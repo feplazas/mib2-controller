@@ -1,225 +1,244 @@
 # MIB2 Controller
 
-Aplicación Android full stack para comunicarse con unidades **MIB2 STD2 Technisat Preh** mediante Telnet sobre Ethernet y ejecutar comandos de diagnóstico y modificación.
+Aplicación Android full stack para comunicarse con unidades **MIB2 STD2 Technisat Preh** (firmware T480) mediante **Telnet sobre Ethernet** y realizar modificaciones avanzadas al comportamiento del sistema.
 
 ![MIB2 Controller Logo](./assets/images/icon.png)
 
 ## 📋 Descripción
 
-MIB2 Controller es una herramienta de control remoto diseñada específicamente para unidades de infoentretenimiento MIB2 STD2 Technisat/Preh con firmware T480 (y variantes). La aplicación permite establecer conexiones Telnet a través de Ethernet, ejecutar comandos shell, y gestionar el historial de operaciones.
+MIB2 Controller es una herramienta profesional de control remoto diseñada específicamente para unidades de infoentretenimiento MIB2 STD2 Technisat/Preh. La aplicación implementa las funcionalidades descritas en el documento técnico **MIB2Acceso.pdf**, incluyendo procedimientos VCDS, generación de códigos FEC, asistente de instalación del Toolbox, y un completo sistema de validación y advertencias de seguridad.
 
-## ✨ Características
+## ✨ Características Principales
 
-### Conexión Telnet
-- Conexión remota a unidades MIB2 vía Telnet (puerto 23)
-- Autenticación automática con credenciales root/root
-- Gestión de configuración de conexión (IP, puerto, credenciales)
-- Indicador visual de estado de conexión en tiempo real
+### 🔧 Procedimientos VCDS
+- **Biblioteca completa** de procedimientos VCDS con traducciones alemán-español
+- **6 procedimientos predefinidos** para modificaciones MQB (SEAT León Cupra 290 5F):
+  - Control XDS+ (Bloqueo Diferencial Electrónico)
+  - Optimización del Diferencial VAQ (Tracción Aumentada)
+  - Asistente de Freno Temprano
+  - Activación del Monitor Offroad
+  - Personalización del Cuadro Digital (Carbono/Cupra)
+  - Developer Mode
+- **Tabla de referencia rápida** con todos los canales y valores
+- **Glosario técnico** alemán-español integrado
+- **Sistema de advertencias críticas** (especialmente XDS+ "Strong")
 
-### Comandos Predefinidos
-- Biblioteca de comandos seguros categorizados:
-  - **Información**: Versión de firmware, información del sistema
-  - **Diagnóstico**: CPU, memoria, procesos, interfaces de red
-  - **Configuración**: Dispositivos montados, uso de disco
-- Ejecución de comandos personalizados con validación de seguridad
-- Confirmación para comandos potencialmente peligrosos
+### 🔑 Generador de Códigos FEC
+- **Códigos predefinidos** para funciones comunes:
+  - Apple CarPlay (00060800)
+  - Android Auto (00060900)
+  - Performance Monitor (00060400)
+- **Generación de ExceptionList.txt** para inyección de códigos
+- **Comandos de inyección** vía MIB2 Toolbox
+- **Validación de formato** de códigos FEC
+- **Soporte para códigos personalizados**
 
-### Historial de Logs
-- Registro completo de todos los comandos ejecutados
-- Visualización de salidas y errores
-- Exportación de logs a archivo de texto
-- Timestamps y estado de éxito/error
+### 🛠️ Asistente de Instalación del Toolbox
+- **Guía paso a paso** para instalación vía Telnet (11 pasos detallados)
+- **Script de instalación automatizado** generado dinámicamente
+- **Comandos de diagnóstico** del sistema QNX
+- **Verificación de instalación** exitosa
+- **Documentación del método alternativo** (acceso directo eMMC)
 
-### Configuración
-- Ajustes de conexión personalizables
-- Gestión de datos (limpieza de historial)
-- Información de la aplicación
+### 🌐 Comunicación Telnet
+- **Cliente Telnet** integrado para comunicación con MIB2
+- **Detección automática de IP** mediante escaneo de red local (rápido y completo)
+- **Gestión de perfiles** para múltiples unidades MIB2
+- **Detección automática de MIB2 Toolbox** instalado
+- **Indicador visual de estado** de conexión en tiempo real
+
+### 📊 Sistema de Logs y Macros
+- **Historial completo** de comandos ejecutados con timestamps
+- **9 macros predefinidas** para operaciones comunes:
+  - Backup completo del sistema
+  - Activación de todas las adaptaciones
+  - Diagnóstico completo
+  - Mantenimiento del sistema
+  - Y más...
+- **Ejecución secuencial** con delays configurables
+- **Indicador de progreso** durante ejecución de macros
+- **Exportación de logs** en formato texto
+
+### 🔒 Modo Experto con PIN
+- **Protección por PIN** de 4 dígitos con almacenamiento seguro
+- **Filtrado de comandos** según nivel de riesgo
+- **Confirmación doble** para operaciones críticas
+- **Desbloqueo de procedimientos avanzados**
+
+### ✅ Validador de Configuraciones
+- **Verificación de compatibilidad** de hardware (790, 790A, 790B, 790B+)
+- **Validación de firmware** (T480, T490, T500)
+- **Sistema de alertas** por nivel de riesgo (seguro, moderado, alto, crítico)
+- **Recomendaciones técnicas** específicas por procedimiento
+- **Generación de reportes** de validación
+
+### 👤 Gestión de Perfiles
+- **Múltiples perfiles** para diferentes unidades MIB2
+- **Colores personalizables** para identificación visual
+- **Cambio rápido** entre perfiles
+- **Almacenamiento local** de configuraciones
 
 ## 🔧 Requisitos
 
 ### Hardware
 - Dispositivo Android (teléfono o tablet)
-- Unidad MIB2 STD2 Technisat/Preh
-- Adaptador USB-Ethernet (ej: D-Link)
+- Unidad MIB2 STD2 Technisat/Preh con firmware T480 o superior
+- Adaptador USB-Ethernet D-Link DUB-E100 (chipset ASIX AX88772)
 - Cable Ethernet
-- Adaptador USB-C a Ethernet para Android (opcional, si se conecta directamente)
+- Adaptador USB-C a Ethernet para Android (opcional)
 
 ### Software
 - Android 8.0 (API 26) o superior
-- Unidad MIB2 con Telnet habilitado (requiere MIB2 Toolbox instalado)
-- Red local (WiFi o Ethernet) compartida entre el dispositivo Android y la unidad MIB2
+- Unidad MIB2 con Telnet habilitado
+- Red local (WiFi o Ethernet) compartida
 
 ## 📱 Instalación
 
 ### Opción 1: Expo Go (Desarrollo)
 1. Instala Expo Go desde Google Play Store
-2. Escanea el código QR proporcionado por el desarrollador
+2. Escanea el código QR proporcionado
 3. La app se cargará en Expo Go
 
 ### Opción 2: APK (Producción)
-1. Descarga el archivo APK desde la página de releases
-2. Habilita "Instalar aplicaciones de fuentes desconocidas" en Android
+1. Descarga el archivo APK desde releases
+2. Habilita "Instalar aplicaciones de fuentes desconocidas"
 3. Instala el APK
 4. Abre la aplicación
 
 ## 🚀 Uso
 
-### 1. Preparación de la Unidad MIB2
+### 1. Configuración de Red
 
-Antes de usar la aplicación, asegúrate de que tu unidad MIB2 tenga Telnet habilitado:
-
-1. Instala [MIB2 STD2 Toolbox](https://github.com/olli991/mib-std2-pq-zr-toolbox)
-2. Habilita el acceso Telnet mediante el menú "Network" del Toolbox
-3. Verifica las credenciales (por defecto: root/root)
-
-### 2. Conexión Física
-
-**Configuración típica:**
-
+**Conexión física:**
 ```
-[Unidad MIB2] --USB--> [Adaptador USB-Ethernet] --Ethernet--> [Router WiFi]
-                                                                    |
-                                                                    v
-                                                          [Dispositivo Android]
+[Unidad MIB2] --USB--> [D-Link DUB-E100] --Ethernet--> [Router WiFi]
+                                                            |
+                                                            v
+                                                  [Dispositivo Android]
 ```
 
-**Pasos:**
-1. Conecta el adaptador USB-Ethernet al puerto USB de la unidad MIB2
-2. Conecta un cable Ethernet del adaptador a tu router WiFi
-3. Conecta tu dispositivo Android a la misma red WiFi
-4. Verifica la dirección IP de la unidad MIB2 (típicamente 192.168.1.4)
+**Configuración de IP:**
+- Unidad MIB2: 192.168.1.4 (típica)
+- Dispositivo: 192.168.1.10 (configurar IP estática)
+- Máscara: 255.255.255.0
+- Gateway: 192.168.1.1
 
-### 3. Conexión en la App
-
+### 2. Conexión en la App
 1. Abre MIB2 Controller
-2. En la pantalla Home, ingresa:
-   - **IP**: 192.168.1.4 (o la IP de tu unidad)
-   - **Puerto**: 23
-3. Presiona "Conectar a MIB2"
-4. Espera la confirmación de conexión exitosa
+2. En **Home**, ingresa IP: 192.168.1.4
+3. O usa **"Buscar MIB2"** para detección automática
+4. Presiona **"Conectar a MIB2"**
+5. Credenciales por defecto: root/root
 
-### 4. Ejecutar Comandos
+### 3. Procedimientos VCDS
+1. Ve a la pestaña **VCDS**
+2. Selecciona el procedimiento deseado
+3. Lee las advertencias y recomendaciones
+4. Presiona **"Ver Comando VCDS"**
+5. Ejecuta el comando en VCDS/OBDeleven
 
-#### Comandos Predefinidos:
-1. Ve a la pestaña "Comandos"
-2. Filtra por categoría (Información, Diagnóstico)
-3. Toca un comando para ejecutarlo
-4. Revisa la salida en la pestaña "Logs"
+### 4. Generación de Códigos FEC
+1. Ve a la pestaña **FEC**
+2. Selecciona códigos predefinidos o agrega personalizados
+3. Presiona **"Generar ExceptionList.txt"**
+4. Comparte el archivo generado
+5. Sigue las instrucciones de inyección vía Toolbox
 
-#### Comandos Personalizados:
-1. En la pestaña "Comandos", desplázate hasta "Comando Personalizado"
-2. Ingresa el comando shell (ej: `cat /proc/version`)
-3. Presiona "Ejecutar Comando"
-4. Confirma la ejecución
+### 5. Instalación del Toolbox
+1. Ve a la pestaña **Toolbox**
+2. Sigue los 11 pasos de la guía
+3. O presiona **"Generar Script de Instalación"**
+4. Ejecuta el script desde Telnet
 
-### 5. Revisar Logs
+### 6. Ejecución de Comandos
+1. Ve a la pestaña **Comandos**
+2. Selecciona un comando de la lista
+3. Confirma la ejecución
+4. Ver resultado en tiempo real
 
-1. Ve a la pestaña "Logs"
-2. Revisa el historial de comandos ejecutados
-3. Exporta los logs con el botón "Exportar"
-4. Limpia el historial con el botón "Limpiar"
+### 7. Macros Automatizadas
+1. Ve a la pestaña **Macros**
+2. Selecciona una macro predefinida
+3. Presiona **"Ejecutar Macro"**
+4. Monitorea el progreso
 
-## 🛡️ Seguridad
+### 8. Gestión de Perfiles
+1. Ve a la pestaña **Perfiles**
+2. Crea un nuevo perfil con:
+   - Nombre descriptivo
+   - IP de la unidad
+   - Puerto (23 por defecto)
+   - Credenciales
+   - Color personalizado
+3. Cambia entre perfiles con un toque
 
-### Validación de Comandos
+## 🛡️ Advertencias de Seguridad
 
-La aplicación incluye validación básica para prevenir comandos peligrosos:
+### ⚠️ CRÍTICO: XDS+ en Modo "Strong"
+**NO configurar el XDS+ en modo "Strong" (Stark)**. Este ajuste genera:
+- Desgaste parasitario de frenos
+- Temperaturas del disco superiores a 600°C-700°C
+- Riesgo de vapor lock (líquido de frenos en ebullición)
+- Destrucción de pastillas en una sola sesión de pista
+- Bucle de control conflictivo con VAQ
 
-- ❌ `rm -rf /` (eliminación recursiva de root)
-- ❌ `mkfs` (formateo de sistema de archivos)
-- ❌ `dd if=` (operaciones de disco)
-- ❌ Escritura a dispositivos de disco
+**Configuración recomendada**: "Standard" (Estándar)
 
-### Recomendaciones
+### ⚠️ Método de Parcheo FEC
+La inyección de códigos FEC sortea la validación de firmware digital de VW AG:
+- Modifica el binario del sistema (tsd.mibstd2.system.swap)
+- Solo funciona en unidades 1-SD sin rutinas de validación
+- Realizar backup completo antes de proceder
 
-- ⚠️ **Usa bajo tu propia responsabilidad**: Los comandos incorrectos pueden dañar la unidad MIB2
-- 📚 **Conoce lo que haces**: Solo ejecuta comandos que entiendas completamente
-- 💾 **Haz backups**: Usa el MIB2 Toolbox para crear respaldos antes de modificaciones
-- 🔒 **Cambia credenciales**: Considera cambiar las credenciales root por defecto
-- 📝 **Revisa logs**: Mantén un registro de todas las operaciones realizadas
+### ⚠️ Acceso Directo eMMC
+El acceso directo al chip eMMC es un método avanzado:
+- Requiere microsoldadura
+- Puede "brickear" la unidad permanentemente
+- Anula la garantía
+- Solo para usuarios con experiencia en electrónica
 
-## 📚 Comandos Útiles
+## 📚 Glosario Técnico (Alemán-Español)
 
-### Información del Sistema
-```bash
-# Versión de firmware
-cat /net/rcc/mnt/efs-persist/FW/version.txt
-
-# Información del sistema operativo
-uname -a
-
-# Información de CPU
-cat /proc/cpuinfo
-```
-
-### Diagnóstico
-```bash
-# Uso de memoria
-free
-
-# Procesos en ejecución
-ps aux
-
-# Interfaces de red
-ifconfig
-
-# Dispositivos montados
-mount
-
-# Uso de disco
-df -h
-```
-
-### Archivos del Sistema
-```bash
-# Listar archivos en directorio
-ls -la /path/to/directory
-
-# Ver contenido de archivo
-cat /path/to/file
-
-# Buscar archivos
-find /path -name "filename"
-```
+| Alemán | Español |
+|--------|---------|
+| Steuergerät | Unidad de Control (ECU/Module) |
+| Bremselektronik | Electrónica de Frenos (ABS/ESC) |
+| Quersperre | Bloqueo Transversal (Diferencial VAQ) |
+| Informationselektronik | Electrónica de Información (Multimedia) |
+| Schalttafeleinsatz | Inserto del Panel de Instrumentos (Cuadro) |
+| Anpassung | Adaptación (Función 10) |
+| Zugriffsberechtigung | Autorización de Acceso / Login de Seguridad (Función 16) |
+| Codierung | Codificación (Función 07 - Long Coding) |
+| Erweiterte elektronische Differenzialsperre | Bloqueo diferencial electrónico extendido (XDS+) |
+| Akustikmaßnahme, Verspannungslogik | Medidas acústicas, lógica de tensión (VAQ) |
+| Bremsassistent | Asistente de Freno |
+| Displaydarstellung | Representación de pantalla |
+| Entwicklermodus | Modo Desarrollador |
 
 ## 🏗️ Arquitectura Técnica
 
 ### Frontend (React Native + Expo)
 - **Framework**: Expo SDK 54, React Native 0.81
-- **Navegación**: Expo Router 6
+- **Navegación**: Expo Router 6 con 8 pestañas
 - **Estilos**: NativeWind 4 (Tailwind CSS)
 - **Estado**: React Context API + AsyncStorage
 - **Lenguaje**: TypeScript 5.9
 
 ### Backend (Node.js + Express)
 - **Framework**: Express.js
-- **Cliente Telnet**: telnet-client (npm)
+- **Cliente Telnet**: telnet-client
 - **Base de Datos**: MySQL + Drizzle ORM
 - **Validación**: Zod
 - **API**: REST + tRPC
 
 ### Base de Datos
 - **Tablas**:
-  - `command_logs`: Historial de comandos ejecutados
-  - `predefined_commands`: Biblioteca de comandos seguros
+  - `command_logs`: Historial de comandos
+  - `predefined_commands`: Biblioteca de comandos
   - `connection_history`: Registro de conexiones
-  - `users`: Gestión de usuarios (opcional)
-
-## 🔌 API Endpoints
-
-### Telnet
-- `POST /api/telnet/connect` - Establecer conexión
-- `POST /api/telnet/disconnect` - Cerrar conexión
-- `POST /api/telnet/execute` - Ejecutar comando
-- `GET /api/telnet/status` - Estado de conexión
+  - `users`: Gestión de usuarios
 
 ## 🛠️ Desarrollo
-
-### Requisitos
-- Node.js 22+
-- pnpm 9+
-- MySQL 8+
-- Expo CLI
 
 ### Instalación
 ```bash
@@ -232,7 +251,6 @@ pnpm install
 
 # Configurar variables de entorno
 cp .env.example .env
-# Editar .env con tus credenciales de base de datos
 
 # Ejecutar migraciones
 pnpm db:push
@@ -244,66 +262,31 @@ pnpm dev
 ### Scripts Disponibles
 ```bash
 pnpm dev          # Iniciar dev server (backend + metro)
-pnpm dev:server   # Solo backend
-pnpm dev:metro    # Solo Metro bundler
 pnpm android      # Abrir en Android
-pnpm ios          # Abrir en iOS
 pnpm check        # TypeScript check
 pnpm lint         # ESLint
-pnpm test         # Tests con Vitest
-pnpm db:push      # Ejecutar migraciones
+pnpm test         # Tests
+pnpm db:push      # Migraciones
 ```
 
-## 📖 Documentación Adicional
+## 📖 Referencias
 
-- [MIB2 STD2 Toolbox](https://github.com/olli991/mib-std2-pq-zr-toolbox)
-- [MIB Wiki](https://mibwiki.one)
-- [Expo Documentation](https://docs.expo.dev/)
-- [React Native Documentation](https://reactnative.dev/)
-
-## 🐛 Problemas Conocidos
-
-### No se puede conectar
-- Verifica que la unidad MIB2 tenga Telnet habilitado
-- Confirma que ambos dispositivos estén en la misma red
-- Prueba hacer ping a la IP de la unidad desde tu Android
-- Revisa que el puerto 23 no esté bloqueado por firewall
-
-### Comandos no se ejecutan
-- Asegúrate de estar conectado antes de ejecutar comandos
-- Verifica que el comando sea válido en QNX
-- Revisa los logs para ver mensajes de error específicos
-
-### La app se cierra inesperadamente
-- Limpia el caché de la aplicación
-- Reinstala la app
-- Reporta el problema con los logs
+- **Documento técnico**: MIB2Acceso.pdf
+- **Repositorio MIB2 Toolbox**: https://github.com/olli991/mib-std2-pq-zr-toolbox
+- **Plataforma**: MQB (SEAT León Cupra 290 5F)
+- **Firmware**: T480 (Technisat Preh)
 
 ## 📄 Licencia
 
-MIT License - Ver archivo LICENSE para más detalles
-
-## ⚠️ Disclaimer
-
-Esta aplicación se proporciona "tal cual" sin garantías de ningún tipo. El uso de esta herramienta es bajo tu propia responsabilidad. Los desarrolladores no se hacen responsables por daños a las unidades MIB2, pérdida de datos, o cualquier otro problema derivado del uso de esta aplicación.
-
-**IMPORTANTE**: Modificar el firmware o la configuración de tu unidad MIB2 puede anular la garantía del vehículo y causar mal funcionamiento del sistema de infoentretenimiento.
-
-## 👥 Contribuciones
-
-Las contribuciones son bienvenidas. Por favor:
-1. Fork el repositorio
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
+Este proyecto es de código abierto y se proporciona "tal cual" sin garantías de ningún tipo. El uso de esta aplicación es bajo tu propio riesgo. No nos hacemos responsables de daños a la unidad MIB2, pérdida de garantía, o cualquier otro problema derivado del uso de esta herramienta.
 
 ## 📧 Soporte
 
-Para reportar problemas o solicitar funcionalidades, abre un issue en GitHub.
+Para reportar problemas o solicitar características, visita: https://help.manus.im
 
 ---
 
-**Versión**: 1.0.0  
-**Última actualización**: Enero 2026  
+**Desarrollado por**: Manus AI  
+**Versión**: 2.0.0  
+**Fecha**: Enero 2026  
 **Compatible con**: MIB2 STD2 Technisat/Preh (Firmware T480 y variantes)

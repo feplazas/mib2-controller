@@ -59,6 +59,27 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="vcds"
+        options={{
+          title: "VCDS",
+          tabBarIcon: ({ color}) => <IconSymbol size={28} name="wrench.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="fec"
+        options={{
+          title: "FEC",
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="key.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="toolbox"
+        options={{
+          title: "Toolbox",
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="hammer.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="macros"
         options={{
           title: "Macros",

@@ -94,3 +94,42 @@
 - [x] Detectar servicios habilitados (Telnet, FTP, etc.)
 - [x] Mostrar información en pantalla Home
 - [x] Agregar alertas si Toolbox no está instalado
+
+## Implementación según Documento Técnico MIB2Acceso.pdf
+
+### Biblioteca de Procedimientos VCDS
+- [x] Crear módulo de procedimientos VCDS con traducciones alemán-español
+- [x] Implementar procedimiento de modificación XDS+ (Standard/Mittel/Schwach/Stark)
+- [x] Implementar procedimiento de optimización VAQ (Tracción Aumentada)
+- [x] Implementar procedimiento de Asistente de Freno Temprano
+- [x] Implementar procedimiento de activación Monitor Offroad
+- [x] Implementar procedimiento de personalización Cuadro Digital (Carbono/Cupra)
+- [x] Implementar procedimiento de Developer Mode
+- [x] Crear tabla de referencia rápida con todos los procedimientos
+
+### Generador de Códigos FEC
+- [x] Crear interfaz para ingresar VIN y VCRN
+- [x] Implementar algoritmo de generación de códigos FEC
+- [x] Agregar códigos predefinidos (00060800 CarPlay, 00060900 Android Auto, 00060400 Performance Monitor)
+- [x] Crear función de exportación de ExceptionList.txt
+- [x] Implementar función de inyección de códigos vía Toolbox
+
+### Asistente de Instalación Toolbox
+- [x] Crear guía paso a paso para instalación vía Telnet
+- [x] Implementar comando de instalación del script
+- [x] Agregar función de parcheo (tsd.mibstd2.system.swap)
+- [x] Crear verificador de instalación exitosa
+- [x] Documentar método alternativo por soldadura (solo informativo)
+
+### Validador de Configuraciones
+- [x] Implementar verificador de compatibilidad de hardware
+- [x] Agregar validación de versión de firmware
+- [x] Crear sistema de alertas de riesgo por configuración
+- [x] Implementar validación de códigos FEC antes de inyección
+
+### Sistema de Advertencias de Seguridad
+- [x] Agregar advertencia crítica sobre XDS+ "Strong" (desgaste de frenos)
+- [x] Implementar recomendación técnica para VAQ "Tracción Aumentada"
+- [x] Agregar nota sobre limitaciones de Vista Sport (hardware 790 B+)
+- [x] Crear sistema de confirmación doble para modificaciones de riesgo
+- [x] Implementar glosario técnico alemán-español en la app
