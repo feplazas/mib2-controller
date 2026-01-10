@@ -263,3 +263,23 @@
 - [x] Mostrar output en tiempo real (logs)
 - [x] Implementar historial de scripts ejecutados (logs de comandos)
 - [x] Agregar sistema de favoritos para scripts (macros predefinidas)
+
+## Características Finales
+
+### Exportación/Importación de Configuración
+- [x] Crear módulo de exportación de configuración completa
+- [x] Exportar perfiles de conexión
+- [x] Exportar macros personalizadas
+- [x] Exportar configuración de la app (theme, expert mode, etc.)
+- [x] Crear módulo de importación con validación
+- [x] Implementar UI para exportar/importar (pantalla dedicada)
+- [x] Agregar función de compartir archivo de configuración
+
+### Modo Offline con Cola de Comandos
+- [x] Crear sistema de cola de comandos pendientes
+- [x] Detectar estado de conexión (online/offline)
+- [x] Guardar comandos en cola cuando está offline
+- [x] Implementar ejecución manual al reconectar
+- [x] Mostrar indicador de comandos pendientes (stats)
+- [x] Agregar gestión manual de cola (ver, editar, eliminar)
+- [x] Persistir cola en AsyncStorage
