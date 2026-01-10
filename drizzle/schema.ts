@@ -25,4 +25,57 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
-// TODO: Add your tables here
+/**
+ * Command Logs Table
+ * Stores history of all commands executed on MIB2 units
+ */
+export const commandLogs = mysqlTable("command_logs", {
+  id: int("id").autoincrement().primaryKey(),
+  command: text("command").notNull(),
+  output: text("output"),
+  error: text("error"),
+  success: int("success").notNull().default(0), // 0 = false, 1 = true
+  executedAt: timestamp("executedAt").defaultNow().notNull(),
+  host: varchar("host", { length: 15 }),
+  port: int("port"),
+  userId: int("userId"),
+});
+
+/**
+ * Predefined Commands Table
+ * Stores library of known safe commands for MIB2
+ */
+export const predefinedCommands = mysqlTable("predefined_commands", {
+  id: int("id").autoincrement().primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  category: varchar("category", { length: 50 }).notNull(),
+  description: text("description").notNull(),
+  command: text("command").notNull(),
+  requiresConfirmation: int("requiresConfirmation").notNull().default(0),
+  firmwareVersion: varchar("firmwareVersion", { length: 50 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+/**
+ * Connection History Table
+ * Tracks all connection attempts to MIB2 units
+ */
+export const connectionHistory = mysqlTable("connection_history", {
+  id: int("id").autoincrement().primaryKey(),
+  host: varchar("host", { length: 15 }).notNull(),
+  port: int("port").notNull(),
+  success: int("success").notNull(), // 0 = false, 1 = true
+  errorMessage: text("errorMessage"),
+  connectedAt: timestamp("connectedAt").defaultNow().notNull(),
+  disconnectedAt: timestamp("disconnectedAt"),
+  userId: int("userId"),
+});
+
+export type CommandLog = typeof commandLogs.$inferSelect;
+export type NewCommandLog = typeof commandLogs.$inferInsert;
+
+export type PredefinedCommand = typeof predefinedCommands.$inferSelect;
+export type NewPredefinedCommand = typeof predefinedCommands.$inferInsert;
+
+export type ConnectionHistory = typeof connectionHistory.$inferSelect;
+export type NewConnectionHistory = typeof connectionHistory.$inferInsert;
