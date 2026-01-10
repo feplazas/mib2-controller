@@ -9,6 +9,7 @@ import { Platform } from "react-native";
 import "@/lib/_core/nativewind-pressable";
 import { ThemeProvider } from "@/lib/theme-provider";
 import { TelnetProvider } from "@/lib/telnet-provider";
+import { ExpertModeProvider } from "@/lib/expert-mode-provider";
 import {
   SafeAreaFrameContext,
   SafeAreaInsetsContext,
@@ -100,24 +101,28 @@ export default function RootLayout() {
   if (shouldOverrideSafeArea) {
     return (
       <ThemeProvider>
-        <TelnetProvider>
-          <SafeAreaProvider initialMetrics={providerInitialMetrics}>
-            <SafeAreaFrameContext.Provider value={frame}>
-              <SafeAreaInsetsContext.Provider value={insets}>
-                {content}
-              </SafeAreaInsetsContext.Provider>
-            </SafeAreaFrameContext.Provider>
-          </SafeAreaProvider>
-        </TelnetProvider>
+        <ExpertModeProvider>
+          <TelnetProvider>
+            <SafeAreaProvider initialMetrics={providerInitialMetrics}>
+              <SafeAreaFrameContext.Provider value={frame}>
+                <SafeAreaInsetsContext.Provider value={insets}>
+                  {content}
+                </SafeAreaInsetsContext.Provider>
+              </SafeAreaFrameContext.Provider>
+            </SafeAreaProvider>
+          </TelnetProvider>
+        </ExpertModeProvider>
       </ThemeProvider>
     );
   }
 
   return (
     <ThemeProvider>
-      <TelnetProvider>
-        <SafeAreaProvider initialMetrics={providerInitialMetrics}>{content}</SafeAreaProvider>
-      </TelnetProvider>
+      <ExpertModeProvider>
+        <TelnetProvider>
+          <SafeAreaProvider initialMetrics={providerInitialMetrics}>{content}</SafeAreaProvider>
+        </TelnetProvider>
+      </ExpertModeProvider>
     </ThemeProvider>
   );
 }

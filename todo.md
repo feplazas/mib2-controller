@@ -46,5 +46,28 @@
 - [x] Documentar protocolo de comunicación implementado
 
 ## Fase de Entrega
-- [ ] Crear checkpoint final
-- [ ] Preparar documentación de entrega
+- [x] Crear checkpoint final
+- [x] Preparar documentación de entrega
+
+## Mejoras Adicionales
+
+### Detección Automática de IP
+- [x] Implementar servicio de escaneo de red local
+- [x] Crear endpoint backend para escaneo de puertos
+- [x] Agregar botón "Buscar MIB2" en pantalla Home
+- [x] Mostrar dispositivos encontrados con indicador de progreso
+
+### Biblioteca de Comandos Expandida
+- [x] Agregar comandos de modificación de adaptaciones
+- [x] Agregar comandos de personalización de skins
+- [x] Agregar comandos de gestión de archivos
+- [x] Agregar comandos de red y conectividad
+- [x] Categorizar comandos por nivel de riesgo
+
+### Modo Experto
+- [x] Crear sistema de PIN de seguridad
+- [x] Implementar almacenamiento seguro de PIN
+- [x] Agregar toggle de Modo Experto en Configuración
+- [x] Crear pantalla de configuración de PIN
+- [x] Filtrar comandos avanzados según modo
+- [x] Implementar doble confirmación para comandos peligrosos
