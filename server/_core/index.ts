@@ -8,6 +8,7 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import telnetRouter from "../routes/telnet";
 import networkRouter from "../routes/network";
+import operationsRouter from "../routes/operations";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise((resolve) => {
@@ -67,6 +68,9 @@ async function startServer() {
 
   // Network scanning routes
   app.use("/api/network", networkRouter);
+
+  // Operation history routes
+  app.use("/api/operations", operationsRouter);
 
   app.use(
     "/api/trpc",

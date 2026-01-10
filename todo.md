@@ -206,3 +206,30 @@
 - [x] Documentar método de cortocircuito SDA/SCL
 - [x] Agregar modo de recuperación por comandos vendor-specific
 - [x] Implementar verificación de integridad de EEPROM
+
+## Características de Seguridad y Trazabilidad
+
+### Dry Run Mode
+- [x] Implementar modo de simulación sin escritura real
+- [x] Crear vista previa de bytes que se modificarían
+- [x] Mostrar comparativa antes/después en modo simulación
+- [x] Agregar toggle "Dry Run" en pantalla de spoofing
+- [x] Generar reporte detallado de cambios simulados
+
+### Backup/Restore de EEPROM
+- [x] Implementar función de backup completo de EEPROM
+- [x] Guardar backup en archivo binario con metadata
+- [x] Crear lista de backups disponibles
+- [x] Implementar función de restauración desde backup
+- [x] Agregar verificación de integridad de backups
+- [x] Backup automático antes de cada operación de spoofing
+
+### Historial de Operaciones
+- [x] Crear tabla de base de datos para historial
+- [x] Registrar operaciones de spoofing con timestamp
+- [x] Registrar operaciones de recuperación
+- [x] Almacenar información del adaptador usado
+- [x] Guardar resultado (éxito/fallo) y tiempo de ejecución
+- [x] Crear pantalla de visualización de historial (integrado en API)
+- [x] Agregar filtros y búsqueda en historial (por tipo, dispositivo)
+- [x] Generar estadísticas de operaciones

@@ -5,6 +5,8 @@
 
 import { usbService, DLINK_VENDOR_ID, DLINK_PRODUCT_ID_B1 } from './usb-service';
 import { EepromAnalyzer, type EepromAnalysis } from './eeprom-analyzer';
+import { EepromBackupManager } from './eeprom-backup';
+import { OperationHistoryManager } from './operation-history';
 
 export interface SpoofingProgress {
   step: number;
@@ -20,6 +22,13 @@ export interface SpoofingResult {
   newVid?: number;
   newPid?: number;
   error?: string;
+  dryRun?: boolean;
+  simulatedChanges?: Array<{
+    offset: number;
+    offsetName: string;
+    oldValue: number;
+    newValue: number;
+  }>;
 }
 
 export type ProgressCallback = (progress: SpoofingProgress) => void;
@@ -33,7 +42,8 @@ export class EepromWriter {
    */
   static async performSpoofing(
     analysis: EepromAnalysis,
-    onProgress?: ProgressCallback
+    onProgress?: ProgressCallback,
+    dryRun: boolean = false
   ): Promise<SpoofingResult> {
     const totalSteps = 7;
     let currentStep = 0;
@@ -66,6 +76,18 @@ export class EepromWriter {
       // Paso 2: Crear backup de EEPROM original
       reportProgress('Creating backup of original EEPROM...');
       const backup = [...analysis.rawData];
+      
+      // Crear backup persistente automáticamente
+      try {
+        const backupId = await EepromBackupManager.createBackup(
+          analysis,
+          `Auto-backup before spoofing (${dryRun ? 'Dry Run' : 'Real Operation'})`
+        );
+        console.log(`[EepromWriter] Auto-backup created: ${backupId}`);
+      } catch (backupError) {
+        console.error('[EepromWriter] Failed to create auto-backup:', backupError);
+        // Continue anyway, we have the in-memory backup
+      }
 
       // Paso 3: Preparar datos para escritura
       reportProgress('Preparing new VID/PID values...');
@@ -77,6 +99,53 @@ export class EepromWriter {
       const newVidHigh = (targetVid >> 8) & 0xFF;
       const newPidLow = targetPid & 0xFF;
       const newPidHigh = (targetPid >> 8) & 0xFF;
+
+      // Si es Dry Run, solo simular los cambios
+      if (dryRun) {
+        reportProgress('[DRY RUN] Simulating VID write...');
+        reportProgress('[DRY RUN] Simulating PID write...');
+        if (analysis.checksumOffset) {
+          reportProgress('[DRY RUN] Simulating checksum update...');
+        }
+        reportProgress('[DRY RUN] Simulation complete');
+
+        const simulatedChanges = [
+          {
+            offset: vidPidLocation.vidOffsetLow,
+            offsetName: 'VID Low Byte',
+            oldValue: backup[vidPidLocation.vidOffsetLow],
+            newValue: newVidLow,
+          },
+          {
+            offset: vidPidLocation.vidOffsetHigh,
+            offsetName: 'VID High Byte',
+            oldValue: backup[vidPidLocation.vidOffsetHigh],
+            newValue: newVidHigh,
+          },
+          {
+            offset: vidPidLocation.pidOffsetLow,
+            offsetName: 'PID Low Byte',
+            oldValue: backup[vidPidLocation.pidOffsetLow],
+            newValue: newPidLow,
+          },
+          {
+            offset: vidPidLocation.pidOffsetHigh,
+            offsetName: 'PID High Byte',
+            oldValue: backup[vidPidLocation.pidOffsetHigh],
+            newValue: newPidHigh,
+          },
+        ];
+
+        return {
+          success: true,
+          message: '[DRY RUN] Simulation completed successfully. No actual changes were made to EEPROM.',
+          verificationPassed: true,
+          newVid: targetVid,
+          newPid: targetPid,
+          dryRun: true,
+          simulatedChanges,
+        };
+      }
 
       // Paso 4: Escribir VID (2 bytes)
       reportProgress('Writing new Vendor ID to EEPROM...');

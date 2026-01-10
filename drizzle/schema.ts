@@ -79,3 +79,26 @@ export type NewPredefinedCommand = typeof predefinedCommands.$inferInsert;
 
 export type ConnectionHistory = typeof connectionHistory.$inferSelect;
 export type NewConnectionHistory = typeof connectionHistory.$inferInsert;
+
+/**
+ * Operation History Table
+ * Tracks all spoofing and recovery operations
+ */
+export const operationHistory = mysqlTable("operation_history", {
+  id: int("id").autoincrement().primaryKey(),
+  operationType: varchar("operationType", { length: 50 }).notNull(), // 'spoofing', 'recovery', 'restore'
+  deviceVid: varchar("deviceVid", { length: 10 }).notNull(),
+  devicePid: varchar("devicePid", { length: 10 }).notNull(),
+  deviceChipset: varchar("deviceChipset", { length: 50 }),
+  result: varchar("result", { length: 20 }).notNull(), // 'success', 'failed'
+  dryRun: int("dryRun").notNull().default(0), // 0 = false, 1 = true
+  executionTimeMs: int("executionTimeMs"),
+  errorMessage: text("errorMessage"),
+  backupId: varchar("backupId", { length: 100 }),
+  metadata: text("metadata"), // JSON string con detalles adicionales
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  userId: int("userId"),
+});
+
+export type OperationHistory = typeof operationHistory.$inferSelect;
+export type NewOperationHistory = typeof operationHistory.$inferInsert;

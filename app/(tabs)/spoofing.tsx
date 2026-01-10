@@ -16,6 +16,7 @@ export default function SpoofingScreen() {
   const [analysis, setAnalysis] = useState<EepromAnalysis | null>(null);
   const [progress, setProgress] = useState<SpoofingProgress | null>(null);
   const [result, setResult] = useState<string>('');
+  const [dryRunMode, setDryRunMode] = useState(false);
 
   useEffect(() => {
     initializeUsb();
@@ -164,11 +165,24 @@ export default function SpoofingScreen() {
 
       const spoofingResult = await EepromWriter.performSpoofing(analysis, (prog) => {
         setProgress(prog);
-      });
+      }, dryRunMode);
 
       if (spoofingResult.success) {
         await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        setResult('SUCCESS: ' + spoofingResult.message);
+        
+        // Mostrar cambios simulados si es Dry Run
+        if (spoofingResult.dryRun && spoofingResult.simulatedChanges) {
+          let changesSummary = 'Simulated Changes:\n\n';
+          spoofingResult.simulatedChanges.forEach(change => {
+            changesSummary += `${change.offsetName} (0x${change.offset.toString(16).padStart(2, '0')}): `;
+            changesSummary += `0x${change.oldValue.toString(16).padStart(2, '0')} → `;
+            changesSummary += `0x${change.newValue.toString(16).padStart(2, '0')}\n`;
+          });
+          setResult('DRY RUN SUCCESS:\n' + spoofingResult.message + '\n\n' + changesSummary);
+        } else {
+          setResult('SUCCESS: ' + spoofingResult.message);
+        }
+        
         setCurrentStep('complete');
       } else {
         await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
@@ -387,6 +401,20 @@ export default function SpoofingScreen() {
                 </View>
               </View>
 
+              {/* Dry Run Toggle */}
+              <View className="flex-row items-center justify-between bg-surface rounded-2xl p-4 border border-border">
+                <View className="flex-1">
+                  <Text className="text-sm font-semibold text-foreground">Dry Run Mode</Text>
+                  <Text className="text-xs text-muted">Simulate without writing to EEPROM</Text>
+                </View>
+                <TouchableOpacity
+                  onPress={() => setDryRunMode(!dryRunMode)}
+                  className={`w-14 h-8 rounded-full p-1 ${dryRunMode ? 'bg-primary' : 'bg-border'}`}
+                >
+                  <View className={`w-6 h-6 rounded-full bg-background transition-all ${dryRunMode ? 'ml-6' : 'ml-0'}`} />
+                </TouchableOpacity>
+              </View>
+
               <View className="flex-row gap-2">
                 <TouchableOpacity
                   onPress={handleReset}
@@ -396,9 +424,11 @@ export default function SpoofingScreen() {
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={handleConfirmSpoofing}
-                  className="flex-1 bg-error px-6 py-3 rounded-full active:opacity-80"
+                  className={`flex-1 px-6 py-3 rounded-full active:opacity-80 ${dryRunMode ? 'bg-warning' : 'bg-error'}`}
                 >
-                  <Text className="text-white font-semibold text-center">Start Spoofing</Text>
+                  <Text className="text-white font-semibold text-center">
+                    {dryRunMode ? 'Run Simulation' : 'Start Spoofing'}
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>

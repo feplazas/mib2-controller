@@ -24,6 +24,8 @@ const MAPPING = {
   "wrench.fill": "build",
   "key.fill": "vpn-key",
   "hammer.fill": "construction",
+  "bolt.fill": "flash-on",
+  "folder.fill": "folder",
 } as IconMapping;
 
 /**
