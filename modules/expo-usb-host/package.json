@@ -1,0 +1,20 @@
+{
+  "name": "expo-usb-host",
+  "version": "1.0.0",
+  "description": "Expo module for USB Host API access on Android",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {},
+  "keywords": [
+    "expo",
+    "usb",
+    "android",
+    "usb-host"
+  ],
+  "author": "",
+  "license": "MIT",
+  "peerDependencies": {
+    "expo": "*",
+    "expo-modules-core": "*"
+  }
+}

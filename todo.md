@@ -283,3 +283,33 @@
 - [x] Mostrar indicador de comandos pendientes (stats)
 - [x] Agregar gestión manual de cola (ver, editar, eliminar)
 - [x] Persistir cola en AsyncStorage
+
+## Implementación de Módulo Nativo USB
+
+### Estructura del Módulo Expo
+- [x] Crear directorio modules/expo-usb-host
+- [x] Configurar expo-module.config.json
+- [x] Crear archivo de definición TypeScript
+- [x] Configurar build.gradle para Android
+
+### Código Kotlin para USB Host
+- [x] Implementar UsbHostModule.kt con funciones básicas
+- [x] Implementar getDeviceList() para listar dispositivos
+- [x] Implementar requestPermission() para solicitar permisos
+- [x] Implementar openDevice() y closeDevice()
+- [x] Implementar controlTransfer() para comunicación de bajo nivel
+- [ ] Agregar manejo de eventos USB (attach/detach)
+
+### Configuración de Android
+- [x] Agregar permisos USB en AndroidManifest.xml (via plugin)
+- [x] Configurar USB intent filters (via plugin)
+- [x] Agregar declaración de USB Host feature (via plugin)
+- [x] Configurar device_filter.xml para adaptadores específicos
+
+### Integración y Pruebas
+- [x] Actualizar usb-service.ts para usar módulo nativo
+- [x] Crear pantalla de diagnóstico USB con detección y test de EEPROM
+- [x] Crear guía de rebuild completa (REBUILD_GUIDE.md)
+- [ ] Probar detección de dispositivos USB reales (requiere rebuild)
+- [ ] Validar solicitud de permisos (requiere rebuild)
+- [ ] Probar control transfers con adaptador ASIX (requiere rebuild)

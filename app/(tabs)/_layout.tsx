@@ -129,6 +129,13 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="usb-diag"
+        options={{
+          title: "USB",
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="cable.connector" color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="settings"
         options={{
           title: "Config",

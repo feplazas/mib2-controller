@@ -5,6 +5,7 @@
  */
 
 import { Platform } from 'react-native';
+import * as ExpoUsbHost from '../modules/expo-usb-host/src/index';
 
 // Constantes USB estándar
 export const USB_DIR_OUT = 0x00;
@@ -51,9 +52,8 @@ export interface EEPROMData {
  * Servicio USB para comunicación de bajo nivel con dispositivos
  */
 class UsbService {
-  private usbManager: any = null;
-  private currentDevice: any = null;
-  private connection: any = null;
+  private currentDevice: UsbDevice | null = null;
+  private isDeviceOpen: boolean = false;
 
   /**
    * Inicializar el servicio USB
@@ -64,11 +64,7 @@ class UsbService {
     }
 
     try {
-      // En React Native, necesitamos usar un módulo nativo
-      // Por ahora, simulamos la estructura
-      // TODO: Implementar módulo nativo real con USB Host API
-      
-      console.log('[UsbService] Initialized');
+      console.log('[UsbService] Initialized with native USB Host module');
       return true;
     } catch (error) {
       console.error('[UsbService] Initialization failed:', error);
@@ -81,17 +77,27 @@ class UsbService {
    */
   async listDevices(): Promise<UsbDevice[]> {
     if (Platform.OS === 'web') {
+      console.warn('[UsbService] USB not supported on web platform');
       return [];
     }
 
     try {
-      // TODO: Implementar con módulo nativo
-      // const deviceList = await NativeModules.UsbModule.getDeviceList();
+      console.log('[UsbService] Scanning for USB devices...');
+      console.log('[UsbService] Platform:', Platform.OS, Platform.Version);
       
-      // Simulación para desarrollo
-      const devices: UsbDevice[] = [];
+      const devices = await ExpoUsbHost.getDeviceList();
       
       console.log(`[UsbService] Found ${devices.length} USB devices`);
+      devices.forEach(device => {
+        console.log(`[UsbService]   - ${device.deviceName}: VID=0x${device.vendorId.toString(16).padStart(4, '0')}, PID=0x${device.productId.toString(16).padStart(4, '0')}`);
+        if (device.manufacturerName) {
+          console.log(`[UsbService]     Manufacturer: ${device.manufacturerName}`);
+        }
+        if (device.productName) {
+          console.log(`[UsbService]     Product: ${device.productName}`);
+        }
+      });
+      
       return devices;
     } catch (error) {
       console.error('[UsbService] Failed to list devices:', error);
@@ -126,13 +132,29 @@ class UsbService {
     }
 
     try {
-      // TODO: Implementar con módulo nativo
-      // const granted = await NativeModules.UsbModule.requestPermission(device.deviceId);
+      const granted = await ExpoUsbHost.requestPermission(device.deviceId);
       
-      console.log(`[UsbService] Permission requested for device ${device.deviceName}`);
-      return true; // Simulación
+      console.log(`[UsbService] Permission ${granted ? 'granted' : 'denied'} for device ${device.deviceName}`);
+      return granted;
     } catch (error) {
       console.error('[UsbService] Permission request failed:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Verificar si tenemos permiso para un dispositivo
+   */
+  async hasPermission(device: UsbDevice): Promise<boolean> {
+    if (Platform.OS === 'web') {
+      return false;
+    }
+
+    try {
+      const hasPermission = await ExpoUsbHost.hasPermission(device.deviceId);
+      return hasPermission;
+    } catch (error) {
+      console.error('[UsbService] Permission check failed:', error);
       return false;
     }
   }
@@ -146,12 +168,28 @@ class UsbService {
     }
 
     try {
-      // TODO: Implementar con módulo nativo
-      // this.connection = await NativeModules.UsbModule.openDevice(device.deviceId);
-      this.currentDevice = device;
+      // Verificar si tenemos permiso
+      const hasPermission = await this.hasPermission(device);
+      if (!hasPermission) {
+        console.log('[UsbService] No permission, requesting...');
+        const granted = await this.requestPermission(device);
+        if (!granted) {
+          console.error('[UsbService] Permission denied by user');
+          return false;
+        }
+      }
+
+      const opened = await ExpoUsbHost.openDevice(device.deviceId);
       
-      console.log(`[UsbService] Opened connection to ${device.deviceName}`);
-      return true;
+      if (opened) {
+        this.currentDevice = device;
+        this.isDeviceOpen = true;
+        console.log(`[UsbService] Opened connection to ${device.deviceName}`);
+      } else {
+        console.error('[UsbService] Failed to open device');
+      }
+      
+      return opened;
     } catch (error) {
       console.error('[UsbService] Failed to open device:', error);
       return false;
@@ -162,16 +200,15 @@ class UsbService {
    * Cerrar conexión con el dispositivo actual
    */
   async closeDevice(): Promise<void> {
-    if (!this.connection) {
+    if (!this.isDeviceOpen) {
       return;
     }
 
     try {
-      // TODO: Implementar con módulo nativo
-      // await NativeModules.UsbModule.closeDevice();
+      await ExpoUsbHost.closeDevice();
       
-      this.connection = null;
       this.currentDevice = null;
+      this.isDeviceOpen = false;
       
       console.log('[UsbService] Device connection closed');
     } catch (error) {
@@ -197,7 +234,7 @@ class UsbService {
     data: number[] | number,
     timeout: number = 5000
   ): Promise<number[] | number> {
-    if (!this.connection) {
+    if (!this.isDeviceOpen) {
       throw new Error('No device connection established');
     }
 
@@ -205,25 +242,24 @@ class UsbService {
       const isRead = (requestType & USB_DIR_IN) !== 0;
       const length = Array.isArray(data) ? data.length : data;
 
-      // TODO: Implementar con módulo nativo
-      // const result = await NativeModules.UsbModule.controlTransfer(
-      //   requestType,
-      //   request,
-      //   value,
-      //   index,
-      //   isRead ? length : data,
-      //   timeout
-      // );
-
       console.log(`[UsbService] Control transfer: type=0x${requestType.toString(16)}, ` +
                   `req=0x${request.toString(16)}, val=0x${value.toString(16)}, ` +
                   `idx=0x${index.toString(16)}, len=${length}`);
 
-      // Simulación para desarrollo
+      const result = await ExpoUsbHost.controlTransfer({
+        requestType,
+        request,
+        value,
+        index,
+        data: Array.isArray(data) ? data : undefined,
+        length: isRead ? length : undefined,
+        timeout
+      });
+
       if (isRead) {
-        return new Array(length).fill(0);
+        return result;
       }
-      return length;
+      return result.length;
     } catch (error) {
       console.error('[UsbService] Control transfer failed:', error);
       throw error;
@@ -342,7 +378,7 @@ class UsbService {
    * Enviar comando vendor-specific genérico
    */
   async sendVendorCommand(request: number, value: number, index: number, data?: number[]): Promise<number[] | number> {
-    if (!this.connection) {
+    if (!this.isDeviceOpen) {
       throw new Error('No device connection established');
     }
 
@@ -379,7 +415,7 @@ class UsbService {
    * Verificar si hay una conexión activa
    */
   isConnected(): boolean {
-    return this.connection !== null && this.currentDevice !== null;
+    return this.isDeviceOpen && this.currentDevice !== null;
   }
 }
 

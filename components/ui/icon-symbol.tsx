@@ -27,6 +27,9 @@ const MAPPING = {
   "bolt.fill": "flash-on",
   "folder.fill": "folder",
   "chart.bar.fill": "bar-chart",
+  "list.bullet": "list",
+  "arrow.clockwise": "refresh",
+  "cable.connector": "usb",
 } as IconMapping;
 
 /**
