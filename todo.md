@@ -71,3 +71,26 @@
 - [x] Crear pantalla de configuración de PIN
 - [x] Filtrar comandos avanzados según modo
 - [x] Implementar doble confirmación para comandos peligrosos
+
+## Características Avanzadas v1.2.0
+
+### Perfiles de Configuración
+- [x] Crear sistema de gestión de perfiles
+- [x] Implementar almacenamiento de múltiples perfiles
+- [x] Agregar UI para crear/editar/eliminar perfiles
+- [x] Implementar cambio rápido entre perfiles
+- [x] Agregar validación de datos de perfil
+
+### Macros de Comandos
+- [x] Crear sistema de macros con secuencias de comandos
+- [x] Implementar biblioteca de macros predefinidas
+- [x] Agregar UI para ejecutar macros
+- [x] Implementar ejecución secuencial con delays
+- [x] Agregar indicador de progreso para macros
+
+### Integración MIB2 Toolbox
+- [x] Implementar detección de MIB2 Toolbox instalado
+- [x] Obtener versión de Toolbox
+- [x] Detectar servicios habilitados (Telnet, FTP, etc.)
+- [x] Mostrar información en pantalla Home
+- [x] Agregar alertas si Toolbox no está instalado

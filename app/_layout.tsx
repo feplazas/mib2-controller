@@ -10,6 +10,7 @@ import "@/lib/_core/nativewind-pressable";
 import { ThemeProvider } from "@/lib/theme-provider";
 import { TelnetProvider } from "@/lib/telnet-provider";
 import { ExpertModeProvider } from "@/lib/expert-mode-provider";
+import { ProfilesProvider } from "@/lib/profiles-provider";
 import {
   SafeAreaFrameContext,
   SafeAreaInsetsContext,
@@ -101,8 +102,9 @@ export default function RootLayout() {
   if (shouldOverrideSafeArea) {
     return (
       <ThemeProvider>
-        <ExpertModeProvider>
-          <TelnetProvider>
+        <ProfilesProvider>
+          <ExpertModeProvider>
+            <TelnetProvider>
             <SafeAreaProvider initialMetrics={providerInitialMetrics}>
               <SafeAreaFrameContext.Provider value={frame}>
                 <SafeAreaInsetsContext.Provider value={insets}>
@@ -110,19 +112,22 @@ export default function RootLayout() {
                 </SafeAreaInsetsContext.Provider>
               </SafeAreaFrameContext.Provider>
             </SafeAreaProvider>
-          </TelnetProvider>
-        </ExpertModeProvider>
+            </TelnetProvider>
+          </ExpertModeProvider>
+        </ProfilesProvider>
       </ThemeProvider>
     );
   }
 
   return (
     <ThemeProvider>
-      <ExpertModeProvider>
-        <TelnetProvider>
-          <SafeAreaProvider initialMetrics={providerInitialMetrics}>{content}</SafeAreaProvider>
-        </TelnetProvider>
-      </ExpertModeProvider>
+      <ProfilesProvider>
+        <ExpertModeProvider>
+          <TelnetProvider>
+            <SafeAreaProvider initialMetrics={providerInitialMetrics}>{content}</SafeAreaProvider>
+          </TelnetProvider>
+        </ExpertModeProvider>
+      </ProfilesProvider>
     </ThemeProvider>
   );
 }

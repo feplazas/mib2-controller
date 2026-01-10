@@ -6,14 +6,17 @@ import { ScreenContainer } from "@/components/screen-container";
 import { useTelnet } from "@/lib/telnet-provider";
 import { parseFirmwareVersion } from "@/lib/telnet-client";
 import { quickScan, scanNetwork, parseSubnet, type ScanResult, type ScanProgress } from "@/lib/network-scanner";
+import { detectToolbox, type ToolboxInfo } from "@/lib/toolbox-detector";
 
 export default function HomeScreen() {
-  const { connectionStatus, isConnecting, config, updateConfig, connect, disconnect } = useTelnet();
+  const { connectionStatus, isConnecting, config, updateConfig, connect, disconnect, executeCommand } = useTelnet();
   const [host, setHost] = useState(config.host);
   const [port, setPort] = useState(config.port.toString());
   const [scanning, setScanning] = useState(false);
   const [scanProgress, setScanProgress] = useState<ScanProgress | null>(null);
   const [foundDevices, setFoundDevices] = useState<ScanResult[]>([]);
+  const [toolboxInfo, setToolboxInfo] = useState<ToolboxInfo | null>(null);
+  const [detectingToolbox, setDetectingToolbox] = useState(false);
 
   const handleConnect = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -28,8 +31,24 @@ export default function HomeScreen() {
     
     if (response.success) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      // Auto-detect toolbox
+      setTimeout(() => handleDetectToolbox(), 1000);
     } else {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+    }
+  };
+
+  const handleDetectToolbox = async () => {
+    if (!connectionStatus.connected) return;
+
+    setDetectingToolbox(true);
+    try {
+      const info = await detectToolbox(executeCommand);
+      setToolboxInfo(info);
+    } catch (error) {
+      console.error('Error detecting toolbox:', error);
+    } finally {
+      setDetectingToolbox(false);
     }
   };
 
@@ -144,21 +163,97 @@ export default function HomeScreen() {
             </View>
 
             {connectionStatus.connected && (
-              <View className="gap-2">
-                <View className="flex-row justify-between">
-                  <Text className="text-sm text-muted">Host:</Text>
-                  <Text className="text-sm text-foreground font-medium">{connectionStatus.host}</Text>
-                </View>
-                <View className="flex-row justify-between">
-                  <Text className="text-sm text-muted">Puerto:</Text>
-                  <Text className="text-sm text-foreground font-medium">{connectionStatus.port}</Text>
-                </View>
-                {connectionStatus.lastActivity && (
+              <View className="gap-3">
+                <View className="gap-2">
                   <View className="flex-row justify-between">
-                    <Text className="text-sm text-muted">Última actividad:</Text>
-                    <Text className="text-sm text-foreground font-medium">
-                      {new Date(connectionStatus.lastActivity).toLocaleTimeString()}
+                    <Text className="text-sm text-muted">Host:</Text>
+                    <Text className="text-sm text-foreground font-medium">{connectionStatus.host}</Text>
+                  </View>
+                  <View className="flex-row justify-between">
+                    <Text className="text-sm text-muted">Puerto:</Text>
+                    <Text className="text-sm text-foreground font-medium">{connectionStatus.port}</Text>
+                  </View>
+                  {connectionStatus.lastActivity && (
+                    <View className="flex-row justify-between">
+                      <Text className="text-sm text-muted">Última actividad:</Text>
+                      <Text className="text-sm text-foreground font-medium">
+                        {new Date(connectionStatus.lastActivity).toLocaleTimeString()}
+                      </Text>
+                    </View>
+                  )}
+                </View>
+
+                {/* Toolbox Info */}
+                {toolboxInfo && (
+                  <View className="bg-background rounded-lg p-3">
+                    <View className="flex-row items-center justify-between mb-2">
+                      <Text className="text-sm font-semibold text-foreground">MIB2 Toolbox</Text>
+                      <View className={`px-2 py-1 rounded ${
+                        toolboxInfo.installed ? 'bg-success/20' : 'bg-error/20'
+                      }`}>
+                        <Text className={`text-xs font-semibold ${
+                          toolboxInfo.installed ? 'text-success' : 'text-error'
+                        }`}>
+                          {toolboxInfo.installed ? '✓ Instalado' : '✗ No Instalado'}
+                        </Text>
+                      </View>
+                    </View>
+                    {toolboxInfo.installed && toolboxInfo.version && (
+                      <Text className="text-xs text-muted mb-2">Versión: {toolboxInfo.version}</Text>
+                    )}
+                    {toolboxInfo.installed && toolboxInfo.services && (
+                      <View className="flex-row gap-2 flex-wrap">
+                        <View className={`px-2 py-1 rounded ${
+                          toolboxInfo.services.telnet ? 'bg-success/10' : 'bg-muted/10'
+                        }`}>
+                          <Text className={`text-xs ${
+                            toolboxInfo.services.telnet ? 'text-success' : 'text-muted'
+                          }`}>
+                            Telnet {toolboxInfo.services.telnet ? '✓' : '✗'}
+                          </Text>
+                        </View>
+                        <View className={`px-2 py-1 rounded ${
+                          toolboxInfo.services.ftp ? 'bg-success/10' : 'bg-muted/10'
+                        }`}>
+                          <Text className={`text-xs ${
+                            toolboxInfo.services.ftp ? 'text-success' : 'text-muted'
+                          }`}>
+                            FTP {toolboxInfo.services.ftp ? '✓' : '✗'}
+                          </Text>
+                        </View>
+                        <View className={`px-2 py-1 rounded ${
+                          toolboxInfo.services.ssh ? 'bg-success/10' : 'bg-muted/10'
+                        }`}>
+                          <Text className={`text-xs ${
+                            toolboxInfo.services.ssh ? 'text-success' : 'text-muted'
+                          }`}>
+                            SSH {toolboxInfo.services.ssh ? '✓' : '✗'}
+                          </Text>
+                        </View>
+                      </View>
+                    )}
+                    {!toolboxInfo.installed && (
+                      <Text className="text-xs text-error mt-1">
+                        ⚠️ Se recomienda instalar MIB2 Toolbox
+                      </Text>
+                    )}
+                  </View>
+                )}
+
+                {!toolboxInfo && !detectingToolbox && (
+                  <TouchableOpacity
+                    onPress={handleDetectToolbox}
+                    className="bg-primary/20 border border-primary px-4 py-2 rounded-lg active:opacity-80"
+                  >
+                    <Text className="text-primary font-semibold text-center text-sm">
+                      🔍 Detectar MIB2 Toolbox
                     </Text>
+                  </TouchableOpacity>
+                )}
+
+                {detectingToolbox && (
+                  <View className="bg-primary/10 rounded-lg p-2">
+                    <Text className="text-primary text-sm text-center">Detectando Toolbox...</Text>
                   </View>
                 )}
               </View>

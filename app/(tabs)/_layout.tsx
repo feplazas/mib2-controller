@@ -36,6 +36,13 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="profiles"
+        options={{
+          title: "Perfiles",
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.2.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="commands"
         options={{
           title: "Comandos",
@@ -52,10 +59,17 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="settings"
+        name="commands"
         options={{
-          title: "Ajustes",
+          title: "Comandos",
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="chevron.right" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="macros"
+        options={{
+          title: "Macros",
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="play.fill" color={color} />,
         }}
       />
     </Tabs>

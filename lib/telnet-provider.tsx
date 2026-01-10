@@ -4,6 +4,7 @@
 
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useProfiles } from './profiles-provider';
 import {
   TelnetClient,
   TelnetConfig,
@@ -41,6 +42,7 @@ const STORAGE_KEY_HISTORY = '@mib2_controller:command_history';
 const MAX_HISTORY_ITEMS = 100;
 
 export function TelnetProvider({ children }: { children: React.ReactNode }) {
+  const { activeProfile } = useProfiles();
   const [client, setClient] = useState<TelnetClient | null>(null);
   const [config, setConfig] = useState<TelnetConfig>(DEFAULT_MIB2_CONFIG);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>({ connected: false });
@@ -49,9 +51,22 @@ export function TelnetProvider({ children }: { children: React.ReactNode }) {
 
   // Load saved configuration on mount
   useEffect(() => {
-    loadConfig();
     loadHistory();
   }, []);
+
+  // Update config when active profile changes
+  useEffect(() => {
+    if (activeProfile) {
+      setConfig({
+        host: activeProfile.host,
+        port: activeProfile.port,
+        username: activeProfile.username,
+        password: activeProfile.password,
+      });
+    } else {
+      loadConfig();
+    }
+  }, [activeProfile]);
 
   // Initialize client when config changes
   useEffect(() => {
