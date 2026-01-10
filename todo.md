@@ -133,3 +133,48 @@
 - [x] Agregar nota sobre limitaciones de Vista Sport (hardware 790 B+)
 - [x] Crear sistema de confirmación doble para modificaciones de riesgo
 - [x] Implementar glosario técnico alemán-español en la app
+
+## Automatización de Spoofing ASIX AX88772 (Nativo Android)
+
+### Servicio USB de Bajo Nivel
+- [x] Implementar UsbManager y detección de dispositivos USB
+- [x] Crear servicio de USB control transfers
+- [x] Implementar lectura de EEPROM mediante control transfers
+- [x] Implementar escritura de EEPROM mediante control transfers
+- [x] Gestión de permisos USB en Android
+
+### Detección y Análisis de EEPROM
+- [x] Detectar adaptadores ASIX conectados (VID 0x0B95)
+- [x] Leer volcado completo de EEPROM (256 bytes típico)
+- [x] Analizar mapa de memoria para localizar offsets VID/PID
+- [x] Identificar versión del chipset (AX88772A/B/C)
+- [x] Detectar presencia de eFuse vs EEPROM externa
+
+### Escritor de EEPROM con Validaciones
+- [x] Implementar escritura byte por byte con verificación
+- [x] Soporte para Little Endian en valores
+- [x] Escribir nuevo VID (0x2001) en offsets 0x88-0x89
+- [x] Escribir nuevo PID (0x3C05) en offsets 0x8A-0x8B
+- [x] Calcular y actualizar checksum si es necesario
+- [x] Verificar escritura exitosa mediante re-lectura
+
+### Interfaz de Usuario
+- [x] Crear pantalla de asistente de spoofing paso a paso
+- [x] Mostrar información del adaptador detectado
+- [x] Visualizar mapa de memoria EEPROM (hex dump)
+- [x] Comparativa antes/después de VID/PID
+- [x] Botón de ejecución con confirmación múltiple
+- [x] Indicador de progreso durante escritura
+- [x] Instrucciones de reconexión del adaptador
+
+### Advertencias y Recuperación
+- [x] Advertencia crítica sobre riesgo de "bricking"
+- [x] Detectar AX88772C con eFuse y bloquear operación
+- [x] Documentar método de recuperación
+- [x] Validación pre-escritura de compatibilidad
+- [x] Sistema de rollback si falla escritura
+
+### Documentación
+- [x] Tabla de compatibilidad de hardware ASIX
+- [x] Guía de troubleshooting
+- [x] Implicaciones de seguridad y legalidad
