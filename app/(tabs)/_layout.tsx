@@ -59,17 +59,17 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="commands"
-        options={{
-          title: "Comandos",
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="chevron.right" color={color} />,
-        }}
-      />
-      <Tabs.Screen
         name="macros"
         options={{
           title: "Macros",
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="play.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: "Config",
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="gear" color={color} />,
         }}
       />
     </Tabs>
