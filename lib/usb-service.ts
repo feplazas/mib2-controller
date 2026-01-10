@@ -339,6 +339,36 @@ class UsbService {
   }
 
   /**
+   * Enviar comando vendor-specific genérico
+   */
+  async sendVendorCommand(request: number, value: number, index: number, data?: number[]): Promise<number[] | number> {
+    if (!this.connection) {
+      throw new Error('No device connection established');
+    }
+
+    try {
+      const requestType = data && data.length > 0 
+        ? USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE
+        : USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_DEVICE;
+
+      const result = await this.controlTransfer(
+        requestType,
+        request,
+        value,
+        index,
+        data || 4, // Leer 4 bytes por defecto si no hay data
+        5000
+      );
+
+      console.log(`[UsbService] Vendor command 0x${request.toString(16)} executed`);
+      return result;
+    } catch (error) {
+      console.error(`[UsbService] Vendor command 0x${request.toString(16)} failed:`, error);
+      throw error;
+    }
+  }
+
+  /**
    * Obtener información del dispositivo actual
    */
   getCurrentDevice(): UsbDevice | null {

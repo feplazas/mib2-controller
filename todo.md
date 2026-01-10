@@ -178,3 +178,31 @@
 - [x] Tabla de compatibilidad de hardware ASIX
 - [x] Guía de troubleshooting
 - [x] Implicaciones de seguridad y legalidad
+
+## Base de Datos de Adaptadores y Recuperación Avanzada
+
+### Base de Datos de Adaptadores Conocidos
+- [x] Crear esquema de base de datos para adaptadores USB-Ethernet
+- [x] Agregar especificaciones de adaptadores ASIX (AX88772/A/B/C)
+- [x] Agregar especificaciones de adaptadores D-Link (DUB-E100 Rev B1/C1)
+- [x] Documentar offsets de EEPROM conocidos por fabricante
+- [x] Incluir información de tamaño de EEPROM (93C46/56/66)
+- [x] Agregar nivel de compatibilidad (Alta/Media/Baja/Incompatible)
+- [x] Documentar quirks y particularidades por modelo
+
+### Sistema de Detección Inteligente
+- [x] Implementar lookup automático en base de datos por VID/PID
+- [x] Sugerir offsets de EEPROM basados en modelo detectado
+- [x] Mostrar información de compatibilidad antes de spoofing
+- [x] Advertir sobre modelos problemáticos conocidos
+- [x] Sugerir configuraciones óptimas por modelo
+
+### Modo de Recuperación Avanzado
+- [x] Crear pantalla de diagnóstico de adaptadores
+- [x] Implementar detección de adaptadores "brickeados"
+- [x] Agregar método de reset por software (vendor commands)
+- [x] Implementar lectura de descriptores USB internos
+- [x] Crear herramienta de escritura forzada de EEPROM
+- [x] Documentar método de cortocircuito SDA/SCL
+- [x] Agregar modo de recuperación por comandos vendor-specific
+- [x] Implementar verificación de integridad de EEPROM

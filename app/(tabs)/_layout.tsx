@@ -82,8 +82,15 @@ export default function TabLayout() {
       <Tabs.Screen
         name="spoofing"
         options={{
-          title: "Spoofing",
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="chevron.left.forwardslash.chevron.right" color={color} />,
+          title: 'Spoofing',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="bolt.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="recovery"
+        options={{
+          title: 'Recovery',
+          tabBarIcon: ({ color}) => <IconSymbol size={28} name="wrench.fill" color={color} />,
         }}
       />
       <Tabs.Screen

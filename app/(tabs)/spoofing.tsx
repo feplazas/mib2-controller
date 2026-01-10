@@ -297,13 +297,23 @@ export default function SpoofingScreen() {
                 <Text className="text-lg font-semibold text-foreground mb-4">EEPROM Analysis</Text>
                 
                 <View className="gap-2">
+                  {analysis.adapterSpec && (
+                    <View className="mb-2 pb-2 border-b border-border">
+                      <Text className="text-xs text-muted mb-1">Detected Adapter:</Text>
+                      <Text className="text-sm font-semibold text-foreground">
+                        {analysis.adapterSpec.vendorName} {analysis.adapterSpec.productName}
+                      </Text>
+                    </View>
+                  )}
                   <View className="flex-row justify-between">
                     <Text className="text-sm text-muted">Chipset:</Text>
                     <Text className="text-sm font-semibold text-foreground">{analysis.chipsetVersion}</Text>
                   </View>
                   <View className="flex-row justify-between">
-                    <Text className="text-sm text-muted">EEPROM Size:</Text>
-                    <Text className="text-sm font-semibold text-foreground">{analysis.size} bytes</Text>
+                    <Text className="text-sm text-muted">EEPROM:</Text>
+                    <Text className="text-sm font-semibold text-foreground">
+                      {analysis.adapterSpec?.eepromType || 'Unknown'} ({analysis.size} bytes)
+                    </Text>
                   </View>
                   <View className="flex-row justify-between">
                     <Text className="text-sm text-muted">Current VID:</Text>
@@ -318,12 +328,25 @@ export default function SpoofingScreen() {
                     </Text>
                   </View>
                   <View className="flex-row justify-between">
-                    <Text className="text-sm text-muted">eFuse:</Text>
-                    <Text className={`text-sm font-semibold ${analysis.hasEfuse ? 'text-error' : 'text-success'}`}>
-                      {analysis.hasEfuse ? 'Yes (NOT COMPATIBLE)' : 'No (Compatible)'}
+                    <Text className="text-sm text-muted">Compatibility:</Text>
+                    <Text className={`text-sm font-semibold ${
+                      analysis.compatibilityReport?.level === 'high' ? 'text-success' :
+                      analysis.compatibilityReport?.level === 'medium' ? 'text-warning' :
+                      'text-error'
+                    }`}>
+                      {analysis.compatibilityReport?.level.toUpperCase() || 'UNKNOWN'}
                     </Text>
                   </View>
                 </View>
+                
+                {analysis.compatibilityReport?.warnings && analysis.compatibilityReport.warnings.length > 0 && (
+                  <View className="mt-4 bg-warning/10 rounded-xl p-3 border border-warning">
+                    <Text className="text-xs font-semibold text-warning mb-1">Warnings:</Text>
+                    {analysis.compatibilityReport.warnings.map((warning, idx) => (
+                      <Text key={idx} className="text-xs text-foreground">• {warning}</Text>
+                    ))}
+                  </View>
+                )}
               </View>
 
               <View className="flex-row gap-2">

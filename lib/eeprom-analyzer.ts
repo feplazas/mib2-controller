@@ -4,6 +4,7 @@
  */
 
 import { usbService, ASIX_VENDOR_ID, DLINK_VENDOR_ID, DLINK_PRODUCT_ID_B1 } from './usb-service';
+import { AdapterDatabase, type AdapterSpec } from './adapter-database';
 
 // Offsets típicos para AX88772B/C (pueden variar según fabricante)
 export const TYPICAL_VID_OFFSET_LOW = 0x88;
@@ -34,6 +35,8 @@ export interface EepromAnalysis {
   checksumOffset?: number;
   rawData: number[];
   hexDump: string;
+  adapterSpec?: AdapterSpec;
+  compatibilityReport?: ReturnType<typeof AdapterDatabase.generateCompatibilityReport>;
 }
 
 /**
@@ -66,8 +69,11 @@ export class EepromAnalyzer {
       }
     }
 
+    // Buscar especificaciones en base de datos primero para usar offsets conocidos
+    const adapterSpec = AdapterDatabase.findByVidPid(device.vendorId, device.productId);
+
     // Buscar VID/PID en la memoria
-    const vidPidLocation = this.findVidPidOffsets(rawData, device.vendorId, device.productId);
+    const vidPidLocation = this.findVidPidOffsets(rawData, device.vendorId, device.productId, adapterSpec);
 
     // Extraer VID/PID actual
     const currentVid = this.extractWord(
@@ -93,6 +99,9 @@ export class EepromAnalyzer {
     // Generar hex dump
     const hexDump = this.generateHexDump(rawData);
 
+    // Generar reporte de compatibilidad
+    const compatibilityReport = AdapterDatabase.generateCompatibilityReport(device.vendorId, device.productId);
+
     return {
       size: rawData.length,
       currentVid,
@@ -103,6 +112,8 @@ export class EepromAnalyzer {
       checksumOffset,
       rawData,
       hexDump,
+      adapterSpec,
+      compatibilityReport,
     };
   }
 
@@ -112,13 +123,35 @@ export class EepromAnalyzer {
   private static findVidPidOffsets(
     data: number[],
     expectedVid: number,
-    expectedPid: number
+    expectedPid: number,
+    adapterSpec?: AdapterSpec
   ): VidPidLocation {
     // Convertir VID/PID a bytes Little Endian
     const vidLow = expectedVid & 0xFF;
     const vidHigh = (expectedVid >> 8) & 0xFF;
     const pidLow = expectedPid & 0xFF;
     const pidHigh = (expectedPid >> 8) & 0xFF;
+
+    // Si tenemos especificaciones de la base de datos, usar esos offsets primero
+    if (adapterSpec && adapterSpec.eepromOffsets) {
+      const offsets = adapterSpec.eepromOffsets;
+      if (
+        data.length > offsets.pidHigh &&
+        data[offsets.vidLow] === vidLow &&
+        data[offsets.vidHigh] === vidHigh &&
+        data[offsets.pidLow] === pidLow &&
+        data[offsets.pidHigh] === pidHigh
+      ) {
+        console.log('[EepromAnalyzer] Using offsets from adapter database');
+        return {
+          vidOffsetLow: offsets.vidLow,
+          vidOffsetHigh: offsets.vidHigh,
+          pidOffsetLow: offsets.pidLow,
+          pidOffsetHigh: offsets.pidHigh,
+          confidence: 'high',
+        };
+      }
+    }
 
     // Primero intentar con offsets típicos
     if (
