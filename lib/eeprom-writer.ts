@@ -7,6 +7,7 @@ import { usbService, DLINK_VENDOR_ID, DLINK_PRODUCT_ID_B1 } from './usb-service'
 import { EepromAnalyzer, type EepromAnalysis } from './eeprom-analyzer';
 import { EepromBackupManager } from './eeprom-backup';
 import { OperationHistoryManager } from './operation-history';
+import { NotificationService } from './notification-service';
 
 export interface SpoofingProgress {
   step: number;
@@ -184,6 +185,11 @@ export class EepromWriter {
         };
       }
 
+      // Enviar notificación de éxito
+      if (!dryRun) {
+        await NotificationService.notifySpoofingComplete(true, analysis.chipsetVersion);
+      }
+
       return {
         success: true,
         message: 'Spoofing completed successfully! Please disconnect and reconnect the adapter.',
@@ -193,6 +199,12 @@ export class EepromWriter {
       };
     } catch (error) {
       console.error('[EepromWriter] Spoofing failed:', error);
+      
+      // Enviar notificación de fallo
+      if (!dryRun) {
+        await NotificationService.notifySpoofingComplete(false, analysis.chipsetVersion);
+      }
+
       return {
         success: false,
         message: 'Spoofing operation failed',

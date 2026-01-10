@@ -26,6 +26,7 @@ const MAPPING = {
   "hammer.fill": "construction",
   "bolt.fill": "flash-on",
   "folder.fill": "folder",
+  "chart.bar.fill": "bar-chart",
 } as IconMapping;
 
 /**

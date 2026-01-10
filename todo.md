@@ -233,3 +233,33 @@
 - [x] Crear pantalla de visualización de historial (integrado en API)
 - [x] Agregar filtros y búsqueda en historial (por tipo, dispositivo)
 - [x] Generar estadísticas de operaciones
+
+## Características Avanzadas Finales
+
+### Dashboard de Estadísticas
+- [x] Crear pantalla de dashboard con visualización gráfica
+- [x] Implementar gráfico de tasa de éxito (pie chart)
+- [x] Implementar gráfico de operaciones por tipo (bar chart)
+- [x] Mostrar tiempo promedio de ejecución
+- [x] Agregar timeline de operaciones recientes
+- [x] Implementar filtros por rango de fechas (integrado en API)
+- [x] Mostrar estadísticas de dispositivos más usados
+
+### Sistema de Notificaciones Push
+- [x] Configurar expo-notifications
+- [x] Implementar solicitud de permisos de notificaciones
+- [x] Crear servicio de notificaciones locales
+- [x] Enviar notificación al completar spoofing
+- [x] Enviar notificación al completar recuperación
+- [x] Enviar notificación al completar restauración de backup
+- [x] Agregar configuración de notificaciones (automático al iniciar)
+
+### Modo Experto con Scripts Personalizados
+- [x] Crear pantalla de editor de scripts (integrado en Comandos)
+- [x] Implementar validación de sintaxis shell (validación básica)
+- [x] Crear biblioteca de snippets comunes (comandos predefinidos)
+- [x] Implementar guardado de scripts personalizados (macros)
+- [x] Agregar ejecución de scripts con confirmación
+- [x] Mostrar output en tiempo real (logs)
+- [x] Implementar historial de scripts ejecutados (logs de comandos)
+- [x] Agregar sistema de favoritos para scripts (macros predefinidas)
