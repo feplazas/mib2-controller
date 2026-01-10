@@ -313,3 +313,14 @@
 - [ ] Probar detección de dispositivos USB reales (requiere rebuild)
 - [ ] Validar solicitud de permisos (requiere rebuild)
 - [ ] Probar control transfers con adaptador ASIX (requiere rebuild)
+
+## Compilación y Distribución
+
+### EAS Build Configuration
+- [x] Crear archivo eas.json con perfiles de build
+- [x] Configurar perfil preview para APK de prueba
+- [x] Configurar perfil production para release
+- [x] Crear guía completa de EAS Build (EAS_BUILD_GUIDE.md)
+- [ ] Usuario debe crear cuenta en Expo (expo.dev/signup)
+- [ ] Usuario debe ejecutar: eas build --platform android --profile preview
+- [ ] Usuario debe descargar e instalar APK generado
