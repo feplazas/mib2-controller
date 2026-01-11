@@ -1,5 +1,5 @@
 import { ScrollView, Text, View, TouchableOpacity, Alert } from 'react-native';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ScreenContainer } from '@/components/screen-container';
 import { useUsbStatus } from '@/lib/usb-status-context';
 import { profilesService, type VIDPIDProfile } from '@/lib/profiles-service';
@@ -8,14 +8,36 @@ import * as Haptics from 'expo-haptics';
 export default function VIDPIDProfilesScreen() {
   const { status, device } = useUsbStatus();
   const [isApplying, setIsApplying] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<'all' | 'mib2_compatible' | 'common_adapters'>('all');
+  const [selectedCategory, setSelectedCategory] = useState<'all' | 'mib2_compatible' | 'common_adapters' | 'custom'>('all');
+  const [allProfiles, setAllProfiles] = useState<VIDPIDProfile[]>([]);
+  const [filteredProfiles, setFilteredProfiles] = useState<VIDPIDProfile[]>([]);
+  const [stats, setStats] = useState({ total: 0, compatible: 0, asix: 0, realtek: 0, categories: {} as Record<string, number> });
 
-  const allProfiles = profilesService.getPredefinedProfiles();
-  const stats = profilesService.getStats();
+  // Cargar perfiles al montar
+  useEffect(() => {
+    loadProfiles();
+  }, []);
 
-  const filteredProfiles = selectedCategory === 'all' 
-    ? allProfiles 
-    : profilesService.getProfilesByCategory(selectedCategory);
+  // Filtrar perfiles cuando cambia la categoría
+  useEffect(() => {
+    filterProfiles();
+  }, [selectedCategory, allProfiles]);
+
+  const loadProfiles = async () => {
+    const profiles = await profilesService.getAllProfiles();
+    const profileStats = await profilesService.getStats();
+    setAllProfiles(profiles);
+    setStats(profileStats);
+  };
+
+  const filterProfiles = async () => {
+    if (selectedCategory === 'all') {
+      setFilteredProfiles(allProfiles);
+    } else {
+      const filtered = await profilesService.getProfilesByCategory(selectedCategory);
+      setFilteredProfiles(filtered);
+    }
+  };
 
   const formatVIDPID = (vid: number, pid: number): string => {
     return `${vid.toString(16).padStart(4, '0').toUpperCase()}:${pid.toString(16).padStart(4, '0').toUpperCase()}`;
@@ -28,7 +50,7 @@ export default function VIDPIDProfilesScreen() {
     }
 
     // Validar si el dispositivo puede ser spoofed
-    const validation = profilesService.canDeviceBeSpoof(device);
+    const validation = await profilesService.canDeviceBeSpoof(device);
     if (!validation.canSpoof) {
       Alert.alert('⚠️ No Compatible', validation.reason || 'Dispositivo no compatible con spoofing');
       return;
@@ -106,9 +128,22 @@ export default function VIDPIDProfilesScreen() {
               📚 Biblioteca de Perfiles
             </Text>
             <Text className="text-sm text-muted text-center">
-              Perfiles VID/PID predefinidos para aplicación rápida
+              Perfiles VID/PID predefinidos y personalizados
             </Text>
           </View>
+
+          {/* Botón Crear Perfil */}
+          <TouchableOpacity
+            onPress={() => {
+              const router = require('expo-router').router;
+              router.push('/(tabs)/custom-profile-editor');
+            }}
+            className="bg-purple-500 rounded-xl p-4 items-center"
+          >
+            <Text className="text-sm font-bold text-white">
+              ➕ Crear Perfil Personalizado
+            </Text>
+          </TouchableOpacity>
 
           {/* Estadísticas */}
           <View className="bg-surface rounded-2xl p-6 border border-border">
@@ -181,6 +216,18 @@ export default function VIDPIDProfilesScreen() {
                 Comunes ({stats.categories.common_adapters || 0})
               </Text>
             </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setSelectedCategory('custom')}
+              className={`flex-1 rounded-xl p-3 items-center ${
+                selectedCategory === 'custom' ? 'bg-purple-500' : 'bg-surface border border-border'
+              }`}
+            >
+              <Text className={`text-xs font-bold ${
+                selectedCategory === 'custom' ? 'text-white' : 'text-foreground'
+              }`}>
+                Custom ({stats.categories.custom || 0})
+              </Text>
+            </TouchableOpacity>
           </View>
 
           {/* Lista de Perfiles */}
@@ -235,24 +282,89 @@ export default function VIDPIDProfilesScreen() {
                 </Text>
               </View>
 
-              {/* Botón de Aplicar */}
-              <TouchableOpacity
-                onPress={() => handleApplyProfile(profile)}
-                disabled={status !== 'connected' || isApplying}
-                className={`rounded-xl p-3 items-center ${
-                  status === 'connected' && !isApplying
-                    ? 'bg-primary'
-                    : 'bg-border'
-                }`}
-              >
-                <Text className={`text-sm font-bold ${
-                  status === 'connected' && !isApplying
-                    ? 'text-background'
-                    : 'text-muted'
-                }`}>
-                  {isApplying ? '⏳ Aplicando...' : '🚀 Aplicar Perfil'}
-                </Text>
-              </TouchableOpacity>
+              {/* Botones de Acción */}
+              {profile.category === 'custom' ? (
+                <View className="gap-2">
+                  <View className="flex-row gap-2">
+                    <TouchableOpacity
+                      onPress={() => {
+                        const router = require('expo-router').router;
+                        router.push({ pathname: '/(tabs)/custom-profile-editor', params: { profileId: profile.id } });
+                      }}
+                      className="flex-1 bg-blue-500 rounded-xl p-3 items-center"
+                    >
+                      <Text className="text-sm font-bold text-white">
+                        ✏️ Editar
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={async () => {
+                        Alert.alert(
+                          '⚠️ Eliminar Perfil',
+                          `¿Estás seguro de eliminar "${profile.name}"?`,
+                          [
+                            { text: 'Cancelar', style: 'cancel' },
+                            {
+                              text: 'Eliminar',
+                              style: 'destructive',
+                              onPress: async () => {
+                                try {
+                                  await profilesService.deleteCustomProfile(profile.id);
+                                  await loadProfiles();
+                                  await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                                  Alert.alert('✅ Perfil Eliminado', 'El perfil se eliminó correctamente');
+                                } catch (error: any) {
+                                  Alert.alert('Error', error.message || 'No se pudo eliminar el perfil');
+                                }
+                              },
+                            },
+                          ]
+                        );
+                      }}
+                      className="flex-1 bg-red-500 rounded-xl p-3 items-center"
+                    >
+                      <Text className="text-sm font-bold text-white">
+                        🗑️ Eliminar
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => handleApplyProfile(profile)}
+                    disabled={status !== 'connected' || isApplying}
+                    className={`rounded-xl p-3 items-center ${
+                      status === 'connected' && !isApplying
+                        ? 'bg-primary'
+                        : 'bg-border'
+                    }`}
+                  >
+                    <Text className={`text-sm font-bold ${
+                      status === 'connected' && !isApplying
+                        ? 'text-background'
+                        : 'text-muted'
+                    }`}>
+                      {isApplying ? '⏳ Aplicando...' : '🚀 Aplicar Perfil'}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <TouchableOpacity
+                  onPress={() => handleApplyProfile(profile)}
+                  disabled={status !== 'connected' || isApplying}
+                  className={`rounded-xl p-3 items-center ${
+                    status === 'connected' && !isApplying
+                      ? 'bg-primary'
+                      : 'bg-border'
+                  }`}
+                >
+                  <Text className={`text-sm font-bold ${
+                    status === 'connected' && !isApplying
+                      ? 'text-background'
+                      : 'text-muted'
+                  }`}>
+                    {isApplying ? '⏳ Aplicando...' : '🚀 Aplicar Perfil'}
+                  </Text>
+                </TouchableOpacity>
+              )}
             </View>
           ))}
 

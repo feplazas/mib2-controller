@@ -178,6 +178,93 @@ const PREDEFINED_PROFILES: VIDPIDProfile[] = [
  */
 class ProfilesService {
   /**
+   * Cargar perfiles personalizados desde AsyncStorage
+   */
+  async loadCustomProfiles(): Promise<VIDPIDProfile[]> {
+    try {
+      const stored = await AsyncStorage.getItem(CUSTOM_PROFILES_KEY);
+      if (!stored) return [];
+      return JSON.parse(stored) as VIDPIDProfile[];
+    } catch (error) {
+      console.error('[ProfilesService] Error loading custom profiles:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Guardar perfil personalizado
+   */
+  async saveCustomProfile(profile: Omit<VIDPIDProfile, 'id' | 'category'>): Promise<VIDPIDProfile> {
+    try {
+      const customProfiles = await this.loadCustomProfiles();
+      
+      const newProfile: VIDPIDProfile = {
+        ...profile,
+        id: `custom_${Date.now()}`,
+        category: 'custom',
+      };
+      
+      customProfiles.push(newProfile);
+      await AsyncStorage.setItem(CUSTOM_PROFILES_KEY, JSON.stringify(customProfiles));
+      
+      console.log(`[ProfilesService] Custom profile saved: ${newProfile.name}`);
+      return newProfile;
+    } catch (error) {
+      console.error('[ProfilesService] Error saving custom profile:', error);
+      throw new Error('No se pudo guardar el perfil personalizado');
+    }
+  }
+
+  /**
+   * Actualizar perfil personalizado existente
+   */
+  async updateCustomProfile(id: string, updates: Partial<Omit<VIDPIDProfile, 'id' | 'category'>>): Promise<void> {
+    try {
+      const customProfiles = await this.loadCustomProfiles();
+      const index = customProfiles.findIndex(p => p.id === id);
+      
+      if (index === -1) {
+        throw new Error('Perfil no encontrado');
+      }
+      
+      customProfiles[index] = {
+        ...customProfiles[index],
+        ...updates,
+      };
+      
+      await AsyncStorage.setItem(CUSTOM_PROFILES_KEY, JSON.stringify(customProfiles));
+      console.log(`[ProfilesService] Custom profile updated: ${id}`);
+    } catch (error) {
+      console.error('[ProfilesService] Error updating custom profile:', error);
+      throw new Error('No se pudo actualizar el perfil');
+    }
+  }
+
+  /**
+   * Eliminar perfil personalizado
+   */
+  async deleteCustomProfile(id: string): Promise<void> {
+    try {
+      const customProfiles = await this.loadCustomProfiles();
+      const filtered = customProfiles.filter(p => p.id !== id);
+      
+      await AsyncStorage.setItem(CUSTOM_PROFILES_KEY, JSON.stringify(filtered));
+      console.log(`[ProfilesService] Custom profile deleted: ${id}`);
+    } catch (error) {
+      console.error('[ProfilesService] Error deleting custom profile:', error);
+      throw new Error('No se pudo eliminar el perfil');
+    }
+  }
+
+  /**
+   * Obtener todos los perfiles (predefinidos + personalizados)
+   */
+  async getAllProfiles(): Promise<VIDPIDProfile[]> {
+    const customProfiles = await this.loadCustomProfiles();
+    return [...PREDEFINED_PROFILES, ...customProfiles];
+  }
+
+  /**
    * Obtener todos los perfiles predefinidos
    */
   getPredefinedProfiles(): VIDPIDProfile[] {
@@ -185,31 +272,68 @@ class ProfilesService {
   }
 
   /**
-   * Obtener perfiles por categoría
+   * Filtrar perfiles por categoría
    */
-  getProfilesByCategory(category: VIDPIDProfile['category']): VIDPIDProfile[] {
-    return PREDEFINED_PROFILES.filter(p => p.category === category);
+  async getProfilesByCategory(category: VIDPIDProfile['category']): Promise<VIDPIDProfile[]> {
+    const allProfiles = await this.getAllProfiles();
+    return allProfiles.filter(p => p.category === category);
+  }
+
+    /**
+   * Buscar perfil por ID
+   */
+  async getProfileById(id: string): Promise<VIDPIDProfile | null> {
+    const allProfiles = await this.getAllProfiles();
+    return allProfiles.find(p => p.id === id) || null;
   }
 
   /**
-   * Obtener perfil por ID
+   * Buscar perfil por VID/PID
    */
-  getProfileById(id: string): VIDPIDProfile | null {
-    const predefined = PREDEFINED_PROFILES.find(p => p.id === id);
-    if (predefined) return predefined;
-    
-    // Buscar en perfiles personalizados
-    // TODO: Implementar cuando se agregue soporte para perfiles custom
-    return null;
-  }
-
-  /**
-   * Buscar perfil que coincida con VID/PID
-   */
-  findProfileByVIDPID(vendorId: number, productId: number): VIDPIDProfile | null {
-    return PREDEFINED_PROFILES.find(
+  async findProfileByVIDPID(vendorId: number, productId: number): Promise<VIDPIDProfile | null> {
+    const allProfiles = await this.getAllProfiles();
+    return allProfiles.find(
       p => p.vendorId === vendorId && p.productId === productId
     ) || null;
+  }
+
+  /**
+   * Exportar perfil como JSON
+   */
+  exportProfile(profile: VIDPIDProfile): string {
+    return JSON.stringify(profile, null, 2);
+  }
+
+  /**
+   * Importar perfil desde JSON
+   */
+  async importProfile(jsonString: string): Promise<VIDPIDProfile> {
+    try {
+      const profile = JSON.parse(jsonString) as VIDPIDProfile;
+      
+      // Validar estructura
+      if (!profile.name || !profile.vendorId || !profile.productId) {
+        throw new Error('JSON inválido: faltan campos requeridos');
+      }
+      
+      // Guardar como perfil personalizado
+      const saved = await this.saveCustomProfile({
+        name: profile.name,
+        manufacturer: profile.manufacturer || 'Desconocido',
+        model: profile.model || 'Desconocido',
+        vendorId: profile.vendorId,
+        productId: profile.productId,
+        chipset: profile.chipset || 'Desconocido',
+        compatible: profile.compatible || false,
+        notes: profile.notes || '',
+        icon: profile.icon || '🔧',
+      });
+      
+      return saved;
+    } catch (error) {
+      console.error('[ProfilesService] Error importing profile:', error);
+      throw new Error('No se pudo importar el perfil: JSON inválido');
+    }
   }
 
   /**
@@ -296,7 +420,7 @@ class ProfilesService {
   /**
    * Validar si un dispositivo puede ser spoofed
    */
-  canDeviceBeSpoof(device: UsbDevice): { canSpoof: boolean; reason?: string } {
+  async canDeviceBeSpoof(device: UsbDevice): Promise<{ canSpoof: boolean; reason?: string }> {
     // Verificar si es chipset ASIX
     const isASIX = device.chipset?.toLowerCase().includes('asix') || 
                    device.vendorId === 0x0B95;
@@ -309,7 +433,7 @@ class ProfilesService {
     }
     
     // Verificar si ya tiene VID/PID compatible
-    const currentProfile = this.findProfileByVIDPID(device.vendorId, device.productId);
+    const currentProfile = await this.findProfileByVIDPID(device.vendorId, device.productId);
     if (currentProfile?.compatible) {
       return {
         canSpoof: false,
@@ -323,23 +447,24 @@ class ProfilesService {
   /**
    * Obtener estadísticas de perfiles
    */
-  getStats(): {
+  async getStats(): Promise<{
     total: number;
     compatible: number;
     asix: number;
     realtek: number;
     categories: Record<string, number>;
-  } {
+  }> {
+    const allProfiles = await this.getAllProfiles();
     const stats = {
-      total: PREDEFINED_PROFILES.length,
-      compatible: PREDEFINED_PROFILES.filter(p => p.compatible).length,
-      asix: PREDEFINED_PROFILES.filter(p => p.chipset.toLowerCase().includes('asix')).length,
-      realtek: PREDEFINED_PROFILES.filter(p => p.chipset.toLowerCase().includes('realtek')).length,
+      total: allProfiles.length,
+      compatible: allProfiles.filter(p => p.compatible).length,
+      asix: allProfiles.filter(p => p.chipset.toLowerCase().includes('asix')).length,
+      realtek: allProfiles.filter(p => p.chipset.toLowerCase().includes('realtek')).length,
       categories: {} as Record<string, number>,
     };
     
     // Contar por categoría
-    PREDEFINED_PROFILES.forEach(p => {
+    allProfiles.forEach(p => {
       stats.categories[p.category] = (stats.categories[p.category] || 0) + 1;
     });
     

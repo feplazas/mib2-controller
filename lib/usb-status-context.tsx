@@ -75,7 +75,7 @@ export function UsbStatusProvider({ children }: { children: React.ReactNode }) {
       }
 
       // Detectar perfil del dispositivo
-      const profile = profilesService.findProfileByVIDPID(
+      const profile = await profilesService.findProfileByVIDPID(
         targetDevice.vendorId,
         targetDevice.productId
       );

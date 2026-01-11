@@ -522,3 +522,20 @@
 - [x] Agregar botón rápido para aplicar perfil MIB2 ("Ir a Perfiles VID/PID")
 - [ ] Mostrar notificación al detectar dispositivo conocido (pendiente)
 - [ ] Guardar checkpoint con detección automática
+
+
+## Modo Experto - Perfiles Personalizados (11 Ene 2026 - 18:30)
+
+- [x] Extender profiles-service con funciones CRUD de perfiles custom
+- [x] Implementar saveCustomProfile() con AsyncStorage
+- [x] Implementar loadCustomProfiles() para cargar perfiles guardados
+- [x] Implementar deleteCustomProfile() para eliminar perfiles
+- [x] Crear pantalla custom-profile-editor.tsx para crear/editar
+- [x] Agregar validación de valores VID/PID hexadecimales (regex /^[0-9A-Fa-f]{4}$/)
+- [x] Implementar formulario con campos: nombre, fabricante, modelo, VID, PID, chipset
+- [x] Agregar función exportProfile() para exportar como JSON
+- [x] Agregar función importProfile() para importar desde JSON
+- [x] Integrar perfiles custom en vidpid-profiles.tsx
+- [x] Mostrar perfiles custom con badge "Custom" (filtro purple)
+- [x] Agregar botón "Crear Perfil Personalizado" en biblioteca
+- [ ] Guardar checkpoint con modo experto completo
