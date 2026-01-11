@@ -1,6 +1,7 @@
-import { createContext, useCallback, useEffect, useState } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 import { usbService, UsbDevice } from './usb-service';
+import { profilesService, VIDPIDProfile } from './profiles-service';
 
 export type UsbStatus = 'disconnected' | 'detected' | 'connected';
 
@@ -9,6 +10,8 @@ interface UsbStatusContextType {
   device: UsbDevice | null;
   devices: UsbDevice[];
   isScanning: boolean;
+  detectedProfile: VIDPIDProfile | null;
+  recommendedProfile: VIDPIDProfile | null;
   scanDevices: () => Promise<void>;
   connectToDevice: (device: UsbDevice) => Promise<boolean>;
   disconnectDevice: () => Promise<void>;
@@ -21,6 +24,8 @@ export function UsbStatusProvider({ children }: { children: React.ReactNode }) {
   const [device, setDevice] = useState<UsbDevice | null>(null);
   const [devices, setDevices] = useState<UsbDevice[]>([]);
   const [isScanning, setIsScanning] = useState(false);
+  const [detectedProfile, setDetectedProfile] = useState<VIDPIDProfile | null>(null);
+  const [recommendedProfile, setRecommendedProfile] = useState<VIDPIDProfile | null>(null);
 
   // Escanear dispositivos USB
   const scanDevices = useCallback(async () => {
@@ -69,6 +74,22 @@ export function UsbStatusProvider({ children }: { children: React.ReactNode }) {
         return false;
       }
 
+      // Detectar perfil del dispositivo
+      const profile = profilesService.findProfileByVIDPID(
+        targetDevice.vendorId,
+        targetDevice.productId
+      );
+      setDetectedProfile(profile);
+      
+      // Sugerir perfil MIB2 compatible si el dispositivo no lo es
+      if (profile && !profile.compatible) {
+        const recommended = profilesService.getMIB2CompatibleProfiles()[0]; // D-Link DUB-E100
+        setRecommendedProfile(recommended);
+        console.log(`[UsbStatusProvider] Device not MIB2 compatible. Recommending: ${recommended.name}`);
+      } else {
+        setRecommendedProfile(null);
+      }
+      
       // Marcar como conectado
       setDevice(targetDevice);
       setStatus('connected');
@@ -85,6 +106,8 @@ export function UsbStatusProvider({ children }: { children: React.ReactNode }) {
     
     try {
       setDevice(null);
+      setDetectedProfile(null);
+      setRecommendedProfile(null);
       setStatus(devices.length > 0 ? 'detected' : 'disconnected');
     } catch (error) {
       console.error('[UsbStatusProvider] Disconnection error:', error);
@@ -123,6 +146,8 @@ export function UsbStatusProvider({ children }: { children: React.ReactNode }) {
     device,
     devices,
     isScanning,
+    detectedProfile,
+    recommendedProfile,
     scanDevices,
     connectToDevice,
     disconnectDevice,
@@ -142,5 +167,3 @@ export function useUsbStatus(): UsbStatusContextType {
   }
   return context;
 }
-
-import { useContext } from 'react';

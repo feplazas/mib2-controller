@@ -5,7 +5,7 @@ import { useUsbStatus } from '@/lib/usb-status-context';
 import { usbService } from '@/lib/usb-service';
 
 export default function UsbStatusScreen() {
-  const { status, device, devices, isScanning, scanDevices } = useUsbStatus();
+  const { status, device, devices, isScanning, scanDevices, detectedProfile, recommendedProfile } = useUsbStatus();
   const [refreshing, setRefreshing] = useState(false);
   const [connectionTime, setConnectionTime] = useState<Date | null>(null);
   const [uptime, setUptime] = useState('00:00:00');
@@ -180,6 +180,57 @@ export default function UsbStatusScreen() {
             </View>
           )}
 
+          {/* Perfil Detectado */}
+          {status === 'connected' && detectedProfile && (
+            <View className={`rounded-2xl p-6 border ${
+              detectedProfile.compatible 
+                ? 'bg-green-500/10 border-green-500' 
+                : 'bg-blue-500/10 border-blue-500'
+            }`}>
+              <View className="flex-row items-center gap-2 mb-3">
+                <Text className="text-2xl">{detectedProfile.icon}</Text>
+                <Text className="text-lg font-bold text-foreground">
+                  Perfil Detectado
+                </Text>
+              </View>
+              
+              <View className="gap-2 mb-4">
+                <View className="flex-row justify-between">
+                  <Text className="text-sm text-muted">Adaptador:</Text>
+                  <Text className="text-sm text-foreground font-bold">
+                    {detectedProfile.name}
+                  </Text>
+                </View>
+                <View className="flex-row justify-between">
+                  <Text className="text-sm text-muted">Fabricante:</Text>
+                  <Text className="text-sm text-foreground">
+                    {detectedProfile.manufacturer}
+                  </Text>
+                </View>
+                <View className="flex-row justify-between">
+                  <Text className="text-sm text-muted">Chipset:</Text>
+                  <Text className="text-sm text-foreground">
+                    {detectedProfile.chipset}
+                  </Text>
+                </View>
+                <View className="flex-row justify-between">
+                  <Text className="text-sm text-muted">Compatible MIB2:</Text>
+                  <Text className={`text-sm font-bold ${
+                    detectedProfile.compatible ? 'text-green-500' : 'text-red-500'
+                  }`}>
+                    {detectedProfile.compatible ? '✅ Sí' : '❌ No'}
+                  </Text>
+                </View>
+              </View>
+              
+              <View className="bg-background rounded-lg p-3">
+                <Text className="text-xs text-muted">
+                  {detectedProfile.notes}
+                </Text>
+              </View>
+            </View>
+          )}
+
           {/* Estadísticas de Conexión */}
           {status === 'connected' && (
             <View className="bg-surface rounded-2xl p-6 border border-border">
@@ -209,6 +260,52 @@ export default function UsbStatusScreen() {
                   </Text>
                 </View>
               </View>
+            </View>
+          )}
+
+          {/* Sugerencia de Spoofing */}
+          {status === 'connected' && recommendedProfile && (
+            <View className="bg-yellow-500/10 rounded-2xl p-6 border border-yellow-500">
+              <View className="flex-row items-center gap-2 mb-3">
+                <Text className="text-2xl">⚡</Text>
+                <Text className="text-lg font-bold text-foreground">
+                  Spoofing Recomendado
+                </Text>
+              </View>
+              
+              <View className="bg-background rounded-lg p-4 mb-4">
+                <Text className="text-sm text-muted mb-2">
+                  Este dispositivo no es compatible con MIB2. Se recomienda aplicar el siguiente perfil:
+                </Text>
+                <View className="gap-2 mt-2">
+                  <View className="flex-row justify-between">
+                    <Text className="text-sm text-muted">Perfil Objetivo:</Text>
+                    <Text className="text-sm text-foreground font-bold">
+                      {recommendedProfile.name}
+                    </Text>
+                  </View>
+                  <View className="flex-row justify-between">
+                    <Text className="text-sm text-muted">VID:PID:</Text>
+                    <Text className="text-sm text-foreground font-mono">
+                      {recommendedProfile.vendorId.toString(16).padStart(4, '0').toUpperCase()}:
+                      {recommendedProfile.productId.toString(16).padStart(4, '0').toUpperCase()}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+              
+              <TouchableOpacity
+                onPress={() => {
+                  // Navegar a Perfiles VID/PID
+                  const router = require('expo-router').router;
+                  router.push('/(tabs)/vidpid-profiles');
+                }}
+                className="bg-primary rounded-xl p-3 items-center"
+              >
+                <Text className="text-sm font-bold text-background">
+                  🚀 Ir a Perfiles VID/PID
+                </Text>
+              </TouchableOpacity>
             </View>
           )}
 

@@ -510,3 +510,15 @@
 - [ ] Agregar función de perfiles personalizados (pendiente)
 - [x] Integrar en tab Herramientas (botón "Perfiles VID/PID")
 - [ ] Guardar checkpoint con biblioteca de perfiles
+
+
+## Detección Automática de Perfiles (11 Ene 2026 - 18:00)
+
+- [x] Integrar profilesService en usb-status-context (importado)
+- [x] Detectar perfil automáticamente al conectar dispositivo (findProfileByVIDPID)
+- [x] Agregar detectedProfile al estado de USB (nuevo estado)
+- [x] Mostrar badge de perfil detectado en Estado USB (tarjeta verde/azul)
+- [x] Implementar sugerencia de spoofing si no es compatible (recommendedProfile)
+- [x] Agregar botón rápido para aplicar perfil MIB2 ("Ir a Perfiles VID/PID")
+- [ ] Mostrar notificación al detectar dispositivo conocido (pendiente)
+- [ ] Guardar checkpoint con detección automática
