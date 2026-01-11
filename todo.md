@@ -435,3 +435,13 @@
 - [x] Agregar funciones EEPROM reales (readEEPROM, writeEEPROM, dumpEEPROM)
 - [x] Implementar spoofing VID/PID funcional (spoofVIDPID con verificación)
 - [ ] Compilar APK final con todas las funciones (corrigiendo error de namespace)
+
+
+## Correcciones Críticas (11 Ene 2026 - 16:35)
+
+- [x] Identificar que plugin withUsbHost no estaba registrado en app.config.ts
+- [x] Agregar plugin withUsbHost a app.config.ts
+- [x] Actualizar package.json del módulo usb-native con configuración completa
+- [x] Verificar namespace en build.gradle del módulo
+- [ ] Compilar nuevo APK con todas las correcciones
+- [ ] Validar que el APK funciona correctamente
