@@ -8,14 +8,17 @@ import * as Haptics from 'expo-haptics';
 export default function VIDPIDProfilesScreen() {
   const { status, device } = useUsbStatus();
   const [isApplying, setIsApplying] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'mib2_compatible' | 'common_adapters' | 'custom'>('all');
   const [allProfiles, setAllProfiles] = useState<VIDPIDProfile[]>([]);
   const [filteredProfiles, setFilteredProfiles] = useState<VIDPIDProfile[]>([]);
   const [stats, setStats] = useState({ total: 0, compatible: 0, asix: 0, realtek: 0, categories: {} as Record<string, number> });
+  const [cacheInfo, setCacheInfo] = useState<{ lastUpdated: number | null; isOffline: boolean }>({ lastUpdated: null, isOffline: false });
 
-  // Cargar perfiles al montar
+  // Cargar perfiles y cache al montar
   useEffect(() => {
     loadProfiles();
+    loadCacheInfo();
   }, []);
 
   // Filtrar perfiles cuando cambia la categoría
@@ -23,11 +26,57 @@ export default function VIDPIDProfilesScreen() {
     filterProfiles();
   }, [selectedCategory, allProfiles]);
 
+  const loadCacheInfo = async () => {
+    const metadata = await profilesService.getCacheMetadata();
+    const isOffline = await profilesService.isCacheAvailable();
+    setCacheInfo({
+      lastUpdated: metadata?.lastUpdated || null,
+      isOffline: isOffline,
+    });
+  };
+
   const loadProfiles = async () => {
+    // Inicializar cache si es primera vez
+    await profilesService.initializeCache();
     const profiles = await profilesService.getAllProfiles();
     const profileStats = await profilesService.getStats();
     setAllProfiles(profiles);
     setStats(profileStats);
+  };
+
+  const handleRefreshCache = async () => {
+    setIsRefreshing(true);
+    try {
+      const result = await profilesService.refreshCache();
+      if (result.success) {
+        await loadProfiles();
+        await loadCacheInfo();
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        Alert.alert('✅ Cache Actualizado', `${result.profileCount} perfiles sincronizados`);
+      } else {
+        Alert.alert('Error', 'No se pudo actualizar el cache');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Error al actualizar cache');
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  const formatLastUpdated = (timestamp: number | null): string => {
+    if (!timestamp) return 'Nunca';
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'Hace un momento';
+    if (diffMins < 60) return `Hace ${diffMins} min`;
+    if (diffHours < 24) return `Hace ${diffHours}h`;
+    if (diffDays < 7) return `Hace ${diffDays} días`;
+    return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
   };
 
   const filterProfiles = async () => {
@@ -130,6 +179,32 @@ export default function VIDPIDProfilesScreen() {
             <Text className="text-sm text-muted text-center">
               Perfiles VID/PID predefinidos y personalizados
             </Text>
+          </View>
+
+          {/* Indicador de Cache Offline */}
+          <View className="bg-surface rounded-xl p-4 border border-border">
+            <View className="flex-row justify-between items-center">
+              <View className="flex-row items-center gap-2">
+                <Text className="text-lg">{cacheInfo.isOffline ? '🟢' : '🔴'}</Text>
+                <View>
+                  <Text className="text-sm font-bold text-foreground">
+                    {cacheInfo.isOffline ? 'Modo Offline Activo' : 'Cache No Disponible'}
+                  </Text>
+                  <Text className="text-xs text-muted">
+                    Última sync: {formatLastUpdated(cacheInfo.lastUpdated)}
+                  </Text>
+                </View>
+              </View>
+              <TouchableOpacity
+                onPress={handleRefreshCache}
+                disabled={isRefreshing}
+                className={`rounded-lg px-3 py-2 ${isRefreshing ? 'bg-border' : 'bg-primary'}`}
+              >
+                <Text className={`text-xs font-bold ${isRefreshing ? 'text-muted' : 'text-background'}`}>
+                  {isRefreshing ? '⏳' : '🔄'} Sync
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
 
           {/* Botón Crear Perfil */}

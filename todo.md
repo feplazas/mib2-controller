@@ -549,4 +549,17 @@
 - [x] Implementar checkDuplicateProfile() en profiles-service.ts
 - [x] Validar duplicados al guardar perfil custom
 - [x] Mostrar advertencia con opción de editar existente
-- [ ] Guardar checkpoint con mejoras completas
+- [x] Guardar checkpoint con mejoras completas (abc27a91)
+
+
+## Modo Offline con Cache de Perfiles (11 Ene 2026 - 18:46)
+
+- [x] Crear constante PREDEFINED_PROFILES_CACHE_KEY en profiles-service
+- [x] Implementar initializeCache() para guardar en AsyncStorage
+- [x] Implementar loadCachedPredefinedProfiles() para cargar desde cache
+- [x] Agregar timestamp de última actualización del cache (CacheMetadata)
+- [x] Inicializar cache automáticamente al primer uso
+- [x] Agregar indicador de estado offline en vidpid-profiles.tsx (🟢/🔴)
+- [x] Mostrar fecha de última sincronización (formatLastUpdated)
+- [x] Agregar botón de refresh manual para actualizar cache (🔄 Sync)
+- [ ] Guardar checkpoint con modo offline completo

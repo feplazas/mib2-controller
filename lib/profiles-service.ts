@@ -4,6 +4,14 @@ import { backupService } from './backup-service';
 import type { UsbDevice } from './usb-service';
 
 const CUSTOM_PROFILES_KEY = '@mib2_custom_profiles';
+const PREDEFINED_PROFILES_CACHE_KEY = '@mib2_predefined_profiles_cache';
+const CACHE_METADATA_KEY = '@mib2_cache_metadata';
+
+export interface CacheMetadata {
+  lastUpdated: number;
+  version: string;
+  profileCount: number;
+}
 
 export interface VIDPIDProfile {
   id: string;
@@ -177,6 +185,103 @@ const PREDEFINED_PROFILES: VIDPIDProfile[] = [
  * Profiles Service - Gestión de perfiles VID/PID
  */
 class ProfilesService {
+  private cacheInitialized = false;
+
+  /**
+   * Inicializar cache de perfiles predefinidos
+   */
+  async initializeCache(): Promise<void> {
+    if (this.cacheInitialized) return;
+    
+    try {
+      // Guardar perfiles predefinidos en cache
+      await AsyncStorage.setItem(PREDEFINED_PROFILES_CACHE_KEY, JSON.stringify(PREDEFINED_PROFILES));
+      
+      // Guardar metadata del cache
+      const metadata: CacheMetadata = {
+        lastUpdated: Date.now(),
+        version: '1.0.0',
+        profileCount: PREDEFINED_PROFILES.length,
+      };
+      await AsyncStorage.setItem(CACHE_METADATA_KEY, JSON.stringify(metadata));
+      
+      this.cacheInitialized = true;
+      console.log(`[ProfilesService] Cache initialized with ${PREDEFINED_PROFILES.length} profiles`);
+    } catch (error) {
+      console.error('[ProfilesService] Error initializing cache:', error);
+    }
+  }
+
+  /**
+   * Obtener metadata del cache
+   */
+  async getCacheMetadata(): Promise<CacheMetadata | null> {
+    try {
+      const stored = await AsyncStorage.getItem(CACHE_METADATA_KEY);
+      if (!stored) return null;
+      return JSON.parse(stored) as CacheMetadata;
+    } catch (error) {
+      console.error('[ProfilesService] Error getting cache metadata:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Cargar perfiles predefinidos desde cache (modo offline)
+   */
+  async loadCachedPredefinedProfiles(): Promise<VIDPIDProfile[]> {
+    try {
+      const stored = await AsyncStorage.getItem(PREDEFINED_PROFILES_CACHE_KEY);
+      if (!stored) {
+        // Si no hay cache, inicializar y devolver predefinidos
+        await this.initializeCache();
+        return PREDEFINED_PROFILES;
+      }
+      return JSON.parse(stored) as VIDPIDProfile[];
+    } catch (error) {
+      console.error('[ProfilesService] Error loading cached profiles:', error);
+      return PREDEFINED_PROFILES; // Fallback a predefinidos en memoria
+    }
+  }
+
+  /**
+   * Actualizar cache de perfiles predefinidos (refresh manual)
+   */
+  async refreshCache(): Promise<{ success: boolean; profileCount: number; timestamp: number }> {
+    try {
+      await AsyncStorage.setItem(PREDEFINED_PROFILES_CACHE_KEY, JSON.stringify(PREDEFINED_PROFILES));
+      
+      const metadata: CacheMetadata = {
+        lastUpdated: Date.now(),
+        version: '1.0.0',
+        profileCount: PREDEFINED_PROFILES.length,
+      };
+      await AsyncStorage.setItem(CACHE_METADATA_KEY, JSON.stringify(metadata));
+      
+      console.log(`[ProfilesService] Cache refreshed with ${PREDEFINED_PROFILES.length} profiles`);
+      return {
+        success: true,
+        profileCount: PREDEFINED_PROFILES.length,
+        timestamp: metadata.lastUpdated,
+      };
+    } catch (error) {
+      console.error('[ProfilesService] Error refreshing cache:', error);
+      return { success: false, profileCount: 0, timestamp: 0 };
+    }
+  }
+
+  /**
+   * Verificar si el cache está disponible (modo offline)
+   */
+  async isCacheAvailable(): Promise<boolean> {
+    try {
+      const stored = await AsyncStorage.getItem(PREDEFINED_PROFILES_CACHE_KEY);
+      return stored !== null;
+    } catch {
+      return false;
+    }
+  }
+
   /**
    * Cargar perfiles personalizados desde AsyncStorage
    */
