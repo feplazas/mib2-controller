@@ -434,4 +434,4 @@
 - [x] Reimplementar módulo USB nativo simplificado (modules/usb-native/)
 - [x] Agregar funciones EEPROM reales (readEEPROM, writeEEPROM, dumpEEPROM)
 - [x] Implementar spoofing VID/PID funcional (spoofVIDPID con verificación)
-- [ ] Compilar APK final con todas las funciones (en progreso)
+- [ ] Compilar APK final con todas las funciones (corrigiendo error de namespace)

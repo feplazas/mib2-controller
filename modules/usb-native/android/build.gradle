@@ -10,6 +10,7 @@ applyKotlinExpoModulesCorePlugin()
 useExpoPublishing()
 
 android {
+  namespace "expo.modules.usbnative"
   compileSdkVersion 34
 
   defaultConfig {
