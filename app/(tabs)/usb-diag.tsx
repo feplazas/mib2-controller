@@ -26,15 +26,15 @@ export default function UsbDiagScreen() {
     try {
       await usbService.initialize();
       addDiagnosticLog('success', '✅ Servicio USB inicializado');
-      const foundDevices = await usbService.listDevices();
+      const foundDevices = await usbService.scanDevices();
       addDiagnosticLog('info', `📱 Encontrados ${foundDevices.length} dispositivos USB`);
       
-      foundDevices.forEach((dev, idx) => {
+      foundDevices.forEach((dev: UsbDevice, idx: number) => {
         addDiagnosticLog('info', `Dispositivo #${idx + 1}: ${dev.deviceName}`);
         addDiagnosticLog('info', `  VID: 0x${dev.vendorId.toString(16).toUpperCase().padStart(4, '0')} (${dev.vendorId})`);
         addDiagnosticLog('info', `  PID: 0x${dev.productId.toString(16).toUpperCase().padStart(4, '0')} (${dev.productId})`);
-        if (dev.manufacturerName) addDiagnosticLog('info', `  Fabricante: ${dev.manufacturerName}`);
-        if (dev.productName) addDiagnosticLog('info', `  Producto: ${dev.productName}`);
+        if (dev.manufacturer) addDiagnosticLog('info', `  Fabricante: ${dev.manufacturer}`);
+        if (dev.product) addDiagnosticLog('info', `  Producto: ${dev.product}`);
         if (dev.chipset) addDiagnosticLog('info', `  Chipset: ${dev.chipset}`);
       });
       
@@ -68,23 +68,19 @@ export default function UsbDiagScreen() {
       
       // Solicitar permiso
       addDiagnosticLog('info', `🔐 Verificando permisos para ${device.deviceName}...`);
-      const hasPermission = await usbService.hasPermission(device);
-      if (!hasPermission) {
-        addDiagnosticLog('warn', '⚠️  Sin permisos. Solicitando al usuario...');
-        const granted = await usbService.requestPermission(device);
-        if (!granted) {
-          addDiagnosticLog('error', '❌ Permiso denegado por el usuario');
-          Alert.alert('Permiso Denegado', 'No se puede acceder al dispositivo sin permiso.');
-          return;
-        }
-        addDiagnosticLog('success', '✅ Permiso concedido');
-      } else {
-        addDiagnosticLog('success', '✅ Ya tiene permisos');
+      // Solicitar permisos
+      addDiagnosticLog('warn', '⚠️  Solicitando permisos al usuario...');
+      const granted = await usbService.requestPermission(device.deviceId);
+      if (!granted) {
+        addDiagnosticLog('error', '❌ Permiso denegado por el usuario');
+        Alert.alert('Permiso Denegado', 'No se puede acceder al dispositivo sin permiso.');
+        return;
       }
+      addDiagnosticLog('success', '✅ Permiso concedido');
 
       // Abrir conexión
       addDiagnosticLog('info', '🔌 Abriendo conexión con dispositivo...');
-      const opened = await usbService.openDevice(device);
+      const opened = await usbService.openDevice(device.deviceId);
       if (opened) {
         setSelectedDevice(device);
         setIsConnected(true);
@@ -125,9 +121,9 @@ export default function UsbDiagScreen() {
       setLoading(true);
       
       // Intentar leer los primeros 16 bytes de EEPROM
-      const data = await usbService.readEeprom(0x00, 16);
+      const result = await usbService.readEEPROM(0x00, 16);
       
-      const hexString = data.map(b => b.toString(16).padStart(2, '0')).join(' ');
+      const hexString = result.bytes.map((b: number) => b.toString(16).padStart(2, '0')).join(' ');
       
       Alert.alert(
         'Lectura de EEPROM Exitosa',
@@ -302,19 +298,19 @@ export default function UsbDiagScreen() {
                           {device.interfaceCount}
                         </Text>
                       </View>
-                      {device.manufacturerName && (
+                      {device.manufacturer && (
                         <View className="flex-row">
                           <Text className="text-xs text-muted w-32">Fabricante:</Text>
                           <Text className="text-xs text-foreground">
-                            {device.manufacturerName}
+                            {device.manufacturer}
                           </Text>
                         </View>
                       )}
-                      {device.productName && (
+                      {device.product && (
                         <View className="flex-row">
                           <Text className="text-xs text-muted w-32">Producto:</Text>
                           <Text className="text-xs text-foreground">
-                            {device.productName}
+                            {device.product}
                           </Text>
                         </View>
                       )}

@@ -1,7 +1,15 @@
 import { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { ScreenContainer } from '@/components/screen-container';
-import { EepromBackupManager, type BackupMetadata } from '@/lib/eeprom-backup';
+// import { EepromBackupManager, type BackupMetadata } from '@/lib/eeprom-backup';
+
+type BackupMetadata = {
+  id: string;
+  deviceName: string;
+  timestamp: number;
+  size: number;
+  checksum: string;
+};
 import * as Haptics from 'expo-haptics';
 
 export default function BackupsScreen() {
@@ -16,11 +24,9 @@ export default function BackupsScreen() {
   const loadBackups = async () => {
     setLoading(true);
     try {
-      const backupList = await EepromBackupManager.listBackups();
-      setBackups(backupList);
-
-      const size = await EepromBackupManager.getTotalBackupSize();
-      setTotalSize(size);
+      // Mock data - EEPROM backup functionality in development
+      setBackups([]);
+      setTotalSize(0);
     } catch (error) {
       Alert.alert('Error', 'Failed to load backups');
     } finally {
@@ -47,18 +53,7 @@ export default function BackupsScreen() {
     setLoading(true);
     try {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-
-      const result = await EepromBackupManager.restoreBackup(backupId, (progress) => {
-        console.log(`[Backups] Restore progress: ${progress.message}`);
-      });
-
-      if (result.success) {
-        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        Alert.alert('Success', result.message);
-      } else {
-        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-        Alert.alert('Restore Failed', result.message);
-      }
+      Alert.alert('En Desarrollo', 'Funcionalidad de restauración en desarrollo');
     } catch (error) {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       Alert.alert('Error', 'Failed to restore backup: ' + error);
@@ -71,13 +66,7 @@ export default function BackupsScreen() {
     setLoading(true);
     try {
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      const exportPath = await EepromBackupManager.exportBackup(backupId);
-
-      if (exportPath) {
-        Alert.alert('Success', 'Backup exported successfully');
-      } else {
-        Alert.alert('Error', 'Failed to export backup');
-      }
+      Alert.alert('En Desarrollo', 'Funcionalidad de exportación en desarrollo');
     } catch (error) {
       Alert.alert('Error', 'Export failed: ' + error);
     } finally {
@@ -96,12 +85,7 @@ export default function BackupsScreen() {
           style: 'destructive',
           onPress: async () => {
             await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-            const deleted = await EepromBackupManager.deleteBackup(backupId);
-            if (deleted) {
-              loadBackups();
-            } else {
-              Alert.alert('Error', 'Failed to delete backup');
-            }
+            Alert.alert('En Desarrollo', 'Funcionalidad de eliminación en desarrollo');
           },
         },
       ]
@@ -119,9 +103,7 @@ export default function BackupsScreen() {
           onPress: async () => {
             setLoading(true);
             try {
-              const deletedCount = await EepromBackupManager.cleanOldBackups(10);
-              Alert.alert('Success', `Deleted ${deletedCount} old backups`);
-              loadBackups();
+              Alert.alert('En Desarrollo', 'Funcionalidad de limpieza en desarrollo');
             } catch (error) {
               Alert.alert('Error', 'Failed to clean backups');
             } finally {

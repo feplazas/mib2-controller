@@ -1,7 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useCallback, useEffect, useState } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 import { usbService, UsbDevice } from './usb-service';
-import { addDiagnosticLog } from '@/app/(tabs)/diagnostic';
 
 export type UsbStatus = 'disconnected' | 'detected' | 'connected';
 
@@ -28,31 +27,26 @@ export function UsbStatusProvider({ children }: { children: React.ReactNode }) {
     if (isScanning) return;
     
     setIsScanning(true);
-    addDiagnosticLog('info', '🔄 [Context] Escaneando dispositivos USB...');
     
     try {
       await usbService.initialize();
-      const foundDevices = await usbService.listDevices();
+      const foundDevices = await usbService.scanDevices();
       setDevices(foundDevices);
-      
-      addDiagnosticLog('info', `📱 [Context] Encontrados ${foundDevices.length} dispositivos`);
       
       if (foundDevices.length > 0) {
         // Si hay dispositivos pero no estamos conectados, marcar como "detected"
         if (status === 'disconnected') {
           setStatus('detected');
-          addDiagnosticLog('success', '✅ [Context] Estado cambiado a: DETECTED');
         }
       } else {
         // No hay dispositivos
         if (status !== 'disconnected') {
           setStatus('disconnected');
           setDevice(null);
-          addDiagnosticLog('warn', '⚠️  [Context] Estado cambiado a: DISCONNECTED');
         }
       }
     } catch (error) {
-      addDiagnosticLog('error', `❌ [Context] Error al escanear: ${error}`);
+      console.error('[UsbStatusProvider] Error scanning devices:', error);
       setStatus('disconnected');
       setDevice(null);
       setDevices([]);
@@ -63,34 +57,24 @@ export function UsbStatusProvider({ children }: { children: React.ReactNode }) {
 
   // Conectar a un dispositivo específico
   const connectToDevice = useCallback(async (targetDevice: UsbDevice): Promise<boolean> => {
-    addDiagnosticLog('info', `🔌 [Context] Intentando conectar a ${targetDevice.deviceName}...`);
-    
     try {
-      // Verificar permisos
-      const hasPermission = await usbService.hasPermission(targetDevice);
-      if (!hasPermission) {
-        addDiagnosticLog('warn', '⚠️  [Context] Solicitando permisos...');
-        const granted = await usbService.requestPermission(targetDevice);
-        if (!granted) {
-          addDiagnosticLog('error', '❌ [Context] Permiso denegado');
-          return false;
-        }
-        addDiagnosticLog('success', '✅ [Context] Permiso concedido');
-      }
-
-      // Abrir conexión
-      const opened = await usbService.openDevice(targetDevice);
-      if (opened) {
-        setDevice(targetDevice);
-        setStatus('connected');
-        addDiagnosticLog('success', `✅ [Context] CONECTADO a ${targetDevice.deviceName}`);
-        return true;
-      } else {
-        addDiagnosticLog('error', '❌ [Context] No se pudo abrir el dispositivo');
+      // Solicitar permisos y abrir dispositivo
+      const granted = await usbService.requestPermission(targetDevice.deviceId);
+      if (!granted) {
         return false;
       }
+      
+      const opened = await usbService.openDevice(targetDevice.deviceId);
+      if (!opened) {
+        return false;
+      }
+
+      // Marcar como conectado
+      setDevice(targetDevice);
+      setStatus('connected');
+      return true;
     } catch (error) {
-      addDiagnosticLog('error', `❌ [Context] Error de conexión: ${error}`);
+      console.error('[UsbStatusProvider] Connection error:', error);
       return false;
     }
   }, []);
@@ -99,15 +83,11 @@ export function UsbStatusProvider({ children }: { children: React.ReactNode }) {
   const disconnectDevice = useCallback(async () => {
     if (!device) return;
     
-    addDiagnosticLog('info', '🔌 [Context] Desconectando dispositivo...');
-    
     try {
-      await usbService.closeDevice();
       setDevice(null);
       setStatus(devices.length > 0 ? 'detected' : 'disconnected');
-      addDiagnosticLog('success', '✅ [Context] Dispositivo desconectado');
     } catch (error) {
-      addDiagnosticLog('error', `❌ [Context] Error al desconectar: ${error}`);
+      console.error('[UsbStatusProvider] Disconnection error:', error);
     }
   }, [device, devices.length]);
 
@@ -119,22 +99,23 @@ export function UsbStatusProvider({ children }: { children: React.ReactNode }) {
     // Listener de cambios de estado de la app
     const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
       if (nextAppState === 'active') {
-        addDiagnosticLog('info', '📱 [Context] App activa, re-escaneando...');
+        // App volvió al foreground, escanear nuevamente
         scanDevices();
       }
     });
 
-    // Escaneo periódico cada 5 segundos
-    const interval = setInterval(() => {
-      if (AppState.currentState === 'active') {
-        scanDevices();
-      }
-    }, 5000);
-
     return () => {
       subscription.remove();
-      clearInterval(interval);
     };
+  }, [scanDevices]);
+
+  // Escaneo periódico cada 5 segundos
+  useEffect(() => {
+    const interval = setInterval(() => {
+      scanDevices();
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, [scanDevices]);
 
   const value: UsbStatusContextType = {
@@ -154,10 +135,12 @@ export function UsbStatusProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function useUsbStatus() {
+export function useUsbStatus(): UsbStatusContextType {
   const context = useContext(UsbStatusContext);
-  if (context === undefined) {
-    throw new Error('useUsbStatus must be used within a UsbStatusProvider');
+  if (!context) {
+    throw new Error('useUsbStatus must be used within UsbStatusProvider');
   }
   return context;
 }
+
+import { useContext } from 'react';

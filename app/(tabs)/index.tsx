@@ -161,7 +161,7 @@ export default function HomeScreen() {
           {/* USB Status Indicator - REAL TIME */}
           <UsbStatusIndicator 
             status={usbStatus} 
-            deviceName={usbDevice?.productName || usbDevice?.deviceName}
+            deviceName={usbDevice?.product || usbDevice?.deviceName}
           />
 
           {/* Connection Status Card */}
