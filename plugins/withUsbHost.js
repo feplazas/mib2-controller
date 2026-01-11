@@ -1,10 +1,13 @@
-const { withAndroidManifest } = require('@expo/config-plugins');
+const { withAndroidManifest, withDangerousMod, AndroidConfig } = require('@expo/config-plugins');
+const fs = require('fs');
+const path = require('path');
 
 /**
  * Plugin de Expo para agregar permisos y configuración USB Host
  */
 const withUsbHost = (config) => {
-  return withAndroidManifest(config, async (config) => {
+  // Paso 1: Modificar AndroidManifest.xml
+  config = withAndroidManifest(config, async (config) => {
     const androidManifest = config.modResults;
     const mainApplication = androidManifest.manifest.application[0];
     const manifest = androidManifest.manifest;
@@ -103,6 +106,46 @@ const withUsbHost = (config) => {
 
     return config;
   });
+
+  // Paso 2: Crear archivo device_filter.xml en res/xml/
+  config = withDangerousMod(config, [
+    'android',
+    async (config) => {
+      const projectRoot = config.modRequest.projectRoot;
+      const androidResPath = path.join(projectRoot, 'android', 'app', 'src', 'main', 'res');
+      const xmlPath = path.join(androidResPath, 'xml');
+      const deviceFilterPath = path.join(xmlPath, 'device_filter.xml');
+
+      // Crear directorio xml si no existe
+      if (!fs.existsSync(xmlPath)) {
+        fs.mkdirSync(xmlPath, { recursive: true });
+      }
+
+      // Contenido del device_filter.xml
+      const deviceFilterContent = `<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ASIX AX88772 / AX88772A / AX88772B USB Ethernet Adapters -->
+    <usb-device vendor-id="2652" product-id="29720" />
+    <usb-device vendor-id="2652" product-id="29721" />
+    
+    <!-- D-Link DUB-E100 (target device for spoofing) -->
+    <usb-device vendor-id="2001" product-id="61953" />
+    
+    <!-- Allow any USB device (for testing) -->
+    <!-- Uncomment the line below to allow any USB device -->
+    <!-- <usb-device /> -->
+</resources>
+`;
+
+      // Escribir archivo
+      fs.writeFileSync(deviceFilterPath, deviceFilterContent, 'utf-8');
+      console.log('✅ Created device_filter.xml at:', deviceFilterPath);
+
+      return config;
+    },
+  ]);
+
+  return config;
 };
 
 module.exports = withUsbHost;
