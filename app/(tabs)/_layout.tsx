@@ -43,10 +43,10 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="usb-diag"
+        name="usb-status"
         options={{
-          title: "USB",
-          tabBarIcon: ({ color }) => <IconSymbol size={24} name="cable.connector" color={color} />,
+          title: "Estado USB",
+          tabBarIcon: ({ color }) => <IconSymbol size={24} name="antenna.radiowaves.left.and.right" color={color} />,
         }}
       />
       <Tabs.Screen
@@ -96,9 +96,15 @@ export default function TabLayout() {
       
       {/* Hidden tabs - accessible via navigation but not shown in tab bar */}
       <Tabs.Screen
-        name="logs"
+        name="usb-diag"
         options={{
           href: null, // Hide from tab bar
+        }}
+      />
+      <Tabs.Screen
+        name="logs"
+        options={{
+          href: null,
         }}
       />
       <Tabs.Screen

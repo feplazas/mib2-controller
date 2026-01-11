@@ -445,3 +445,12 @@
 - [x] Verificar namespace en build.gradle del módulo
 - [ ] Compilar nuevo APK con todas las correcciones
 - [ ] Validar que el APK funciona correctamente
+
+
+## Nueva Pantalla de Estado USB (11 Ene 2026 - 16:40)
+
+- [x] Crear pantalla dedicada de estado de conexión USB (usb-status.tsx)
+- [x] Mostrar información detallada del dispositivo conectado (VID/PID, chipset, serial)
+- [x] Agregar indicadores visuales de estado (conectado/desconectado/detectado)
+- [x] Mostrar estadísticas de conexión en tiempo real (uptime, dispositivos detectados)
+- [ ] Guardar checkpoint con nueva funcionalidad

@@ -31,6 +31,7 @@ const MAPPING = {
   "arrow.clockwise": "refresh",
   "cable.connector": "usb",
   "stethoscope": "bug-report",
+  "antenna.radiowaves.left.and.right": "wifi-tethering",
 } as IconMapping;
 
 /**
