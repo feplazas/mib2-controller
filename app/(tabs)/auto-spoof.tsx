@@ -1,4 +1,4 @@
-import { ScrollView, Text, View, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useState } from 'react';
 import { ScreenContainer } from '@/components/screen-container';
 import { useUsbStatus } from '@/lib/usb-status-context';
@@ -63,6 +63,33 @@ export default function AutoSpoofScreen() {
       return;
     }
 
+    // Validación adicional: Verificar que el dispositivo aún está conectado
+    if (status !== 'connected') {
+      Alert.alert('Error', 'El dispositivo USB se desconectó. Por favor reconecta y vuelve a intentar.');
+      return;
+    }
+
+    // Validación: Advertir sobre cable OTG y alimentación
+    Alert.alert(
+      '🔌 Verificación de Requisitos',
+      '✅ ANTES DE CONTINUAR, VERIFICA:\n\n' +
+      '1. Cable OTG conectado correctamente\n' +
+      '2. Adaptador USB enchufado firmemente\n' +
+      '3. Batería del teléfono >20%\n' +
+      '4. NO desconectarás el adaptador durante el proceso\n\n' +
+      '⚠️ Desconectar durante la escritura puede INUTILIZAR el adaptador permanentemente.\n\n' +
+      '¿Todos los requisitos están cumplidos?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Sí, Continuar',
+          onPress: () => showCriticalWarning(),
+        },
+      ]
+    );
+  };
+
+  const showCriticalWarning = () => {
     // Confirmación con advertencias
     Alert.alert(
       '⚠️ Advertencia Crítica',
@@ -81,24 +108,27 @@ export default function AutoSpoofScreen() {
         {
           text: 'Continuar',
           style: 'destructive',
-          onPress: () => executeWithConfirmation(),
+          onPress: () => showFinalConfirmation(),
         },
       ]
     );
   };
 
-  const executeWithConfirmation = () => {
+  const showFinalConfirmation = () => {
     Alert.alert(
-      '⚠️ Última Confirmación',
-      'Esta es tu última oportunidad para cancelar.\n\n' +
-      'El proceso escribirá:\n' +
-      '• VID: 0x2001 (D-Link)\n' +
-      '• PID: 0x3C05 (DUB-E100)\n\n' +
-      '¿Estás ABSOLUTAMENTE seguro?',
+      '⚠️ Confirmación Final',
+      'ÚLTIMA OPORTUNIDAD PARA CANCELAR\n\n' +
+      '📋 Resumen de cambios:\n' +
+      `• VID actual: ${usbService.formatVIDPID(device!.vendorId, device!.productId)}\n` +
+      '• VID nuevo: 0x2001 (D-Link)\n' +
+      '• PID nuevo: 0x3C05 (DUB-E100)\n\n' +
+      '✅ Se creará un backup automático antes de escribir\n\n' +
+      '⚠️ NO TOQUES EL ADAPTADOR DURANTE EL PROCESO\n\n' +
+      '¿Ejecutar spoofing AHORA?',
       [
-        { text: 'Cancelar', style: 'cancel' },
+        { text: 'NO, Cancelar', style: 'cancel' },
         {
-          text: 'Ejecutar Ahora',
+          text: 'SÍ, Ejecutar',
           style: 'destructive',
           onPress: () => performSpoof(),
         },
@@ -118,20 +148,14 @@ export default function AutoSpoofScreen() {
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
       // Paso 1: Validar compatibilidad
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Verificar que el dispositivo esté abierto
-      if (!device.deviceId) {
-        throw new Error('Dispositivo no tiene ID válido');
+      if (!usbService.isCompatibleForSpoofing(device)) {
+        throw new Error('Dispositivo no compatible para spoofing');
       }
+      await new Promise(resolve => setTimeout(resolve, 500));
 
-      // Paso 2: Crear backup de seguridad
+      // Paso 2: Crear backup automático
       setCurrentStep('creating_backup');
-      const backup = await backupService.createBackup(
-        device,
-        `Backup automático antes de spoofing a VID:0x2001 PID:0x3C05`
-      );
-      console.log(`[AutoSpoof] Backup created: ${backup.id}`);
+      await backupService.createBackup(device);
       await new Promise(resolve => setTimeout(resolve, 500));
 
       // Paso 3: Escribir VID byte bajo (0x88 = 0x01)
@@ -251,13 +275,13 @@ export default function AutoSpoofScreen() {
             </Text>
             <View className="gap-2">
               <View className="flex-row justify-between">
-                <Text className="text-sm text-muted">Nuevo VID:</Text>
+                <Text className="text-sm text-muted">VID (Vendor ID):</Text>
                 <Text className="text-sm text-foreground font-mono font-bold">
                   0x2001 (D-Link)
                 </Text>
               </View>
               <View className="flex-row justify-between">
-                <Text className="text-sm text-muted">Nuevo PID:</Text>
+                <Text className="text-sm text-muted">PID (Product ID):</Text>
                 <Text className="text-sm text-foreground font-mono font-bold">
                   0x3C05 (DUB-E100)
                 </Text>
@@ -336,6 +360,30 @@ export default function AutoSpoofScreen() {
             </View>
           )}
 
+          {/* Advertencias de Seguridad */}
+          <View className="bg-red-500/10 rounded-2xl p-6 border border-red-500">
+            <Text className="text-lg font-bold text-red-500 mb-3">
+              ⚠️ Advertencias Importantes
+            </Text>
+            <View className="gap-2">
+              <Text className="text-sm text-foreground">
+                • Esta operación es IRREVERSIBLE sin backup
+              </Text>
+              <Text className="text-sm text-foreground">
+                • NO desconectes el adaptador durante el proceso
+              </Text>
+              <Text className="text-sm text-foreground">
+                • Solo funciona con ASIX AX88772A/B con EEPROM externa
+              </Text>
+              <Text className="text-sm text-foreground">
+                • Dispositivos con eFuse NO son compatibles
+              </Text>
+              <Text className="text-sm text-foreground">
+                • Se creará un backup automático antes de escribir
+              </Text>
+            </View>
+          </View>
+
           {/* Botón de Ejecución */}
           <TouchableOpacity
             onPress={executeAutoSpoof}
@@ -349,60 +397,12 @@ export default function AutoSpoofScreen() {
             <Text className="text-2xl font-bold text-background mb-2">
               {isExecuting ? '⏳ Ejecutando...' : '🚀 Ejecutar Spoofing Automático'}
             </Text>
-            <Text className="text-sm text-background/80 text-center">
-              {canExecute
-                ? 'Reprogramar EEPROM con un solo toque'
-                : 'Conecta un adaptador compatible para continuar'}
-            </Text>
+            {!canExecute && !isExecuting && (
+              <Text className="text-xs text-background opacity-70">
+                Conecta un adaptador compatible para continuar
+              </Text>
+            )}
           </TouchableOpacity>
-
-          {/* Advertencias */}
-          <View className="bg-red-500/10 rounded-2xl p-6 border border-red-500">
-            <Text className="text-lg font-bold text-red-500 mb-4">
-              ⚠️ Advertencias Importantes
-            </Text>
-            <View className="gap-2">
-              <Text className="text-sm text-foreground">
-                • Esta operación es IRREVERSIBLE sin herramientas especializadas
-              </Text>
-              <Text className="text-sm text-foreground">
-                • Puede inutilizar el adaptador si falla ("bricking")
-              </Text>
-              <Text className="text-sm text-foreground">
-                • NO interrumpas el proceso una vez iniciado
-              </Text>
-              <Text className="text-sm text-foreground">
-                • Asegúrate de tener alimentación estable
-              </Text>
-              <Text className="text-sm text-foreground">
-                • Solo para adaptadores ASIX AX88772A/B con EEPROM externa
-              </Text>
-              <Text className="text-sm text-foreground">
-                • NO funciona con chips AX88772C (eFuse bloqueado)
-              </Text>
-            </View>
-          </View>
-
-          {/* Información Técnica */}
-          <View className="bg-surface rounded-2xl p-6 border border-border">
-            <Text className="text-lg font-bold text-foreground mb-4">
-              📚 Información Técnica
-            </Text>
-            <View className="gap-2">
-              <Text className="text-sm text-muted">
-                • Offsets EEPROM: 0x88 (VID), 0x8A (PID)
-              </Text>
-              <Text className="text-sm text-muted">
-                • Formato: Little Endian (byte menos significativo primero)
-              </Text>
-              <Text className="text-sm text-muted">
-                • Comandos USB: ASIX_CMD_WRITE_EEPROM (0x05)
-              </Text>
-              <Text className="text-sm text-muted">
-                • Basado en: Guíaspoofing.pdf (ethtool method)
-              </Text>
-            </View>
-          </View>
         </View>
       </ScrollView>
     </ScreenContainer>
