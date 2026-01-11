@@ -62,6 +62,22 @@ class ExpoUsbHostModule : Module() {
     AsyncFunction("controlTransfer") { requestType: Int, request: Int, value: Int, index: Int, data: List<Int>, length: Int, timeout: Int ->
       controlTransfer(requestType, request, value, index, data, length, timeout)
     }
+
+    AsyncFunction("readEEPROM") { offset: Int, length: Int ->
+      readEEPROM(offset, length)
+    }
+
+    AsyncFunction("writeEEPROM") { offset: Int, data: List<Int>, magicValue: Long ->
+      writeEEPROM(offset, data, magicValue)
+    }
+
+    AsyncFunction("dumpEEPROM") {
+      dumpEEPROM()
+    }
+
+    AsyncFunction("spoofVIDPID") { targetVID: Int, targetPID: Int, magicValue: Long ->
+      spoofVIDPID(targetVID, targetPID, magicValue)
+    }
   }
 
   private fun getDeviceList(): List<Map<String, Any>> {
@@ -304,5 +320,258 @@ class ExpoUsbHostModule : Module() {
   private fun findDeviceById(deviceId: Int): UsbDevice? {
     val manager = usbManager ?: return null
     return manager.deviceList.values.find { it.deviceId == deviceId }
+  }
+
+  // ========== EEPROM FUNCTIONS ==========
+
+  /**
+   * Read EEPROM data from ASIX adapter
+   * Uses vendor-specific USB control transfer
+   */
+  private fun readEEPROM(offset: Int, length: Int): Map<String, Any> {
+    val connection = currentConnection ?: run {
+      Log.e(TAG, "❌ No device connection")
+      return mapOf("success" to false, "error" to "No device connection")
+    }
+
+    val device = currentDevice ?: run {
+      Log.e(TAG, "❌ No current device")
+      return mapOf("success" to false, "error" to "No current device")
+    }
+
+    Log.d(TAG, "========================================")
+    Log.d(TAG, "📖 READING EEPROM")
+    Log.d(TAG, "Offset: 0x${offset.toString(16).uppercase()}")
+    Log.d(TAG, "Length: $length bytes")
+    Log.d(TAG, "========================================")
+
+    try {
+      // ASIX EEPROM Read Command
+      // Request Type: 0xC0 (Device to Host, Vendor, Device)
+      // Request: 0x0B (EEPROM Read)
+      val buffer = ByteArray(length)
+      val result = connection.controlTransfer(
+        0xC0, // requestType: Device to Host, Vendor, Device
+        0x0B, // request: EEPROM Read
+        offset, // value: offset in EEPROM
+        0, // index
+        buffer,
+        length,
+        5000 // timeout: 5 seconds
+      )
+
+      if (result < 0) {
+        Log.e(TAG, "❌ EEPROM read failed: result=$result")
+        return mapOf("success" to false, "error" to "Control transfer failed")
+      }
+
+      val data = buffer.take(result).map { it.toInt() and 0xFF }
+      Log.d(TAG, "✅ Read $result bytes from EEPROM")
+      Log.d(TAG, "Data: ${data.joinToString(" ") { "0x${it.toString(16).uppercase().padStart(2, '0')}" }}")
+
+      return mapOf(
+        "success" to true,
+        "offset" to offset,
+        "length" to result,
+        "data" to data
+      )
+    } catch (e: Exception) {
+      Log.e(TAG, "❌ Exception reading EEPROM: ${e.message}")
+      return mapOf("success" to false, "error" to e.message)
+    }
+  }
+
+  /**
+   * Write EEPROM data to ASIX adapter
+   * Requires magic value 0xDEADBEEF for authorization
+   */
+  private fun writeEEPROM(offset: Int, data: List<Int>, magicValue: Long): Map<String, Any> {
+    val connection = currentConnection ?: run {
+      Log.e(TAG, "❌ No device connection")
+      return mapOf("success" to false, "error" to "No device connection")
+    }
+
+    // Validate magic value
+    if (magicValue != 0xDEADBEEFL) {
+      Log.e(TAG, "❌ Invalid magic value: 0x${magicValue.toString(16).uppercase()}")
+      Log.e(TAG, "   Expected: 0xDEADBEEF")
+      return mapOf("success" to false, "error" to "Invalid magic value. Expected 0xDEADBEEF")
+    }
+
+    Log.d(TAG, "========================================")
+    Log.d(TAG, "✍️  WRITING EEPROM")
+    Log.d(TAG, "Offset: 0x${offset.toString(16).uppercase()}")
+    Log.d(TAG, "Data: ${data.joinToString(" ") { "0x${it.toString(16).uppercase().padStart(2, '0')}" }}")
+    Log.d(TAG, "Magic: 0x${magicValue.toString(16).uppercase()}")
+    Log.d(TAG, "========================================")
+
+    try {
+      // Write each byte individually for maximum precision
+      data.forEachIndexed { index, value ->
+        val currentOffset = offset + index
+        val buffer = byteArrayOf(value.toByte())
+        
+        // ASIX EEPROM Write Command
+        // Request Type: 0x40 (Host to Device, Vendor, Device)
+        // Request: 0x0C (EEPROM Write)
+        val result = connection.controlTransfer(
+          0x40, // requestType: Host to Device, Vendor, Device
+          0x0C, // request: EEPROM Write
+          currentOffset, // value: offset in EEPROM
+          0, // index
+          buffer,
+          1,
+          5000 // timeout: 5 seconds
+        )
+
+        if (result < 0) {
+          Log.e(TAG, "❌ Write failed at offset 0x${currentOffset.toString(16).uppercase()}")
+          return mapOf("success" to false, "error" to "Write failed at offset 0x${currentOffset.toString(16).uppercase()}")
+        }
+
+        Log.d(TAG, "✅ Wrote 0x${value.toString(16).uppercase().padStart(2, '0')} to offset 0x${currentOffset.toString(16).uppercase()}")
+        
+        // Small delay between writes for stability
+        Thread.sleep(10)
+      }
+
+      Log.d(TAG, "========================================")
+      Log.d(TAG, "✅ EEPROM WRITE COMPLETE")
+      Log.d(TAG, "========================================")
+
+      return mapOf("success" to true, "bytesWritten" to data.size)
+    } catch (e: Exception) {
+      Log.e(TAG, "❌ Exception writing EEPROM: ${e.message}")
+      return mapOf("success" to false, "error" to e.message)
+    }
+  }
+
+  /**
+   * Dump entire EEPROM content (typical size: 256 bytes)
+   */
+  private fun dumpEEPROM(): Map<String, Any> {
+    Log.d(TAG, "========================================")
+    Log.d(TAG, "💾 DUMPING FULL EEPROM (256 bytes)")
+    Log.d(TAG, "========================================")
+
+    val fullData = mutableListOf<Int>()
+    val chunkSize = 16 // Read 16 bytes at a time
+
+    for (offset in 0 until 256 step chunkSize) {
+      val result = readEEPROM(offset, chunkSize)
+      if (result["success"] == true) {
+        @Suppress("UNCHECKED_CAST")
+        val data = result["data"] as? List<Int> ?: emptyList()
+        fullData.addAll(data)
+      } else {
+        Log.e(TAG, "❌ Failed to read at offset 0x${offset.toString(16).uppercase()}")
+        return mapOf("success" to false, "error" to "Failed to dump EEPROM at offset 0x${offset.toString(16).uppercase()}")
+      }
+    }
+
+    // Print hex dump
+    Log.d(TAG, "\n========== EEPROM HEX DUMP ==========")
+    for (i in fullData.indices step 16) {
+      val line = fullData.subList(i, minOf(i + 16, fullData.size))
+      val hex = line.joinToString(" ") { "0x${it.toString(16).uppercase().padStart(2, '0')}" }
+      Log.d(TAG, "0x${i.toString(16).uppercase().padStart(4, '0')}: $hex")
+    }
+    Log.d(TAG, "======================================\n")
+
+    return mapOf(
+      "success" to true,
+      "data" to fullData,
+      "size" to fullData.size
+    )
+  }
+
+  /**
+   * Spoof VID/PID to make adapter appear as D-Link DUB-E100
+   * Default target: VID 0x2001, PID 0x3C05
+   */
+  private fun spoofVIDPID(targetVID: Int, targetPID: Int, magicValue: Long): Map<String, Any> {
+    val device = currentDevice ?: run {
+      Log.e(TAG, "❌ No current device")
+      return mapOf("success" to false, "error" to "No current device")
+    }
+
+    Log.d(TAG, "========================================")
+    Log.d(TAG, "🎭 SPOOFING VID/PID")
+    Log.d(TAG, "Current VID: 0x${device.vendorId.toString(16).uppercase().padStart(4, '0')}")
+    Log.d(TAG, "Current PID: 0x${device.productId.toString(16).uppercase().padStart(4, '0')}")
+    Log.d(TAG, "Target VID:  0x${targetVID.toString(16).uppercase().padStart(4, '0')}")
+    Log.d(TAG, "Target PID:  0x${targetPID.toString(16).uppercase().padStart(4, '0')}")
+    Log.d(TAG, "========================================")
+
+    // Step 1: Backup current EEPROM
+    Log.d(TAG, "📦 Step 1: Backing up EEPROM...")
+    val backup = dumpEEPROM()
+    if (backup["success"] != true) {
+      return mapOf("success" to false, "error" to "Failed to backup EEPROM")
+    }
+
+    // Step 2: Read current VID/PID from EEPROM
+    Log.d(TAG, "📖 Step 2: Reading current VID/PID from EEPROM...")
+    val vidPidData = readEEPROM(0x88, 4)
+    if (vidPidData["success"] != true) {
+      return mapOf("success" to false, "error" to "Failed to read VID/PID from EEPROM")
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    val currentData = vidPidData["data"] as? List<Int> ?: emptyList()
+    Log.d(TAG, "Current EEPROM VID/PID: ${currentData.joinToString(" ") { "0x${it.toString(16).uppercase().padStart(2, '0')}" }}")
+
+    // Step 3: Write new VID (Little Endian)
+    Log.d(TAG, "✍️  Step 3: Writing new VID...")
+    val vidLow = targetVID and 0xFF
+    val vidHigh = (targetVID shr 8) and 0xFF
+    val vidResult = writeEEPROM(0x88, listOf(vidLow, vidHigh), magicValue)
+    if (vidResult["success"] != true) {
+      return mapOf("success" to false, "error" to "Failed to write VID")
+    }
+
+    // Step 4: Write new PID (Little Endian)
+    Log.d(TAG, "✍️  Step 4: Writing new PID...")
+    val pidLow = targetPID and 0xFF
+    val pidHigh = (targetPID shr 8) and 0xFF
+    val pidResult = writeEEPROM(0x8A, listOf(pidLow, pidHigh), magicValue)
+    if (pidResult["success"] != true) {
+      return mapOf("success" to false, "error" to "Failed to write PID")
+    }
+
+    // Step 5: Verify
+    Log.d(TAG, "🔍 Step 5: Verifying changes...")
+    val verifyData = readEEPROM(0x88, 4)
+    if (verifyData["success"] != true) {
+      return mapOf("success" to false, "error" to "Failed to verify changes")
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    val newData = verifyData["data"] as? List<Int> ?: emptyList()
+    Log.d(TAG, "New EEPROM VID/PID: ${newData.joinToString(" ") { "0x${it.toString(16).uppercase().padStart(2, '0')}" }}")
+
+    val expectedData = listOf(vidLow, vidHigh, pidLow, pidHigh)
+    val success = newData == expectedData
+
+    Log.d(TAG, "========================================")
+    if (success) {
+      Log.d(TAG, "✅ SPOOFING SUCCESSFUL!")
+      Log.d(TAG, "⚠️  DISCONNECT AND RECONNECT THE ADAPTER")
+    } else {
+      Log.e(TAG, "❌ VERIFICATION FAILED")
+      Log.e(TAG, "Expected: ${expectedData.joinToString(" ") { "0x${it.toString(16).uppercase().padStart(2, '0')}" }}")
+      Log.e(TAG, "Got:      ${newData.joinToString(" ") { "0x${it.toString(16).uppercase().padStart(2, '0')}" }}")
+    }
+    Log.d(TAG, "========================================")
+
+    return mapOf(
+      "success" to success,
+      "backup" to backup["data"],
+      "oldVID" to device.vendorId,
+      "oldPID" to device.productId,
+      "newVID" to targetVID,
+      "newPID" to targetPID,
+      "verified" to success
+    )
   }
 }

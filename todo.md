@@ -360,3 +360,33 @@
 - [x] Contexto global UsbStatusProvider
 - [x] Escaneo automático cada 5 segundos
 - [x] Integración con logs de diagnóstico
+
+
+## Funciones Críticas de Spoofing USB (11 Ene 2026 - 11:00)
+
+### PRIORIDAD ALTA - Core Functionality
+- [x] Lectura de EEPROM completa (volcar contenido hexadecimal)
+- [x] Escritura de EEPROM en offsets específicos
+- [x] Validación de Magic Value (0xdeadbeef) antes de escritura
+- [ ] Re-enumeración USB (forzar desconexión/reconexión)
+- [x] Verificación post-spoofing (confirmar nuevo VID/PID)
+- [x] Control Transfers USB para acceso directo a EEPROM
+
+### PRIORIDAD MEDIA - Safety & UX
+- [x] Backup automático de EEPROM antes de modificar
+- [ ] Cálculo y validación de checksum
+- [ ] Detección de eFuse (advertir si chip está bloqueado)
+- [ ] Restauración de EEPROM desde backup
+- [x] Interfaz gráfica para visualizar mapa de memoria (pantalla spoofing existente)
+
+### Offsets de Memoria EEPROM (ASIX AX88772)
+- Offset 0x88: Byte bajo del VID
+- Offset 0x89: Byte alto del VID
+- Offset 0x8A: Byte bajo del PID
+- Offset 0x8B: Byte alto del PID
+
+### Objetivo de Spoofing
+- VID Original: 0x0B95 (ASIX)
+- PID Original: 0x7720 (AX88772B)
+- **VID Objetivo: 0x2001 (D-Link)**
+- **PID Objetivo: 0x3C05 (DUB-E100)**

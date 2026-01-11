@@ -75,6 +75,34 @@ export async function hasPermission(deviceId: number): Promise<boolean> {
   return await ExpoUsbHostModule.hasPermission(deviceId);
 }
 
+/**
+ * Read EEPROM data from ASIX adapter
+ */
+export async function readEEPROM(offset: number, length: number): Promise<any> {
+  return await ExpoUsbHostModule.readEEPROM(offset, length);
+}
+
+/**
+ * Write EEPROM data to ASIX adapter
+ */
+export async function writeEEPROM(offset: number, data: number[], magicValue: number): Promise<any> {
+  return await ExpoUsbHostModule.writeEEPROM(offset, data, magicValue);
+}
+
+/**
+ * Dump entire EEPROM content (256 bytes)
+ */
+export async function dumpEEPROM(): Promise<any> {
+  return await ExpoUsbHostModule.dumpEEPROM();
+}
+
+/**
+ * Spoof VID/PID to make adapter appear as D-Link DUB-E100
+ */
+export async function spoofVIDPID(targetVID: number, targetPID: number, magicValue: number): Promise<any> {
+  return await ExpoUsbHostModule.spoofVIDPID(targetVID, targetPID, magicValue);
+}
+
 // Event listeners for USB device attach/detach events
 export function addUsbDeviceAttachedListener(listener: (device: UsbDevice) => void) {
   // TODO: Implement event listener when native module supports it
