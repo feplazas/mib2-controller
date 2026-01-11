@@ -46,7 +46,14 @@ export default function TabLayout() {
         name="usb-status"
         options={{
           title: "Estado USB",
-          tabBarIcon: ({ color }) => <IconSymbol size={24} name="antenna.radiowaves.left.and.right" color={color} />,
+          tabBarIcon: ({ color}) => <IconSymbol size={24} name="antenna.radiowaves.left.and.right" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="auto-spoof"
+        options={{
+          title: "Auto Spoof",
+          tabBarIcon: ({ color }) => <IconSymbol size={24} name="bolt.fill" color={color} />,
         }}
       />
       <Tabs.Screen
