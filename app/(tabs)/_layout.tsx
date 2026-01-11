@@ -73,6 +73,13 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="diagnostic"
+        options={{
+          title: "Diag",
+          tabBarIcon: ({ color }) => <IconSymbol size={24} name="stethoscope" color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="profiles"
         options={{
           title: "Perfiles",

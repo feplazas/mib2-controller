@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { ScrollView, Text, View, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { ScreenContainer } from '@/components/screen-container';
 import { usbService, UsbDevice } from '@/lib/usb-service';
+import { addDiagnosticLog } from './diagnostic';
 
 /**
  * Pantalla de Diagnóstico USB
@@ -21,12 +22,27 @@ export default function UsbDiagScreen() {
 
   const scanDevices = async () => {
     setLoading(true);
+    addDiagnosticLog('info', '🔍 Iniciando escaneo de dispositivos USB...');
     try {
       await usbService.initialize();
+      addDiagnosticLog('success', '✅ Servicio USB inicializado');
       const foundDevices = await usbService.listDevices();
+      addDiagnosticLog('info', `📱 Encontrados ${foundDevices.length} dispositivos USB`);
+      
+      foundDevices.forEach((dev, idx) => {
+        addDiagnosticLog('info', `Dispositivo #${idx + 1}: ${dev.deviceName}`);
+        addDiagnosticLog('info', `  VID: 0x${dev.vendorId.toString(16).toUpperCase().padStart(4, '0')} (${dev.vendorId})`);
+        addDiagnosticLog('info', `  PID: 0x${dev.productId.toString(16).toUpperCase().padStart(4, '0')} (${dev.productId})`);
+        if (dev.manufacturerName) addDiagnosticLog('info', `  Fabricante: ${dev.manufacturerName}`);
+        if (dev.productName) addDiagnosticLog('info', `  Producto: ${dev.productName}`);
+        if (dev.chipset) addDiagnosticLog('info', `  Chipset: ${dev.chipset}`);
+      });
+      
       setDevices(foundDevices);
       
       if (foundDevices.length === 0) {
+        addDiagnosticLog('warn', '⚠️  No se encontraron dispositivos USB');
+        addDiagnosticLog('info', 'Verifica: cable OTG, alimentación, permisos USB');
         Alert.alert(
           'No se encontraron dispositivos USB',
           'Asegúrate de que:\n\n' +
@@ -39,6 +55,7 @@ export default function UsbDiagScreen() {
       }
     } catch (error) {
       console.error('[UsbDiag] Error scanning devices:', error);
+      addDiagnosticLog('error', `❌ Error al escanear: ${error}`);
       Alert.alert('Error', `No se pudieron escanear dispositivos USB: ${error}`);
     } finally {
       setLoading(false);
@@ -50,26 +67,36 @@ export default function UsbDiagScreen() {
       setLoading(true);
       
       // Solicitar permiso
+      addDiagnosticLog('info', `🔐 Verificando permisos para ${device.deviceName}...`);
       const hasPermission = await usbService.hasPermission(device);
       if (!hasPermission) {
+        addDiagnosticLog('warn', '⚠️  Sin permisos. Solicitando al usuario...');
         const granted = await usbService.requestPermission(device);
         if (!granted) {
+          addDiagnosticLog('error', '❌ Permiso denegado por el usuario');
           Alert.alert('Permiso Denegado', 'No se puede acceder al dispositivo sin permiso.');
           return;
         }
+        addDiagnosticLog('success', '✅ Permiso concedido');
+      } else {
+        addDiagnosticLog('success', '✅ Ya tiene permisos');
       }
 
       // Abrir conexión
+      addDiagnosticLog('info', '🔌 Abriendo conexión con dispositivo...');
       const opened = await usbService.openDevice(device);
       if (opened) {
         setSelectedDevice(device);
         setIsConnected(true);
+        addDiagnosticLog('success', `✅ Conectado a ${device.deviceName}`);
         Alert.alert('Conectado', `Conexión establecida con ${device.deviceName}`);
       } else {
+        addDiagnosticLog('error', '❌ No se pudo abrir el dispositivo');
         Alert.alert('Error', 'No se pudo abrir el dispositivo.');
       }
     } catch (error) {
       console.error('[UsbDiag] Error connecting to device:', error);
+      addDiagnosticLog('error', `❌ Error de conexión: ${error}`);
       Alert.alert('Error', `No se pudo conectar: ${error}`);
     } finally {
       setLoading(false);

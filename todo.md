@@ -336,3 +336,14 @@
 - [x] Adaptador Realtek RTL8153 no se detecta (requiere actualización de código Kotlin)
 - [x] Agregar soporte para más chipsets USB-Ethernet (Realtek, ASIX, D-Link)
 - [x] Mejorar logs de depuración para identificar VID/PID
+
+
+## Nuevas Funcionalidades de Diagnóstico (11 Ene 2026 - 09:10)
+
+- [x] Pantalla de logs en tiempo real dentro de la app
+- [x] Botón "Solicitar Permisos USB" manual
+- [x] Mostrar VID/PID/chipset de dispositivos detectados en UI
+- [x] Botón "Copiar Logs" al portapapeles
+- [x] Sistema de logs persistente sin necesidad de ADB
+- [x] Pestaña "Diag" en tab bar para acceso rápido
+- [x] Logs con emojis y colores para fácil lectura

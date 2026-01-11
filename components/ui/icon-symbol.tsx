@@ -30,6 +30,7 @@ const MAPPING = {
   "list.bullet": "list",
   "arrow.clockwise": "refresh",
   "cable.connector": "usb",
+  "stethoscope": "bug-report",
 } as IconMapping;
 
 /**

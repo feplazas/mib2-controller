@@ -40,6 +40,7 @@ export interface UsbDevice {
   deviceClass: number;
   deviceSubclass: number;
   interfaceCount: number;
+  chipset?: string;
 }
 
 export interface EEPROMData {
