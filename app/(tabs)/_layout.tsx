@@ -10,7 +10,7 @@ export default function TabLayout() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const bottomPadding = Platform.OS === "web" ? 12 : Math.max(insets.bottom, 8);
-  const tabBarHeight = 56 + bottomPadding;
+  const tabBarHeight = 64 + bottomPadding; // Increased height for better touch targets
 
   return (
     <Tabs
@@ -19,12 +19,19 @@ export default function TabLayout() {
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarStyle: {
-          paddingTop: 8,
+          paddingTop: 12,
           paddingBottom: bottomPadding,
           height: tabBarHeight,
           backgroundColor: colors.background,
           borderTopColor: colors.border,
           borderTopWidth: 0.5,
+        },
+        tabBarLabelStyle: {
+          fontSize: 11,
+          fontWeight: '600',
+        },
+        tabBarIconStyle: {
+          marginTop: 4,
         },
       }}
     >
@@ -32,14 +39,14 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "Home",
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          tabBarIcon: ({ color }) => <IconSymbol size={24} name="house.fill" color={color} />,
         }}
       />
       <Tabs.Screen
-        name="profiles"
+        name="usb-diag"
         options={{
-          title: "Perfiles",
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.2.fill" color={color} />,
+          title: "USB",
+          tabBarIcon: ({ color }) => <IconSymbol size={24} name="cable.connector" color={color} />,
         }}
       />
       <Tabs.Screen
@@ -47,99 +54,104 @@ export default function TabLayout() {
         options={{
           title: "Comandos",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="chevron.left.forwardslash.chevron.right" color={color} />
+            <IconSymbol size={24} name="chevron.left.forwardslash.chevron.right" color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="logs"
+        name="tools"
         options={{
-          title: "Logs",
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: "Herramientas",
+          tabBarIcon: ({ color }) => <IconSymbol size={24} name="wrench.fill" color={color} />,
         }}
       />
       <Tabs.Screen
-        name="vcds"
+        name="data"
         options={{
-          title: "VCDS",
-          tabBarIcon: ({ color}) => <IconSymbol size={28} name="wrench.fill" color={color} />,
+          title: "Datos",
+          tabBarIcon: ({ color }) => <IconSymbol size={24} name="chart.bar.fill" color={color} />,
         }}
       />
       <Tabs.Screen
-        name="fec"
+        name="profiles"
         options={{
-          title: "FEC",
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="key.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="toolbox"
-        options={{
-          title: "Toolbox",
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="hammer.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="spoofing"
-        options={{
-          title: 'Spoofing',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="bolt.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="recovery"
-        options={{
-          title: 'Recovery',
-          tabBarIcon: ({ color}) => <IconSymbol size={28} name="wrench.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="backups"
-        options={{
-          title: 'Backups',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="folder.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="macros"
-        options={{
-          title: "Macros",
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="play.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="stats"
-        options={{
-          title: 'Stats',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="chart.bar.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="queue"
-        options={{
-          title: "Cola",
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="list.bullet" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="config"
-        options={{
-          title: "Backup",
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="arrow.clockwise" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="usb-diag"
-        options={{
-          title: "USB",
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="cable.connector" color={color} />,
+          title: "Perfiles",
+          tabBarIcon: ({ color }) => <IconSymbol size={24} name="person.2.fill" color={color} />,
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
           title: "Config",
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="gear" color={color} />,
+          tabBarIcon: ({ color }) => <IconSymbol size={24} name="gear" color={color} />,
+        }}
+      />
+      
+      {/* Hidden tabs - accessible via navigation but not shown in tab bar */}
+      <Tabs.Screen
+        name="logs"
+        options={{
+          href: null, // Hide from tab bar
+        }}
+      />
+      <Tabs.Screen
+        name="vcds"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="fec"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="toolbox"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="spoofing"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="recovery"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="backups"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="macros"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="stats"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="queue"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="config"
+        options={{
+          href: null,
         }}
       />
     </Tabs>

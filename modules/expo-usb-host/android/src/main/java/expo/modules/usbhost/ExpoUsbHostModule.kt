@@ -27,7 +27,10 @@ class ExpoUsbHostModule : Module() {
 
     OnCreate {
       usbManager = appContext.reactContext?.getSystemService(Context.USB_SERVICE) as? UsbManager
+      Log.d(TAG, "========================================")
       Log.d(TAG, "ExpoUsbHostModule initialized")
+      Log.d(TAG, "UsbManager: ${if (usbManager != null) "OK" else "NULL"}")
+      Log.d(TAG, "========================================")
     }
 
     OnDestroy {
@@ -63,14 +66,44 @@ class ExpoUsbHostModule : Module() {
 
   private fun getDeviceList(): List<Map<String, Any>> {
     val manager = usbManager ?: run {
-      Log.e(TAG, "UsbManager not initialized")
+      Log.e(TAG, "❌ UsbManager not initialized")
       return emptyList()
     }
 
     val deviceList = manager.deviceList
+    Log.d(TAG, "========================================")
+    Log.d(TAG, "📱 USB DEVICE SCAN")
     Log.d(TAG, "Found ${deviceList.size} USB devices")
+    Log.d(TAG, "========================================")
 
-    return deviceList.values.map { device ->
+    if (deviceList.isEmpty()) {
+      Log.w(TAG, "⚠️  No USB devices found!")
+      Log.w(TAG, "Possible reasons:")
+      Log.w(TAG, "  1. No USB device connected")
+      Log.w(TAG, "  2. USB OTG cable not working")
+      Log.w(TAG, "  3. Device taken by another app")
+      Log.w(TAG, "  4. Android system has exclusive access")
+    }
+
+    val result = deviceList.values.mapIndexed { index, device ->
+      Log.d(TAG, "----------------------------------------")
+      Log.d(TAG, "Device #${index + 1}:")
+      Log.d(TAG, "  Device ID: ${device.deviceId}")
+      Log.d(TAG, "  Device Name: ${device.deviceName}")
+      Log.d(TAG, "  Vendor ID: 0x${device.vendorId.toString(16).uppercase().padStart(4, '0')} (${device.vendorId})")
+      Log.d(TAG, "  Product ID: 0x${device.productId.toString(16).uppercase().padStart(4, '0')} (${device.productId})")
+      Log.d(TAG, "  Manufacturer: ${device.manufacturerName ?: "N/A"}")
+      Log.d(TAG, "  Product: ${device.productName ?: "N/A"}")
+      Log.d(TAG, "  Serial: ${device.serialNumber ?: "N/A"}")
+      Log.d(TAG, "  Class: ${device.deviceClass}")
+      Log.d(TAG, "  Subclass: ${device.deviceSubclass}")
+      Log.d(TAG, "  Interface Count: ${device.interfaceCount}")
+      Log.d(TAG, "  Has Permission: ${manager.hasPermission(device)}")
+      
+      // Identify common USB-Ethernet chipsets
+      val chipsetInfo = identifyChipset(device.vendorId, device.productId)
+      Log.d(TAG, "  Chipset: $chipsetInfo")
+      
       mapOf(
         "deviceId" to device.deviceId,
         "vendorId" to device.vendorId,
@@ -81,10 +114,41 @@ class ExpoUsbHostModule : Module() {
         "serialNumber" to (device.serialNumber ?: ""),
         "deviceClass" to device.deviceClass,
         "deviceSubclass" to device.deviceSubclass,
-        "interfaceCount" to device.interfaceCount
-      ).also {
-        Log.d(TAG, "Device: VID=0x${device.vendorId.toString(16)}, PID=0x${device.productId.toString(16)}, Name=${device.deviceName}")
+        "interfaceCount" to device.interfaceCount,
+        "chipset" to chipsetInfo
+      )
+    }
+
+    Log.d(TAG, "========================================")
+    return result
+  }
+
+  private fun identifyChipset(vendorId: Int, productId: Int): String {
+    return when (vendorId) {
+      0x0B95 -> when (productId) {
+        0x1780 -> "ASIX AX88178"
+        0x178A -> "ASIX AX88179"
+        0x7720 -> "ASIX AX88772"
+        0x772A -> "ASIX AX88772A"
+        0x772B -> "ASIX AX88772B"
+        else -> "ASIX (Unknown model)"
       }
+      0x0BDA -> when (productId) {
+        0x8152 -> "Realtek RTL8152"
+        0x8153 -> "Realtek RTL8153"
+        else -> "Realtek (Unknown model)"
+      }
+      0x2001 -> when (productId) {
+        0x1A00 -> "D-Link DUB-E100 (Rev A)"
+        0x1A02 -> "D-Link DUB-E100 (Rev B1)"
+        0x3C05 -> "D-Link DUB-E100 (Rev C1)"
+        else -> "D-Link (Unknown model)"
+      }
+      0x0424 -> "Microchip/SMSC"
+      0x0B6F -> "Corega"
+      0x050D -> "Belkin"
+      0x13B1 -> "Linksys"
+      else -> "Unknown (VID: 0x${vendorId.toString(16).uppercase()}, PID: 0x${productId.toString(16).uppercase()})"
     }
   }
 
@@ -101,7 +165,7 @@ class ExpoUsbHostModule : Module() {
     }
 
     if (manager.hasPermission(device)) {
-      Log.d(TAG, "Permission already granted for device ${device.deviceName}")
+      Log.d(TAG, "✅ Permission already granted for device ${device.deviceName}")
       promise.resolve(true)
       return
     }
@@ -130,10 +194,10 @@ class ExpoUsbHostModule : Module() {
             val device: UsbDevice? = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE)
             
             if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-              Log.d(TAG, "Permission granted for device ${device?.deviceName}")
+              Log.d(TAG, "✅ Permission granted for device ${device?.deviceName}")
               promise.resolve(true)
             } else {
-              Log.w(TAG, "Permission denied for device ${device?.deviceName}")
+              Log.w(TAG, "❌ Permission denied for device ${device?.deviceName}")
               promise.resolve(false)
             }
             
@@ -145,7 +209,7 @@ class ExpoUsbHostModule : Module() {
 
     context.registerReceiver(receiver, filter)
     manager.requestPermission(device, permissionIntent)
-    Log.d(TAG, "Requesting permission for device ${device.deviceName}")
+    Log.d(TAG, "🔐 Requesting permission for device ${device.deviceName}")
   }
 
   private fun hasPermission(deviceId: Int): Boolean {
@@ -156,17 +220,17 @@ class ExpoUsbHostModule : Module() {
 
   private fun openDevice(deviceId: Int): Boolean {
     val manager = usbManager ?: run {
-      Log.e(TAG, "UsbManager not initialized")
+      Log.e(TAG, "❌ UsbManager not initialized")
       return false
     }
 
     val device = findDeviceById(deviceId) ?: run {
-      Log.e(TAG, "Device with ID $deviceId not found")
+      Log.e(TAG, "❌ Device with ID $deviceId not found")
       return false
     }
 
     if (!manager.hasPermission(device)) {
-      Log.e(TAG, "No permission to access device ${device.deviceName}")
+      Log.e(TAG, "❌ No permission to access device ${device.deviceName}")
       return false
     }
 
@@ -175,12 +239,12 @@ class ExpoUsbHostModule : Module() {
 
     currentConnection = manager.openDevice(device)
     if (currentConnection == null) {
-      Log.e(TAG, "Failed to open device ${device.deviceName}")
+      Log.e(TAG, "❌ Failed to open device ${device.deviceName}")
       return false
     }
 
     currentDevice = device
-    Log.d(TAG, "Opened device ${device.deviceName}")
+    Log.d(TAG, "✅ Opened device ${device.deviceName}")
     return true
   }
 
@@ -188,7 +252,7 @@ class ExpoUsbHostModule : Module() {
     currentConnection?.close()
     currentConnection = null
     currentDevice = null
-    Log.d(TAG, "Device connection closed")
+    Log.d(TAG, "🔒 Device connection closed")
   }
 
   private fun controlTransfer(
@@ -201,7 +265,7 @@ class ExpoUsbHostModule : Module() {
     timeout: Int
   ): List<Int> {
     val connection = currentConnection ?: run {
-      Log.e(TAG, "No device connection established")
+      Log.e(TAG, "❌ No device connection established")
       throw Exception("No device connection established")
     }
 
@@ -223,11 +287,11 @@ class ExpoUsbHostModule : Module() {
     )
 
     if (result < 0) {
-      Log.e(TAG, "Control transfer failed with result $result")
+      Log.e(TAG, "❌ Control transfer failed with result $result")
       throw Exception("Control transfer failed with result $result")
     }
 
-    Log.d(TAG, "Control transfer: type=0x${requestType.toString(16)}, req=0x${request.toString(16)}, " +
+    Log.d(TAG, "✅ Control transfer: type=0x${requestType.toString(16)}, req=0x${request.toString(16)}, " +
                "val=0x${value.toString(16)}, idx=0x${index.toString(16)}, len=$result")
 
     return if (isRead) {

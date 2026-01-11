@@ -324,3 +324,15 @@
 - [ ] Usuario debe crear cuenta en Expo (expo.dev/signup)
 - [ ] Usuario debe ejecutar: eas build --platform android --profile preview
 - [ ] Usuario debe descargar e instalar APK generado
+
+## Problemas Reportados por Usuario (11 Ene 2026)
+
+- [ ] App no aparece en diálogo de selección USB de Android
+- [ ] Iconos de navegación muy apiñados (15 pestañas)
+- [ ] Adaptador USB no se detecta (posible chipset Realtek RTL8153)
+- [ ] Reorganizar navegación con menos pestañas
+- [x] Mejorar espaciado de iconos en tab bar
+- [x] App ahora aparece en diálogo de selección USB
+- [x] Adaptador Realtek RTL8153 no se detecta (requiere actualización de código Kotlin)
+- [x] Agregar soporte para más chipsets USB-Ethernet (Realtek, ASIX, D-Link)
+- [x] Mejorar logs de depuración para identificar VID/PID

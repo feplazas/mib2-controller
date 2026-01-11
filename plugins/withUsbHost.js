@@ -70,6 +70,13 @@ const withUsbHost = (config) => {
           },
         },
       ],
+      category: [
+        {
+          $: {
+            'android:name': 'android.intent.category.DEFAULT',
+          },
+        },
+      ],
     };
 
     const hasUsbIntentFilter = mainActivity['intent-filter'].some((filter) =>
@@ -121,19 +128,12 @@ const withUsbHost = (config) => {
         fs.mkdirSync(xmlPath, { recursive: true });
       }
 
-      // Contenido del device_filter.xml
+      // Contenido del device_filter.xml - ACEPTAR CUALQUIER DISPOSITIVO USB
       const deviceFilterContent = `<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- ASIX AX88772 / AX88772A / AX88772B USB Ethernet Adapters -->
-    <usb-device vendor-id="2652" product-id="29720" />
-    <usb-device vendor-id="2652" product-id="29721" />
-    
-    <!-- D-Link DUB-E100 (target device for spoofing) -->
-    <usb-device vendor-id="2001" product-id="61953" />
-    
-    <!-- Allow any USB device (for testing) -->
-    <!-- Uncomment the line below to allow any USB device -->
-    <!-- <usb-device /> -->
+    <!-- Accept ANY USB device for maximum compatibility -->
+    <!-- This allows the app to handle all USB devices and show them in the selection dialog -->
+    <usb-device />
 </resources>
 `;
 
