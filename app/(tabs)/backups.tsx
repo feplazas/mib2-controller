@@ -1,113 +1,121 @@
-import { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { ScrollView, Text, View, TouchableOpacity, Alert, RefreshControl } from 'react-native';
+import { useState, useEffect, useCallback } from 'react';
 import { ScreenContainer } from '@/components/screen-container';
-// import { EepromBackupManager, type BackupMetadata } from '@/lib/eeprom-backup';
-
-type BackupMetadata = {
-  id: string;
-  deviceName: string;
-  timestamp: number;
-  size: number;
-  checksum: string;
-};
+import { backupService, type EEPROMBackup } from '@/lib/backup-service';
 import * as Haptics from 'expo-haptics';
 
 export default function BackupsScreen() {
-  const [backups, setBackups] = useState<BackupMetadata[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [totalSize, setTotalSize] = useState(0);
+  const [backups, setBackups] = useState<EEPROMBackup[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isRestoring, setIsRestoring] = useState(false);
+  const [stats, setStats] = useState<{ total: number; totalSize: number; oldestDate: number | null; newestDate: number | null }>({
+    total: 0,
+    totalSize: 0,
+    oldestDate: null,
+    newestDate: null,
+  });
+
+  const loadBackups = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const loadedBackups = await backupService.loadBackups();
+      const loadedStats = await backupService.getStats();
+      setBackups(loadedBackups);
+      setStats(loadedStats);
+    } catch (error) {
+      console.error('[Backups] Error loading backups:', error);
+      Alert.alert('Error', 'No se pudieron cargar los backups');
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     loadBackups();
-  }, []);
+  }, [loadBackups]);
 
-  const loadBackups = async () => {
-    setLoading(true);
-    try {
-      // Mock data - EEPROM backup functionality in development
-      setBackups([]);
-      setTotalSize(0);
-    } catch (error) {
-      Alert.alert('Error', 'Failed to load backups');
-    } finally {
-      setLoading(false);
-    }
+  const formatDate = (timestamp: number): string => {
+    const date = new Date(timestamp);
+    return date.toLocaleString('es-ES', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   };
 
-  const handleRestoreBackup = (backupId: string, deviceName: string) => {
+  const formatSize = (bytes: number): string => {
+    return `${bytes} bytes`;
+  };
+
+  const formatVIDPID = (vid: number, pid: number): string => {
+    return `${vid.toString(16).padStart(4, '0').toUpperCase()}:${pid.toString(16).padStart(4, '0').toUpperCase()}`;
+  };
+
+  const handleRestore = async (backup: EEPROMBackup) => {
     Alert.alert(
-      'Restore EEPROM',
-      `This will restore the EEPROM from backup:\n\n${deviceName}\n\nThis operation will overwrite the current EEPROM data. Continue?`,
+      '⚠️ Confirmar Restauración',
+      `¿Deseas restaurar este backup?\n\n` +
+      `Dispositivo: ${backup.deviceName}\n` +
+      `VID:PID: ${formatVIDPID(backup.vendorId, backup.productId)}\n` +
+      `Fecha: ${formatDate(backup.timestamp)}\n\n` +
+      `Esta operación escribirá los valores originales en la EEPROM del dispositivo conectado.`,
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: 'Cancelar', style: 'cancel' },
         {
-          text: 'Restore',
+          text: 'Restaurar',
           style: 'destructive',
-          onPress: () => executeRestore(backupId),
+          onPress: () => performRestore(backup),
         },
       ]
     );
   };
 
-  const executeRestore = async (backupId: string) => {
-    setLoading(true);
+  const performRestore = async (backup: EEPROMBackup) => {
+    setIsRestoring(true);
     try {
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-      Alert.alert('En Desarrollo', 'Funcionalidad de restauración en desarrollo');
-    } catch (error) {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      
+      const result = await backupService.restoreBackup(backup.id);
+      
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      Alert.alert(
+        '✅ Restauración Exitosa',
+        `Se han restaurado ${result.bytesWritten} bytes desde el backup.\n\n` +
+        `🔌 SIGUIENTE PASO:\n` +
+        `1. Desconecta el adaptador USB\n` +
+        `2. Espera 5 segundos\n` +
+        `3. Vuelve a conectarlo\n` +
+        `4. Verifica el VID/PID restaurado en "Estado USB"`
+      );
+    } catch (error: any) {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert('Error', 'Failed to restore backup: ' + error);
+      Alert.alert('Error', error.message || 'No se pudo restaurar el backup');
     } finally {
-      setLoading(false);
+      setIsRestoring(false);
     }
   };
 
-  const handleExportBackup = async (backupId: string) => {
-    setLoading(true);
-    try {
-      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      Alert.alert('En Desarrollo', 'Funcionalidad de exportación en desarrollo');
-    } catch (error) {
-      Alert.alert('Error', 'Export failed: ' + error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDeleteBackup = (backupId: string, deviceName: string) => {
+  const handleDelete = async (backup: EEPROMBackup) => {
     Alert.alert(
-      'Delete Backup',
-      `Are you sure you want to delete this backup?\n\n${deviceName}`,
+      '⚠️ Confirmar Eliminación',
+      `¿Deseas eliminar este backup?\n\n` +
+      `Dispositivo: ${backup.deviceName}\n` +
+      `Fecha: ${formatDate(backup.timestamp)}\n\n` +
+      `Esta acción no se puede deshacer.`,
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: 'Cancelar', style: 'cancel' },
         {
-          text: 'Delete',
+          text: 'Eliminar',
           style: 'destructive',
           onPress: async () => {
-            await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-            Alert.alert('En Desarrollo', 'Funcionalidad de eliminación en desarrollo');
-          },
-        },
-      ]
-    );
-  };
-
-  const handleCleanOldBackups = () => {
-    Alert.alert(
-      'Clean Old Backups',
-      'This will keep only the 10 most recent backups and delete the rest. Continue?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Clean',
-          onPress: async () => {
-            setLoading(true);
-            try {
-              Alert.alert('En Desarrollo', 'Funcionalidad de limpieza en desarrollo');
-            } catch (error) {
-              Alert.alert('Error', 'Failed to clean backups');
-            } finally {
-              setLoading(false);
+            const deleted = await backupService.deleteBackup(backup.id);
+            if (deleted) {
+              await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              loadBackups();
+            } else {
+              Alert.alert('Error', 'No se pudo eliminar el backup');
             }
           },
         },
@@ -115,128 +123,214 @@ export default function BackupsScreen() {
     );
   };
 
-  const formatSize = (bytes: number): string => {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
-  };
-
-  const formatDate = (timestamp: number): string => {
-    const date = new Date(timestamp);
-    return date.toLocaleString();
+  const handleClearAll = () => {
+    Alert.alert(
+      '⚠️ Confirmar Eliminación Masiva',
+      `¿Deseas eliminar TODOS los backups (${stats.total})?\n\n` +
+      `Esta acción no se puede deshacer.`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Eliminar Todos',
+          style: 'destructive',
+          onPress: async () => {
+            const cleared = await backupService.clearAllBackups();
+            if (cleared) {
+              await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              loadBackups();
+            } else {
+              Alert.alert('Error', 'No se pudieron eliminar los backups');
+            }
+          },
+        },
+      ]
+    );
   };
 
   return (
-    <ScreenContainer className="p-6">
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <View className="gap-6">
+    <ScreenContainer className="p-4">
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        refreshControl={
+          <RefreshControl refreshing={isLoading} onRefresh={loadBackups} />
+        }
+      >
+        <View className="gap-4">
           {/* Header */}
-          <View>
-            <Text className="text-3xl font-bold text-foreground">EEPROM Backups</Text>
-            <Text className="text-sm text-muted mt-2">
-              Manage your EEPROM backup files
+          <View className="items-center mb-4">
+            <Text className="text-3xl font-bold text-foreground mb-2">
+              💾 Backups de EEPROM
+            </Text>
+            <Text className="text-sm text-muted text-center">
+              Gestión de copias de seguridad y restauración
             </Text>
           </View>
 
-          {/* Stats */}
+          {/* Estadísticas */}
           <View className="bg-surface rounded-2xl p-6 border border-border">
-            <View className="flex-row justify-between items-center">
-              <View>
-                <Text className="text-2xl font-bold text-foreground">{backups.length}</Text>
-                <Text className="text-sm text-muted">Total Backups</Text>
-              </View>
-              <View className="items-end">
-                <Text className="text-2xl font-bold text-foreground">{formatSize(totalSize)}</Text>
-                <Text className="text-sm text-muted">Storage Used</Text>
-              </View>
-            </View>
-          </View>
-
-          {/* Actions */}
-          <View className="flex-row gap-2">
-            <TouchableOpacity
-              onPress={loadBackups}
-              disabled={loading}
-              className="flex-1 bg-primary px-4 py-3 rounded-full active:opacity-80"
-            >
-              <Text className="text-background font-semibold text-center">Refresh</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={handleCleanOldBackups}
-              disabled={loading || backups.length <= 10}
-              className={`flex-1 px-4 py-3 rounded-full active:opacity-80 ${
-                backups.length > 10 ? 'bg-warning' : 'bg-border'
-              }`}
-            >
-              <Text className={`font-semibold text-center ${backups.length > 10 ? 'text-background' : 'text-muted'}`}>
-                Clean Old
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Loading */}
-          {loading && (
-            <View className="py-8">
-              <ActivityIndicator size="large" color="#0a7ea4" />
-            </View>
-          )}
-
-          {/* Backup List */}
-          {!loading && backups.length === 0 && (
-            <View className="bg-surface rounded-2xl p-8 border border-border items-center">
-              <Text className="text-lg font-semibold text-foreground mb-2">No Backups Found</Text>
-              <Text className="text-sm text-muted text-center">
-                Backups are automatically created before spoofing operations
-              </Text>
-            </View>
-          )}
-
-          {!loading && backups.map((backup) => (
-            <View key={backup.id} className="bg-surface rounded-2xl p-6 border border-border">
-              <View className="mb-4">
-                <Text className="text-base font-semibold text-foreground mb-1">
-                  {backup.deviceName}
+            <Text className="text-lg font-bold text-foreground mb-4">
+              📊 Estadísticas
+            </Text>
+            <View className="gap-2">
+              <View className="flex-row justify-between">
+                <Text className="text-sm text-muted">Total de Backups:</Text>
+                <Text className="text-sm text-foreground font-bold">
+                  {stats.total}
                 </Text>
-                <Text className="text-xs text-muted">{formatDate(backup.timestamp)}</Text>
               </View>
-
-              <View className="flex-row gap-2 mb-4">
-                <View className="flex-1 bg-background rounded-xl p-3 border border-border">
-                  <Text className="text-xs text-muted mb-1">Size</Text>
-                  <Text className="text-sm font-semibold text-foreground">
-                    {formatSize(backup.size)}
+              <View className="flex-row justify-between">
+                <Text className="text-sm text-muted">Tamaño Total:</Text>
+                <Text className="text-sm text-foreground font-mono">
+                  {formatSize(stats.totalSize)}
+                </Text>
+              </View>
+              {stats.newestDate && (
+                <View className="flex-row justify-between">
+                  <Text className="text-sm text-muted">Más Reciente:</Text>
+                  <Text className="text-sm text-foreground">
+                    {formatDate(stats.newestDate)}
                   </Text>
                 </View>
-                <View className="flex-1 bg-background rounded-xl p-3 border border-border">
-                  <Text className="text-xs text-muted mb-1">Checksum</Text>
-                  <Text className="text-sm font-mono text-foreground">
-                    {backup.checksum}
+              )}
+              {stats.oldestDate && (
+                <View className="flex-row justify-between">
+                  <Text className="text-sm text-muted">Más Antiguo:</Text>
+                  <Text className="text-sm text-foreground">
+                    {formatDate(stats.oldestDate)}
                   </Text>
                 </View>
-              </View>
-
-              <View className="flex-row gap-2">
-                <TouchableOpacity
-                  onPress={() => handleRestoreBackup(backup.id, backup.deviceName)}
-                  className="flex-1 bg-primary px-4 py-3 rounded-full active:opacity-80"
-                >
-                  <Text className="text-background font-semibold text-center text-sm">Restore</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => handleExportBackup(backup.id)}
-                  className="flex-1 bg-border px-4 py-3 rounded-full active:opacity-80"
-                >
-                  <Text className="text-foreground font-semibold text-center text-sm">Export</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => handleDeleteBackup(backup.id, backup.deviceName)}
-                  className="bg-error px-4 py-3 rounded-full active:opacity-80"
-                >
-                  <Text className="text-background font-semibold text-center text-sm">Delete</Text>
-                </TouchableOpacity>
-              </View>
+              )}
             </View>
-          ))}
+          </View>
+
+          {/* Lista de Backups */}
+          {backups.length === 0 ? (
+            <View className="bg-surface rounded-2xl p-8 border border-border items-center">
+              <Text className="text-4xl mb-4">📦</Text>
+              <Text className="text-lg font-bold text-foreground mb-2">
+                No hay backups
+              </Text>
+              <Text className="text-sm text-muted text-center">
+                Los backups se crean automáticamente antes de cada spoofing
+              </Text>
+            </View>
+          ) : (
+            <>
+              <View className="flex-row justify-between items-center mb-2">
+                <Text className="text-lg font-bold text-foreground">
+                  📋 Backups Guardados
+                </Text>
+                {backups.length > 0 && (
+                  <TouchableOpacity onPress={handleClearAll}>
+                    <Text className="text-sm text-red-500 font-medium">
+                      Eliminar Todos
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+
+              {backups.map((backup) => (
+                <View
+                  key={backup.id}
+                  className="bg-surface rounded-2xl p-6 border border-border"
+                >
+                  {/* Header del Backup */}
+                  <View className="flex-row justify-between items-start mb-4">
+                    <View className="flex-1">
+                      <Text className="text-base font-bold text-foreground mb-1">
+                        {backup.deviceName}
+                      </Text>
+                      <Text className="text-xs text-muted">
+                        {formatDate(backup.timestamp)}
+                      </Text>
+                    </View>
+                    <View className="bg-primary/10 px-3 py-1 rounded-full">
+                      <Text className="text-xs text-primary font-mono font-bold">
+                        {formatVIDPID(backup.vendorId, backup.productId)}
+                      </Text>
+                    </View>
+                  </View>
+
+                  {/* Información del Backup */}
+                  <View className="gap-2 mb-4">
+                    <View className="flex-row justify-between">
+                      <Text className="text-sm text-muted">Chipset:</Text>
+                      <Text className="text-sm text-foreground font-medium">
+                        {backup.chipset}
+                      </Text>
+                    </View>
+                    <View className="flex-row justify-between">
+                      <Text className="text-sm text-muted">Serial:</Text>
+                      <Text className="text-sm text-foreground font-mono">
+                        {backup.serialNumber}
+                      </Text>
+                    </View>
+                    <View className="flex-row justify-between">
+                      <Text className="text-sm text-muted">Tamaño:</Text>
+                      <Text className="text-sm text-foreground font-mono">
+                        {formatSize(backup.size)}
+                      </Text>
+                    </View>
+                  </View>
+
+                  {/* Notas */}
+                  {backup.notes && (
+                    <View className="bg-background rounded-lg p-3 mb-4">
+                      <Text className="text-xs text-muted">
+                        {backup.notes}
+                      </Text>
+                    </View>
+                  )}
+
+                  {/* Botones de Acción */}
+                  <View className="flex-row gap-2">
+                    <TouchableOpacity
+                      onPress={() => handleRestore(backup)}
+                      disabled={isRestoring}
+                      className="flex-1 bg-primary rounded-xl p-3 items-center"
+                    >
+                      <Text className="text-sm font-bold text-background">
+                        {isRestoring ? '⏳ Restaurando...' : '🔄 Restaurar'}
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => handleDelete(backup)}
+                      disabled={isRestoring}
+                      className="bg-red-500/10 rounded-xl px-4 py-3 items-center border border-red-500"
+                    >
+                      <Text className="text-sm font-bold text-red-500">
+                        🗑️
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              ))}
+            </>
+          )}
+
+          {/* Información */}
+          <View className="bg-surface rounded-2xl p-6 border border-border">
+            <Text className="text-lg font-bold text-foreground mb-4">
+              ℹ️ Información
+            </Text>
+            <View className="gap-2">
+              <Text className="text-sm text-muted">
+                • Los backups se crean automáticamente antes de cada spoofing
+              </Text>
+              <Text className="text-sm text-muted">
+                • Cada backup contiene una copia completa de la EEPROM (256 bytes)
+              </Text>
+              <Text className="text-sm text-muted">
+                • La restauración sobrescribe los valores VID/PID actuales
+              </Text>
+              <Text className="text-sm text-muted">
+                • Requiere reconexión del adaptador después de restaurar
+              </Text>
+              <Text className="text-sm text-muted">
+                • Los backups se almacenan localmente en el dispositivo
+              </Text>
+            </View>
+          </View>
         </View>
       </ScrollView>
     </ScreenContainer>

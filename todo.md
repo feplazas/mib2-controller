@@ -468,3 +468,17 @@
 - [x] Validar que magic value 0xDEADBEEF se envía correctamente (en writeEEPROM)
 - [x] Verificar que offsets 0x88-0x8B se escriben en little endian (01 20 05 3C)
 - [x] Agregar tab "Auto Spoof" en navegación principal
+
+
+## Sistema de Backup de EEPROM (11 Ene 2026 - 17:15)
+
+- [x] Crear servicio backup-service.ts con AsyncStorage
+- [x] Implementar función saveBackup() para guardar volcado EEPROM
+- [x] Implementar función loadBackups() para listar backups guardados
+- [x] Implementar función restoreBackup() para restaurar EEPROM
+- [x] Integrar backup automático en auto-spoof.tsx antes de spoofing (paso 2)
+- [x] Crear pantalla backups.tsx para gestión de backups
+- [x] Mostrar lista de backups con fecha, VID/PID, y tamaño
+- [x] Agregar botón de restauración con confirmación (doble confirmación)
+- [x] Agregar función de exportar/importar backup (exportBackup/importBackup)
+- [ ] Guardar checkpoint con sistema de backup completo

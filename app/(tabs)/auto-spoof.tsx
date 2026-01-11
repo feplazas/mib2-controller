@@ -3,9 +3,10 @@ import { useState } from 'react';
 import { ScreenContainer } from '@/components/screen-container';
 import { useUsbStatus } from '@/lib/usb-status-context';
 import { usbService } from '@/lib/usb-service';
+import { backupService } from '@/lib/backup-service';
 import * as Haptics from 'expo-haptics';
 
-type SpoofStep = 'idle' | 'validating' | 'writing_vid_low' | 'writing_vid_high' | 'writing_pid_low' | 'writing_pid_high' | 'verifying' | 'success' | 'error';
+type SpoofStep = 'idle' | 'validating' | 'creating_backup' | 'writing_vid_low' | 'writing_vid_high' | 'writing_pid_low' | 'writing_pid_high' | 'verifying' | 'success' | 'error';
 
 export default function AutoSpoofScreen() {
   const { status, device } = useUsbStatus();
@@ -20,6 +21,8 @@ export default function AutoSpoofScreen() {
         return 'Listo para iniciar';
       case 'validating':
         return 'Validando compatibilidad del chipset...';
+      case 'creating_backup':
+        return 'Creando backup de seguridad de EEPROM...';
       case 'writing_vid_low':
         return 'Escribiendo VID byte bajo (0x88)...';
       case 'writing_vid_high':
@@ -41,7 +44,7 @@ export default function AutoSpoofScreen() {
 
   const getStepIcon = (step: SpoofStep): string => {
     if (currentStep === step && isExecuting) return '⏳';
-    if (currentStep === 'success' && ['validating', 'writing_vid_low', 'writing_vid_high', 'writing_pid_low', 'writing_pid_high', 'verifying'].includes(step)) return '✅';
+    if (currentStep === 'success' && ['validating', 'creating_backup', 'writing_vid_low', 'writing_vid_high', 'writing_pid_low', 'writing_pid_high', 'verifying'].includes(step)) return '✅';
     if (currentStep === 'error') return '❌';
     return '⚪';
   };
@@ -122,27 +125,36 @@ export default function AutoSpoofScreen() {
         throw new Error('Dispositivo no tiene ID válido');
       }
 
-      // Paso 2: Escribir VID byte bajo (0x88 = 0x01)
+      // Paso 2: Crear backup de seguridad
+      setCurrentStep('creating_backup');
+      const backup = await backupService.createBackup(
+        device,
+        `Backup automático antes de spoofing a VID:0x2001 PID:0x3C05`
+      );
+      console.log(`[AutoSpoof] Backup created: ${backup.id}`);
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // Paso 3: Escribir VID byte bajo (0x88 = 0x01)
       setCurrentStep('writing_vid_low');
       await usbService.writeEEPROM(0x88, '01');
       await new Promise(resolve => setTimeout(resolve, 100));
 
-      // Paso 3: Escribir VID byte alto (0x89 = 0x20)
+      // Paso 4: Escribir VID byte alto (0x89 = 0x20)
       setCurrentStep('writing_vid_high');
       await usbService.writeEEPROM(0x89, '20');
       await new Promise(resolve => setTimeout(resolve, 100));
 
-      // Paso 4: Escribir PID byte bajo (0x8A = 0x05)
+      // Paso 5: Escribir PID byte bajo (0x8A = 0x05)
       setCurrentStep('writing_pid_low');
       await usbService.writeEEPROM(0x8A, '05');
       await new Promise(resolve => setTimeout(resolve, 100));
 
-      // Paso 5: Escribir PID byte alto (0x8B = 0x3C)
+      // Paso 6: Escribir PID byte alto (0x8B = 0x3C)
       setCurrentStep('writing_pid_high');
       await usbService.writeEEPROM(0x8B, '3C');
       await new Promise(resolve => setTimeout(resolve, 100));
 
-      // Paso 6: Verificar escritura
+      // Paso 7: Verificar escritura
       setCurrentStep('verifying');
       const vidLow = await usbService.readEEPROM(0x88, 1);
       const vidHigh = await usbService.readEEPROM(0x89, 1);
@@ -269,6 +281,10 @@ export default function AutoSpoofScreen() {
                 <View className="flex-row items-center gap-2">
                   <Text className="text-xl">{getStepIcon('validating')}</Text>
                   <Text className="text-sm text-muted flex-1">Validando chipset</Text>
+                </View>
+                <View className="flex-row items-center gap-2">
+                  <Text className="text-xl">{getStepIcon('creating_backup')}</Text>
+                  <Text className="text-sm text-muted flex-1">Creando backup de seguridad</Text>
                 </View>
                 <View className="flex-row items-center gap-2">
                   <Text className="text-xl">{getStepIcon('writing_vid_low')}</Text>
