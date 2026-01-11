@@ -157,6 +157,12 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="vidpid-profiles"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
         name="macros"
         options={{
           href: null,

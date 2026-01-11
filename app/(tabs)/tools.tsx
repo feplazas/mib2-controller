@@ -12,6 +12,7 @@ export default function ToolsScreen() {
     { id: 'recovery', title: 'Recovery', description: 'Recuperar adaptadores brickeados', icon: '🔄' },
     { id: 'backups', title: 'Backups EEPROM', description: 'Gestionar copias de seguridad', icon: '💾' },
     { id: 'advanced-diag', title: 'Diagnóstico Avanzado', description: 'Editor hexadecimal de EEPROM', icon: '🔬' },
+    { id: 'vidpid-profiles', title: 'Perfiles VID/PID', description: 'Biblioteca de perfiles predefinidos', icon: '📚' },
   ];
 
   return (

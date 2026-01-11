@@ -496,3 +496,17 @@
 - [x] Agregar validación de valores hexadecimales (00-FF con regex)
 - [x] Mostrar offsets importantes (VID/PID) destacados (bg-primary/20)
 - [ ] Guardar checkpoint con funcionalidad completa
+
+
+## Biblioteca de Perfiles VID/PID (11 Ene 2026 - 17:45)
+
+- [x] Crear servicio profiles-service.ts con perfiles predefinidos (11 perfiles)
+- [x] Definir perfiles comunes (D-Link DUB-E100, TP-Link, Realtek, ASIX, Apple, Belkin)
+- [x] Agregar información de compatibilidad y notas por perfil (compatible, chipset, notas)
+- [x] Crear pantalla vidpid-profiles.tsx con lista de perfiles
+- [x] Implementar función de aplicación rápida de perfil (applyProfile)
+- [x] Agregar backup automático antes de aplicar perfil (createBackup integrado)
+- [x] Mostrar información detallada de cada perfil (VID/PID, chipset, notas)
+- [ ] Agregar función de perfiles personalizados (pendiente)
+- [x] Integrar en tab Herramientas (botón "Perfiles VID/PID")
+- [ ] Guardar checkpoint con biblioteca de perfiles
