@@ -151,6 +151,12 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="advanced-diag"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
         name="macros"
         options={{
           href: null,

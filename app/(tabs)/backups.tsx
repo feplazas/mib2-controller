@@ -271,6 +271,12 @@ export default function BackupsScreen() {
                         {formatSize(backup.size)}
                       </Text>
                     </View>
+                    <View className="flex-row justify-between">
+                      <Text className="text-sm text-muted">Checksum:</Text>
+                      <Text className="text-xs text-foreground font-mono">
+                        {backup.checksum.substring(0, 8)}...
+                      </Text>
+                    </View>
                   </View>
 
                   {/* Notas */}

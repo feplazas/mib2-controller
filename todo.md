@@ -482,3 +482,17 @@
 - [x] Agregar botón de restauración con confirmación (doble confirmación)
 - [x] Agregar función de exportar/importar backup (exportBackup/importBackup)
 - [ ] Guardar checkpoint con sistema de backup completo
+
+
+## Checksum y Diagnóstico Avanzado (11 Ene 2026 - 17:30)
+
+- [x] Agregar cálculo de checksum MD5 en backup-service.ts (CryptoJS)
+- [x] Validar checksum al restaurar backup (validación automática)
+- [x] Mostrar checksum en pantalla de backups (primeros 8 caracteres)
+- [x] Crear pantalla advanced-diag.tsx con dump hexadecimal completo
+- [x] Implementar vista hexadecimal de 256 bytes (16 bytes por línea)
+- [x] Agregar editor hexadecimal byte-por-byte (toca cualquier byte)
+- [x] Implementar función de escritura de byte individual (writeEEPROM)
+- [x] Agregar validación de valores hexadecimales (00-FF con regex)
+- [x] Mostrar offsets importantes (VID/PID) destacados (bg-primary/20)
+- [ ] Guardar checkpoint con funcionalidad completa

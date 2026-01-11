@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { usbService } from './usb-service';
 import type { UsbDevice } from './usb-service';
+import CryptoJS from 'crypto-js';
 
 const BACKUP_STORAGE_KEY = '@mib2_eeprom_backups';
 
@@ -14,6 +15,7 @@ export interface EEPROMBackup {
   serialNumber: string;
   data: string; // Hex string of complete EEPROM dump (256 bytes)
   size: number;
+  checksum: string; // MD5 hash of data for integrity verification
   notes?: string;
 }
 
@@ -31,6 +33,9 @@ class BackupService {
       // Volcar EEPROM completa (256 bytes)
       const dump = await usbService.dumpEEPROM();
       
+      // Calcular checksum MD5 de los datos
+      const checksum = CryptoJS.MD5(dump.data).toString();
+      
       // Crear objeto de backup
       const backup: EEPROMBackup = {
         id: `backup_${Date.now()}_${device.vendorId}_${device.productId}`,
@@ -42,6 +47,7 @@ class BackupService {
         serialNumber: device.serialNumber || 'N/A',
         data: dump.data,
         size: dump.size,
+        checksum,
         notes: notes || `Backup automático antes de spoofing`,
       };
       
@@ -158,6 +164,13 @@ class BackupService {
         throw new Error('Formato de datos inválido (no es hexadecimal)');
       }
       
+      // Validar integridad con checksum MD5
+      const calculatedChecksum = CryptoJS.MD5(backup.data).toString();
+      if (backup.checksum && calculatedChecksum !== backup.checksum) {
+        throw new Error(`Checksum inválido: datos corruptos detectados\nEsperado: ${backup.checksum}\nCalculado: ${calculatedChecksum}`);
+      }
+      console.log(`[BackupService] Checksum validated: ${calculatedChecksum}`);
+      
       // Restaurar byte por byte en offsets críticos (0x88-0x8B para VID/PID)
       let bytesWritten = 0;
       
@@ -180,6 +193,7 @@ class BackupService {
       bytesWritten += 2;
       
       console.log(`[BackupService] Backup restored successfully: ${bytesWritten} bytes written`);
+      console.log(`[BackupService] Checksum verified: ${backup.checksum}`);
       return { success: true, bytesWritten };
     } catch (error) {
       console.error('[BackupService] Error restoring backup:', error);

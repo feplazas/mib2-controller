@@ -10,6 +10,8 @@ export default function ToolsScreen() {
     { id: 'macros', title: 'Macros', description: 'Secuencias de comandos automatizadas', icon: '▶️' },
     { id: 'spoofing', title: 'USB Spoofing', description: 'Modificar adaptadores ASIX', icon: '⚡' },
     { id: 'recovery', title: 'Recovery', description: 'Recuperar adaptadores brickeados', icon: '🔄' },
+    { id: 'backups', title: 'Backups EEPROM', description: 'Gestionar copias de seguridad', icon: '💾' },
+    { id: 'advanced-diag', title: 'Diagnóstico Avanzado', description: 'Editor hexadecimal de EEPROM', icon: '🔬' },
   ];
 
   return (
