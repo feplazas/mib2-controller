@@ -192,6 +192,33 @@ class ProfilesService {
   }
 
   /**
+   * Verificar si existe un perfil con el mismo VID/PID
+   */
+  async checkDuplicateProfile(vendorId: number, productId: number, excludeId?: string): Promise<{
+    isDuplicate: boolean;
+    existingProfile?: VIDPIDProfile;
+    isPredefined: boolean;
+  }> {
+    const allProfiles = await this.getAllProfiles();
+    
+    const existing = allProfiles.find(p => 
+      p.vendorId === vendorId && 
+      p.productId === productId &&
+      p.id !== excludeId
+    );
+    
+    if (existing) {
+      return {
+        isDuplicate: true,
+        existingProfile: existing,
+        isPredefined: existing.category !== 'custom',
+      };
+    }
+    
+    return { isDuplicate: false, isPredefined: false };
+  }
+
+  /**
    * Guardar perfil personalizado
    */
   async saveCustomProfile(profile: Omit<VIDPIDProfile, 'id' | 'category'>): Promise<VIDPIDProfile> {

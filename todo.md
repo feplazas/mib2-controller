@@ -538,4 +538,15 @@
 - [x] Integrar perfiles custom en vidpid-profiles.tsx
 - [x] Mostrar perfiles custom con badge "Custom" (filtro purple)
 - [x] Agregar botón "Crear Perfil Personalizado" en biblioteca
-- [ ] Guardar checkpoint con modo experto completo
+- [x] Guardar checkpoint con modo experto completo (27e7f795)
+
+
+## Asistente Detección y Validación Duplicados (11 Ene 2026 - 18:40)
+
+- [x] Agregar botón "Detectar desde USB" en custom-profile-editor.tsx
+- [x] Auto-completar VID/PID/chipset del dispositivo conectado
+- [x] Mostrar mensaje si no hay dispositivo conectado
+- [x] Implementar checkDuplicateProfile() en profiles-service.ts
+- [x] Validar duplicados al guardar perfil custom
+- [x] Mostrar advertencia con opción de editar existente
+- [ ] Guardar checkpoint con mejoras completas

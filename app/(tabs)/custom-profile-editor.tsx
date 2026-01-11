@@ -3,12 +3,14 @@ import { useState } from 'react';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { ScreenContainer } from '@/components/screen-container';
 import { profilesService, type VIDPIDProfile } from '@/lib/profiles-service';
+import { useUsbStatus } from '@/lib/usb-status-context';
 import * as Haptics from 'expo-haptics';
 
 export default function CustomProfileEditorScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const isEditing = !!params.profileId;
+  const { status, device } = useUsbStatus();
 
   const [name, setName] = useState('');
   const [manufacturer, setManufacturer] = useState('');
@@ -19,6 +21,50 @@ export default function CustomProfileEditorScreen() {
   const [compatible, setCompatible] = useState(false);
   const [notes, setNotes] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+
+  const detectFromUSB = async () => {
+    if (status !== 'connected' || !device) {
+      Alert.alert(
+        '⚠️ Sin Dispositivo',
+        'Conecta un dispositivo USB para detectar automáticamente sus valores VID/PID.',
+        [{ text: 'OK' }]
+      );
+      return;
+    }
+
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
+    // Auto-completar campos desde el dispositivo conectado
+    setVendorId(device.vendorId.toString(16).padStart(4, '0').toUpperCase());
+    setProductId(device.productId.toString(16).padStart(4, '0').toUpperCase());
+    
+    if (device.chipset) {
+      setChipset(device.chipset);
+    }
+    
+    if (device.manufacturer) {
+      setManufacturer(device.manufacturer);
+    }
+    
+    if (device.product) {
+      setModel(device.product);
+      if (!name) {
+        setName(device.product);
+      }
+    }
+
+    // Verificar si es compatible con MIB2
+    const isASIX = device.chipset?.toLowerCase().includes('asix') || device.vendorId === 0x0B95;
+    if (isASIX) {
+      setNotes('Chipset ASIX detectado - compatible con spoofing de EEPROM');
+    }
+
+    Alert.alert(
+      '✅ Datos Detectados',
+      `VID: ${device.vendorId.toString(16).toUpperCase()}\nPID: ${device.productId.toString(16).toUpperCase()}\nChipset: ${device.chipset || 'Desconocido'}`,
+      [{ text: 'OK' }]
+    );
+  };
 
   const validateHex = (value: string): boolean => {
     // Validar formato hexadecimal de 4 dígitos (0000-FFFF)
@@ -43,6 +89,44 @@ export default function CustomProfileEditorScreen() {
       return;
     }
 
+    // Verificar duplicados
+    const vid = parseInt(vendorId, 16);
+    const pid = parseInt(productId, 16);
+    const duplicateCheck = await profilesService.checkDuplicateProfile(
+      vid, 
+      pid, 
+      isEditing ? params.profileId as string : undefined
+    );
+
+    if (duplicateCheck.isDuplicate && duplicateCheck.existingProfile) {
+      const existing = duplicateCheck.existingProfile;
+      const message = duplicateCheck.isPredefined
+        ? `Ya existe un perfil predefinido con este VID/PID:\n\n"${existing.name}"\n(${existing.manufacturer})\n\nNo puedes crear un perfil duplicado.`
+        : `Ya existe un perfil personalizado con este VID/PID:\n\n"${existing.name}"\n\n¿Deseas editar el perfil existente en lugar de crear uno nuevo?`;
+
+      if (duplicateCheck.isPredefined) {
+        Alert.alert('⚠️ Perfil Duplicado', message, [{ text: 'OK' }]);
+        return;
+      } else {
+        return new Promise<void>((resolve) => {
+          Alert.alert(
+            '⚠️ Perfil Duplicado',
+            message,
+            [
+              { text: 'Cancelar', style: 'cancel', onPress: () => resolve() },
+              {
+                text: 'Editar Existente',
+                onPress: () => {
+                  router.push({ pathname: '/(tabs)/custom-profile-editor', params: { profileId: existing.id } });
+                  resolve();
+                },
+              },
+            ]
+          );
+        });
+      }
+    }
+
     setIsSaving(true);
 
     try {
@@ -50,8 +134,8 @@ export default function CustomProfileEditorScreen() {
         name: name.trim(),
         manufacturer: manufacturer.trim() || 'Personalizado',
         model: model.trim() || 'Custom',
-        vendorId: parseInt(vendorId, 16),
-        productId: parseInt(productId, 16),
+        vendorId: vid,
+        productId: pid,
         chipset: chipset.trim() || 'Desconocido',
         compatible,
         notes: notes.trim(),
@@ -95,6 +179,31 @@ export default function CustomProfileEditorScreen() {
               }
             </Text>
           </View>
+
+          {/* Botón Detectar desde USB */}
+          <TouchableOpacity
+            onPress={detectFromUSB}
+            className={`rounded-xl p-4 items-center flex-row justify-center gap-2 ${
+              status === 'connected' ? 'bg-green-500' : 'bg-border'
+            }`}
+          >
+            <Text className="text-2xl">🔍</Text>
+            <View>
+              <Text className={`text-sm font-bold ${
+                status === 'connected' ? 'text-white' : 'text-muted'
+              }`}>
+                Detectar desde USB
+              </Text>
+              <Text className={`text-xs ${
+                status === 'connected' ? 'text-white/80' : 'text-muted'
+              }`}>
+                {status === 'connected' 
+                  ? `Dispositivo conectado: ${device?.product || 'USB'}` 
+                  : 'Conecta un dispositivo USB'
+                }
+              </Text>
+            </View>
+          </TouchableOpacity>
 
           {/* Formulario */}
           <View className="bg-surface rounded-2xl p-6 border border-border gap-4">
