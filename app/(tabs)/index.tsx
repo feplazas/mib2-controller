@@ -3,6 +3,8 @@ import { useState } from "react";
 import * as Haptics from "expo-haptics";
 
 import { ScreenContainer } from "@/components/screen-container";
+import { UsbStatusIndicator } from "@/components/usb-status-indicator";
+import { useUsbStatus } from "@/lib/usb-status-context";
 import { useTelnet } from "@/lib/telnet-provider";
 import { parseFirmwareVersion } from "@/lib/telnet-client";
 import { quickScan, scanNetwork, parseSubnet, type ScanResult, type ScanProgress } from "@/lib/network-scanner";
@@ -10,6 +12,7 @@ import { detectToolbox, type ToolboxInfo } from "@/lib/toolbox-detector";
 
 export default function HomeScreen() {
   const { connectionStatus, isConnecting, config, updateConfig, connect, disconnect, executeCommand } = useTelnet();
+  const { status: usbStatus, device: usbDevice } = useUsbStatus();
   const [host, setHost] = useState(config.host);
   const [port, setPort] = useState(config.port.toString());
   const [scanning, setScanning] = useState(false);
@@ -154,6 +157,12 @@ export default function HomeScreen() {
               Control remoto para unidades MIB2 STD2 Technisat Preh
             </Text>
           </View>
+
+          {/* USB Status Indicator - REAL TIME */}
+          <UsbStatusIndicator 
+            status={usbStatus} 
+            deviceName={usbDevice?.productName || usbDevice?.deviceName}
+          />
 
           {/* Connection Status Card */}
           <View className="bg-surface rounded-2xl p-6 border border-border">

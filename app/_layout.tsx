@@ -11,6 +11,7 @@ import { ThemeProvider } from "@/lib/theme-provider";
 import { TelnetProvider } from "@/lib/telnet-provider";
 import { ExpertModeProvider } from "@/lib/expert-mode-provider";
 import { ProfilesProvider } from "@/lib/profiles-provider";
+import { UsbStatusProvider } from "@/lib/usb-status-context";
 import {
   SafeAreaFrameContext,
   SafeAreaInsetsContext,
@@ -108,13 +109,15 @@ export default function RootLayout() {
         <ProfilesProvider>
           <ExpertModeProvider>
             <TelnetProvider>
-            <SafeAreaProvider initialMetrics={providerInitialMetrics}>
+              <UsbStatusProvider>
+                <SafeAreaProvider initialMetrics={providerInitialMetrics}>
               <SafeAreaFrameContext.Provider value={frame}>
                 <SafeAreaInsetsContext.Provider value={insets}>
                   {content}
                 </SafeAreaInsetsContext.Provider>
               </SafeAreaFrameContext.Provider>
-            </SafeAreaProvider>
+                </SafeAreaProvider>
+              </UsbStatusProvider>
             </TelnetProvider>
           </ExpertModeProvider>
         </ProfilesProvider>
@@ -127,7 +130,9 @@ export default function RootLayout() {
       <ProfilesProvider>
         <ExpertModeProvider>
           <TelnetProvider>
-            <SafeAreaProvider initialMetrics={providerInitialMetrics}>{content}</SafeAreaProvider>
+            <UsbStatusProvider>
+              <SafeAreaProvider initialMetrics={providerInitialMetrics}>{content}</SafeAreaProvider>
+            </UsbStatusProvider>
           </TelnetProvider>
         </ExpertModeProvider>
       </ProfilesProvider>

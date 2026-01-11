@@ -347,3 +347,16 @@
 - [x] Sistema de logs persistente sin necesidad de ADB
 - [x] Pestaña "Diag" en tab bar para acceso rápido
 - [x] Logs con emojis y colores para fácil lectura
+
+
+## Indicador Visual de Estado USB (11 Ene 2026 - 09:30)
+
+- [x] Componente de indicador de estado USB con 3 estados (desconectado/detectado/conectado)
+- [x] Integración en pantalla principal (Home)
+- [x] Actualización automática en tiempo real
+- [x] Colores visuales: rojo (desconectado), amarillo (detectado), verde (conectado)
+- [x] Mostrar nombre del dispositivo cuando esté conectado
+- [x] Listener de eventos USB para detección automática
+- [x] Contexto global UsbStatusProvider
+- [x] Escaneo automático cada 5 segundos
+- [x] Integración con logs de diagnóstico
