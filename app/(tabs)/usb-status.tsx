@@ -77,8 +77,8 @@ export default function UsbStatusScreen() {
                 `💾 Archivo: ${filename}\n` +
                 `📅 Fecha: ${new Date(backup.timestamp).toLocaleString('es-ES')}\n` +
                 `📊 Tamaño: ${backup.size} bytes\n` +
-                `📂 Ruta: Documents/mib2_backups/\n\n` +
-                `El backup se guardó en la carpeta de documentos de la app. Puedes acceder a él desde el gestor de archivos.`
+                `📂 Ruta: Android/data/[app]/files/Download/mib2_backups/\n\n` +
+                `Accede desde: Archivos → Android → data → [nombre_app] → files → Download → mib2_backups`
               );
             } catch (error: any) {
               await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);

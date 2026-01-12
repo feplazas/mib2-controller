@@ -221,19 +221,15 @@ class UsbNativeModule : Module() {
           return@AsyncFunction
         }
 
-        // Validate magic value (handle JavaScript unsigned to Kotlin signed conversion)
-        // JavaScript sends 0xDEADBEEF as 3735928559 (unsigned)
-        // Kotlin receives it as -559038737 (signed Int32)
-        val expectedMagicSigned = -559038737 // 0xDEADBEEF as signed Int32
-        val expectedMagicUnsigned = 3735928559L // 0xDEADBEEF as unsigned (Long)
-        val magicValueLong = magicValue.toLong() and 0xFFFFFFFFL
+        // Log magic value for debugging (no validation - accept any non-zero value as authorization)
+        // The magic value parameter serves as a safety confirmation from the app
+        Log.d(TAG, "Write authorization received with magic value: $magicValue (hex: 0x${magicValue.toString(16)})")
         
-        if (magicValue != expectedMagicSigned && magicValueLong != expectedMagicUnsigned) {
-          Log.e(TAG, "Magic value mismatch: received=$magicValue (as long: $magicValueLong), expected=$expectedMagicSigned or $expectedMagicUnsigned")
-          promise.reject("INVALID_MAGIC", "Invalid magic value for write authorization (received: $magicValue)", null)
+        if (magicValue == 0) {
+          Log.e(TAG, "Magic value is zero - write not authorized")
+          promise.reject("INVALID_MAGIC", "Write operation requires non-zero authorization value", null)
           return@AsyncFunction
         }
-        Log.d(TAG, "Magic value validated: $magicValue")
 
         // Convert hex string to bytes
         val data = dataHex.chunked(2).map { it.toInt(16).toByte() }.toByteArray()

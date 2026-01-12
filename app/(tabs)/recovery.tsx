@@ -1,6 +1,7 @@
-import { View, Text, TouchableOpacity, ScrollView, Alert, RefreshControl } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Alert, RefreshControl, Linking } from 'react-native';
 import { useState, useEffect } from 'react';
 import * as Haptics from 'expo-haptics';
+import * as FileSystem from 'expo-file-system/legacy';
 import { ScreenContainer } from '@/components/screen-container';
 import { useUsbStatus } from '@/lib/usb-status-context';
 import { backupService, type EEPROMBackup } from '@/lib/backup-service';
@@ -191,9 +192,35 @@ export default function RecoveryScreen() {
 
           {/* Backups Disponibles */}
           <View className="bg-surface rounded-2xl p-6 border border-border">
-            <Text className="text-lg font-semibold text-foreground mb-4">
-              💾 Backups Disponibles ({backups.length})
-            </Text>
+            <View className="flex-row justify-between items-center mb-4">
+              <Text className="text-lg font-semibold text-foreground">
+                💾 Backups Disponibles ({backups.length})
+              </Text>
+              <TouchableOpacity
+                onPress={async () => {
+                  await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  const backupPath = `${FileSystem.documentDirectory}Download/mib2_backups/`;
+                  Alert.alert(
+                    '📂 Ubicación de Backups',
+                    `Los backups se guardan en:\n\n` +
+                    `Android/data/[app]/files/Download/mib2_backups/\n\n` +
+                    `Para acceder:\n` +
+                    `1. Abre "Archivos" o "Mis Archivos"\n` +
+                    `2. Navega a: Android → data → [nombre_app]\n` +
+                    `3. Entra en: files → Download → mib2_backups\n\n` +
+                    `Nota: En Android 11+ necesitas habilitar "Mostrar archivos ocultos" para ver la carpeta Android/data.`,
+                    [
+                      { text: 'Entendido', style: 'default' },
+                    ]
+                  );
+                }}
+                className="bg-primary/10 px-3 py-2 rounded-lg active:opacity-80"
+              >
+                <Text className="text-xs text-primary font-semibold">
+                  📂 Ver Ubicación
+                </Text>
+              </TouchableOpacity>
+            </View>
 
             {backups.length === 0 ? (
               <View className="items-center py-8">

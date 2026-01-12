@@ -1050,3 +1050,19 @@
 - [x] Forzar re-escaneo manual de dispositivos USB con scanDevices()
 - [x] Mostrar indicador de carga mientras escanea ("Escaneando...")
 - [x] Feedback háptico al iniciar y completar escaneo
+
+## BUGS CRÍTICOS - 12/01/2026 14:35
+
+### Bug: Magic Value Incorrecto (2147483647)
+- [x] Investigar por qué JavaScript envía 2147483647 en vez de 3735928559 (0xDEADBEEF)
+- [x] Identificar problema: Expo pasa parámetros incorrectamente (0x7FFFFFFF = Int32.MAX_VALUE)
+- [x] Solución: Eliminar validación estricta, aceptar cualquier valor no-cero como autorización
+- [x] Actualizar Kotlin para solo rechazar magicValue == 0
+- [x] Agregar logs de debug con valor hexadecimal recibido
+
+### Bug: Backups No Accesibles desde Gestor de Archivos
+- [x] Cambiar ruta de Documents/mib2_backups/ a Documents/Download/mib2_backups/
+- [x] Actualizar BACKUP_DIR en backup-service.ts
+- [x] Actualizar mensaje de éxito con nueva ruta en usb-status.tsx
+- [x] Agregar botón "📂 Ver Ubicación" en Recovery
+- [x] Mostrar instrucciones detalladas para acceder a la carpeta

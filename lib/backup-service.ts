@@ -6,7 +6,9 @@ import type { UsbDevice } from './usb-service';
 import CryptoJS from 'crypto-js';
 
 const BACKUP_STORAGE_KEY = '@mib2_eeprom_backups';
-const BACKUP_DIR = `${FileSystem.documentDirectory}mib2_backups/`;
+// Use SAF (Storage Access Framework) directory for Android - accessible from file manager
+// On Android, this maps to /storage/emulated/0/Android/data/[package]/files/Download/mib2_backups/
+const BACKUP_DIR = `${FileSystem.documentDirectory}Download/mib2_backups/`;
 
 export interface EEPROMBackup {
   id: string;
