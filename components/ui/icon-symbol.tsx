@@ -32,6 +32,7 @@ const MAPPING = {
   "cable.connector": "usb",
   "stethoscope": "bug-report",
   "antenna.radiowaves.left.and.right": "wifi-tethering",
+  "bandage.fill": "healing",
 } as IconMapping;
 
 /**

@@ -5,6 +5,9 @@ import * as Haptics from "expo-haptics";
 import { ScreenContainer } from "@/components/screen-container";
 import { useTelnet } from "@/lib/telnet-provider";
 import { useExpertMode } from "@/lib/expert-mode-provider";
+import { useUsbStatus } from "@/lib/usb-status-context";
+import { usbService } from "@/lib/usb-service";
+import * as Clipboard from 'expo-clipboard';
 
 export default function SettingsScreen() {
   const { config, updateConfig, clearMessages } = useTelnet();
@@ -21,6 +24,8 @@ export default function SettingsScreen() {
   const [pinInput, setPinInput] = useState('');
   const [pinConfirm, setPinConfirm] = useState('');
   const [oldPinInput, setOldPinInput] = useState('');
+  const [showDebugInfo, setShowDebugInfo] = useState(false);
+  const { status, device, devices } = useUsbStatus();
 
   const handleSaveSettings = async () => {
     try {
@@ -553,6 +558,149 @@ export default function SettingsScreen() {
                 Limpiar Historial de Comandos
               </Text>
             </TouchableOpacity>
+          </View>
+
+          {/* USB Debug Mode */}
+          <View className="bg-surface rounded-2xl p-6 border border-border">
+            <TouchableOpacity
+              onPress={() => {
+                setShowDebugInfo(!showDebugInfo);
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              }}
+              className="flex-row justify-between items-center mb-4"
+            >
+              <Text className="text-lg font-semibold text-foreground">
+                🔧 Modo Debug USB
+              </Text>
+              <Text className="text-2xl text-muted">
+                {showDebugInfo ? '▼' : '▶'}
+              </Text>
+            </TouchableOpacity>
+
+            {showDebugInfo && (
+              <View className="gap-4">
+                {/* Estado de Conexión */}
+                <View className="bg-background rounded-xl p-4">
+                  <Text className="text-sm font-semibold text-foreground mb-3">
+                    🔌 Estado de Conexión
+                  </Text>
+                  <View className="gap-2">
+                    <View className="flex-row justify-between">
+                      <Text className="text-xs text-muted">Estado:</Text>
+                      <Text className={`text-xs font-medium ${
+                        status === 'connected' ? 'text-success' :
+                        status === 'detected' ? 'text-warning' :
+                        'text-muted'
+                      }`}>
+                        {status === 'connected' ? 'CONECTADO' :
+                         status === 'detected' ? 'DETECTADO' :
+                         'DESCONECTADO'}
+                      </Text>
+                    </View>
+                    <View className="flex-row justify-between">
+                      <Text className="text-xs text-muted">Dispositivos detectados:</Text>
+                      <Text className="text-xs text-foreground font-medium">{devices.length}</Text>
+                    </View>
+                  </View>
+                </View>
+
+                {/* Información del Dispositivo */}
+                {device && (
+                  <View className="bg-background rounded-xl p-4">
+                    <Text className="text-sm font-semibold text-foreground mb-3">
+                      📱 Dispositivo Actual
+                    </Text>
+                    <View className="gap-2">
+                      <View className="flex-row justify-between">
+                        <Text className="text-xs text-muted">Device ID:</Text>
+                        <Text className="text-xs text-foreground font-mono">{device.deviceId}</Text>
+                      </View>
+                      <View className="flex-row justify-between">
+                        <Text className="text-xs text-muted">VID:PID:</Text>
+                        <Text className="text-xs text-foreground font-mono">
+                          0x{device.vendorId.toString(16).toUpperCase().padStart(4, '0')}:0x{device.productId.toString(16).toUpperCase().padStart(4, '0')}
+                        </Text>
+                      </View>
+                      <View className="flex-row justify-between">
+                        <Text className="text-xs text-muted">Chipset:</Text>
+                        <Text className="text-xs text-foreground font-medium">{device.chipset}</Text>
+                      </View>
+                      <View className="flex-row justify-between">
+                        <Text className="text-xs text-muted">Fabricante:</Text>
+                        <Text className="text-xs text-foreground">{device.manufacturer}</Text>
+                      </View>
+                      <View className="flex-row justify-between">
+                        <Text className="text-xs text-muted">Producto:</Text>
+                        <Text className="text-xs text-foreground">{device.product}</Text>
+                      </View>
+                      <View className="flex-row justify-between">
+                        <Text className="text-xs text-muted">Serial:</Text>
+                        <Text className="text-xs text-foreground font-mono">{device.serialNumber}</Text>
+                      </View>
+                    </View>
+                  </View>
+                )}
+
+                {/* Información Técnica */}
+                <View className="bg-background rounded-xl p-4">
+                  <Text className="text-sm font-semibold text-foreground mb-3">
+                    ⚙️ Información Técnica
+                  </Text>
+                  <View className="gap-2">
+                    <View className="flex-row justify-between">
+                      <Text className="text-xs text-muted">Módulo Nativo:</Text>
+                      <Text className="text-xs text-success font-medium">ACTIVO</Text>
+                    </View>
+                    <View className="flex-row justify-between">
+                      <Text className="text-xs text-muted">Magic Value:</Text>
+                      <Text className="text-xs text-foreground font-mono">0xDEADBEEF</Text>
+                    </View>
+                    <View className="flex-row justify-between">
+                      <Text className="text-xs text-muted">EEPROM Size:</Text>
+                      <Text className="text-xs text-foreground font-mono">256 bytes</Text>
+                    </View>
+                    <View className="flex-row justify-between">
+                      <Text className="text-xs text-muted">VID Offset:</Text>
+                      <Text className="text-xs text-foreground font-mono">0x88</Text>
+                    </View>
+                    <View className="flex-row justify-between">
+                      <Text className="text-xs text-muted">PID Offset:</Text>
+                      <Text className="text-xs text-foreground font-mono">0x8A</Text>
+                    </View>
+                  </View>
+                </View>
+
+                {/* Botón Copiar Info */}
+                <TouchableOpacity
+                  onPress={async () => {
+                    const debugInfo = `=== MIB2 Controller Debug Info ===\n\n` +
+                      `Estado: ${status}\n` +
+                      `Dispositivos: ${devices.length}\n\n` +
+                      (device ? (
+                        `Device ID: ${device.deviceId}\n` +
+                        `VID:PID: 0x${device.vendorId.toString(16).toUpperCase()}:0x${device.productId.toString(16).toUpperCase()}\n` +
+                        `Chipset: ${device.chipset}\n` +
+                        `Fabricante: ${device.manufacturer}\n` +
+                        `Producto: ${device.product}\n` +
+                        `Serial: ${device.serialNumber}\n`
+                      ) : 'No hay dispositivo conectado\n') +
+                      `\nMagic Value: 0xDEADBEEF\n` +
+                      `EEPROM Size: 256 bytes\n` +
+                      `VID Offset: 0x88\n` +
+                      `PID Offset: 0x8A`;
+                    
+                    await Clipboard.setStringAsync(debugInfo);
+                    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                    Alert.alert('✅ Copiado', 'Información de debug copiada al portapapeles');
+                  }}
+                  className="bg-primary rounded-xl p-4 active:opacity-80"
+                >
+                  <Text className="text-background font-semibold text-center">
+                    📋 Copiar Info de Debug
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
           </View>
 
           {/* App Info */}

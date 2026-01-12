@@ -70,13 +70,15 @@ export default function UsbStatusScreen() {
               const backup = await backupService.createBackup(device);
               await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
               
+              const filename = `backup_${device.vendorId.toString(16)}_${device.productId.toString(16)}_${backup.timestamp}.bin`;
               Alert.alert(
                 '✅ Backup Creado',
                 `Backup guardado exitosamente:\n\n` +
-                `💾 Archivo: backup_${device.vendorId}_${device.productId}_${Date.now()}.bin\n` +
+                `💾 Archivo: ${filename}\n` +
                 `📅 Fecha: ${new Date(backup.timestamp).toLocaleString('es-ES')}\n` +
-                `📊 Tamaño: ${backup.size} bytes\n\n` +
-                `El backup se guardó en la memoria del dispositivo.`
+                `📊 Tamaño: ${backup.size} bytes\n` +
+                `📂 Ruta: Documents/mib2_backups/\n\n` +
+                `El backup se guardó en la carpeta de documentos de la app. Puedes acceder a él desde el gestor de archivos.`
               );
             } catch (error: any) {
               await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
@@ -362,9 +364,35 @@ export default function UsbStatusScreen() {
             </View>
           )}
 
-          {/* Botones de Acción USB */}
+              {/* Botón Refrescar (siempre visible) */}
+          <View className="mt-4">
+            <TouchableOpacity
+              onPress={async () => {
+                await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                await scanDevices();
+                await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+              }}
+              disabled={isScanning}
+              className={`rounded-xl p-3 items-center border ${
+                isScanning 
+                  ? 'bg-muted/20 border-muted opacity-50' 
+                  : 'bg-background border-primary active:opacity-80'
+              }`}
+            >
+              <View className="flex-row items-center gap-2">
+                <Text className="text-lg">🔄</Text>
+                <Text className={`text-sm font-semibold ${
+                  isScanning ? 'text-muted' : 'text-primary'
+                }`}>
+                  {isScanning ? 'Escaneando...' : 'Refrescar Dispositivos'}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+
+          {/* Botones de Acción */}
           {status === 'detected' && devices.length > 0 && (
-            <View className="mt-4">
+            <View className="mt-3">
               <TouchableOpacity
                 onPress={handleConnect}
                 disabled={isConnecting}

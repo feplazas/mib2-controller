@@ -1008,3 +1008,45 @@
 - [x] Implementar lectura REAL de EEPROM (256 bytes)
 - [x] Mostrar resultado con hex dump
 - [x] Agregar validación de checksum
+
+## BUGS CRÍTICOS REPORTADOS POR USUARIO - 12/01/2026
+
+### Bug 1: Invalid Magic Value for Write Authorization
+- [x] Revisar módulo nativo USB (modules/usb-native/android/.../UsbNativeModule.kt)
+- [x] Identificar problema: JS envía 0xDEADBEEF como unsigned (3735928559), Kotlin compara como signed (-559038737)
+- [x] Corregir validación de magic value para aceptar ambos valores
+- [x] Agregar logs de debug para magic value
+- [x] Probar escritura REAL en EEPROM con magic value correcto
+
+### Bug 2: Backups No Accesibles
+- [x] Cambiar ruta de backups de AsyncStorage a FileSystem.documentDirectory
+- [x] Crear directorio mib2_backups/ en Documents
+- [x] Guardar archivos .bin en formato base64
+- [x] Agregar filepath a interface EEPROMBackup
+- [x] Mostrar ruta completa del backup en el alert de éxito (Documents/mib2_backups/)
+- [ ] Agregar opción "Ver Backups" que abra gestor de archivos
+- [ ] Permitir compartir backups por WhatsApp/Email
+
+### Feature 1: Modo Debug USB en Settings
+- [x] Agregar sección "Modo Debug USB" en settings.tsx (colapsable)
+- [x] Mostrar información técnica del módulo nativo en tiempo real
+- [x] Estado de conexión actual (status, deviceId, VID/PID, chipset)
+- [x] Información del dispositivo (fabricante, producto, serial)
+- [x] Constantes técnicas (Magic Value, EEPROM Size, offsets)
+- [x] Botón "Copiar Info de Debug" para compartir con soporte técnico
+
+### Feature 2: Recuperación Automática de Adaptadores Brickeados
+- [x] Crear pantalla recovery.tsx en (tabs) con pestaña "Recovery"
+- [x] Detectar adaptador brickeado (VID/PID 0x0000:0x0000 o no ASIX/D-Link)
+- [x] Buscar backups disponibles automáticamente desde AsyncStorage
+- [x] Mostrar lista de backups con metadata (fecha, chipset, VID/PID original)
+- [x] Restaurar EEPROM desde backup con confirmación
+- [x] Modo de recuperación forzada sin validaciones (botón "Forzar")
+- [x] Instrucciones paso a paso para usuario
+- [x] Agregar icono "bandage.fill" (healing) en icon-symbol.tsx
+
+### Feature 3: Botón Refrescar en USB Status
+- [x] Agregar botón "Refrescar Dispositivos" en usb-status.tsx (siempre visible)
+- [x] Forzar re-escaneo manual de dispositivos USB con scanDevices()
+- [x] Mostrar indicador de carga mientras escanea ("Escaneando...")
+- [x] Feedback háptico al iniciar y completar escaneo

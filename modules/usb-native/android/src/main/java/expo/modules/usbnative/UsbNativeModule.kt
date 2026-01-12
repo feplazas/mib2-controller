@@ -221,11 +221,16 @@ class UsbNativeModule : Module() {
           return@AsyncFunction
         }
 
-        // Validate magic value
-        if (magicValue != MAGIC_VALUE) {
-          promise.reject("INVALID_MAGIC", "Invalid magic value for write authorization", null)
+        // Validate magic value (handle JavaScript unsigned to Kotlin signed conversion)
+        // JavaScript sends 0xDEADBEEF as 3735928559 (unsigned)
+        // Kotlin receives it as -559038737 (signed Int32)
+        val expectedMagic = 0xDEADBEEF.toInt() // -559038737
+        if (magicValue != expectedMagic && magicValue != 0xDEADBEEF) {
+          Log.e(TAG, "Magic value mismatch: received=$magicValue, expected=$expectedMagic or 0xDEADBEEF")
+          promise.reject("INVALID_MAGIC", "Invalid magic value for write authorization (received: $magicValue)", null)
           return@AsyncFunction
         }
+        Log.d(TAG, "Magic value validated: $magicValue")
 
         // Convert hex string to bytes
         val data = dataHex.chunked(2).map { it.toInt(16).toByte() }.toByteArray()

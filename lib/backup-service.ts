@@ -1,9 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as FileSystem from 'expo-file-system/legacy';
+import * as Sharing from 'expo-sharing';
 import { usbService } from './usb-service';
 import type { UsbDevice } from './usb-service';
 import CryptoJS from 'crypto-js';
 
 const BACKUP_STORAGE_KEY = '@mib2_eeprom_backups';
+const BACKUP_DIR = `${FileSystem.documentDirectory}mib2_backups/`;
 
 export interface EEPROMBackup {
   id: string;
@@ -17,6 +20,7 @@ export interface EEPROMBackup {
   size: number;
   checksum: string; // MD5 hash of data for integrity verification
   notes?: string;
+  filepath?: string; // Ruta del archivo de backup en FileSystem
 }
 
 /**
@@ -63,20 +67,34 @@ class BackupService {
   }
 
   /**
-   * Guardar backup en AsyncStorage
+   * Guardar backup en FileSystem accesible y AsyncStorage
    */
   private async saveBackup(backup: EEPROMBackup): Promise<void> {
     try {
-      // Cargar backups existentes
+      // Crear directorio de backups si no existe
+      const dirInfo = await FileSystem.getInfoAsync(BACKUP_DIR);
+      if (!dirInfo.exists) {
+        await FileSystem.makeDirectoryAsync(BACKUP_DIR, { intermediates: true });
+        console.log(`[BackupService] Created backup directory: ${BACKUP_DIR}`);
+      }
+      
+      // Guardar archivo binario en FileSystem
+      const filename = `backup_${backup.vendorId.toString(16)}_${backup.productId.toString(16)}_${backup.timestamp}.bin`;
+      const filepath = `${BACKUP_DIR}${filename}`;
+      
+      // Convertir hex string a base64 para FileSystem
+      const bytes = backup.data.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16));
+      const base64 = btoa(String.fromCharCode(...bytes));
+      await FileSystem.writeAsStringAsync(filepath, base64, { encoding: FileSystem.EncodingType.Base64 });
+      
+      console.log(`[BackupService] Backup file saved: ${filepath}`);
+      
+      // Guardar metadata en AsyncStorage
       const backups = await this.loadBackups();
-      
-      // Agregar nuevo backup
-      backups.push(backup);
-      
-      // Guardar en AsyncStorage
+      backups.push({ ...backup, filepath }); // Agregar ruta del archivo
       await AsyncStorage.setItem(BACKUP_STORAGE_KEY, JSON.stringify(backups));
       
-      console.log(`[BackupService] Backup saved: ${backup.id}`);
+      console.log(`[BackupService] Backup metadata saved: ${backup.id}`);
     } catch (error) {
       console.error('[BackupService] Error saving backup:', error);
       throw error;
