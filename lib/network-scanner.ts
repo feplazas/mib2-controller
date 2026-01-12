@@ -1,8 +1,10 @@
 /**
  * Network Scanner for MIB2 Discovery
- * 
- * Scans the local network to find MIB2 units with Telnet enabled
+ * Escanea red local usando TCP directo (sin backend)
  */
+
+import TcpSocket from 'react-native-tcp-socket';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export interface ScanResult {
   host: string;
@@ -10,6 +12,7 @@ export interface ScanResult {
   responding: boolean;
   responseTime?: number;
   deviceInfo?: string;
+  isMIB2?: boolean;
 }
 
 export interface ScanProgress {
@@ -17,6 +20,77 @@ export interface ScanProgress {
   total: number;
   percentage: number;
   currentHost: string;
+}
+
+/**
+ * Escanear una IP específica en busca de puerto Telnet abierto
+ */
+async function scanIP(ip: string, port: number = 23, timeout: number = 500): Promise<ScanResult> {
+  return new Promise((resolve) => {
+    const startTime = Date.now();
+    let resolved = false;
+
+    const socket = TcpSocket.createConnection(
+      {
+        host: ip,
+        port,
+      },
+      () => {
+        // Conexión exitosa
+        if (!resolved) {
+          resolved = true;
+          const responseTime = Date.now() - startTime;
+          socket.destroy();
+          resolve({
+            host: ip,
+            port,
+            responding: true,
+            responseTime,
+          });
+        }
+      }
+    );
+
+    socket.on('error', () => {
+      if (!resolved) {
+        resolved = true;
+        socket.destroy();
+        resolve({
+          host: ip,
+          port,
+          responding: false,
+          responseTime: Date.now() - startTime,
+        });
+      }
+    });
+
+    socket.on('timeout', () => {
+      if (!resolved) {
+        resolved = true;
+        socket.destroy();
+        resolve({
+          host: ip,
+          port,
+          responding: false,
+          responseTime: timeout,
+        });
+      }
+    });
+
+    // Timeout de seguridad
+    setTimeout(() => {
+      if (!resolved) {
+        resolved = true;
+        socket.destroy();
+        resolve({
+          host: ip,
+          port,
+          responding: false,
+          responseTime: timeout,
+        });
+      }
+    }, timeout + 100);
+  });
 }
 
 /**
@@ -32,66 +106,38 @@ export async function scanNetwork(
   const results: ScanResult[] = [];
   const total = endRange - startRange + 1;
 
-  for (let i = startRange; i <= endRange; i++) {
-    const host = `${baseIP}.${i}`;
-    const current = i - startRange + 1;
+  // Escanear en lotes de 10 para no saturar la red
+  const batchSize = 10;
+  for (let i = startRange; i <= endRange; i += batchSize) {
+    const batchEnd = Math.min(i + batchSize - 1, endRange);
+    const batchPromises: Promise<ScanResult>[] = [];
+
+    for (let j = i; j <= batchEnd; j++) {
+      const host = `${baseIP}.${j}`;
+      batchPromises.push(scanIP(host, port, 500));
+    }
+
+    const batchResults = await Promise.all(batchPromises);
     
+    // Agregar solo IPs que responden
+    for (const result of batchResults) {
+      if (result.responding) {
+        results.push(result);
+      }
+    }
+
     if (onProgress) {
+      const current = Math.min(batchEnd, endRange) - startRange + 1;
       onProgress({
         current,
         total,
         percentage: Math.round((current / total) * 100),
-        currentHost: host,
+        currentHost: `${baseIP}.${batchEnd}`,
       });
-    }
-
-    try {
-      const result = await checkHost(host, port);
-      if (result.responding) {
-        results.push(result);
-      }
-    } catch (error) {
-      // Host not responding, continue
     }
   }
 
   return results;
-}
-
-/**
- * Check if a specific host has Telnet port open
- */
-async function checkHost(host: string, port: number): Promise<ScanResult> {
-  const startTime = Date.now();
-
-  try {
-    // Use backend API to check host
-    const response = await fetch(`${getBackendUrl()}/api/network/check`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ host, port }),
-      signal: AbortSignal.timeout(2000), // 2 second timeout per host
-    });
-
-    const data = await response.json();
-    const responseTime = Date.now() - startTime;
-
-    return {
-      host,
-      port,
-      responding: data.responding || false,
-      responseTime,
-      deviceInfo: data.deviceInfo,
-    };
-  } catch (error) {
-    return {
-      host,
-      port,
-      responding: false,
-    };
-  }
 }
 
 /**
@@ -125,13 +171,9 @@ export async function quickScan(
       });
     }
 
-    try {
-      const result = await checkHost(host, 23);
-      if (result.responding) {
-        results.push(result);
-      }
-    } catch (error) {
-      // Continue to next IP
+    const result = await scanIP(host, 23, 1000);
+    if (result.responding) {
+      results.push(result);
     }
   }
 
@@ -139,10 +181,68 @@ export async function quickScan(
 }
 
 /**
- * Get the backend API URL
+ * Verificar si una IP es una unidad MIB2
+ * Intenta conectar y buscar banner característico
  */
-function getBackendUrl(): string {
-  return __DEV__ ? 'http://localhost:3000' : 'https://your-backend-url.com';
+export async function verifyMIB2(ip: string, timeout: number = 3000): Promise<boolean> {
+  return new Promise((resolve) => {
+    let resolved = false;
+    let buffer = '';
+
+    const socket = TcpSocket.createConnection(
+      {
+        host: ip,
+        port: 23,
+      },
+      () => {
+        // Conexión exitosa, esperar banner
+      }
+    );
+
+    socket.on('data', (data) => {
+      buffer += data.toString();
+      
+      // Buscar indicadores de QNX/MIB2
+      if (
+        buffer.includes('QNX') ||
+        buffer.includes('login:') ||
+        buffer.includes('MIB') ||
+        buffer.includes('rcc') ||
+        buffer.includes('mmx')
+      ) {
+        if (!resolved) {
+          resolved = true;
+          socket.destroy();
+          resolve(true);
+        }
+      }
+    });
+
+    socket.on('error', () => {
+      if (!resolved) {
+        resolved = true;
+        socket.destroy();
+        resolve(false);
+      }
+    });
+
+    socket.on('timeout', () => {
+      if (!resolved) {
+        resolved = true;
+        socket.destroy();
+        resolve(false);
+      }
+    });
+
+    // Timeout de seguridad
+    setTimeout(() => {
+      if (!resolved) {
+        resolved = true;
+        socket.destroy();
+        resolve(false);
+      }
+    }, timeout + 100);
+  });
 }
 
 /**
@@ -167,4 +267,26 @@ export function isValidIP(ip: string): boolean {
 
   const parts = ip.split('.').map(Number);
   return parts.every(part => part >= 0 && part <= 255);
+}
+
+/**
+ * Obtener IP guardada de AsyncStorage
+ */
+export async function getSavedMIB2IP(): Promise<string | null> {
+  try {
+    return await AsyncStorage.getItem('mib2_ip');
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Guardar IP de MIB2 en AsyncStorage
+ */
+export async function saveMIB2IP(ip: string): Promise<void> {
+  try {
+    await AsyncStorage.setItem('mib2_ip', ip);
+  } catch (error) {
+    console.error('Error saving MIB2 IP:', error);
+  }
 }

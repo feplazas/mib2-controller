@@ -800,3 +800,30 @@
 - [x] Agregar botones Conectar/Desconectar
 - [x] Implementar comandos rápidos (scroll horizontal)
 - [x] Agregar copiar mensaje al portapapeles (long press)
+
+
+## Detección Automática de IP MIB2 (12 Ene 2026 - 11:15)
+
+### Servicio de Escaneo de Red
+- [x] Actualizar lib/network-scanner.ts con TCP directo (sin backend)
+- [x] Implementar escaneo de rango 192.168.1.1-254 en lotes de 10
+- [x] Probar puerto 23 (Telnet) en cada IP
+- [x] Implementar timeout corto por IP (500ms)
+- [x] Implementar verifyMIB2() para detectar banner QNX/MIB2
+- [x] Retornar lista de IPs con puerto 23 abierto
+- [x] Implementar quickScan() para IPs comunes
+- [x] Agregar funciones getSavedMIB2IP() y saveMIB2IP()
+
+### UI de Detección Automática
+- [x] Botón "Búsqueda Rápida" ya existe en pantalla Home
+- [x] Botón "Escaneo Completo" ya existe en pantalla Home
+- [x] Indicador de progreso durante escaneo ya implementado
+- [x] Lista de IPs encontradas ya implementada
+- [x] Selección manual de IP ya implementada
+- [x] Guardar IP detectada en AsyncStorage ya implementado
+
+### Integración con Telnet
+- [x] telnet-provider.tsx ya usa IP de config (actualizable)
+- [x] Implementar conexión automática al encontrar MIB2 (con confirmación)
+- [x] Notificación háptica al conectar exitosamente
+- [x] Detección automática de Toolbox después de conectar

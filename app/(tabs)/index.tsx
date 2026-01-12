@@ -78,10 +78,33 @@ export default function HomeScreen() {
       if (results.length === 0) {
         Alert.alert('Sin Resultados', 'No se encontraron unidades MIB2 en las IPs comunes');
       } else if (results.length === 1) {
-        // Auto-select the only found device
+        // Auto-select and connect
         setHost(results[0].host);
         setPort(results[0].port.toString());
-        Alert.alert('¡Encontrado!', `Unidad MIB2 detectada en ${results[0].host}`);
+        await updateConfig({
+          host: results[0].host,
+          port: results[0].port,
+        });
+        Alert.alert(
+          '¡Encontrado!',
+          `Unidad MIB2 detectada en ${results[0].host}\n\n¿Conectar automáticamente?`,
+          [
+            { text: 'Cancelar', style: 'cancel' },
+            {
+              text: 'Conectar',
+              onPress: async () => {
+                try {
+                  await connect();
+                  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                  setTimeout(() => handleDetectToolbox(), 1000);
+                } catch (error) {
+                  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+                  Alert.alert('Error', 'No se pudo conectar a la unidad MIB2');
+                }
+              },
+            },
+          ]
+        );
       } else {
         Alert.alert('Múltiples Dispositivos', `Se encontraron ${results.length} dispositivos. Selecciona uno de la lista.`);
       }
