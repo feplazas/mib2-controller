@@ -857,3 +857,16 @@
 - [x] Mostrar operación actual (read/write)
 - [x] Mensaje de completado cuando progreso llega a 100%
 - [x] Agregar simulación de progreso en performSpoof (backup + escritura)
+
+
+## Botón de Backup Manual EEPROM (12 Ene 2026 - 11:50)
+
+- [x] Agregar botón "Crear Backup Manual" en usb-status.tsx
+- [x] Mostrar botón solo cuando hay dispositivo conectado
+- [x] Implementar función handleCreateBackup con backupService
+- [x] Mostrar estado "Creando Backup..." durante operación
+- [x] Mostrar mensaje de éxito con nombre de archivo, fecha y tamaño
+- [x] Agregar haptic feedback al completar (success/error)
+- [x] Manejar errores y mostrar alertas apropiadas
+- [x] Agregar confirmación antes de crear backup
+- [x] Deshabilitar botón durante creación de backup

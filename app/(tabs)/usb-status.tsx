@@ -1,9 +1,10 @@
-import { ScrollView, Text, View, TouchableOpacity, RefreshControl } from 'react-native';
+import { ScrollView, Text, View, TouchableOpacity, RefreshControl, Alert } from 'react-native';
 import { useState, useEffect } from 'react';
 import * as Haptics from 'expo-haptics';
 import { ScreenContainer } from '@/components/screen-container';
 import { useUsbStatus } from '@/lib/usb-status-context';
 import { usbService } from '@/lib/usb-service';
+import { backupService } from '@/lib/backup-service';
 import { ChipsetStatusBadge } from '@/components/chipset-status-badge';
 import { getChipsetCompatibility, canAttemptSpoofing } from '@/lib/chipset-compatibility';
 import { ScanningIndicator } from '@/components/scanning-indicator';
@@ -13,6 +14,7 @@ export default function UsbStatusScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [connectionTime, setConnectionTime] = useState<Date | null>(null);
   const [uptime, setUptime] = useState('00:00:00');
+  const [isCreatingBackup, setIsCreatingBackup] = useState(false);
 
   // Actualizar tiempo de conexión cada segundo
   useEffect(() => {
@@ -43,6 +45,49 @@ export default function UsbStatusScreen() {
     setRefreshing(true);
     await scanDevices();
     setRefreshing(false);
+  };
+
+  const handleCreateBackup = async () => {
+    if (!device) {
+      Alert.alert('Error', 'No hay dispositivo USB conectado');
+      return;
+    }
+
+    Alert.alert(
+      '💾 Crear Backup Manual',
+      'Se creará una copia de seguridad completa de la EEPROM del adaptador USB.\n\nEsto es recomendable antes de realizar cualquier modificación.\n\n¿Deseas continuar?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Crear Backup',
+          onPress: async () => {
+            setIsCreatingBackup(true);
+            try {
+              await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              const backup = await backupService.createBackup(device);
+              await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+              
+              Alert.alert(
+                '✅ Backup Creado',
+                `Backup guardado exitosamente:\n\n` +
+                `💾 Archivo: backup_${device.vendorId}_${device.productId}_${Date.now()}.bin\n` +
+                `📅 Fecha: ${new Date(backup.timestamp).toLocaleString('es-ES')}\n` +
+                `📊 Tamaño: ${backup.size} bytes\n\n` +
+                `El backup se guardó en la memoria del dispositivo.`
+              );
+            } catch (error: any) {
+              await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+              Alert.alert(
+                '❌ Error al Crear Backup',
+                error.message || 'No se pudo crear el backup. Verifica que el dispositivo esté conectado correctamente.'
+              );
+            } finally {
+              setIsCreatingBackup(false);
+            }
+          },
+        },
+      ]
+    );
   };
 
   const getStatusColor = () => {
@@ -219,6 +264,29 @@ export default function UsbStatusScreen() {
                 }
                 return null;
               })()}
+              
+              {/* Botón de Backup Manual */}
+              <TouchableOpacity
+                onPress={handleCreateBackup}
+                disabled={isCreatingBackup}
+                className={`rounded-xl p-4 items-center border-2 ${
+                  isCreatingBackup 
+                    ? 'bg-muted/20 border-muted opacity-50' 
+                    : 'bg-background border-primary active:opacity-80'
+                }`}
+              >
+                <View className="flex-row items-center gap-2">
+                  <Text className="text-xl">💾</Text>
+                  <Text className={`text-base font-bold ${
+                    isCreatingBackup ? 'text-muted' : 'text-primary'
+                  }`}>
+                    {isCreatingBackup ? 'Creando Backup...' : 'Crear Backup Manual'}
+                  </Text>
+                </View>
+                <Text className="text-xs text-muted mt-1">
+                  Copia de seguridad preventiva de EEPROM
+                </Text>
+              </TouchableOpacity>
             </View>
           )}
 
