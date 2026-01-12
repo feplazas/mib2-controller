@@ -39,7 +39,7 @@ interface UsbNativeModuleInterface {
   openDevice(deviceId: number): Promise<boolean>;
   closeDevice(): boolean;
   readEEPROM(offset: number, length: number): Promise<EEPROMReadResult>;
-  writeEEPROM(offset: number, dataHex: string, magicValue: number): Promise<{ bytesWritten: number }>;
+  writeEEPROM(offset: number, dataHex: string, magicValue: number, skipVerification: boolean): Promise<{ bytesWritten: number; verified: boolean }>;
   dumpEEPROM(): Promise<EEPROMDumpResult>;
   spoofVIDPID(targetVID: number, targetPID: number): Promise<SpoofResult>;
 }

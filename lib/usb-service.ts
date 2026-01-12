@@ -159,7 +159,7 @@ class UsbService {
   /**
    * Escribir datos a EEPROM en offset específico
    */
-  async writeEEPROM(offset: number, dataHex: string): Promise<{ bytesWritten: number }> {
+  async writeEEPROM(offset: number, dataHex: string, skipVerification: boolean = false): Promise<{ bytesWritten: number; verified: boolean }> {
     if (Platform.OS !== 'android') {
       throw new Error('USB operations only available on Android');
     }
@@ -169,9 +169,16 @@ class UsbService {
     }
 
     try {
-      usbLogger.info('write', `Escribiendo en EEPROM offset 0x${offset.toString(16)}...`, `Data: ${dataHex}`);
-      const result = await UsbNativeModule.writeEEPROM(offset, dataHex, MAGIC_VALUE);
-      usbLogger.success('write', `Escritura exitosa: ${result.bytesWritten} bytes escritos`);
+      const mode = skipVerification ? '(SIN VERIFICACIÓN)' : '(con verificación)';
+      usbLogger.info('write', `Escribiendo en EEPROM offset 0x${offset.toString(16)} ${mode}...`, `Data: ${dataHex}`);
+      const result = await UsbNativeModule.writeEEPROM(offset, dataHex, MAGIC_VALUE, skipVerification);
+      
+      if (skipVerification) {
+        usbLogger.warning('write', `Escritura completada: ${result.bytesWritten} bytes (verificación omitida)`);
+      } else {
+        usbLogger.success('write', `Escritura y verificación exitosa: ${result.bytesWritten} bytes`);
+      }
+      
       return result;
     } catch (error: any) {
       usbLogger.error('write', 'Error al escribir EEPROM', error.message);

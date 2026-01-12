@@ -213,7 +213,7 @@ class UsbNativeModule : Module() {
       }
     }
 
-    AsyncFunction("writeEEPROM") { offset: Int, dataHex: String, magicValue: Int, promise: Promise ->
+    AsyncFunction("writeEEPROM") { offset: Int, dataHex: String, magicValue: Int, skipVerification: Boolean, promise: Promise ->
       try {
         val connection = currentConnection
         if (connection == null) {
@@ -266,7 +266,65 @@ class UsbNativeModule : Module() {
         Thread.sleep(500)
         Log.d(TAG, "Write completed and device ready for verification")
         
-        promise.resolve(mapOf("bytesWritten" to bytesWritten))
+        // Verificación opcional (puede omitirse para adaptadores con protección de escritura)
+        if (!skipVerification) {
+          Log.d(TAG, "Starting verification of written data...")
+          val verifyData = ByteArray(data.size)
+          
+          for (i in data.indices) {
+            val currentOffset = offset + i
+            val buffer = ByteArray(2)
+            
+            val result = connection.controlTransfer(
+              USB_DIR_IN or USB_TYPE_VENDOR or USB_RECIP_DEVICE,
+              ASIX_CMD_READ_EEPROM,
+              currentOffset,
+              0,
+              buffer,
+              buffer.size,
+              5000
+            )
+
+            if (result < 0) {
+              Log.e(TAG, "Verification read failed at offset $currentOffset")
+              promise.reject("VERIFY_FAILED", "Failed to read EEPROM for verification at offset $currentOffset", null)
+              return@AsyncFunction
+            }
+
+            verifyData[i] = buffer[0]
+          }
+          
+          // Comparar bytes escritos vs leídos
+          val mismatchPositions = mutableListOf<Int>()
+          for (i in data.indices) {
+            if (data[i] != verifyData[i]) {
+              mismatchPositions.add(i)
+              Log.w(TAG, "Mismatch at offset ${offset + i}: wrote 0x${String.format("%02X", data[i].toInt() and 0xFF)}, read 0x${String.format("%02X", verifyData[i].toInt() and 0xFF)}")
+            }
+          }
+          
+          if (mismatchPositions.isNotEmpty()) {
+            val writtenHex = data.joinToString("") { "%02X".format(it) }
+            val readHex = verifyData.joinToString("") { "%02X".format(it) }
+            Log.e(TAG, "Verification failed: ${mismatchPositions.size} bytes don't match")
+            Log.e(TAG, "Written: $writtenHex")
+            Log.e(TAG, "Read back: $readHex")
+            Log.e(TAG, "Mismatch positions: ${mismatchPositions.joinToString(", ")}")
+            
+            promise.reject(
+              "VERIFY_FAILED",
+              "Verification failed: ${mismatchPositions.size} bytes don't match at positions ${mismatchPositions.joinToString(", ")}",
+              null
+            )
+            return@AsyncFunction
+          }
+          
+          Log.d(TAG, "Verification successful: all $bytesWritten bytes match")
+        } else {
+          Log.w(TAG, "Verification skipped as requested (force mode)")
+        }
+        
+        promise.resolve(mapOf("bytesWritten" to bytesWritten, "verified" to !skipVerification))
       } catch (e: Exception) {
         Log.e(TAG, "Error writing EEPROM: ${e.message}")
         promise.reject("WRITE_ERROR", e.message, e)

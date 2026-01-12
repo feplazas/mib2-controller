@@ -38,6 +38,7 @@ export default function AutoSpoofScreen() {
   const resultModalRef = useRef(null);
   const [isTesting, setIsTesting] = useState(false);
   const [testResult, setTestResult] = useState<'success' | 'fail' | null>(null);
+  const [skipVerification, setSkipVerification] = useState(false);
 
   const getStepText = (step: SpoofStep): string => {
     switch (step) {
@@ -225,28 +226,28 @@ export default function AutoSpoofScreen() {
       setCurrentStep('writing_vid_low');
       setEepromProgress(25);
       setEepromBytesProcessed(1);
-      await usbService.writeEEPROM(0x88, '01');
+      await usbService.writeEEPROM(0x88, '01', skipVerification);
       await new Promise(resolve => setTimeout(resolve, 100));
 
       // Paso 4: Escribir VID byte alto (0x89 = 0x20)
       setCurrentStep('writing_vid_high');
       setEepromProgress(50);
       setEepromBytesProcessed(2);
-      await usbService.writeEEPROM(0x89, '20');
+      await usbService.writeEEPROM(0x89, '20', skipVerification);
       await new Promise(resolve => setTimeout(resolve, 100));
 
       // Paso 5: Escribir PID byte bajo (0x8A = 0x05)
       setCurrentStep('writing_pid_low');
       setEepromProgress(75);
       setEepromBytesProcessed(3);
-      await usbService.writeEEPROM(0x8A, '05');
+      await usbService.writeEEPROM(0x8A, '05', skipVerification);
       await new Promise(resolve => setTimeout(resolve, 100));
 
       // Paso 6: Escribir PID byte alto (0x8B = 0x3C)
       setCurrentStep('writing_pid_high');
       setEepromProgress(100);
       setEepromBytesProcessed(4);
-      await usbService.writeEEPROM(0x8B, '3C');
+      await usbService.writeEEPROM(0x8B, '3C', skipVerification);
       await new Promise(resolve => setTimeout(resolve, 100));
 
       // Paso 7: Verificar escritura
@@ -274,16 +275,23 @@ export default function AutoSpoofScreen() {
         timestamp: new Date(),
       });
       
+      const verificationNote = skipVerification 
+        ? '\n⚠️ IMPORTANTE: Verificación omitida. Debes reconectar el adaptador para confirmar que el spoofing fue exitoso.\n'
+        : '';
+      
       setSuccessMessage(
         'Spoofing completado exitosamente.\n\n' +
         '📋 Valores escritos:\n' +
         '• VID: 0x2001 (D-Link)\n' +
-        '• PID: 0x3C05 (DUB-E100)\n\n' +
-        '🔌 SIGUIENTE PASO:\n' +
-        '1. Desconecta el adaptador USB\n' +
-        '2. Espera 5 segundos\n' +
-        '3. Vuelve a conectarlo\n' +
-        '4. Verifica el nuevo ID en la pantalla "Estado USB"'
+        '• PID: 0x3C05 (DUB-E100)\n' +
+        verificationNote +
+        '\n🔌 PASOS OBLIGATORIOS:\n' +
+        '1️⃣ Desconecta el adaptador USB del cable OTG\n' +
+        '2️⃣ Espera 5-10 segundos (importante)\n' +
+        '3️⃣ Vuelve a conectar el adaptador\n' +
+        '4️⃣ Ve a "Estado USB" para verificar VID/PID\n' +
+        '5️⃣ Si no cambió, usa "Test de Spoofing" para diagnóstico\n\n' +
+        '📡 Si el VID/PID no cambia después de reconectar, ve a la pestaña "Diag" para ver logs detallados de la operación.'
       );
       
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -652,6 +660,30 @@ export default function AutoSpoofScreen() {
               </Text>
             </View>
           </View>
+
+          {/* Checkbox Forzar sin Verificación */}
+          <TouchableOpacity
+            onPress={() => {
+              setSkipVerification(!skipVerification);
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            }}
+            disabled={isExecuting}
+            className="flex-row items-start gap-3 p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/30"
+          >
+            <View className={`w-6 h-6 rounded border-2 items-center justify-center ${
+              skipVerification ? 'bg-yellow-500 border-yellow-500' : 'border-yellow-500'
+            }`}>
+              {skipVerification && <Text className="text-background font-bold">✓</Text>}
+            </View>
+            <View className="flex-1">
+              <Text className="text-base font-semibold text-yellow-500 mb-1">
+                ⚠️ Forzar sin Verificación
+              </Text>
+              <Text className="text-xs text-muted leading-relaxed">
+                Omite la verificación post-escritura. Úsalo solo si la verificación normal falla debido a protección de escritura del adaptador. Después del spoofing, desconecta y reconecta el adaptador para verificar manualmente.
+              </Text>
+            </View>
+          </TouchableOpacity>
 
           {/* Botones de Test y Spoof Rápido */}
           <View className="gap-3">

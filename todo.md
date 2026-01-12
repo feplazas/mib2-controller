@@ -1129,3 +1129,22 @@
 - [x] Agregar feedback háptico al compartir (success/error)
 - [x] Mostrar error si no se puede compartir
 - [x] Botón deshabilitado durante restauración
+
+
+## Solución: Problema de Verificación Post-Spoofing
+
+### Contexto
+El adaptador AX88179A experimental falla verificación después de escribir EEPROM.
+Error: "Verificación falló: Los datos escritos no coinciden"
+Causa probable: Protección de escritura en ciertas posiciones o caché de lectura
+
+### Implementación
+- [x] Agregar logs detallados en módulo Kotlin (writeEEPROM)
+- [x] Mostrar hex dump de bytes escritos vs bytes leídos
+- [x] Log de posiciones específicas que fallan ("Mismatch at offset X: wrote 0xYY, read 0xZZ")
+- [x] Agregar parámetro skipVerification en writeEEPROM (Kotlin + TypeScript)
+- [x] Implementar checkbox "⚠️ Forzar sin Verificación" en auto-spoof.tsx
+- [x] Agregar advertencia crítica al usar forzar (texto amarillo con explicación)
+- [x] Instrucciones de reconexión después del spoofing (5 pasos numerados)
+- [x] Mensaje especial cuando skipVerification está activado
+- [x] Referencia a pestaña "Diag" para ver logs detallados
