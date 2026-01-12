@@ -3,6 +3,9 @@ import { useState, useEffect } from 'react';
 import { ScreenContainer } from '@/components/screen-container';
 import { useUsbStatus } from '@/lib/usb-status-context';
 import { usbService } from '@/lib/usb-service';
+import { ChipsetStatusBadge } from '@/components/chipset-status-badge';
+import { getChipsetCompatibility } from '@/lib/chipset-compatibility';
+import { ScanningIndicator } from '@/components/scanning-indicator';
 
 export default function UsbStatusScreen() {
   const { status, device, devices, isScanning, scanDevices, detectedProfile, recommendedProfile } = useUsbStatus();
@@ -83,6 +86,8 @@ export default function UsbStatusScreen() {
         }
       >
         <View className="gap-4">
+          {/* Indicador de Escaneo */}
+          <ScanningIndicator isScanning={isScanning} />
           {/* Header */}
           <View className="items-center mb-4">
             <Text className="text-3xl font-bold text-foreground mb-2">
@@ -170,13 +175,18 @@ export default function UsbStatusScreen() {
                   </View>
                 )}
 
-                <View className="flex-row justify-between">
-                  <Text className="text-sm text-muted">Compatible:</Text>
-                  <Text className={`text-sm font-medium ${usbService.isCompatibleForSpoofing(device) ? 'text-green-500' : 'text-red-500'}`}>
-                    {usbService.isCompatibleForSpoofing(device) ? '✅ Sí' : '❌ No'}
-                  </Text>
-                </View>
               </View>
+            </View>
+          )}
+
+          {/* Badge de Estado del Chipset */}
+          {status === 'connected' && device && device.chipset && (
+            <View className="mt-4">
+              <ChipsetStatusBadge
+                chipset={device.chipset}
+                compatibility={getChipsetCompatibility(device.chipset)}
+                animated={true}
+              />
             </View>
           )}
 

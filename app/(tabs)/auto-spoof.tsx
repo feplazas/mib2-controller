@@ -4,6 +4,8 @@ import { ScreenContainer } from '@/components/screen-container';
 import { useUsbStatus } from '@/lib/usb-status-context';
 import { usbService } from '@/lib/usb-service';
 import { backupService } from '@/lib/backup-service';
+import { ChipsetStatusBadge } from '@/components/chipset-status-badge';
+import { getChipsetCompatibility, canAttemptSpoofing, getCompatibilityMessage } from '@/lib/chipset-compatibility';
 import * as Haptics from 'expo-haptics';
 
 type SpoofStep = 'idle' | 'validating' | 'creating_backup' | 'writing_vid_low' | 'writing_vid_high' | 'writing_pid_low' | 'writing_pid_high' | 'verifying' | 'success' | 'error';
@@ -55,14 +57,36 @@ export default function AutoSpoofScreen() {
       return;
     }
 
-    if (!usbService.isCompatibleForSpoofing(device)) {
+    const compatibility = getChipsetCompatibility(device.chipset || '');
+    
+    if (!canAttemptSpoofing(compatibility)) {
       Alert.alert(
         'Dispositivo No Compatible',
-        `El dispositivo ${device.chipset || 'desconocido'} no es compatible para spoofing.\n\nSolo se soportan adaptadores ASIX AX88772A/B con EEPROM externa.`
+        getCompatibilityMessage(compatibility, device.chipset || 'desconocido')
       );
       return;
     }
+    
+    // Advertencia adicional para chipsets experimentales
+    if (compatibility === 'experimental') {
+      Alert.alert(
+        '⚠️ Chipset Experimental',
+        `${device.chipset} no está 100% confirmado pero debería funcionar.\n\n¿Deseas continuar con el spoofing?`,
+        [
+          { text: 'Cancelar', style: 'cancel' },
+          { text: 'Sí, Continuar', onPress: () => proceedWithSpoofing() },
+        ]
+      );
+      return;
+    }
+    
+    proceedWithSpoofing();
+  };
+  
+  const proceedWithSpoofing = () => {
 
+    if (!device) return;
+    
     // Validación adicional: Verificar que el dispositivo aún está conectado
     if (status !== 'connected') {
       Alert.alert('Error', 'El dispositivo USB se desconectó. Por favor reconecta y vuelve a intentar.');
@@ -148,7 +172,8 @@ export default function AutoSpoofScreen() {
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
       // Paso 1: Validar compatibilidad
-      if (!usbService.isCompatibleForSpoofing(device)) {
+      const compatibility = getChipsetCompatibility(device.chipset || '');
+      if (!canAttemptSpoofing(compatibility)) {
         throw new Error('Dispositivo no compatible para spoofing');
       }
       await new Promise(resolve => setTimeout(resolve, 500));
@@ -213,7 +238,7 @@ export default function AutoSpoofScreen() {
     }
   };
 
-  const canExecute = status === 'connected' && device && usbService.isCompatibleForSpoofing(device);
+  const canExecute = status === 'connected' && device && canAttemptSpoofing(getChipsetCompatibility(device.chipset || ''));
 
   return (
     <ScreenContainer className="p-4">
@@ -267,6 +292,15 @@ export default function AutoSpoofScreen() {
               </Text>
             )}
           </View>
+
+          {/* Badge de Estado del Chipset */}
+          {device && device.chipset && (
+            <ChipsetStatusBadge
+              chipset={device.chipset}
+              compatibility={getChipsetCompatibility(device.chipset)}
+              animated={true}
+            />
+          )}
 
           {/* Valores Objetivo */}
           <View className="bg-surface rounded-2xl p-6 border border-border">

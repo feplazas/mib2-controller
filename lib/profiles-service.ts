@@ -673,16 +673,16 @@ class ProfilesService {
       };
     }
     
-    // Validación estricta: solo AX88772, AX88772A, AX88772B
+    // Validación expandida: todos los chipsets ASIX soportan spoofing
+    // Los AX88772/A/B están confirmados, otros ASIX son experimentales pero compatibles
     const chipset = device.chipset?.toLowerCase() || '';
-    const compatibleModels = ['ax88772', 'ax88772a', 'ax88772b'];
-    const isCompatibleASIX = compatibleModels.some(model => chipset.includes(model));
+    const confirmedModels = ['ax88772', 'ax88772a', 'ax88772b'];
+    const isConfirmed = confirmedModels.some(model => chipset.includes(model));
     
-    if (!isCompatibleASIX) {
-      return {
-        canSpoof: false,
-        reason: `Modelo ASIX no compatible. Solo AX88772/A/B soportan spoofing para MIB2. Tu chipset: ${device.chipset}`,
-      };
+    // Todos los ASIX son compatibles (comparten arquitectura de EEPROM)
+    // Solo advertimos si es experimental
+    if (!isConfirmed) {
+      console.log(`[ProfilesService] Chipset ASIX experimental detectado: ${device.chipset}`);
     }
     
     // Verificar si ya tiene VID/PID compatible

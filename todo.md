@@ -611,3 +611,22 @@
 - [x] Eliminar referencias a "MIB2Acceso.pdf" en la UI
 - [x] Buscar y eliminar menciones de documentos PDF en toda la app
 - [ ] Probar detección con múltiples VID/PID conocidos (requiere hardware)
+
+
+## Expansión de Compatibilidad y Feedback Visual (11 Ene 2026 - 20:40)
+
+- [x] Expandir validación de spoofing a TODOS los chipsets ASIX (AX88172, AX88178, AX88179, AX88772/A/B/C)
+- [x] Marcar AX88772/A/B como "confirmados" y otros ASIX como "experimentales"
+- [x] Actualizar canDeviceBeSpoof() para permitir todos los ASIX
+- [x] Crear componente ChipsetStatusBadge con iconos dinámicos y animaciones
+- [x] Implementar animación de "scanning" durante detección USB (ScanningIndicator)
+- [x] Agregar animación de "pulse" en badge de estado confirmado
+- [x] Agregar animación de "fade" en badge de estado experimental
+- [x] Agregar iconos de estado: ✅ confirmado, ⚠️ experimental, ❌ incompatible, ❓ desconocido
+- [x] Crear helper getChipsetCompatibility() para determinar compatibilidad
+- [x] Crear helper canAttemptSpoofing() para validar si puede intentar spoofing
+- [x] Integrar ChipsetStatusBadge en usb-status.tsx
+- [x] Integrar ChipsetStatusBadge en auto-spoof.tsx
+- [x] Integrar ScanningIndicator en usb-status.tsx
+- [x] Actualizar validación en auto-spoof con advertencia para experimentales
+- [ ] Probar animaciones en dispositivo real
