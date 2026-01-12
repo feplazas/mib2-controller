@@ -124,7 +124,7 @@ export default function VCDSScreen() {
               Procedimientos VCDS
             </Text>
             <Text className="text-sm" style={{ color: colors.muted }}>
-              Modificaciones técnicas basadas en el documento MIB2Acceso.pdf
+              Modificaciones técnicas para unidades MIB2 STD2 Technisat Preh
             </Text>
           </View>
 

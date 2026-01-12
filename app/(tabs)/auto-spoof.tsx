@@ -225,7 +225,7 @@ export default function AutoSpoofScreen() {
               🔧 Spoofing Automático
             </Text>
             <Text className="text-sm text-muted text-center">
-              Reprogramación automática de EEPROM según Guíaspoofing.pdf
+              Reprogramación automática de EEPROM para adaptadores ASIX compatibles
             </Text>
           </View>
 

@@ -574,5 +574,40 @@
 - [x] Agregar advertencia de no desconectar durante proceso (triple confirmación)
 - [x] Mejorar diálogo de confirmación con triple check (3 alertas)
 - [x] Agregar resumen de cambios antes de ejecutar (VID/PID actual vs nuevo)
-- [ ] Guardar checkpoint con Auto Spoof activado
-- [ ] Compilar nuevo APK con EAS Build
+- [x] Guardar checkpoint con Auto Spoof activado (89ccadcf)
+- [x] Compilar nuevo APK con EAS Build (build 9207a399 en progreso)
+
+
+## Investigación y Soporte Realtek RTL8156 (11 Ene 2026 - 19:40)
+
+- [x] Investigar método de spoofing para Realtek RTL8156 (iwpriv/PG Tool)
+- [x] Buscar documentación de EEPROM de Realtek (CONFIDENCIAL, solo partners)
+- [x] Analizar diferencias entre ASIX y Realtek EEPROM (eFuse vs EEPROM externa)
+- [x] Investigar herramientas PG-Tool de Realtek (requiere drivers kernel)
+- [x] Determinar si RTL8156 permite modificación de VID/PID (SÍ, pero NO en Android)
+- [x] Agregar detección de chipset Realtek en la app
+- [x] Mostrar advertencia de incompatibilidad con Realtek
+- [x] Sugerir alternativas (adaptador ASIX o modificación en PC)
+- [x] Crear guía de modificación Realtek en PC (realtek_research.md)
+- [ ] Compilar APK con detección de Realtek
+
+
+## Detección Completa de Chipsets y Validación Estricta (11 Ene 2026 - 19:50)
+
+- [x] Expandir identifyChipset() en UsbNativeModule.kt con todos los chipsets comunes
+- [x] Agregar detección de ASIX: AX88172, AX88178, AX88179, AX88772, AX88772A, AX88772B, AX88772C
+- [x] Agregar detección de Realtek: RTL8150, RTL8152, RTL8153, RTL8156
+- [x] Agregar detección de Broadcom: BCM5701
+- [x] Agregar detección de Microchip: LAN9512/9514, LAN7500, LAN7800
+- [x] Agregar detección de Davicom: DM9601
+- [x] Agregar detección de TP-Link: UE300, UE200
+- [x] Agregar detección de Apple: USB Ethernet Adapter
+- [x] Agregar detección de Belkin: USB-C to Ethernet
+- [x] Actualizar biblioteca de perfiles con 18 adaptadores comunes del mercado
+- [x] Implementar validación estricta: SOLO ASIX AX88772/A/B permiten spoofing MIB2
+- [x] Agregar advertencias específicas por chipset incompatible (Realtek, Broadcom, Microchip, Davicom)
+- [x] Actualizar canDeviceBeSpoof() con validación estricta y mensajes personalizados
+- [x] Eliminar TODAS las referencias visuales a "Guíaspoofing.pdf" en la UI
+- [x] Eliminar referencias a "MIB2Acceso.pdf" en la UI
+- [x] Buscar y eliminar menciones de documentos PDF en toda la app
+- [ ] Probar detección con múltiples VID/PID conocidos (requiere hardware)

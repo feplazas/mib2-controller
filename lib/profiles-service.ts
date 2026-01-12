@@ -176,7 +176,85 @@ const PREDEFINED_PROFILES: VIDPIDProfile[] = [
     chipset: 'Realtek RTL8153',
     category: 'common_adapters',
     compatible: false,
-    notes: 'Adaptador Belkin USB-C. Requiere spoofing.',
+    notes: 'Adaptador Belkin USB-C. Chipset Realtek NO compatible con spoofing en Android.',
+    icon: '🔧',
+  },
+  {
+    id: 'realtek_rtl8156',
+    name: 'Realtek RTL8156 Generic',
+    manufacturer: 'Realtek',
+    model: 'RTL8156',
+    vendorId: 0x0BDA,
+    productId: 0x8156,
+    chipset: 'Realtek RTL8156',
+    category: 'common_adapters',
+    compatible: false,
+    notes: 'Chipset Realtek 2.5G. NO compatible con spoofing en Android (requiere drivers kernel).',
+    icon: '🔧',
+  },
+  {
+    id: 'asix_ax88178',
+    name: 'ASIX AX88178 Generic',
+    manufacturer: 'ASIX',
+    model: 'AX88178',
+    vendorId: 0x0B95,
+    productId: 0x1780,
+    chipset: 'ASIX AX88178',
+    category: 'common_adapters',
+    compatible: false,
+    notes: 'Chipset ASIX Gigabit. Compatible con spoofing.',
+    icon: '🔧',
+  },
+  {
+    id: 'asix_ax88179',
+    name: 'ASIX AX88179 Generic',
+    manufacturer: 'ASIX',
+    model: 'AX88179',
+    vendorId: 0x0B95,
+    productId: 0x178A,
+    chipset: 'ASIX AX88179',
+    category: 'common_adapters',
+    compatible: false,
+    notes: 'Chipset ASIX Gigabit USB 3.0. Compatible con spoofing.',
+    icon: '🔧',
+  },
+  {
+    id: 'microchip_lan9512',
+    name: 'Microchip LAN9512/9514',
+    manufacturer: 'Microchip',
+    model: 'LAN9512/LAN9514',
+    vendorId: 0x0424,
+    productId: 0xEC00,
+    chipset: 'Microchip LAN9512/9514',
+    category: 'common_adapters',
+    compatible: false,
+    notes: 'Chipset Microchip común en Raspberry Pi. NO compatible con spoofing.',
+    icon: '🔧',
+  },
+  {
+    id: 'microchip_lan7800',
+    name: 'Microchip LAN7800',
+    manufacturer: 'Microchip',
+    model: 'LAN7800',
+    vendorId: 0x0424,
+    productId: 0x7800,
+    chipset: 'Microchip LAN7800',
+    category: 'common_adapters',
+    compatible: false,
+    notes: 'Chipset Microchip Gigabit USB 3.0. NO compatible con spoofing.',
+    icon: '🔧',
+  },
+  {
+    id: 'davicom_dm9601',
+    name: 'Davicom DM9601',
+    manufacturer: 'Davicom',
+    model: 'DM9601',
+    vendorId: 0x0FE6,
+    productId: 0x9700,
+    chipset: 'Davicom DM9601',
+    category: 'common_adapters',
+    compatible: false,
+    notes: 'Chipset Davicom económico. NO compatible con spoofing.',
     icon: '🔧',
   },
 ];
@@ -558,9 +636,52 @@ class ProfilesService {
                    device.vendorId === 0x0B95;
     
     if (!isASIX) {
+      // Detectar chipset específico para mensaje personalizado
+      const chipsetLower = device.chipset?.toLowerCase() || '';
+      
+      if (chipsetLower.includes('realtek')) {
+        return {
+          canSpoof: false,
+          reason: 'Chipsets Realtek NO son compatibles con spoofing en Android. Requieren drivers kernel de Linux/Windows y herramientas específicas (PG Tool). Considera conseguir un adaptador ASIX.',
+        };
+      }
+      
+      if (chipsetLower.includes('microchip') || chipsetLower.includes('lan')) {
+        return {
+          canSpoof: false,
+          reason: 'Chipsets Microchip NO soportan modificación de VID/PID. Solo chipsets ASIX AX88772/A/B son compatibles.',
+        };
+      }
+      
+      if (chipsetLower.includes('broadcom')) {
+        return {
+          canSpoof: false,
+          reason: 'Chipsets Broadcom NO soportan modificación de VID/PID. Solo chipsets ASIX AX88772/A/B son compatibles.',
+        };
+      }
+      
+      if (chipsetLower.includes('davicom')) {
+        return {
+          canSpoof: false,
+          reason: 'Chipsets Davicom NO soportan modificación de VID/PID. Solo chipsets ASIX AX88772/A/B son compatibles.',
+        };
+      }
+      
       return {
         canSpoof: false,
-        reason: 'Solo chipsets ASIX soportan spoofing de EEPROM',
+        reason: 'Solo chipsets ASIX AX88772/A/B soportan spoofing de EEPROM para MIB2.',
+      };
+    }
+    
+    // Validación estricta: solo AX88772, AX88772A, AX88772B
+    const chipset = device.chipset?.toLowerCase() || '';
+    const compatibleModels = ['ax88772', 'ax88772a', 'ax88772b'];
+    const isCompatibleASIX = compatibleModels.some(model => chipset.includes(model));
+    
+    if (!isCompatibleASIX) {
+      return {
+        canSpoof: false,
+        reason: `Modelo ASIX no compatible. Solo AX88772/A/B soportan spoofing para MIB2. Tu chipset: ${device.chipset}`,
       };
     }
     

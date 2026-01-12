@@ -452,18 +452,79 @@ class UsbNativeModule : Module() {
 
   private fun identifyChipset(vendorId: Int, productId: Int): String {
     return when (vendorId) {
+      // ASIX Electronics (0x0B95) - Compatible con spoofing MIB2
       0x0B95 -> when (productId) {
+        0x1720 -> "ASIX AX88172"
         0x1780 -> "ASIX AX88178"
         0x178A -> "ASIX AX88179"
+        0x1790 -> "ASIX AX88179A"
         0x7720 -> "ASIX AX88772"
         0x772A -> "ASIX AX88772A"
         0x772B -> "ASIX AX88772B"
+        0x7E2B -> "ASIX AX88772C"
         else -> "ASIX (Unknown model)"
       }
-      0x0BDA -> "Realtek RTL8153"
-      0x2001 -> "D-Link DUB-E100"
-      0x0DF6 -> "Sitecom"
-      0x0B95 -> "ASIX"
+      
+      // Realtek (0x0BDA) - NO compatible con spoofing en Android
+      0x0BDA -> when (productId) {
+        0x8150 -> "Realtek RTL8150"
+        0x8152 -> "Realtek RTL8152"
+        0x8153 -> "Realtek RTL8153"
+        0x8156 -> "Realtek RTL8156"
+        else -> "Realtek (Unknown model)"
+      }
+      
+      // D-Link (0x2001) - Objetivo de spoofing
+      0x2001 -> when (productId) {
+        0x1A02 -> "D-Link DUB-E100 v2"
+        0x3C05 -> "D-Link DUB-E100"
+        else -> "D-Link (Unknown model)"
+      }
+      
+      // TP-Link (0x2357)
+      0x2357 -> when (productId) {
+        0x0601 -> "TP-Link UE300"
+        0x0602 -> "TP-Link UE200"
+        else -> "TP-Link (Unknown model)"
+      }
+      
+      // Apple (0x05AC)
+      0x05AC -> when (productId) {
+        0x1402 -> "Apple USB Ethernet"
+        else -> "Apple (Unknown model)"
+      }
+      
+      // Belkin (0x050D)
+      0x050D -> when (productId) {
+        0x0121 -> "Belkin USB-C to Ethernet"
+        else -> "Belkin (Unknown model)"
+      }
+      
+      // Microchip (0x0424)
+      0x0424 -> when (productId) {
+        0xEC00 -> "Microchip LAN9512/LAN9514"
+        0x7500 -> "Microchip LAN7500"
+        0x7800 -> "Microchip LAN7800"
+        else -> "Microchip (Unknown model)"
+      }
+      
+      // Broadcom (0x0A5C)
+      0x0A5C -> when (productId) {
+        0x6412 -> "Broadcom BCM5701"
+        else -> "Broadcom (Unknown model)"
+      }
+      
+      // Davicom (0x0FE6)
+      0x0FE6 -> when (productId) {
+        0x9700 -> "Davicom DM9601"
+        else -> "Davicom (Unknown model)"
+      }
+      
+      // Sitecom (0x0DF6)
+      0x0DF6 -> when (productId) {
+        else -> "Sitecom (Unknown model)"
+      }
+      
       else -> "Unknown"
     }
   }
