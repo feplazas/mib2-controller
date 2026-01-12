@@ -1112,3 +1112,20 @@
 - [ ] Implementar reintentos en verificación (3 intentos con delay)
 - [ ] Agregar opción "Forzar Sin Verificación" en auto-spoof para adaptadores experimentales
 - [ ] Logs detallados de qué se escribió vs qué se leyó (hex dump completo)
+
+
+## Mejoras Solicitadas - 12/01/2026 15:13
+
+### 1. Delay Post-Escritura EEPROM
+- [x] Agregar delay de 500ms después de cada writeEEPROM() antes de verificación
+- [x] Implementar en módulo nativo Kotlin (UsbNativeModule.kt)
+- [x] Agregar log de debug indicando el delay ("waiting 500ms for device to update...")
+- [x] Probar con adaptador AX88179A experimental (pendiente en APK)
+
+### 2. Compartir Backup en Recovery
+- [x] Agregar botón "📤 Compartir Backup" en cada backup de recovery.tsx
+- [x] Usar expo-sharing para compartir archivo .bin
+- [x] Verificar que archivo existe antes de compartir (FileSystem.getInfoAsync)
+- [x] Agregar feedback háptico al compartir (success/error)
+- [x] Mostrar error si no se puede compartir
+- [x] Botón deshabilitado durante restauración

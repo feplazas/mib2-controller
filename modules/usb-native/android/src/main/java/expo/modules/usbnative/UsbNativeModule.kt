@@ -260,7 +260,12 @@ class UsbNativeModule : Module() {
           Thread.sleep(10)
         }
 
-        Log.d(TAG, "Wrote $bytesWritten bytes to EEPROM at offset $offset")
+        // Delay post-escritura para permitir que el adaptador actualice su memoria
+        // Esto es especialmente importante para adaptadores experimentales como AX88179A
+        Log.d(TAG, "Wrote $bytesWritten bytes to EEPROM at offset $offset - waiting 500ms for device to update...")
+        Thread.sleep(500)
+        Log.d(TAG, "Write completed and device ready for verification")
+        
         promise.resolve(mapOf("bytesWritten" to bytesWritten))
       } catch (e: Exception) {
         Log.e(TAG, "Error writing EEPROM: ${e.message}")

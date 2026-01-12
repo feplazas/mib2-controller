@@ -1,7 +1,8 @@
-import { View, Text, TouchableOpacity, ScrollView, Alert, RefreshControl, Linking } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Alert, RefreshControl } from 'react-native';
 import { useState, useEffect } from 'react';
 import * as Haptics from 'expo-haptics';
 import * as FileSystem from 'expo-file-system/legacy';
+import * as Sharing from 'expo-sharing';
 import { ScreenContainer } from '@/components/screen-container';
 import { useUsbStatus } from '@/lib/usb-status-context';
 import { backupService, type EEPROMBackup } from '@/lib/backup-service';
@@ -272,7 +273,7 @@ export default function RecoveryScreen() {
                       </View>
                     </View>
 
-                    <View className="flex-row gap-2">
+                    <View className="flex-row gap-2 mb-2">
                       <TouchableOpacity
                         onPress={() => handleRestore(backup)}
                         disabled={status !== 'connected' || isRestoring}
@@ -309,10 +310,62 @@ export default function RecoveryScreen() {
                               : 'text-error'
                           }`}
                         >
-                          🚨 Forzar
+                          {isRestoring ? '⏳ Forzando...' : '⚠️ Forzar'}
                         </Text>
                       </TouchableOpacity>
                     </View>
+
+                    <TouchableOpacity
+                      onPress={async () => {
+                        try {
+                          await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                          
+                          if (!backup.filepath) {
+                            Alert.alert('❌ Error', 'No se encontró la ruta del archivo de backup');
+                            return;
+                          }
+
+                          // Verificar que el archivo existe
+                          const fileInfo = await FileSystem.getInfoAsync(backup.filepath);
+                          if (!fileInfo.exists) {
+                            Alert.alert('❌ Error', 'El archivo de backup no existe en el sistema');
+                            return;
+                          }
+
+                          // Verificar si se puede compartir
+                          const canShare = await Sharing.isAvailableAsync();
+                          if (!canShare) {
+                            Alert.alert('❌ Error', 'La función de compartir no está disponible en este dispositivo');
+                            return;
+                          }
+
+                          // Compartir archivo
+                          await Sharing.shareAsync(backup.filepath, {
+                            mimeType: 'application/octet-stream',
+                            dialogTitle: `Compartir Backup - ${backup.deviceName}`,
+                          });
+
+                          await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                        } catch (error: any) {
+                          await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+                          Alert.alert('❌ Error', `No se pudo compartir el backup:\n${error.message}`);
+                        }
+                      }}
+                      disabled={isRestoring}
+                      className={`w-full rounded-xl p-3 border ${
+                        isRestoring
+                          ? 'bg-muted/20 border-muted'
+                          : 'bg-green-500/10 border-green-500/30 active:opacity-80'
+                      }`}
+                    >
+                      <Text
+                        className={`text-center font-semibold text-sm ${
+                          isRestoring ? 'text-muted' : 'text-green-400'
+                        }`}
+                      >
+                        📤 Compartir Backup
+                      </Text>
+                    </TouchableOpacity>
                   </View>
                 ))}
               </View>
