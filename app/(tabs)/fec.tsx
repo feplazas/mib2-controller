@@ -1,26 +1,30 @@
 import { useState } from "react";
-import { ScrollView, Text, View, TouchableOpacity, TextInput, Alert, Platform } from "react-native";
+import { ScrollView, Text, View, TouchableOpacity, TextInput, Alert, Platform, Linking } from "react-native";
 import * as Haptics from "expo-haptics";
 import * as Sharing from "expo-sharing";
 import * as FileSystem from "expo-file-system/legacy";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
+import { useTelnet } from "@/lib/telnet-provider";
 import {
   PREDEFINED_FEC_CODES,
   FEC_INJECTION_INFO,
+  FEC_GENERATOR_URL,
   validateVIN,
   validateVCRN,
   validateFECCode,
   generateFECCode,
   generateExceptionList,
   generateToolboxInjectionCommand,
+  generateFecInjectionCommands,
   type FECCode,
   type VehicleData,
 } from "@/lib/fec-generator";
 
 export default function FECScreen() {
   const colors = useColors();
+  const { isConnected, sendCommand } = useTelnet();
   const [vin, setVin] = useState("");
   const [vcrn, setVcrn] = useState("");
   const [selectedCodes, setSelectedCodes] = useState<string[]>([]);
@@ -105,6 +109,54 @@ export default function FECScreen() {
     Alert.alert("Comando de Inyección", command, [{ text: "Cerrar" }]);
   };
 
+  const handleInjectViaTelnet = () => {
+    if (!isConnected) {
+      Alert.alert('No Conectado', 'Debes conectarte a la unidad MIB2 primero');
+      return;
+    }
+
+    if (selectedCodes.length === 0) {
+      Alert.alert('Sin Códigos', 'Selecciona al menos un código FEC');
+      return;
+    }
+
+    Alert.alert(
+      'Confirmar Inyección',
+      `¿Inyectar ${selectedCodes.length} código(s) FEC vía Telnet?\n\nLa unidad se reiniciará automáticamente.`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Inyectar',
+          style: 'destructive',
+          onPress: () => {
+            if (Platform.OS !== 'web') {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+            }
+            const commands = generateFecInjectionCommands(selectedCodes);
+            commands.forEach((cmd) => {
+              if (cmd && !cmd.startsWith('#')) {
+                sendCommand(cmd);
+              }
+            });
+            Alert.alert('Inyectando', 'Códigos FEC enviados. La unidad se reiniciará.');
+          },
+        },
+      ]
+    );
+  };
+
+  const handleOpenGenerator = async () => {
+    if (Platform.OS !== 'web') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    }
+    const supported = await Linking.canOpenURL(FEC_GENERATOR_URL);
+    if (supported) {
+      await Linking.openURL(FEC_GENERATOR_URL);
+    } else {
+      Alert.alert('Error', 'No se pudo abrir el generador online');
+    }
+  };
+
   const handleShowInfo = () => {
     if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -125,6 +177,16 @@ export default function FECScreen() {
               Feature Enable Codes para activación de funciones SWaP
             </Text>
           </View>
+
+          {/* Generator Button */}
+          <TouchableOpacity
+            onPress={handleOpenGenerator}
+            className="bg-primary px-4 py-3 rounded-xl active:opacity-80"
+          >
+            <Text className="text-center font-semibold text-base" style={{ color: colors.background }}>
+              🌐 Abrir Generador Online (vwcoding.ru)
+            </Text>
+          </TouchableOpacity>
 
           {/* Info Button */}
           <TouchableOpacity
@@ -339,6 +401,20 @@ export default function FECScreen() {
               >
                 <Text className="text-center font-semibold" style={{ color: colors.foreground }}>
                   Ver Comando de Inyección
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={handleInjectViaTelnet}
+                className="px-4 py-3 rounded-xl active:opacity-80"
+                style={{ backgroundColor: isConnected ? '#22C55E' : colors.muted + '33' }}
+                disabled={!isConnected}
+              >
+                <Text
+                  className="text-center font-semibold text-base"
+                  style={{ color: isConnected ? colors.background : colors.muted }}
+                >
+                  {isConnected ? '⚡ Inyectar vía Telnet' : '🔌 Conectar Telnet Primero'}
                 </Text>
               </TouchableOpacity>
             </View>

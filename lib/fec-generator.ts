@@ -17,24 +17,69 @@ export interface FECCode {
  */
 export const PREDEFINED_FEC_CODES: FECCode[] = [
   {
-    code: '00060800',
+    code: '00010001',
     name: 'Apple CarPlay',
     description: 'Habilita integración de Apple CarPlay en el sistema de infotainment',
     category: 'connectivity',
   },
   {
-    code: '00060900',
+    code: '00010002',
     name: 'Android Auto',
     description: 'Habilita integración de Android Auto en el sistema de infotainment',
     category: 'connectivity',
   },
   {
-    code: '00060400',
+    code: '00010004',
+    name: 'MirrorLink',
+    description: 'Habilita MirrorLink para dispositivos compatibles',
+    category: 'connectivity',
+  },
+  {
+    code: '00010008',
+    name: 'App-Connect (Full-Link)',
+    description: 'Habilita todas las funciones de App-Connect',
+    category: 'connectivity',
+  },
+  {
+    code: '00060001',
     name: 'Performance Monitor',
     description: 'Habilita el monitor de rendimiento en el cuadro digital',
     category: 'performance',
   },
+  {
+    code: '09400008',
+    name: 'Mapas Europa',
+    description: 'Activa región de mapas Europa (EU)',
+    category: 'multimedia',
+  },
+  {
+    code: '09410008',
+    name: 'Mapas Norteamérica',
+    description: 'Activa región de mapas Norteamérica (NAR)',
+    category: 'multimedia',
+  },
 ];
+
+/**
+ * URL del generador FEC online
+ */
+export const FEC_GENERATOR_URL = 'https://vwcoding.ru/en/utils/fec/';
+
+/**
+ * Generar comandos Telnet para inyectar códigos FEC
+ */
+export function generateFecInjectionCommands(codes: string[]): string[] {
+  return [
+    '# Montar sistema de archivos',
+    'mount -uw /net/rcc/dev/shmem',
+    '',
+    '# Inyectar códigos FEC',
+    ...codes.map((code) => `echo "${code}" >> /net/rcc/dev/shmem/addfec.txt`),
+    '',
+    '# Reiniciar unidad para aplicar cambios',
+    'reboot',
+  ];
+}
 
 /**
  * Interfaz para datos del vehículo

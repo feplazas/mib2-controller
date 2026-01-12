@@ -1,11 +1,13 @@
-import { useState } from "react";
-import { ScrollView, Text, View, TouchableOpacity, Alert, Platform } from "react-native";
+import { useState, useEffect } from "react";
+import { ScrollView, Text, View, TouchableOpacity, Alert, Platform, ActivityIndicator } from "react-native";
 import * as Haptics from "expo-haptics";
 import * as Sharing from "expo-sharing";
 import * as FileSystem from "expo-file-system/legacy";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
+import { useTelnet } from "@/lib/telnet-provider";
+import { useUsbStatus } from "@/lib/usb-status-context";
 import {
   TOOLBOX_INSTALLATION_STEPS,
   EMMC_ACCESS_INFO,
@@ -15,11 +17,17 @@ import {
   type InstallationStep,
 } from "@/lib/toolbox-installer";
 
+type StepStatus = 'pending' | 'inProgress' | 'completed' | 'error';
+
 export default function ToolboxScreen() {
   const colors = useColors();
+  const { isConnected, sendCommand } = useTelnet();
+  const { status: usbStatus } = useUsbStatus();
   const [selectedStep, setSelectedStep] = useState<InstallationStep | null>(null);
   const [showEmmcInfo, setShowEmmcInfo] = useState(false);
   const [showDiagnostics, setShowDiagnostics] = useState(false);
+  const [stepStatuses, setStepStatuses] = useState<Record<number, StepStatus>>({});
+  const [executing, setExecuting] = useState(false);
 
   const handleSelectStep = (step: InstallationStep) => {
     if (Platform.OS !== "web") {
@@ -85,6 +93,76 @@ export default function ToolboxScreen() {
     Alert.alert("Comando de Verificación", command, [{ text: "Cerrar" }]);
   };
 
+  const handleExecuteStep = async (step: InstallationStep) => {
+    if (!isConnected) {
+      Alert.alert('No Conectado', 'Debes conectarte a la unidad MIB2 primero');
+      return;
+    }
+
+    if (!step.command) {
+      Alert.alert('Sin Comando', 'Este paso no tiene un comando asociado');
+      return;
+    }
+
+    Alert.alert(
+      'Ejecutar Paso',
+      `¿Ejecutar: ${step.title}?`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Ejecutar',
+          onPress: async () => {
+            if (Platform.OS !== 'web') {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            }
+            setExecuting(true);
+            setStepStatuses(prev => ({ ...prev, [step.step]: 'inProgress' }));
+
+            try {
+              sendCommand(step.command!);
+              // Simular tiempo de ejecución
+              setTimeout(() => {
+                setStepStatuses(prev => ({ ...prev, [step.step]: 'completed' }));
+                setExecuting(false);
+                if (Platform.OS !== 'web') {
+                  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                }
+              }, 2000);
+            } catch (error) {
+              setStepStatuses(prev => ({ ...prev, [step.step]: 'error' }));
+              setExecuting(false);
+              if (Platform.OS !== 'web') {
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+              }
+              Alert.alert('Error', 'Error al ejecutar comando');
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const getStepIcon = (stepNumber: number): string => {
+    const status = stepStatuses[stepNumber];
+    if (status === 'completed') return '✅';
+    if (status === 'inProgress') return '⏳';
+    if (status === 'error') return '⚠️';
+    return '▫️';
+  };
+
+  const getStepColor = (stepNumber: number): string => {
+    const status = stepStatuses[stepNumber];
+    if (status === 'completed') return '#22C55E';
+    if (status === 'inProgress') return colors.primary;
+    if (status === 'error') return '#EF4444';
+    return colors.muted;
+  };
+
+  // Check prerequisites
+  const telnetReady = isConnected;
+  const usbReady = usbStatus === 'connected';
+  const allReady = telnetReady && usbReady;
+
   return (
     <ScreenContainer className="p-4">
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -97,6 +175,32 @@ export default function ToolboxScreen() {
             <Text className="text-sm" style={{ color: colors.muted }}>
               Guía paso a paso para instalar el MIB2 STD2 Toolbox
             </Text>
+          </View>
+
+          {/* Prerequisites Status */}
+          <View className="bg-surface rounded-xl p-4 border" style={{ borderColor: colors.border }}>
+            <Text className="text-lg font-semibold mb-3" style={{ color: colors.foreground }}>
+              Estado de Prerequisitos
+            </Text>
+            <View className="gap-2">
+              <View className="flex-row items-center gap-2">
+                <Text className="text-2xl">{telnetReady ? '✅' : '❌'}</Text>
+                <Text className="text-sm" style={{ color: colors.foreground }}>
+                  Conexión Telnet {telnetReady ? 'Activa' : 'Inactiva'}
+                </Text>
+              </View>
+              <View className="flex-row items-center gap-2">
+                <Text className="text-2xl">{usbReady ? '✅' : '❌'}</Text>
+                <Text className="text-sm" style={{ color: colors.foreground }}>
+                  Adaptador USB {usbReady ? 'Conectado' : 'Desconectado'}
+                </Text>
+              </View>
+              {!allReady && (
+                <Text className="text-xs mt-2" style={{ color: '#F59E0B' }}>
+                  ⚠️ Completa los prerequisitos antes de instalar
+                </Text>
+              )}
+            </View>
           </View>
 
           {/* Action Buttons */}

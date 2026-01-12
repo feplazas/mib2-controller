@@ -724,3 +724,79 @@
 - [ ] Probar generación de FEC codes
 - [ ] Probar ejecución de comandos Telnet
 - [ ] Validar que todos los comandos funcionan en QNX real
+
+
+## Implementación Final - FEC, Toolbox y Telnet (12 Ene 2026 - 03:00)
+
+### Generador FEC Funcional
+- [ ] Investigar algoritmo de generación FEC (VIN + VCRN → código firmado)
+- [ ] Buscar implementaciones de referencia en comunidad MIB2
+- [ ] Crear lib/fec-generator.ts con algoritmo funcional
+- [ ] Implementar validación de VIN (17 caracteres)
+- [ ] Implementar validación de VCRN (10 caracteres)
+- [ ] Crear pantalla fec.tsx con UI completa
+- [ ] Input VIN con validación
+- [ ] Input VCRN con validación
+- [ ] Checkboxes para features (CarPlay, AndroidAuto, Performance Monitor, etc)
+- [ ] Botón "Generar Códigos" que ejecuta algoritmo
+- [ ] Mostrar códigos generados en formato copiable
+- [ ] Botón "Copiar al Portapapeles"
+- [ ] Botón "Enviar vía Telnet" (si conectado)
+- [ ] Guardar VIN/VCRN en AsyncStorage para reutilizar
+
+### Guía Interactiva de Toolbox
+- [ ] Crear pantalla toolbox.tsx con wizard paso a paso
+- [ ] Paso 1: Verificar conexión Telnet (botón "Conectar")
+- [ ] Paso 2: Verificar adaptador USB spoofed (leer estado USB)
+- [ ] Paso 3: Preparar SD/USB con Toolbox (instrucciones + link descarga)
+- [ ] Paso 4: Ejecutar instalación (botón "Instalar Toolbox" → comando Telnet)
+- [ ] Paso 5: Verificar instalación (comando ls /mnt/efs-persist/toolbox)
+- [ ] Paso 6: Ejecutar parche SWaP (botón "Parchar SWaP" → comando Telnet)
+- [ ] Paso 7: Inyectar FEC codes (link a pantalla FEC Generator)
+- [ ] Mostrar output de comandos en tiempo real
+- [ ] Indicadores de progreso por paso (✅ completado, ⏳ en progreso, ⚠️ error)
+- [ ] Botón "Reintentar" en caso de error
+
+### Terminal Telnet Mejorada
+- [ ] Actualizar commands.tsx con terminal interactiva
+- [ ] ScrollView con mensajes de Telnet (tipo consola)
+- [ ] Input de comando en la parte inferior
+- [ ] Botón "Enviar" junto al input
+- [ ] Autocompletado de comandos MIB2 (dropdown con sugerencias)
+- [ ] Historial de comandos (flecha arriba/abajo para navegar)
+- [ ] Colorear output: verde para success, rojo para error, gris para info
+- [ ] Botón "Limpiar Terminal"
+- [ ] Botón "Exportar Log" (guardar mensajes en archivo)
+- [ ] Mostrar timestamp en cada mensaje
+- [ ] Auto-scroll al final cuando llegan nuevos mensajes
+
+
+## ✅ Completado - Implementación Final (12 Ene 2026 - 11:10)
+
+### Generador FEC Funcional
+- [x] Investigar algoritmo FEC (descubierto que es propietario de VAG)
+- [x] Implementar alternativa práctica: biblioteca de códigos + generador online
+- [x] Actualizar lib/fec-generator.ts con códigos correctos y función de inyección
+- [x] Actualizar fec.tsx con botón "Abrir Generador Online" (vwcoding.ru)
+- [x] Agregar botón "Inyectar vía Telnet" con integración funcional
+- [x] Implementar generateFecInjectionCommands() para comandos Telnet
+
+### Guía Interactiva de Toolbox
+- [x] Actualizar toolbox.tsx con integración Telnet
+- [x] Agregar panel de estado de prerequisitos (Telnet + USB)
+- [x] Implementar función handleExecuteStep() para ejecutar comandos
+- [x] Agregar indicadores de progreso por paso (✅/⏳/⚠️)
+- [x] Implementar getStepIcon() y getStepColor() para estados dinámicos
+
+### Terminal Telnet Mejorada
+- [x] Reescribir commands.tsx como terminal interactiva completa
+- [x] Implementar ScrollView con auto-scroll a mensajes nuevos
+- [x] Agregar TextInput con botón "Enviar"
+- [x] Implementar autocompletado con dropdown de sugerencias
+- [x] Agregar historial de comandos
+- [x] Implementar colores por tipo de mensaje (command/response/error/info)
+- [x] Agregar timestamps a cada mensaje
+- [x] Implementar botón "Limpiar Terminal"
+- [x] Agregar botones Conectar/Desconectar
+- [x] Implementar comandos rápidos (scroll horizontal)
+- [x] Agregar copiar mensaje al portapapeles (long press)
