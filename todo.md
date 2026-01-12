@@ -974,3 +974,21 @@
 - [x] Corregir acceso a propiedad size de EEPROMReadResult (usar valor hardcoded 256)
 - [x] Eliminar doble llave en función getStatusColor
 - [x] Verificar 0 errores TypeScript en compilación
+
+## Test de Spoofing en Auto Spoof
+
+### Verificación Post-Spoofing
+- [x] Agregar botón "🧪 Test de Spoofing" en auto-spoof.tsx
+- [x] Implementar función que re-escanea dispositivos USB después del spoofing (usbService.scanDevices() REAL)
+- [x] Verificar si VID/PID cambió a valores objetivo (0x2001:0x3C05)
+- [x] Mostrar resultado con comparación antes/después
+- [x] Agregar indicador visual de éxito (verde) o fallo (rojo)
+- [x] Incluir instrucciones de reconexión si no detecta cambios
+- [x] Agregar feedback háptico según resultado del test
+
+### Spoof Rápido para Usuarios Experimentados
+- [x] Agregar botón "🔄 Spoof Rápido" en auto-spoof.tsx
+- [x] Implementar función que ejecuta spoofing con una sola confirmación
+- [x] Mantener backup automático antes de escribir
+- [x] Mostrar advertencia crítica pero sin múltiples diálogos
+- [x] Reutilizar lógica de performSpoof (misma función REAL)

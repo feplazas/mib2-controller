@@ -36,6 +36,8 @@ export default function AutoSpoofScreen() {
     timestamp: Date;
   } | null>(null);
   const resultModalRef = useRef(null);
+  const [isTesting, setIsTesting] = useState(false);
+  const [testResult, setTestResult] = useState<'success' | 'fail' | null>(null);
 
   const getStepText = (step: SpoofStep): string => {
     switch (step) {
@@ -301,6 +303,122 @@ export default function AutoSpoofScreen() {
   };
 
   const canExecute = status === 'connected' && device && canAttemptSpoofing(getChipsetCompatibility(device.chipset || ''));
+
+  // Función REAL de Test de Spoofing
+  const handleTestSpoofing = async () => {
+    setIsTesting(true);
+    setTestResult(null);
+    
+    try {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      
+      // Re-escanear dispositivos USB REALES
+      const devices = await usbService.scanDevices();
+      
+      if (devices.length === 0) {
+        Alert.alert(
+          '⚠️ Dispositivo No Detectado',
+          'No se detectó ningún dispositivo USB.\n\n' +
+          '🔌 INSTRUCCIONES:\n' +
+          '1. Desconecta el adaptador USB\n' +
+          '2. Espera 5 segundos\n' +
+          '3. Vuelve a conectar el adaptador\n' +
+          '4. Espera a que el sistema lo reconozca\n' +
+          '5. Intenta el test nuevamente'
+        );
+        setTestResult('fail');
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        return;
+      }
+      
+      // Verificar VID/PID del primer dispositivo detectado
+      const detectedDevice = devices[0];
+      const targetVID = 0x2001;
+      const targetPID = 0x3C05;
+      
+      const isSuccess = detectedDevice.vendorId === targetVID && detectedDevice.productId === targetPID;
+      
+      if (isSuccess) {
+        setTestResult('success');
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        Alert.alert(
+          '✅ Spoofing Exitoso',
+          `El adaptador tiene el VID/PID correcto:\n\n` +
+          `🔌 Dispositivo: ${detectedDevice.deviceName}\n` +
+          `✅ VID: 0x${detectedDevice.vendorId.toString(16).toUpperCase().padStart(4, '0')} (D-Link)\n` +
+          `✅ PID: 0x${detectedDevice.productId.toString(16).toUpperCase().padStart(4, '0')} (DUB-E100)\n` +
+          `👍 Chipset: ${detectedDevice.chipset}\n\n` +
+          `✅ El spoofing fue EXITOSO. El adaptador ahora es compatible con MIB2.`
+        );
+      } else {
+        setTestResult('fail');
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+        Alert.alert(
+          '⚠️ Spoofing No Detectado',
+          `El adaptador NO tiene el VID/PID objetivo:\n\n` +
+          `🔌 Dispositivo: ${detectedDevice.deviceName}\n` +
+          `❌ VID actual: 0x${detectedDevice.vendorId.toString(16).toUpperCase().padStart(4, '0')}\n` +
+          `❌ PID actual: 0x${detectedDevice.productId.toString(16).toUpperCase().padStart(4, '0')}\n` +
+          `🎯 VID esperado: 0x2001\n` +
+          `🎯 PID esperado: 0x3C05\n\n` +
+          `🔄 POSIBLES CAUSAS:\n` +
+          `1. No se ha ejecutado el spoofing aún\n` +
+          `2. El spoofing falló durante la escritura\n` +
+          `3. No se ha reconectado el adaptador después del spoofing\n\n` +
+          `💡 SOLUCIÓN:\n` +
+          `Desconecta y reconecta el adaptador para que el sistema lea los nuevos valores de EEPROM.`
+        );
+      }
+    } catch (error: any) {
+      setTestResult('fail');
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert('Error', `No se pudo realizar el test:\n\n${error.message}`);
+    } finally {
+      setIsTesting(false);
+    }
+  };
+
+  // Función REAL de Spoof Rápido (una sola confirmación)
+  const handleQuickSpoof = async () => {
+    if (!device) {
+      Alert.alert('Error', 'No hay dispositivo USB conectado');
+      return;
+    }
+
+    const compatibility = getChipsetCompatibility(device.chipset || '');
+    
+    if (!canAttemptSpoofing(compatibility)) {
+      Alert.alert(
+        'Dispositivo No Compatible',
+        getCompatibilityMessage(compatibility, device.chipset || 'desconocido')
+      );
+      return;
+    }
+
+    // Una sola confirmación crítica
+    Alert.alert(
+      '⚠️ Spoof Rápido',
+      `🚀 MODO RÁPIDO - Una sola confirmación\n\n` +
+      `📊 Dispositivo: ${device.deviceName}\n` +
+      `🔧 Chipset: ${device.chipset}\n` +
+      `🔄 VID/PID: ${usbService.formatVIDPID(device.vendorId, device.productId)} → 0x2001:0x3C05\n\n` +
+      `⚠️ ADVERTENCIAS:\n` +
+      `• Modificación PERMANENTE de EEPROM\n` +
+      `• NO desconectar durante el proceso\n` +
+      `• Backup automático incluido\n` +
+      `• Requiere reconexión después\n\n` +
+      `🔋 Batería: Asegúrate de tener >20%\n\n` +
+      `¿Ejecutar spoofing AHORA?`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'SÍ, Ejecutar',
+          style: 'destructive',
+          onPress: () => performSpoof(),
+        },
+      ]
+    );
+  };
   
   const handleShareResult = async () => {
     try {
@@ -535,7 +653,68 @@ export default function AutoSpoofScreen() {
             </View>
           </View>
 
-          {/* Botón de Ejecución */}
+          {/* Botones de Test y Spoof Rápido */}
+          <View className="gap-3">
+            {/* Botón Test de Spoofing */}
+            <TouchableOpacity
+              onPress={handleTestSpoofing}
+              disabled={isTesting}
+              className={`rounded-xl p-4 items-center border-2 ${
+                testResult === 'success'
+                  ? 'bg-green-500/10 border-green-500'
+                  : testResult === 'fail'
+                  ? 'bg-red-500/10 border-red-500'
+                  : isTesting
+                  ? 'bg-muted/20 border-muted opacity-50'
+                  : 'bg-blue-500/10 border-blue-500 active:opacity-80'
+              }`}
+            >
+              <View className="flex-row items-center gap-2">
+                <Text className="text-xl">
+                  {isTesting ? '⏳' : testResult === 'success' ? '✅' : testResult === 'fail' ? '❌' : '🧪'}
+                </Text>
+                <Text className={`text-base font-bold ${
+                  testResult === 'success'
+                    ? 'text-green-500'
+                    : testResult === 'fail'
+                    ? 'text-red-500'
+                    : isTesting
+                    ? 'text-muted'
+                    : 'text-blue-500'
+                }`}>
+                  {isTesting ? 'Testeando...' : 'Test de Spoofing'}
+                </Text>
+              </View>
+              <Text className="text-xs text-muted mt-1">
+                Verifica si el adaptador tiene VID/PID 0x2001:0x3C05
+              </Text>
+            </TouchableOpacity>
+
+            {/* Botón Spoof Rápido */}
+            <TouchableOpacity
+              onPress={handleQuickSpoof}
+              disabled={!canExecute || isExecuting}
+              className={`rounded-xl p-4 items-center border-2 ${
+                canExecute && !isExecuting
+                  ? 'bg-orange-500/10 border-orange-500 active:opacity-80'
+                  : 'bg-muted/20 border-muted opacity-50'
+              }`}
+            >
+              <View className="flex-row items-center gap-2">
+                <Text className="text-xl">🔄</Text>
+                <Text className={`text-base font-bold ${
+                  canExecute && !isExecuting ? 'text-orange-500' : 'text-muted'
+                }`}>
+                  {isExecuting ? 'Ejecutando...' : 'Spoof Rápido'}
+                </Text>
+              </View>
+              <Text className="text-xs text-muted mt-1">
+                Ejecuta spoofing con una sola confirmación
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Botón de Ejecución Principal */}
           <TouchableOpacity
             onPress={executeAutoSpoof}
             disabled={!canExecute || isExecuting}
@@ -551,6 +730,11 @@ export default function AutoSpoofScreen() {
             {!canExecute && !isExecuting && (
               <Text className="text-xs text-background opacity-70">
                 Conecta un adaptador compatible para continuar
+              </Text>
+            )}
+            {canExecute && !isExecuting && (
+              <Text className="text-xs text-background/80 mt-1">
+                Con triple confirmación y validaciones completas
               </Text>
             )}
           </TouchableOpacity>
