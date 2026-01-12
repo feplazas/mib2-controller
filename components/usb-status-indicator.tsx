@@ -25,8 +25,8 @@ export function UsbStatusIndicator({ status, deviceName, onPress }: UsbStatusInd
     if (onPress) {
       onPress();
     } else {
-      // Por defecto, navegar a la pantalla USB
-      router.push('/(tabs)/usb-diag');
+      // Por defecto, navegar a la pantalla USB Status
+      router.push('/(tabs)/usb-status');
     }
   };
 

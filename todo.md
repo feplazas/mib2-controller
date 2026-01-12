@@ -870,3 +870,29 @@
 - [x] Manejar errores y mostrar alertas apropiadas
 - [x] Agregar confirmación antes de crear backup
 - [x] Deshabilitar botón durante creación de backup
+
+
+## Auditoría Final - APK Producción (12 Ene 2026 - 12:05)
+
+### Navegaciones
+- [x] Buscar TODAS las referencias a router.push, router.navigate, href
+- [x] Corregir navegación en usb-status-indicator.tsx (usb-diag → usb-status)
+- [x] Verificar que todas las rutas existen en app/(tabs)/_layout.tsx
+- [x] Verificar navegación en tools.tsx (todas correctas)
+
+### Mockups y Datos Falsos
+- [x] Revisar todas las pantallas en busca de datos hardcodeados
+- [x] Verificar fec-generator.ts (placeholder esperado, usa vwcoding.ru para generación real)
+- [x] Verificar que todos los servicios usen módulos nativos reales
+
+### Funcionalidad Core
+- [x] Verificar detección USB real (usb-service.ts usa UsbNativeModule)
+- [x] Verificar lectura/escritura EEPROM real (UsbNativeModule.readEEPROM/writeEEPROM)
+- [x] Verificar cliente Telnet TCP real (telnet-client.ts usa react-native-tcp-socket)
+- [x] Verificar generación FEC (pantalla fec.tsx tiene botón para vwcoding.ru)
+- [x] Verificar backup service usa AsyncStorage real (backup-service.ts usa @react-native-async-storage)
+
+### Testing Final
+- [ ] Probar cada tab sin crashes
+- [ ] Probar cada botón sin Unmatched Route
+- [ ] Verificar que no hay console.errors en producción
