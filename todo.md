@@ -827,3 +827,12 @@
 - [x] Implementar conexión automática al encontrar MIB2 (con confirmación)
 - [x] Notificación háptica al conectar exitosamente
 - [x] Detección automática de Toolbox después de conectar
+
+
+## Corrección Error Unmatched Route en Tab USB (12 Ene 2026 - 11:40)
+
+- [x] Verificar configuración de rutas en app/(tabs)/_layout.tsx
+- [x] Encontrar navegación a /(tabs)/vidpid-profiles que ya no existe
+- [x] Eliminar botón de navegación a vidpid-profiles en usb-status.tsx
+- [x] Actualizar tools.tsx eliminando referencias a pantallas eliminadas
+- [ ] Probar navegación en APK compilado

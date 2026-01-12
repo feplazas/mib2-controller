@@ -303,19 +303,7 @@ export default function UsbStatusScreen() {
                   </View>
                 </View>
               </View>
-              
-              <TouchableOpacity
-                onPress={() => {
-                  // Navegar a Perfiles VID/PID
-                  const router = require('expo-router').router;
-                  router.push('/(tabs)/vidpid-profiles');
-                }}
-                className="bg-primary rounded-xl p-3 items-center"
-              >
-                <Text className="text-sm font-bold text-background">
-                  🚀 Ir a Perfiles VID/PID
-                </Text>
-              </TouchableOpacity>
+
             </View>
           )}
 

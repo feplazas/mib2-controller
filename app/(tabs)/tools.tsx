@@ -4,15 +4,11 @@ import { ScreenContainer } from "@/components/screen-container";
 
 export default function ToolsScreen() {
   const tools = [
-    { id: 'vcds', title: 'VCDS', description: 'Procedimientos VCDS con traducciones', icon: '🔧' },
     { id: 'fec', title: 'Generador FEC', description: 'Generar códigos FEC personalizados', icon: '🔑' },
     { id: 'toolbox', title: 'MIB2 Toolbox', description: 'Asistente de instalación', icon: '🛠️' },
-    { id: 'macros', title: 'Macros', description: 'Secuencias de comandos automatizadas', icon: '▶️' },
-    { id: 'spoofing', title: 'USB Spoofing', description: 'Modificar adaptadores ASIX', icon: '⚡' },
-    { id: 'recovery', title: 'Recovery', description: 'Recuperar adaptadores brickeados', icon: '🔄' },
-    { id: 'backups', title: 'Backups EEPROM', description: 'Gestionar copias de seguridad', icon: '💾' },
-    { id: 'advanced-diag', title: 'Diagnóstico Avanzado', description: 'Editor hexadecimal de EEPROM', icon: '🔬' },
-    { id: 'vidpid-profiles', title: 'Perfiles VID/PID', description: 'Biblioteca de perfiles predefinidos', icon: '📚' },
+    { id: 'auto-spoof', title: 'USB Spoofing', description: 'Modificar adaptadores ASIX', icon: '⚡' },
+    { id: 'usb-status', title: 'Estado USB', description: 'Información del adaptador conectado', icon: '🔌' },
+    { id: 'commands', title: 'Terminal Telnet', description: 'Consola interactiva MIB2', icon: '💻' },
   ];
 
   return (
