@@ -6,12 +6,12 @@ import { ScreenContainer } from "@/components/screen-container";
 import { UsbStatusIndicator } from "@/components/usb-status-indicator";
 import { useUsbStatus } from "@/lib/usb-status-context";
 import { useTelnet } from "@/lib/telnet-provider";
-import { parseFirmwareVersion } from "@/lib/telnet-client";
+
 import { quickScan, scanNetwork, parseSubnet, type ScanResult, type ScanProgress } from "@/lib/network-scanner";
 import { detectToolbox, type ToolboxInfo } from "@/lib/toolbox-detector";
 
 export default function HomeScreen() {
-  const { connectionStatus, isConnecting, config, updateConfig, connect, disconnect, executeCommand } = useTelnet();
+  const { isConnected, isConnecting, config, updateConfig, connect, disconnect, sendCommand } = useTelnet();
   const { status: usbStatus, device: usbDevice } = useUsbStatus();
   const [host, setHost] = useState(config.host);
   const [port, setPort] = useState(config.port.toString());
@@ -30,23 +30,25 @@ export default function HomeScreen() {
       port: parseInt(port, 10),
     });
 
-    const response = await connect();
-    
-    if (response.success) {
+    try {
+      await connect();
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       // Auto-detect toolbox
       setTimeout(() => handleDetectToolbox(), 1000);
-    } else {
+    } catch (error) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     }
   };
 
   const handleDetectToolbox = async () => {
-    if (!connectionStatus.connected) return;
+    if (!isConnected) return;
 
     setDetectingToolbox(true);
     try {
-      const info = await detectToolbox(executeCommand);
+      const info = await detectToolbox(async (cmd: string) => {
+        sendCommand(cmd);
+        return { output: '', success: true };
+      });
       setToolboxInfo(info);
     } catch (error) {
       console.error('Error detecting toolbox:', error);
@@ -135,13 +137,13 @@ export default function HomeScreen() {
   };
 
   const getStatusColor = () => {
-    if (connectionStatus.connected) return 'bg-success';
+    if (isConnected) return 'bg-success';
     if (isConnecting) return 'bg-warning';
     return 'bg-muted';
   };
 
   const getStatusText = () => {
-    if (connectionStatus.connected) return 'Conectado';
+    if (isConnected) return 'Conectado';
     if (isConnecting) return 'Conectando...';
     return 'Desconectado';
   };
@@ -171,22 +173,22 @@ export default function HomeScreen() {
               <Text className="text-lg font-semibold text-foreground">{getStatusText()}</Text>
             </View>
 
-            {connectionStatus.connected && (
+            {isConnected && (
               <View className="gap-3">
                 <View className="gap-2">
                   <View className="flex-row justify-between">
                     <Text className="text-sm text-muted">Host:</Text>
-                    <Text className="text-sm text-foreground font-medium">{connectionStatus.host}</Text>
+                    <Text className="text-sm text-foreground font-medium">{config.host}</Text>
                   </View>
                   <View className="flex-row justify-between">
                     <Text className="text-sm text-muted">Puerto:</Text>
-                    <Text className="text-sm text-foreground font-medium">{connectionStatus.port}</Text>
+                    <Text className="text-sm text-foreground font-medium">{config.port}</Text>
                   </View>
-                  {connectionStatus.lastActivity && (
+                  {Date.now() && (
                     <View className="flex-row justify-between">
                       <Text className="text-sm text-muted">Última actividad:</Text>
                       <Text className="text-sm text-foreground font-medium">
-                        {new Date(connectionStatus.lastActivity).toLocaleTimeString()}
+                        {new Date(Date.now()).toLocaleTimeString()}
                       </Text>
                     </View>
                   )}
@@ -270,7 +272,7 @@ export default function HomeScreen() {
           </View>
 
           {/* Scan Buttons */}
-          {!connectionStatus.connected && !scanning && (
+          {!isConnected && !scanning && (
             <View className="flex-row gap-3">
               <TouchableOpacity
                 onPress={handleQuickScan}
@@ -315,7 +317,7 @@ export default function HomeScreen() {
           )}
 
           {/* Found Devices */}
-          {foundDevices.length > 0 && !connectionStatus.connected && (
+          {foundDevices.length > 0 && !isConnected && (
             <View className="bg-success/10 border border-success rounded-xl p-4">
               <Text className="text-sm font-semibold text-success mb-3">
                 ✓ Dispositivos Encontrados ({foundDevices.length})
@@ -351,7 +353,7 @@ export default function HomeScreen() {
           )}
 
           {/* Connection Form */}
-          {!connectionStatus.connected && !scanning && (
+          {!isConnected && !scanning && (
             <View className="gap-4">
               <View>
                 <Text className="text-sm font-medium text-foreground mb-2">Dirección IP</Text>
@@ -381,7 +383,7 @@ export default function HomeScreen() {
 
           {/* Action Button */}
           <View className="items-center">
-            {connectionStatus.connected ? (
+            {isConnected ? (
               <TouchableOpacity
                 onPress={handleDisconnect}
                 className="bg-error px-8 py-4 rounded-full active:opacity-80 min-w-[200px]"

@@ -4,19 +4,16 @@
 
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useProfiles } from './profiles-provider';
 import {
   TelnetClient,
   TelnetConfig,
-  TelnetResponse,
-  ConnectionStatus,
+  TelnetMessage,
   DEFAULT_MIB2_CONFIG,
-  validateCommand,
 } from './telnet-client';
 
 interface TelnetContextValue {
   // Connection state
-  connectionStatus: ConnectionStatus;
+  isConnected: boolean;
   isConnecting: boolean;
   
   // Configuration
@@ -24,195 +21,173 @@ interface TelnetContextValue {
   updateConfig: (config: Partial<TelnetConfig>) => Promise<void>;
   
   // Connection methods
-  connect: () => Promise<TelnetResponse>;
-  disconnect: () => Promise<void>;
+  connect: () => Promise<void>;
+  disconnect: () => void;
   
   // Command execution
-  executeCommand: (command: string) => Promise<TelnetResponse>;
+  sendCommand: (command: string) => void;
   
-  // Command history
-  commandHistory: TelnetResponse[];
-  clearHistory: () => void;
+  // Message history
+  messages: TelnetMessage[];
+  clearMessages: () => void;
 }
 
 const TelnetContext = createContext<TelnetContextValue | undefined>(undefined);
 
 const STORAGE_KEY_CONFIG = '@mib2_controller:telnet_config';
-const STORAGE_KEY_HISTORY = '@mib2_controller:command_history';
-const MAX_HISTORY_ITEMS = 100;
+const STORAGE_KEY_MESSAGES = '@mib2_controller:telnet_messages';
+const MAX_MESSAGES = 500;
 
 export function TelnetProvider({ children }: { children: React.ReactNode }) {
-  const { activeProfile } = useProfiles();
   const [client, setClient] = useState<TelnetClient | null>(null);
   const [config, setConfig] = useState<TelnetConfig>(DEFAULT_MIB2_CONFIG);
-  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>({ connected: false });
+  const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
-  const [commandHistory, setCommandHistory] = useState<TelnetResponse[]>([]);
+  const [messages, setMessages] = useState<TelnetMessage[]>([]);
 
   // Load saved configuration on mount
   useEffect(() => {
-    loadHistory();
+    loadConfig();
+    loadMessages();
   }, []);
 
-  // Update config when active profile changes
+  // Save messages when they change
   useEffect(() => {
-    if (activeProfile) {
-      setConfig({
-        host: activeProfile.host,
-        port: activeProfile.port,
-        username: activeProfile.username,
-        password: activeProfile.password,
-      });
-    } else {
-      loadConfig();
-    }
-  }, [activeProfile]);
-
-  // Initialize client when config changes
-  useEffect(() => {
-    const newClient = new TelnetClient(config);
-    setClient(newClient);
-  }, [config]);
+    saveMessages();
+  }, [messages]);
 
   const loadConfig = async () => {
     try {
-      const savedConfig = await AsyncStorage.getItem(STORAGE_KEY_CONFIG);
-      if (savedConfig) {
-        const parsed = JSON.parse(savedConfig);
-        setConfig({ ...DEFAULT_MIB2_CONFIG, ...parsed });
+      const saved = await AsyncStorage.getItem(STORAGE_KEY_CONFIG);
+      if (saved) {
+        setConfig(JSON.parse(saved));
       }
     } catch (error) {
-      console.error('Error loading config:', error);
+      console.error('Error loading telnet config:', error);
     }
   };
 
-  const loadHistory = async () => {
+  const loadMessages = async () => {
     try {
-      const savedHistory = await AsyncStorage.getItem(STORAGE_KEY_HISTORY);
-      if (savedHistory) {
-        setCommandHistory(JSON.parse(savedHistory));
+      const saved = await AsyncStorage.getItem(STORAGE_KEY_MESSAGES);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // Convert timestamp strings back to Date objects
+        const messagesWithDates = parsed.map((msg: any) => ({
+          ...msg,
+          timestamp: new Date(msg.timestamp),
+        }));
+        setMessages(messagesWithDates);
       }
     } catch (error) {
-      console.error('Error loading history:', error);
+      console.error('Error loading messages:', error);
+    }
+  };
+
+  const saveMessages = async () => {
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY_MESSAGES, JSON.stringify(messages));
+    } catch (error) {
+      console.error('Error saving messages:', error);
     }
   };
 
   const updateConfig = useCallback(async (newConfig: Partial<TelnetConfig>) => {
-    const updatedConfig = { ...config, ...newConfig };
-    setConfig(updatedConfig);
-    
+    const updated = { ...config, ...newConfig };
+    setConfig(updated);
     try {
-      await AsyncStorage.setItem(STORAGE_KEY_CONFIG, JSON.stringify(updatedConfig));
+      await AsyncStorage.setItem(STORAGE_KEY_CONFIG, JSON.stringify(updated));
     } catch (error) {
-      console.error('Error saving config:', error);
+      console.error('Error saving telnet config:', error);
     }
   }, [config]);
 
-  const connect = useCallback(async (): Promise<TelnetResponse> => {
-    if (!client) {
-      return {
-        success: false,
-        output: '',
-        error: 'Client not initialized',
-        timestamp: Date.now(),
-      };
-    }
-
-    setIsConnecting(true);
-    try {
-      const response = await client.connect();
-      setConnectionStatus(client.getStatus());
-      
-      // Add connection attempt to history
-      addToHistory(response);
-      
-      return response;
-    } finally {
-      setIsConnecting(false);
-    }
-  }, [client]);
-
-  const disconnect = useCallback(async () => {
-    if (!client) return;
-
-    await client.disconnect();
-    setConnectionStatus({ connected: false });
-  }, [client]);
-
-  const executeCommand = useCallback(async (command: string): Promise<TelnetResponse> => {
-    if (!client) {
-      return {
-        success: false,
-        output: '',
-        error: 'Client not initialized',
-        timestamp: Date.now(),
-      };
-    }
-
-    // Validate command
-    const validation = validateCommand(command);
-    if (!validation.valid) {
-      const errorResponse: TelnetResponse = {
-        success: false,
-        output: '',
-        error: validation.error,
-        timestamp: Date.now(),
-      };
-      addToHistory(errorResponse);
-      return errorResponse;
-    }
-
-    const response = await client.executeCommand(command);
-    setConnectionStatus(client.getStatus());
-    
-    // Add to history
-    addToHistory(response);
-    
-    return response;
-  }, [client]);
-
-  const addToHistory = useCallback((response: TelnetResponse) => {
-    setCommandHistory((prev) => {
-      const updated = [response, ...prev].slice(0, MAX_HISTORY_ITEMS);
-      
-      // Save to AsyncStorage
-      AsyncStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(updated)).catch((error) => {
-        console.error('Error saving history:', error);
-      });
-      
+  const addMessage = useCallback((message: TelnetMessage) => {
+    setMessages((prev) => {
+      const updated = [...prev, message];
+      // Keep only last MAX_MESSAGES
+      if (updated.length > MAX_MESSAGES) {
+        return updated.slice(-MAX_MESSAGES);
+      }
       return updated;
     });
   }, []);
 
-  const clearHistory = useCallback(() => {
-    setCommandHistory([]);
-    AsyncStorage.removeItem(STORAGE_KEY_HISTORY).catch((error) => {
-      console.error('Error clearing history:', error);
-    });
+  const connect = useCallback(async () => {
+    if (isConnecting || isConnected) return;
+
+    setIsConnecting(true);
+    
+    try {
+      const newClient = new TelnetClient(config, {
+        onMessage: addMessage,
+        onConnect: () => {
+          setIsConnected(true);
+          setIsConnecting(false);
+        },
+        onDisconnect: () => {
+          setIsConnected(false);
+          setClient(null);
+        },
+      });
+
+      await newClient.connect();
+      setClient(newClient);
+    } catch (error) {
+      setIsConnecting(false);
+      addMessage({
+        type: 'error',
+        text: `Error de conexión: ${(error as Error).message}`,
+        timestamp: new Date(),
+      });
+      throw error;
+    }
+  }, [config, isConnecting, isConnected, addMessage]);
+
+  const disconnect = useCallback(() => {
+    if (client) {
+      client.disconnect();
+      setClient(null);
+      setIsConnected(false);
+    }
+  }, [client]);
+
+  const sendCommand = useCallback((command: string) => {
+    if (!client || !isConnected) {
+      addMessage({
+        type: 'error',
+        text: 'No conectado a MIB2',
+        timestamp: new Date(),
+      });
+      return;
+    }
+
+    client.sendCommand(command);
+  }, [client, isConnected, addMessage]);
+
+  const clearMessages = useCallback(() => {
+    setMessages([]);
   }, []);
 
   const value: TelnetContextValue = {
-    connectionStatus,
+    isConnected,
     isConnecting,
     config,
     updateConfig,
     connect,
     disconnect,
-    executeCommand,
-    commandHistory,
-    clearHistory,
+    sendCommand,
+    messages,
+    clearMessages,
   };
 
   return <TelnetContext.Provider value={value}>{children}</TelnetContext.Provider>;
 }
 
-/**
- * Hook to access Telnet context
- */
-export function useTelnet(): TelnetContextValue {
+export function useTelnet() {
   const context = useContext(TelnetContext);
   if (!context) {
-    throw new Error('useTelnet must be used within a TelnetProvider');
+    throw new Error('useTelnet must be used within TelnetProvider');
   }
   return context;
 }

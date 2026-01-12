@@ -661,3 +661,66 @@
 - [x] Implementar funcionalidad de compartir resultado como archivo de texto
 - [x] Integrar SuccessResultModal en auto-spoof.tsx después de spoofing exitoso
 - [ ] Probar flujo completo en dispositivo real: primera ejecución → tutorial → spoofing → resultado → compartir
+
+
+## Rediseño Completo - Enfoque en Flujo Real (12 Ene 2026 - 00:00)
+
+### Corrección de Errores Críticos
+- [x] Corregir error "Unmatched Route" (manus20260110134809://)
+- [x] Revisar todas las rutas de navegación
+- [x] Verificar deep links y esquemas personalizados
+
+### Simplificación de Arquitectura
+- [x] Eliminar completamente módulo VCDS y todas sus referencias
+- [x] Eliminar pantalla vcds.tsx
+- [x] Eliminar lib/vcds-procedures.ts
+- [x] Actualizar navegación del tab bar
+- [x] Reducir tabs a: Home, USB, Spoof, Telnet, Toolbox, FEC, Config
+- [x] Eliminar pantallas innecesarias: queue, macros, logs, profiles, data, diagnostic, stats, config, backups, recovery, advanced-diag, vidpid-profiles, custom-profile-editor, spoofing, usb-diag
+
+### Implementación de Cliente Telnet Real
+- [x] Instalar react-native-tcp-socket para conexiones TCP
+- [x] Crear lib/telnet-client.ts con cliente Telnet funcional usando TCP directo
+- [x] Implementar conexión a 192.168.1.4:23
+- [x] Implementar autenticación root/root automática
+- [x] Actualizar lib/telnet-provider.tsx con nueva API
+- [x] Agregar comandos pre-configurados en MIB2_COMMANDS
+- [x] Implementar historial de mensajes con AsyncStorage
+- [ ] Crear pantalla terminal interactiva (commands.tsx ya existe)
+- [ ] Probar conexión Telnet real con MIB2
+
+### Implementación de Generador FEC Real
+- [ ] Investigar algoritmo de generación FEC (VIN + VCRN → código firmado)
+- [ ] Crear lib/fec-generator.ts con algoritmo funcional
+- [ ] Crear pantalla fec-generator.tsx
+- [ ] Input para VIN (17 caracteres, validación)
+- [ ] Input para VCRN (10 caracteres, obtener de Telnet)
+- [ ] Checkboxes para features: CarPlay (00060800), AndroidAuto (00060900), etc
+- [ ] Botón "Generar Códigos" que ejecuta algoritmo real
+- [ ] Mostrar códigos generados para copiar
+- [ ] Botón "Copiar al Portapapeles"
+- [ ] Botón "Enviar vía Telnet" (si conexión activa)
+
+### Implementación de Guía de Toolbox
+- [ ] Crear pantalla toolbox-guide.tsx
+- [ ] Paso 1: Verificar acceso Telnet
+- [ ] Paso 2: Preparar SD/USB con Toolbox
+- [ ] Paso 3: Ejecutar comando de instalación
+- [ ] Paso 4: Verificar instalación
+- [ ] Paso 5: Ejecutar parche SWaP
+- [ ] Paso 6: Inyectar FEC codes
+- [ ] Botones "Ejecutar Comando" que envían comandos reales vía Telnet
+- [ ] Mostrar output en tiempo real
+
+### Actualización de Documentación
+- [ ] Actualizar README.md con flujo real
+- [ ] Crear FLOW.md explicando el proceso completo
+- [ ] Documentar comandos Telnet útiles
+- [ ] Agregar troubleshooting común
+
+### Testing Real
+- [ ] Probar spoofing con adaptador ASIX real
+- [ ] Probar conexión Telnet a MIB2 real
+- [ ] Probar generación de FEC codes
+- [ ] Probar ejecución de comandos Telnet
+- [ ] Validar que todos los comandos funcionan en QNX real

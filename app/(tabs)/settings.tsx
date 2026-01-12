@@ -7,7 +7,7 @@ import { useTelnet } from "@/lib/telnet-provider";
 import { useExpertMode } from "@/lib/expert-mode-provider";
 
 export default function SettingsScreen() {
-  const { config, updateConfig, clearHistory } = useTelnet();
+  const { config, updateConfig, clearMessages } = useTelnet();
   const { isExpertMode, isPinSet, enableExpertMode, disableExpertMode, setPin, changePin, resetPin } = useExpertMode();
   
   const [host, setHost] = useState(config.host);
@@ -539,7 +539,7 @@ export default function SettingsScreen() {
                       text: 'Limpiar',
                       style: 'destructive',
                       onPress: () => {
-                        clearHistory();
+                        clearMessages();
                         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
                         Alert.alert('Éxito', 'Historial eliminado');
                       },

@@ -15,14 +15,14 @@ import {
 import { useExpertMode } from "@/lib/expert-mode-provider";
 
 export default function CommandsScreen() {
-  const { connectionStatus, executeCommand } = useTelnet();
+  const { isConnected, sendCommand } = useTelnet();
   const { isExpertMode } = useExpertMode();
   const [customCommand, setCustomCommand] = useState('');
   const [executing, setExecuting] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<CommandCategory | 'all'>('all');
 
   const handleExecuteCommand = async (cmd: MIB2Command) => {
-    if (!connectionStatus.connected) {
+    if (!isConnected) {
       Alert.alert('No Conectado', 'Debes conectarte a la unidad MIB2 primero');
       return;
     }
@@ -50,28 +50,25 @@ export default function CommandsScreen() {
           {
             text: 'Ejecutar',
             style: cmd.riskLevel === 'critical' || cmd.riskLevel === 'high' ? 'destructive' : 'default',
-            onPress: () => executeCommandInternal(cmd.command),
+            onPress: () => sendCommandInternal(cmd.command),
           },
         ]
       );
     } else {
-      executeCommandInternal(cmd.command);
+      sendCommandInternal(cmd.command);
     }
   };
 
-  const executeCommandInternal = async (command: string) => {
+  const sendCommandInternal = (command: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setExecuting(true);
 
     try {
-      const response = await executeCommand(command);
-      
-      if (response.success) {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      } else {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-        Alert.alert('Error', response.error || 'Error al ejecutar comando');
-      }
+      sendCommand(command);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } catch (error) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert('Error', 'Error al ejecutar comando');
     } finally {
       setExecuting(false);
     }
@@ -92,7 +89,7 @@ export default function CommandsScreen() {
           text: 'Ejecutar',
           style: 'destructive',
           onPress: () => {
-            executeCommandInternal(customCommand);
+            sendCommandInternal(customCommand);
             setCustomCommand('');
           },
         },
@@ -196,7 +193,7 @@ export default function CommandsScreen() {
               )}
             </View>
             <Text className="text-sm text-muted mt-1">
-              {connectionStatus.connected 
+              {isConnected 
                 ? `${filteredCommands.length} comandos disponibles` 
                 : 'Conecta a MIB2 para ejecutar comandos'}
             </Text>
@@ -225,9 +222,9 @@ export default function CommandsScreen() {
               <TouchableOpacity
                 key={cmd.id}
                 onPress={() => handleExecuteCommand(cmd)}
-                disabled={!connectionStatus.connected || executing}
+                disabled={!isConnected || executing}
                 className="bg-surface rounded-xl p-4 border border-border active:opacity-70"
-                style={{ opacity: !connectionStatus.connected || executing ? 0.5 : 1 }}
+                style={{ opacity: !isConnected || executing ? 0.5 : 1 }}
               >
                 <View className="flex-row items-start justify-between mb-2">
                   <View className="flex-1 mr-2">
@@ -282,13 +279,13 @@ export default function CommandsScreen() {
               multiline
               numberOfLines={3}
               className="bg-background border border-border rounded-lg px-3 py-2 text-foreground font-mono text-sm mb-3"
-              editable={connectionStatus.connected && !executing}
+              editable={isConnected && !executing}
             />
             <TouchableOpacity
               onPress={handleExecuteCustomCommand}
-              disabled={!connectionStatus.connected || executing || !customCommand.trim()}
+              disabled={!isConnected || executing || !customCommand.trim()}
               className="bg-primary px-4 py-3 rounded-lg active:opacity-80"
-              style={{ opacity: !connectionStatus.connected || executing || !customCommand.trim() ? 0.5 : 1 }}
+              style={{ opacity: !isConnected || executing || !customCommand.trim() ? 0.5 : 1 }}
             >
               <Text className="text-white font-semibold text-center">
                 Ejecutar Comando
