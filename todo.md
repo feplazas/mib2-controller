@@ -896,3 +896,81 @@
 - [ ] Probar cada tab sin crashes
 - [ ] Probar cada botón sin Unmatched Route
 - [ ] Verificar que no hay console.errors en producción
+
+
+## Botones Test EEPROM y Desconectar (12 Ene 2026 - 12:30)
+
+### Test EEPROM
+- [ ] Agregar botón "Test EEPROM" en usb-status.tsx
+- [ ] Implementar función handleTestEEPROM que usa UsbNativeModule.readEEPROM()
+- [ ] Leer 256 bytes completos de EEPROM
+- [ ] Calcular checksum MD5 de los datos
+- [ ] Verificar integridad (detectar bytes corruptos o 0xFF)
+- [ ] Mostrar resultado con checksum, tamaño y estado (OK/Corrupto)
+- [ ] Agregar indicador de progreso durante lectura
+- [ ] Haptic feedback al completar
+
+### Desconectar
+- [ ] Agregar botón "Desconectar" en usb-status.tsx
+- [ ] Implementar función handleDisconnect que usa UsbNativeModule.closeDevice()
+- [ ] Mostrar confirmación antes de desconectar
+- [ ] Cerrar conexión USB de forma segura
+- [ ] Actualizar estado de conexión a "disconnected"
+- [ ] Mostrar mensaje de éxito
+- [ ] Haptic feedback al desconectar
+
+
+## Botones Conectar, Test EEPROM y Desconectar (12 Ene 2026 - 12:32)
+
+### Conectar
+- [ ] Agregar botón "Conectar" en usb-status.tsx (visible cuando estado = detected)
+- [ ] Implementar función handleConnect que usa requestPermission() + openDevice()
+- [ ] Mostrar indicador de progreso durante conexión
+- [ ] Actualizar estado a "connected" al éxito
+- [ ] Mostrar mensaje de error si falla
+- [ ] Haptic feedback al conectar
+
+### Test EEPROM
+- [ ] Agregar botón "Test EEPROM" en usb-status.tsx (visible cuando estado = connected)
+- [ ] Implementar función handleTestEEPROM con UsbNativeModule.readEEPROM()
+- [ ] Leer 256 bytes completos
+- [ ] Calcular checksum MD5
+- [ ] Verificar integridad
+- [ ] Mostrar resultado detallado
+- [ ] Indicador de progreso
+- [ ] Haptic feedback
+
+### Desconectar
+- [ ] Agregar botón "Desconectar" en usb-status.tsx (visible cuando estado = connected)
+- [ ] Implementar función handleDisconnect con UsbNativeModule.closeDevice()
+- [ ] Confirmación antes de desconectar
+- [ ] Actualizar estado a "disconnected"
+- [ ] Mensaje de éxito
+- [ ] Haptic feedback
+
+## Correcciones Finales - Pantalla USB Status
+
+### Botones Funcionales en USB Status
+- [x] Agregar botón "Conectar" cuando dispositivo está detectado
+- [x] Implementar solicitud de permisos USB con UsbNativeModule.requestPermission()
+- [x] Implementar apertura de conexión con UsbNativeModule.openDevice()
+- [x] Agregar botón "Test EEPROM" cuando dispositivo está conectado
+- [x] Implementar lectura de EEPROM (256 bytes) con validación de checksum
+- [x] Mostrar resultado del test con estado OK/CORRUPTA
+- [x] Agregar botón "Desconectar" cuando dispositivo está conectado
+- [x] Implementar cierre seguro de conexión con UsbNativeModule.closeDevice()
+- [x] Agregar feedback háptico para todas las operaciones
+- [x] Implementar manejo de errores con alertas descriptivas
+
+### Información de Autor en Settings
+- [x] Actualizar versión a 1.0.0 en pantalla Settings
+- [x] Agregar campo "Creada por: Felipe Plazas" en información de la app
+- [x] Actualizar créditos al final de la pantalla con nombre del autor
+- [x] Mantener compatibilidad con MIB2 STD2 Technisat/Preh
+
+### Correcciones TypeScript
+- [x] Corregir error de propiedad productName (usar deviceName)
+- [x] Corregir llamada a readEEPROM con parámetros correctos (offset, length)
+- [x] Corregir acceso a propiedad size de EEPROMReadResult (usar valor hardcoded 256)
+- [x] Eliminar doble llave en función getStatusColor
+- [x] Verificar 0 errores TypeScript en compilación

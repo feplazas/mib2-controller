@@ -564,7 +564,11 @@ export default function SettingsScreen() {
             <View className="gap-3">
               <View className="flex-row justify-between">
                 <Text className="text-sm text-muted">Versión</Text>
-                <Text className="text-sm text-foreground font-medium">1.1.0</Text>
+                <Text className="text-sm text-foreground font-medium">1.0.0</Text>
+              </View>
+              <View className="flex-row justify-between">
+                <Text className="text-sm text-muted">Creada por</Text>
+                <Text className="text-sm text-foreground font-medium">Felipe Plazas</Text>
               </View>
               <View className="flex-row justify-between">
                 <Text className="text-sm text-muted">Plataforma</Text>
@@ -592,7 +596,10 @@ export default function SettingsScreen() {
           {/* Credits */}
           <View className="items-center py-4">
             <Text className="text-xs text-muted text-center">
-              MIB2 Controller v1.1.0
+              MIB2 Controller v1.0.0
+            </Text>
+            <Text className="text-xs text-muted text-center mt-1">
+              Creada por Felipe Plazas
             </Text>
             <Text className="text-xs text-muted text-center mt-1">
               Para unidades MIB2 STD2 Technisat/Preh

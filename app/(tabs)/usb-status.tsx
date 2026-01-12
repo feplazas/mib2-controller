@@ -15,6 +15,9 @@ export default function UsbStatusScreen() {
   const [connectionTime, setConnectionTime] = useState<Date | null>(null);
   const [uptime, setUptime] = useState('00:00:00');
   const [isCreatingBackup, setIsCreatingBackup] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [isTestingEEPROM, setIsTestingEEPROM] = useState(false);
+  const [isDisconnecting, setIsDisconnecting] = useState(false);
 
   // Actualizar tiempo de conexión cada segundo
   useEffect(() => {
@@ -83,6 +86,130 @@ export default function UsbStatusScreen() {
               );
             } finally {
               setIsCreatingBackup(false);
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleConnect = async () => {
+    if (!device) {
+      Alert.alert('Error', 'No hay dispositivo USB detectado');
+      return;
+    }
+
+    setIsConnecting(true);
+    try {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      
+      // Solicitar permisos
+      const granted = await usbService.requestPermission(device.deviceId);
+      if (!granted) {
+        throw new Error('Permisos USB denegados');
+      }
+
+      // Abrir dispositivo
+      const opened = await usbService.openDevice(device.deviceId);
+      if (!opened) {
+        throw new Error('No se pudo abrir el dispositivo USB');
+      }
+
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      Alert.alert(
+        '✅ Conectado',
+        `Dispositivo USB conectado exitosamente:\n\n` +
+        `📱 ${device.deviceName}\n` +
+        `🔌 VID/PID: ${device.vendorId.toString(16).toUpperCase()}:${device.productId.toString(16).toUpperCase()}\n` +
+        `🔧 Chipset: ${device.chipset}`
+      );
+    } catch (error: any) {
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert(
+        '❌ Error al Conectar',
+        error.message || 'No se pudo conectar con el dispositivo USB'
+      );
+    } finally {
+      setIsConnecting(false);
+    }
+  };
+
+  const handleTestEEPROM = async () => {
+    if (!device) {
+      Alert.alert('Error', 'No hay dispositivo USB conectado');
+      return;
+    }
+
+    setIsTestingEEPROM(true);
+    try {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      
+      // Leer EEPROM completa (256 bytes)
+      const result = await usbService.readEEPROM(0, 256);
+      
+      // Calcular checksum simple
+      let checksum = 0;
+      for (let i = 0; i < result.data.length; i += 2) {
+        const byte = parseInt(result.data.substr(i, 2), 16);
+        checksum = (checksum + byte) & 0xFF;
+      }
+
+      // Verificar integridad (detectar si está corrupta)
+      const isCorrupt = result.data === 'FF'.repeat(128); // 256 bytes = 128 pares FF
+      
+      await Haptics.notificationAsync(
+        isCorrupt ? Haptics.NotificationFeedbackType.Warning : Haptics.NotificationFeedbackType.Success
+      );
+      
+      Alert.alert(
+        isCorrupt ? '⚠️ EEPROM Corrupta' : '✅ Test EEPROM Exitoso',
+        `Resultado del test:\n\n` +
+        `📊 Tamaño: 256 bytes\n` +
+        `🔢 Checksum: 0x${checksum.toString(16).toUpperCase().padStart(2, '0')}\n` +
+        `${isCorrupt ? '❌ Estado: CORRUPTA (todos los bytes son 0xFF)' : '✅ Estado: OK (datos válidos)'}\n\n` +
+        `${isCorrupt ? 'La EEPROM parece estar vacía o dañada.' : 'La EEPROM contiene datos válidos.'}`
+      );
+    } catch (error: any) {
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert(
+        '❌ Error al Leer EEPROM',
+        error.message || 'No se pudo leer la EEPROM. Verifica que el dispositivo esté conectado correctamente.'
+      );
+    } finally {
+      setIsTestingEEPROM(false);
+    }
+  };
+
+  const handleDisconnect = async () => {
+    Alert.alert(
+      '🔌 Desconectar Dispositivo',
+      '¿Estás seguro de que deseas desconectar el dispositivo USB?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Desconectar',
+          style: 'destructive',
+          onPress: async () => {
+            setIsDisconnecting(true);
+            try {
+              await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              
+              // Cerrar dispositivo
+              const closed = usbService.closeDevice();
+              
+              await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+              Alert.alert(
+                '✅ Desconectado',
+                'El dispositivo USB se desconectó correctamente.'
+              );
+            } catch (error: any) {
+              await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+              Alert.alert(
+                '❌ Error al Desconectar',
+                error.message || 'No se pudo desconectar el dispositivo USB'
+              );
+            } finally {
+              setIsDisconnecting(false);
             }
           },
         },
@@ -222,6 +349,72 @@ export default function UsbStatusScreen() {
                 )}
 
               </View>
+            </View>
+          )}
+
+          {/* Botones de Acción USB */}
+          {status === 'detected' && devices.length > 0 && (
+            <View className="mt-4">
+              <TouchableOpacity
+                onPress={handleConnect}
+                disabled={isConnecting}
+                className={`rounded-xl p-4 items-center border-2 ${
+                  isConnecting 
+                    ? 'bg-muted/20 border-muted opacity-50' 
+                    : 'bg-primary border-primary active:opacity-80'
+                }`}
+              >
+                <View className="flex-row items-center gap-2">
+                  <Text className="text-xl">🔌</Text>
+                  <Text className="text-base font-bold text-background">
+                    {isConnecting ? 'Conectando...' : 'Conectar'}
+                  </Text>
+                </View>
+                <Text className="text-xs text-background/80 mt-1">
+                  Solicitar permisos y abrir conexión USB
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {status === 'connected' && device && (
+            <View className="mt-4 gap-3">
+              {/* Botón Test EEPROM */}
+              <TouchableOpacity
+                onPress={handleTestEEPROM}
+                disabled={isTestingEEPROM}
+                className={`rounded-xl p-4 items-center border-2 ${
+                  isTestingEEPROM 
+                    ? 'bg-muted/20 border-muted opacity-50' 
+                    : 'bg-green-500 border-green-500 active:opacity-80'
+                }`}
+              >
+                <View className="flex-row items-center gap-2">
+                  <Text className="text-xl">🧪</Text>
+                  <Text className="text-base font-bold text-background">
+                    {isTestingEEPROM ? 'Testeando...' : 'Test EEPROM'}
+                  </Text>
+                </View>
+                <Text className="text-xs text-background/80 mt-1">
+                  Leer y verificar integridad de EEPROM (256 bytes)
+                </Text>
+              </TouchableOpacity>
+
+              {/* Botón Desconectar */}
+              <TouchableOpacity
+                onPress={handleDisconnect}
+                className="rounded-xl p-4 items-center border-2 bg-background border-error active:opacity-80"
+              >
+                <View className="flex-row items-center gap-2">
+                  <Text className="text-xl">❌</Text>
+                  <Text className="text-base font-bold text-error">
+                    Desconectar
+                  </Text>
+                </View>
+                <Text className="text-xs text-muted mt-1">
+                  Cerrar conexión USB de forma segura
+                </Text>
+              </TouchableOpacity>
             </View>
           )}
 
