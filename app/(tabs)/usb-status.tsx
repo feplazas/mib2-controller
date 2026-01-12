@@ -10,7 +10,7 @@ import { getChipsetCompatibility, canAttemptSpoofing } from '@/lib/chipset-compa
 import { ScanningIndicator } from '@/components/scanning-indicator';
 
 export default function UsbStatusScreen() {
-  const { status, device, devices, isScanning, scanDevices, detectedProfile, recommendedProfile } = useUsbStatus();
+  const { status, device, devices, isScanning, scanDevices, connectToDevice, disconnectDevice, detectedProfile, recommendedProfile } = useUsbStatus();
   const [refreshing, setRefreshing] = useState(false);
   const [connectionTime, setConnectionTime] = useState<Date | null>(null);
   const [uptime, setUptime] = useState('00:00:00');
@@ -94,7 +94,10 @@ export default function UsbStatusScreen() {
   };
 
   const handleConnect = async () => {
-    if (!device) {
+    // Usar el primer dispositivo detectado si no hay device seleccionado
+    const targetDevice = device || (devices.length > 0 ? devices[0] : null);
+    
+    if (!targetDevice) {
       Alert.alert('Error', 'No hay dispositivo USB detectado');
       return;
     }
@@ -104,24 +107,28 @@ export default function UsbStatusScreen() {
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       
       // Solicitar permisos
-      const granted = await usbService.requestPermission(device.deviceId);
+      const granted = await usbService.requestPermission(targetDevice.deviceId);
       if (!granted) {
         throw new Error('Permisos USB denegados');
       }
 
       // Abrir dispositivo
-      const opened = await usbService.openDevice(device.deviceId);
+      const opened = await usbService.openDevice(targetDevice.deviceId);
       if (!opened) {
         throw new Error('No se pudo abrir el dispositivo USB');
       }
+
+      // Actualizar estado global usando connectToDevice del contexto
+      // Esto marca el dispositivo como conectado en el contexto
+      await connectToDevice(targetDevice);
 
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       Alert.alert(
         '✅ Conectado',
         `Dispositivo USB conectado exitosamente:\n\n` +
-        `📱 ${device.deviceName}\n` +
-        `🔌 VID/PID: ${device.vendorId.toString(16).toUpperCase()}:${device.productId.toString(16).toUpperCase()}\n` +
-        `🔧 Chipset: ${device.chipset}`
+        `📱 ${targetDevice.deviceName}\n` +
+        `🔌 VID/PID: 0x${targetDevice.vendorId.toString(16).toUpperCase().padStart(4, '0')}:0x${targetDevice.productId.toString(16).toUpperCase().padStart(4, '0')}\n` +
+        `🔧 Chipset: ${targetDevice.chipset}`
       );
     } catch (error: any) {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
@@ -195,7 +202,10 @@ export default function UsbStatusScreen() {
               await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
               
               // Cerrar dispositivo
-              const closed = usbService.closeDevice();
+              usbService.closeDevice();
+              
+              // Actualizar estado global usando disconnectDevice del contexto
+              await disconnectDevice();
               
               await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
               Alert.alert(

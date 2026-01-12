@@ -992,3 +992,19 @@
 - [x] Mantener backup automático antes de escribir
 - [x] Mostrar advertencia crítica pero sin múltiples diálogos
 - [x] Reutilizar lógica de performSpoof (misma función REAL)
+
+## BUGS CRÍTICOS - Conexión USB Real
+
+### Problema: Botón Conectar No Funciona
+- [x] Revisar lógica de handleConnect en usb-status.tsx
+- [x] Verificar que usa el dispositivo detectado correctamente (usa targetDevice = device || devices[0])
+- [x] Corregir error "No hay dispositivo USB detectado" cuando SÍ está detectado
+- [x] Asegurar que requestPermission y openDevice usan el device correcto
+- [x] Usar connectToDevice del contexto para actualizar estado global
+- [x] Usar disconnectDevice del contexto para actualizar estado al desconectar
+
+### Problema: Falta Test EEPROM Después de Conectar
+- [x] Verificar que botón "Test EEPROM" aparece cuando status === 'connected'
+- [x] Implementar lectura REAL de EEPROM (256 bytes)
+- [x] Mostrar resultado con hex dump
+- [x] Agregar validación de checksum
