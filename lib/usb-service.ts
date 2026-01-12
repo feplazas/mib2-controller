@@ -1,5 +1,6 @@
 import { Platform } from 'react-native';
 import UsbNativeModule, { type UsbDevice as NativeUsbDevice, type EEPROMReadResult, type EEPROMDumpResult, type SpoofResult } from '../modules/usb-native';
+import { usbLogger } from './usb-logger';
 
 export type UsbDevice = NativeUsbDevice;
 export { type EEPROMReadResult, type EEPROMDumpResult, type SpoofResult };
@@ -47,14 +48,16 @@ class UsbService {
     }
 
     try {
-      console.log('[UsbService] Scanning for USB devices...');
+      usbLogger.info('scan', 'Escaneando dispositivos USB...');
       this.devices = UsbNativeModule.getDeviceList();
-      console.log(`[UsbService] Found ${this.devices.length} USB devices`);
+      usbLogger.success('scan', `Encontrados ${this.devices.length} dispositivos USB`, 
+        this.devices.map(d => `${d.deviceName} (${d.vendorId.toString(16)}:${d.productId.toString(16)})`)  
+      );
       
       this.notifyListeners();
       return this.devices;
-    } catch (error) {
-      console.error('[UsbService] Error scanning USB devices:', error);
+    } catch (error: any) {
+      usbLogger.error('scan', 'Error al escanear dispositivos', error.message);
       return [];
     }
   }
@@ -68,12 +71,16 @@ class UsbService {
     }
 
     try {
-      console.log(`[UsbService] Requesting permission for device ${deviceId}`);
+      usbLogger.info('permission', `Solicitando permisos para dispositivo ${deviceId}...`);
       const granted = await UsbNativeModule.requestPermission(deviceId);
-      console.log(`[UsbService] Permission ${granted ? 'granted' : 'denied'} for device ${deviceId}`);
+      if (granted) {
+        usbLogger.success('permission', `Permisos concedidos para dispositivo ${deviceId}`);
+      } else {
+        usbLogger.warning('permission', `Permisos denegados para dispositivo ${deviceId}`);
+      }
       return granted;
-    } catch (error) {
-      console.error('[UsbService] Error requesting USB permission:', error);
+    } catch (error: any) {
+      usbLogger.error('permission', 'Error al solicitar permisos', error.message);
       return false;
     }
   }
@@ -87,15 +94,17 @@ class UsbService {
     }
 
     try {
-      console.log(`[UsbService] Opening device ${deviceId}`);
+      usbLogger.info('connect', `Abriendo conexión a dispositivo ${deviceId}...`);
       const opened = await UsbNativeModule.openDevice(deviceId);
       if (opened) {
         this.currentDeviceId = deviceId;
-        console.log(`[UsbService] Device ${deviceId} opened successfully`);
+        usbLogger.success('connect', `Dispositivo ${deviceId} conectado exitosamente`);
+      } else {
+        usbLogger.error('connect', `No se pudo abrir dispositivo ${deviceId}`);
       }
       return opened;
-    } catch (error) {
-      console.error('[UsbService] Error opening USB device:', error);
+    } catch (error: any) {
+      usbLogger.error('connect', 'Error al abrir dispositivo', error.message);
       return false;
     }
   }
@@ -109,15 +118,17 @@ class UsbService {
     }
 
     try {
-      console.log('[UsbService] Closing device');
+      usbLogger.info('disconnect', 'Cerrando dispositivo USB...');
       const closed = UsbNativeModule.closeDevice();
       if (closed) {
         this.currentDeviceId = null;
-        console.log('[UsbService] Device closed successfully');
+        usbLogger.success('disconnect', 'Dispositivo desconectado exitosamente');
+      } else {
+        usbLogger.warning('disconnect', 'No se pudo cerrar el dispositivo');
       }
       return closed;
-    } catch (error) {
-      console.error('[UsbService] Error closing USB device:', error);
+    } catch (error: any) {
+      usbLogger.error('disconnect', 'Error al cerrar dispositivo', error.message);
       return false;
     }
   }
@@ -135,12 +146,12 @@ class UsbService {
     }
 
     try {
-      console.log(`[UsbService] Reading ${length} bytes from EEPROM at offset 0x${offset.toString(16)}`);
+      usbLogger.info('read', `Leyendo ${length} bytes desde EEPROM offset 0x${offset.toString(16)}...`);
       const result = await UsbNativeModule.readEEPROM(offset, length);
-      console.log(`[UsbService] Read successful: ${result.data}`);
+      usbLogger.success('read', `Lectura exitosa: ${length} bytes`, `Data: ${result.data.substring(0, 32)}${result.data.length > 32 ? '...' : ''}`);
       return result;
-    } catch (error) {
-      console.error('[UsbService] Error reading EEPROM:', error);
+    } catch (error: any) {
+      usbLogger.error('read', 'Error al leer EEPROM', error.message);
       throw error;
     }
   }
@@ -158,12 +169,12 @@ class UsbService {
     }
 
     try {
-      console.log(`[UsbService] Writing to EEPROM at offset 0x${offset.toString(16)}: ${dataHex}`);
+      usbLogger.info('write', `Escribiendo en EEPROM offset 0x${offset.toString(16)}...`, `Data: ${dataHex}`);
       const result = await UsbNativeModule.writeEEPROM(offset, dataHex, MAGIC_VALUE);
-      console.log(`[UsbService] Write successful: ${result.bytesWritten} bytes written`);
+      usbLogger.success('write', `Escritura exitosa: ${result.bytesWritten} bytes escritos`);
       return result;
-    } catch (error) {
-      console.error('[UsbService] Error writing EEPROM:', error);
+    } catch (error: any) {
+      usbLogger.error('write', 'Error al escribir EEPROM', error.message);
       throw error;
     }
   }
@@ -181,12 +192,12 @@ class UsbService {
     }
 
     try {
-      console.log('[UsbService] Dumping complete EEPROM...');
+      usbLogger.info('dump', 'Volcando EEPROM completa (256 bytes)...');
       const result = await UsbNativeModule.dumpEEPROM();
-      console.log(`[UsbService] Dump successful: ${result.size} bytes`);
+      usbLogger.success('dump', `Volcado exitoso: ${result.size} bytes`);
       return result;
-    } catch (error) {
-      console.error('[UsbService] Error dumping EEPROM:', error);
+    } catch (error: any) {
+      usbLogger.error('dump', 'Error al volcar EEPROM', error.message);
       throw error;
     }
   }

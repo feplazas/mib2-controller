@@ -1066,3 +1066,49 @@
 - [x] Actualizar mensaje de éxito con nueva ruta en usb-status.tsx
 - [x] Agregar botón "📂 Ver Ubicación" en Recovery
 - [x] Mostrar instrucciones detalladas para acceder a la carpeta
+
+## Feature: Pantalla de Diagnóstico con Logs en Tiempo Real
+
+### Servicio de Logging Centralizado
+- [x] Crear lib/usb-logger.ts con sistema de logging centralizado
+- [x] Definir tipos de log: info, warning, error, success
+- [x] Implementar almacenamiento en memoria (últimos 500 logs)
+- [x] Agregar timestamps automáticos
+- [x] Implementar listeners para notificar cambios en tiempo real
+- [x] Métodos de conveniencia: info(), warning(), error(), success()
+- [x] Exportar logs como texto para compartir
+
+### Pantalla de Diagnóstico (diag.tsx)
+- [x] Crear app/(tabs)/diag.tsx
+- [x] Mostrar logs en tiempo real con auto-scroll
+- [x] Colores por nivel: azul (info), amarillo (warning), rojo (error), verde (success)
+- [x] Filtros por tipo de operación (all, info, warning, error, success)
+- [x] Botón "Limpiar Logs" con confirmación
+- [x] Botón "Exportar Logs" para compartir por WhatsApp/Email
+- [x] Botón "Auto/Manual" para controlar auto-scroll
+- [x] Estadísticas: total, errores, avisos, éxitos
+- [x] Agregar pestaña "Diag" en tab navigator
+- [x] Agregar icono chart.bar.fill en icon-symbol.tsx
+
+### Integración en Operaciones USB
+- [x] Agregar logging en scanDevices()
+- [x] Agregar logging en requestPermission()
+- [x] Agregar logging en openDevice()
+- [x] Agregar logging en closeDevice()
+- [x] Agregar logging en readEEPROM()
+- [x] Agregar logging en writeEEPROM()
+- [x] Agregar logging en dumpEEPROM()
+- [ ] Agregar logging en performSpoof() (pendiente)
+
+## BUG: Verificación Fallida en Spoofing (AX88179A Experimental)
+
+### Problema
+- [ ] Spoofing escribe correctamente pero verificación posterior falla
+- [ ] Error: "Los datos escritos no coinciden"
+- [ ] Adaptador AX88179A puede tener protección o caché
+
+### Solución
+- [ ] Agregar delay de 500ms después de cada escritura en writeEEPROM
+- [ ] Implementar reintentos en verificación (3 intentos con delay)
+- [ ] Agregar opción "Forzar Sin Verificación" en auto-spoof para adaptadores experimentales
+- [ ] Logs detallados de qué se escribió vs qué se leyó (hex dump completo)
