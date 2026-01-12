@@ -1,10 +1,11 @@
 import { ScrollView, Text, View, TouchableOpacity, RefreshControl } from 'react-native';
 import { useState, useEffect } from 'react';
+import * as Haptics from 'expo-haptics';
 import { ScreenContainer } from '@/components/screen-container';
 import { useUsbStatus } from '@/lib/usb-status-context';
 import { usbService } from '@/lib/usb-service';
 import { ChipsetStatusBadge } from '@/components/chipset-status-badge';
-import { getChipsetCompatibility } from '@/lib/chipset-compatibility';
+import { getChipsetCompatibility, canAttemptSpoofing } from '@/lib/chipset-compatibility';
 import { ScanningIndicator } from '@/components/scanning-indicator';
 
 export default function UsbStatusScreen() {
@@ -181,12 +182,43 @@ export default function UsbStatusScreen() {
 
           {/* Badge de Estado del Chipset */}
           {status === 'connected' && device && device.chipset && (
-            <View className="mt-4">
+            <View className="mt-4 gap-3">
               <ChipsetStatusBadge
                 chipset={device.chipset}
                 compatibility={getChipsetCompatibility(device.chipset)}
                 animated={true}
               />
+              
+              {/* Botón de Acceso Rápido a Auto Spoof */}
+              {(() => {
+                const compat = getChipsetCompatibility(device.chipset);
+                if (canAttemptSpoofing(compat)) {
+                  return (
+                    <TouchableOpacity
+                      onPress={() => {
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                        const router = require('expo-router').router;
+                        router.push('/(tabs)/auto-spoof');
+                      }}
+                      className="bg-primary rounded-xl p-4 items-center active:opacity-80"
+                    >
+                      <View className="flex-row items-center gap-2">
+                        <Text className="text-xl">⚡</Text>
+                        <Text className="text-base font-bold text-background">
+                          Ir a Auto Spoof
+                        </Text>
+                        <Text className="text-xl">›</Text>
+                      </View>
+                      <Text className="text-xs text-background/80 mt-1">
+                        {compat === 'confirmed' 
+                          ? 'Chipset confirmado compatible' 
+                          : 'Chipset experimental - usar con precaución'}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                }
+                return null;
+              })()}
             </View>
           )}
 

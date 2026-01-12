@@ -836,3 +836,24 @@
 - [x] Eliminar botón de navegación a vidpid-profiles en usb-status.tsx
 - [x] Actualizar tools.tsx eliminando referencias a pantallas eliminadas
 - [ ] Probar navegación en APK compilado
+
+
+## Mejoras UX - Acceso Rápido y Progreso EEPROM (12 Ene 2026 - 11:45)
+
+### Botón de Acceso Rápido a Auto Spoof
+- [x] Agregar botón "Ir a Auto Spoof" en usb-status.tsx
+- [x] Mostrar botón solo cuando chipset es ASIX compatible (confirmed o experimental)
+- [x] Usar router.push para navegar a auto-spoof
+- [x] Agregar haptic feedback al presionar
+- [x] Mostrar mensaje diferente según nivel de compatibilidad
+
+### Indicador de Progreso EEPROM
+- [x] Crear componente EepromProgressIndicator
+- [x] Mostrar porcentaje de progreso (0-100%)
+- [x] Mostrar tiempo estimado restante
+- [x] Mostrar bytes leídos/escritos con formato (B/KB/MB)
+- [x] Integrar en auto-spoof.tsx durante lectura/escritura
+- [x] Agregar animación de progreso suave con react-native-reanimated
+- [x] Mostrar operación actual (read/write)
+- [x] Mensaje de completado cuando progreso llega a 100%
+- [x] Agregar simulación de progreso en performSpoof (backup + escritura)

@@ -7,6 +7,7 @@ import { backupService } from '@/lib/backup-service';
 import { ChipsetStatusBadge } from '@/components/chipset-status-badge';
 import { getChipsetCompatibility, canAttemptSpoofing, getCompatibilityMessage } from '@/lib/chipset-compatibility';
 import { SuccessResultModal } from '@/components/success-result-modal';
+import { EepromProgressIndicator } from '@/components/eeprom-progress-indicator';
 import * as Haptics from 'expo-haptics';
 import * as Sharing from 'expo-sharing';
 import { captureRef } from 'react-native-view-shot';
@@ -20,6 +21,10 @@ export default function AutoSpoofScreen() {
   const [currentStep, setCurrentStep] = useState<SpoofStep>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [eepromProgress, setEepromProgress] = useState(0);
+  const [eepromBytesProcessed, setEepromBytesProcessed] = useState(0);
+  const [eepromTotalBytes, setEepromTotalBytes] = useState(0);
+  const [eepromOperation, setEepromOperation] = useState<'read' | 'write'>('read');
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [spoofingResult, setSpoofingResult] = useState<{
     originalVID: string;
@@ -195,26 +200,50 @@ export default function AutoSpoofScreen() {
 
       // Paso 2: Crear backup automático
       setCurrentStep('creating_backup');
+      setEepromOperation('read');
+      setEepromTotalBytes(256); // EEPROM típica de 256 bytes
+      
+      // Simular progreso de lectura de backup
+      for (let i = 0; i <= 100; i += 10) {
+        setEepromProgress(i);
+        setEepromBytesProcessed(Math.floor((i / 100) * 256));
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+      
       await backupService.createBackup(device);
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 200));
 
+      // Resetear progreso para escritura
+      setEepromOperation('write');
+      setEepromProgress(0);
+      setEepromBytesProcessed(0);
+      setEepromTotalBytes(4); // 4 bytes a escribir (VID low, VID high, PID low, PID high)
+      
       // Paso 3: Escribir VID byte bajo (0x88 = 0x01)
       setCurrentStep('writing_vid_low');
+      setEepromProgress(25);
+      setEepromBytesProcessed(1);
       await usbService.writeEEPROM(0x88, '01');
       await new Promise(resolve => setTimeout(resolve, 100));
 
       // Paso 4: Escribir VID byte alto (0x89 = 0x20)
       setCurrentStep('writing_vid_high');
+      setEepromProgress(50);
+      setEepromBytesProcessed(2);
       await usbService.writeEEPROM(0x89, '20');
       await new Promise(resolve => setTimeout(resolve, 100));
 
       // Paso 5: Escribir PID byte bajo (0x8A = 0x05)
       setCurrentStep('writing_pid_low');
+      setEepromProgress(75);
+      setEepromBytesProcessed(3);
       await usbService.writeEEPROM(0x8A, '05');
       await new Promise(resolve => setTimeout(resolve, 100));
 
       // Paso 6: Escribir PID byte alto (0x8B = 0x3C)
       setCurrentStep('writing_pid_high');
+      setEepromProgress(100);
+      setEepromBytesProcessed(4);
       await usbService.writeEEPROM(0x8B, '3C');
       await new Promise(resolve => setTimeout(resolve, 100));
 
@@ -444,6 +473,21 @@ export default function AutoSpoofScreen() {
                 </Text>
               </View>
             </View>
+          )}
+
+          {/* Indicador de Progreso EEPROM */}
+          {isExecuting && eepromTotalBytes > 0 && (
+            <EepromProgressIndicator
+              progress={eepromProgress}
+              bytesProcessed={eepromBytesProcessed}
+              totalBytes={eepromTotalBytes}
+              operation={eepromOperation}
+              estimatedTimeRemaining={
+                eepromProgress > 0 && eepromProgress < 100
+                  ? Math.round(((100 - eepromProgress) / eepromProgress) * 2) // Estimación simple
+                  : undefined
+              }
+            />
           )}
 
           {/* Mensaje de Éxito */}
