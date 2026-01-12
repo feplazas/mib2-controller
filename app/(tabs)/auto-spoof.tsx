@@ -6,7 +6,11 @@ import { usbService } from '@/lib/usb-service';
 import { backupService } from '@/lib/backup-service';
 import { ChipsetStatusBadge } from '@/components/chipset-status-badge';
 import { getChipsetCompatibility, canAttemptSpoofing, getCompatibilityMessage } from '@/lib/chipset-compatibility';
+import { SuccessResultModal } from '@/components/success-result-modal';
 import * as Haptics from 'expo-haptics';
+import * as Sharing from 'expo-sharing';
+import { captureRef } from 'react-native-view-shot';
+import { useRef } from 'react';
 
 type SpoofStep = 'idle' | 'validating' | 'creating_backup' | 'writing_vid_low' | 'writing_vid_high' | 'writing_pid_low' | 'writing_pid_high' | 'verifying' | 'success' | 'error';
 
@@ -16,6 +20,17 @@ export default function AutoSpoofScreen() {
   const [currentStep, setCurrentStep] = useState<SpoofStep>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [spoofingResult, setSpoofingResult] = useState<{
+    originalVID: string;
+    originalPID: string;
+    newVID: string;
+    newPID: string;
+    chipset: string;
+    deviceName: string;
+    timestamp: Date;
+  } | null>(null);
+  const resultModalRef = useRef(null);
 
   const getStepText = (step: SpoofStep): string => {
     switch (step) {
@@ -216,6 +231,18 @@ export default function AutoSpoofScreen() {
 
       // Éxito
       setCurrentStep('success');
+      
+      // Capturar resultado para modal
+      setSpoofingResult({
+        originalVID: usbService.formatVIDPID(device.vendorId, 0).split(':')[0],
+        originalPID: usbService.formatVIDPID(0, device.productId).split(':')[1],
+        newVID: '0x2001',
+        newPID: '0x3C05',
+        chipset: device.chipset || 'Desconocido',
+        deviceName: device.deviceName,
+        timestamp: new Date(),
+      });
+      
       setSuccessMessage(
         'Spoofing completado exitosamente.\n\n' +
         '📋 Valores escritos:\n' +
@@ -227,7 +254,13 @@ export default function AutoSpoofScreen() {
         '3. Vuelve a conectarlo\n' +
         '4. Verifica el nuevo ID en la pantalla "Estado USB"'
       );
+      
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      
+      // Mostrar modal de éxito después de un breve delay
+      setTimeout(() => {
+        setShowSuccessModal(true);
+      }, 1000);
 
     } catch (error: any) {
       setCurrentStep('error');
@@ -239,6 +272,46 @@ export default function AutoSpoofScreen() {
   };
 
   const canExecute = status === 'connected' && device && canAttemptSpoofing(getChipsetCompatibility(device.chipset || ''));
+  
+  const handleShareResult = async () => {
+    try {
+      if (!spoofingResult) return;
+      
+      // Crear texto formateado para compartir
+      const shareText = `🎉 Spoofing MIB2 Exitoso\n\n` +
+        `💻 Dispositivo: ${spoofingResult.deviceName}\n` +
+        `🔧 Chipset: ${spoofingResult.chipset}\n` +
+        `📅 Fecha: ${spoofingResult.timestamp.toLocaleString('es-ES')}\n\n` +
+        `❌ Antes:\n` +
+        `  VID: ${spoofingResult.originalVID}\n` +
+        `  PID: ${spoofingResult.originalPID}\n\n` +
+        `✅ Después:\n` +
+        `  VID: ${spoofingResult.newVID}\n` +
+        `  PID: ${spoofingResult.newPID}\n\n` +
+        `#MIB2Controller #USBSpoofing #ASIX`;
+
+      // Verificar si sharing está disponible
+      const isAvailable = await Sharing.isAvailableAsync();
+      
+      if (isAvailable) {
+        // Crear archivo temporal con el texto
+        const FileSystem = require('expo-file-system');
+        const fileUri = FileSystem.cacheDirectory + 'spoofing_result.txt';
+        await FileSystem.writeAsStringAsync(fileUri, shareText);
+        
+        // Compartir archivo
+        await Sharing.shareAsync(fileUri, {
+          mimeType: 'text/plain',
+          dialogTitle: 'Compartir Resultado de Spoofing',
+        });
+      } else {
+        Alert.alert('Error', 'La función de compartir no está disponible en este dispositivo');
+      }
+    } catch (error) {
+      console.error('Error sharing result:', error);
+      Alert.alert('Error', 'No se pudo compartir el resultado');
+    }
+  };
 
   return (
     <ScreenContainer className="p-4">
@@ -439,6 +512,17 @@ export default function AutoSpoofScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
+      
+      {/* Success Result Modal */}
+      <SuccessResultModal
+        visible={showSuccessModal}
+        result={spoofingResult}
+        onClose={() => {
+          setShowSuccessModal(false);
+          setSpoofingResult(null);
+        }}
+        onShare={handleShareResult}
+      />
     </ScreenContainer>
   );
 }
