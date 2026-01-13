@@ -1148,3 +1148,21 @@ Causa probable: Protección de escritura en ciertas posiciones o caché de lectu
 - [x] Instrucciones de reconexión después del spoofing (5 pasos numerados)
 - [x] Mensaje especial cuando skipVerification está activado
 - [x] Referencia a pestaña "Diag" para ver logs detallados
+
+
+## BUG CRÍTICO: Pantalla Telnet/Home es MOCKUP
+
+### Problema Reportado (13 Ene 2026 - 01:46)
+La pantalla Home/Telnet escanea red 192.168.1.x SIN verificar si hay adaptador USB-Ethernet conectado.
+Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
+
+### Solución Requerida
+- [x] Verificar que hay dispositivo USB conectado (status === 'connected' del contexto)
+- [x] Agregar verificación en handleConnect antes de conectar a MIB2
+- [x] Agregar verificación en handleQuickScan antes de escanear red
+- [x] Agregar verificación en handleFullScan antes de escanear red
+- [x] Mostrar error claro: "Adaptador USB Requerido" con instrucciones de 3 pasos
+- [x] Feedback háptico de error cuando no hay adaptador
+- [x] Eliminar TODOS los mockups/simulaciones de la pantalla Telnet
+- [ ] Verificar que el adaptador tiene conexión Ethernet activa (IP asignada) - requiere API nativa
+- [ ] Obtener IP real del adaptador USB-Ethernet (no hardcodear 192.168.1.x) - requiere API nativa

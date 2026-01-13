@@ -22,6 +22,17 @@ export default function HomeScreen() {
   const [detectingToolbox, setDetectingToolbox] = useState(false);
 
   const handleConnect = async () => {
+    // Verificar que hay adaptador USB conectado
+    if (usbStatus !== 'connected') {
+      Alert.alert(
+        'Adaptador USB Requerido',
+        'Debes conectar un adaptador USB-Ethernet antes de conectarte a la MIB2.\n\n1. Conecta el adaptador USB-Ethernet al puerto USB de la unidad MIB2\n2. Conecta tu dispositivo Android a la misma red (WiFi o adaptador Ethernet)\n3. Ve a la pesta\u00f1a "USB" para verificar la conexi\u00f3n',
+        [{ text: 'Entendido' }]
+      );
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      return;
+    }
+
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     
     // Update config before connecting
@@ -63,6 +74,17 @@ export default function HomeScreen() {
   };
 
   const handleQuickScan = async () => {
+    // Verificar que hay adaptador USB conectado
+    if (usbStatus !== 'connected') {
+      Alert.alert(
+        'Adaptador USB Requerido',
+        'Debes conectar un adaptador USB-Ethernet antes de escanear la red.\n\n1. Conecta el adaptador USB-Ethernet al puerto USB de la unidad MIB2\n2. Conecta tu dispositivo Android a la misma red (WiFi o adaptador Ethernet)\n3. Ve a la pesta\u00f1a "USB" para verificar la conexi\u00f3n',
+        [{ text: 'Entendido' }]
+      );
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      return;
+    }
+
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setScanning(true);
     setFoundDevices([]);
@@ -116,6 +138,17 @@ export default function HomeScreen() {
   };
 
   const handleFullScan = async () => {
+    // Verificar que hay adaptador USB conectado
+    if (usbStatus !== 'connected') {
+      Alert.alert(
+        'Adaptador USB Requerido',
+        'Debes conectar un adaptador USB-Ethernet antes de escanear la red.\n\n1. Conecta el adaptador USB-Ethernet al puerto USB de la unidad MIB2\n2. Conecta tu dispositivo Android a la misma red (WiFi o adaptador Ethernet)\n3. Ve a la pesta\u00f1a "USB" para verificar la conexi\u00f3n',
+        [{ text: 'Entendido' }]
+      );
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      return;
+    }
+
     Alert.alert(
       'Escaneo Completo',
       'Esto escaneará toda la subred (puede tardar varios minutos). ¿Continuar?',
@@ -123,7 +156,7 @@ export default function HomeScreen() {
         { text: 'Cancelar', style: 'cancel' },
         {
           text: 'Escanear',
-          onPress: async () => {
+          onPress: async () =>{
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             setScanning(true);
             setFoundDevices([]);
