@@ -223,7 +223,7 @@ class UsbService {
 
     try {
       console.log(`[UsbService] Spoofing VID/PID to ${this.formatVIDPID(targetVID, targetPID)}`);
-      const result = await UsbNativeModule.spoofVIDPID(targetVID, targetPID);
+      const result = await UsbNativeModule.spoofVIDPID(targetVID, targetPID, MAGIC_VALUE);
       console.log(`[UsbService] Spoof ${result.success ? 'successful' : 'failed'}`);
       return result;
     } catch (error) {

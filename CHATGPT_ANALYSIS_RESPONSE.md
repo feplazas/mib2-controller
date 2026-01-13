@@ -168,18 +168,25 @@ AsyncFunction("spoofVIDPID") { targetVID: Int, targetPID: Int, magicValue: Int, 
 **Análisis:**
 - ✅ **CORRECTO:** Hay un mismatch de firma (2 params en TS vs 3 params en Kotlin)
 - ✅ **IMPACTO:** Llamadas desde JS fallarán con error "Wrong number of arguments"
-- ✅ **SOLUCIÓN:** Alinear firmas eliminando `magicValue` de Kotlin (no se usa en la implementación actual)
+- ⚠️ **SOLUCIÓN INCORRECTA INICIAL:** Se eliminó `magicValue` de Kotlin, pero esto estaba MAL
+- ✅ **SOLUCIÓN CORRECTA:** El `magicValue` es **CRÍTICO** para el spoofing (mecanismo de autorización de escritura EEPROM documentado en Guíaspoofing.pdf)
+- ✅ **CORRECCIÓN APLICADA:** Se agregó el parámetro `magicValue` en TypeScript en lugar de eliminarlo de Kotlin
 
-**Acción recomendada:**
-```kotlin
-// ANTES
-AsyncFunction("spoofVIDPID") { targetVID: Int, targetPID: Int, magicValue: Int, promise: Promise ->
+**Acción recomendada (CORREGIDA):**
+```typescript
+// ANTES (TypeScript)
+spoofVIDPID(targetVID: number, targetPID: number): Promise<SpoofResult>;
 
-// DESPUÉS
-AsyncFunction("spoofVIDPID") { targetVID: Int, targetPID: Int, promise: Promise ->
+// DESPUÉS (TypeScript)
+spoofVIDPID(targetVID: number, targetPID: number, magicValue: number): Promise<SpoofResult>;
 ```
 
-**Impacto en propósito de la app:** ✅ **CRÍTICO** (corrige bug potencial)
+```typescript
+// Llamada desde usb-service.ts
+const result = await UsbNativeModule.spoofVIDPID(targetVID, targetPID, MAGIC_VALUE);
+```
+
+**Impacto en propósito de la app:** ✅ **CRÍTICO** (corrige bug potencial SIN romper funcionalidad de spoofing)
 
 ---
 

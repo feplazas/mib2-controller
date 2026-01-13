@@ -522,7 +522,7 @@ class UsbNativeModule : Module() {
       }
     }
 
-    AsyncFunction("spoofVIDPID") { targetVID: Int, targetPID: Int, promise: Promise ->
+    AsyncFunction("spoofVIDPID") { targetVID: Int, targetPID: Int, magicValue: Int, promise: Promise ->
       try {
         val connection = currentConnection
         if (connection == null) {

@@ -48,7 +48,7 @@ interface UsbNativeModuleInterface {
   writeEEPROM(offset: number, dataHex: string, magicValue: number, skipVerification: boolean): Promise<{ bytesWritten: number; verified: boolean }>;
   dumpEEPROM(): Promise<EEPROMDumpResult>;
   detectEEPROMType(): Promise<EEPROMTypeResult>;
-  spoofVIDPID(targetVID: number, targetPID: number): Promise<SpoofResult>;
+  spoofVIDPID(targetVID: number, targetPID: number, magicValue: number): Promise<SpoofResult>;
 }
 
 const UsbNativeModule = requireNativeModule<UsbNativeModuleInterface>('UsbNative');
