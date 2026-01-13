@@ -1210,3 +1210,13 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [ ] Validar respuestas del sistema QNX después de cada paso
 - [ ] Detectar automáticamente si Toolbox ya está instalado
 - [ ] Agregar logs detallados de cada paso de instalación
+
+
+## 🔧 Corrección de Build EAS (2026-01-13)
+
+### Error de Gradle en EAS Build
+- [ ] Corregir configuración de repositorios en android/build.gradle
+- [ ] Remover dependencia problemática de JFrog Artifactory
+- [ ] Agregar repositorios públicos estándar (Google, Maven Central)
+- [ ] Ejecutar nuevo build con EAS
+- [ ] Verificar descarga exitosa del APK
