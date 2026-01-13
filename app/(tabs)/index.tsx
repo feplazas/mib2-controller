@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, TextInput, ActivityIndicator, ScrollView, Alert } from "react-native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import * as Haptics from "expo-haptics";
 
 import { ScreenContainer } from "@/components/screen-container";
@@ -9,6 +9,7 @@ import { useTelnet } from "@/lib/telnet-provider";
 
 import { quickScan, scanNetwork, parseSubnet, type ScanResult, type ScanProgress } from "@/lib/network-scanner";
 import { detectToolbox, type ToolboxInfo } from "@/lib/toolbox-detector";
+import { detectUSBEthernetAdapter, detectSubnet, validateAdapterConnectivity, type NetworkInterface } from "@/modules/network-info";
 
 export default function HomeScreen() {
   const { isConnected, isConnecting, config, updateConfig, connect, disconnect, sendCommand } = useTelnet();
@@ -20,6 +21,32 @@ export default function HomeScreen() {
   const [foundDevices, setFoundDevices] = useState<ScanResult[]>([]);
   const [toolboxInfo, setToolboxInfo] = useState<ToolboxInfo | null>(null);
   const [detectingToolbox, setDetectingToolbox] = useState(false);
+  const [networkAdapter, setNetworkAdapter] = useState<NetworkInterface | null>(null);
+  const [detectedSubnet, setDetectedSubnet] = useState<string>('192.168.1');
+
+  // Detectar adaptador de red automáticamente cuando USB se conecta
+  useEffect(() => {
+    const detectNetwork = async () => {
+      if (usbStatus === 'connected') {
+        try {
+          const adapter = await detectUSBEthernetAdapter();
+          setNetworkAdapter(adapter);
+          
+          if (adapter) {
+            const subnet = await detectSubnet();
+            setDetectedSubnet(subnet);
+          }
+        } catch (error) {
+          console.error('Error detecting network adapter:', error);
+        }
+      } else {
+        setNetworkAdapter(null);
+        setDetectedSubnet('192.168.1');
+      }
+    };
+
+    detectNetwork();
+  }, [usbStatus]);
 
   const handleConnect = async () => {
     // Verificar que hay adaptador USB conectado
@@ -221,6 +248,30 @@ export default function HomeScreen() {
             status={usbStatus} 
             deviceName={usbDevice?.product || usbDevice?.deviceName}
           />
+
+          {/* Network Adapter Info */}
+          {networkAdapter && (
+            <View className="bg-surface rounded-2xl p-4 border border-border">
+              <View className="flex-row items-center gap-2 mb-2">
+                <View className="w-3 h-3 rounded-full bg-success" />
+                <Text className="text-sm font-semibold text-foreground">Adaptador de Red Detectado</Text>
+              </View>
+              <View className="gap-1">
+                <View className="flex-row justify-between">
+                  <Text className="text-xs text-muted">Interfaz:</Text>
+                  <Text className="text-xs text-foreground font-medium">{networkAdapter.name}</Text>
+                </View>
+                <View className="flex-row justify-between">
+                  <Text className="text-xs text-muted">IP del Adaptador:</Text>
+                  <Text className="text-xs text-foreground font-medium">{networkAdapter.ipAddress}</Text>
+                </View>
+                <View className="flex-row justify-between">
+                  <Text className="text-xs text-muted">Subred Detectada:</Text>
+                  <Text className="text-xs text-foreground font-medium">{detectedSubnet}.x</Text>
+                </View>
+              </View>
+            </View>
+          )}
 
           {/* Connection Status Card */}
           <View className="bg-surface rounded-2xl p-6 border border-border">

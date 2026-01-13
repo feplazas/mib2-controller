@@ -16,6 +16,7 @@ import {
   generateToolboxVerificationCommand,
   type InstallationStep,
 } from "@/lib/toolbox-installer";
+import { listBackups, restoreBackup, deleteBackup, backupCriticalBinary, type BackupInfo } from "@/lib/toolbox-backup";
 
 type StepStatus = 'pending' | 'inProgress' | 'completed' | 'error';
 
@@ -28,6 +29,9 @@ export default function ToolboxScreen() {
   const [showDiagnostics, setShowDiagnostics] = useState(false);
   const [stepStatuses, setStepStatuses] = useState<Record<number, StepStatus>>({});
   const [executing, setExecuting] = useState(false);
+  const [backups, setBackups] = useState<BackupInfo[]>([]);
+  const [loadingBackups, setLoadingBackups] = useState(false);
+  const [showBackups, setShowBackups] = useState(false);
 
   const handleSelectStep = (step: InstallationStep) => {
     if (Platform.OS !== "web") {
@@ -54,6 +58,110 @@ export default function ToolboxScreen() {
     setShowDiagnostics(true);
     setSelectedStep(null);
     setShowEmmcInfo(false);
+  };
+
+  const handleShowBackups = async () => {
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    setShowBackups(true);
+    setSelectedStep(null);
+    setShowEmmcInfo(false);
+    setShowDiagnostics(false);
+    await loadBackupsList();
+  };
+
+  const loadBackupsList = async () => {
+    if (!isConnected) {
+      Alert.alert('Error', 'Debes estar conectado por Telnet para ver los backups');
+      return;
+    }
+
+    setLoadingBackups(true);
+    try {
+      const backupsList = await listBackups(async (cmd: string) => {
+        const result = await sendCommand(cmd);
+        return { output: result, success: true };
+      });
+      setBackups(backupsList);
+    } catch (error) {
+      Alert.alert('Error', 'No se pudieron cargar los backups');
+    } finally {
+      setLoadingBackups(false);
+    }
+  };
+
+  const handleRestoreBackup = async (backup: BackupInfo) => {
+    Alert.alert(
+      '⚠️ Restaurar Backup',
+      `¿Estás seguro de que deseas restaurar este backup?\n\nArchivo: ${backup.filename}\nFecha: ${backup.timestamp}\nTamaño: ${(backup.size / 1024).toFixed(2)} KB\n\nEsto sobrescribirá el archivo actual.`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Restaurar',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const result = await restoreBackup(
+                async (cmd: string) => {
+                  const output = await sendCommand(cmd);
+                  return { output, success: true };
+                },
+                backup
+              );
+
+              if (result.success) {
+                Alert.alert('✅ Éxito', 'Backup restaurado correctamente');
+                if (Platform.OS !== "web") {
+                  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                }
+              } else {
+                Alert.alert('❌ Error', result.error || 'No se pudo restaurar el backup');
+                if (Platform.OS !== "web") {
+                  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+                }
+              }
+            } catch (error) {
+              Alert.alert('❌ Error', 'Error inesperado al restaurar backup');
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleDeleteBackup = async (backup: BackupInfo) => {
+    Alert.alert(
+      'Eliminar Backup',
+      `¿Estás seguro de que deseas eliminar este backup?\n\n${backup.filename}\n${backup.timestamp}`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Eliminar',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const success = await deleteBackup(
+                async (cmd: string) => {
+                  const output = await sendCommand(cmd);
+                  return { output, success: true };
+                },
+                backup.backupPath
+              );
+
+              if (success) {
+                Alert.alert('✅ Éxito', 'Backup eliminado');
+                await loadBackupsList();
+              } else {
+                Alert.alert('❌ Error', 'No se pudo eliminar el backup');
+              }
+            } catch (error) {
+              Alert.alert('❌ Error', 'Error inesperado al eliminar backup');
+            }
+          },
+        },
+      ]
+    );
   };
 
   const handleGenerateScript = async () => {
@@ -159,7 +267,53 @@ export default function ToolboxScreen() {
                           {
                             text: 'EJECUTAR',
                             style: 'destructive',
-                            onPress: () => executeStepCommand(step),
+                            onPress: async () => {
+                              // Crear backup automático antes del parcheo
+                              Alert.alert(
+                                '💾 Creando Backup',
+                                'Creando backup del binario crítico antes de continuar...'
+                              );
+                              
+                              try {
+                                const backupResult = await backupCriticalBinary(
+                                  async (cmd: string) => {
+                                    const output = await sendCommand(cmd);
+                                    return { output, success: true };
+                                  }
+                                );
+
+                                if (backupResult.success && backupResult.backup) {
+                                  Alert.alert(
+                                    '✅ Backup Creado',
+                                    `Backup guardado exitosamente:\n\nRuta: ${backupResult.backup.backupPath}\nTamaño: ${(backupResult.backup.size / 1024).toFixed(2)} KB\nChecksum: ${backupResult.backup.checksum?.substring(0, 16)}...\n\nProcediendo con el parcheo...`,
+                                    [
+                                      {
+                                        text: 'Continuar',
+                                        onPress: () => executeStepCommand(step),
+                                      },
+                                    ]
+                                  );
+                                } else {
+                                  Alert.alert(
+                                    '❌ Error en Backup',
+                                    `No se pudo crear el backup: ${backupResult.error}\n\n¿Deseas continuar sin backup? (NO RECOMENDADO)`,
+                                    [
+                                      { text: 'Cancelar', style: 'cancel' },
+                                      {
+                                        text: 'Continuar Sin Backup',
+                                        style: 'destructive',
+                                        onPress: () => executeStepCommand(step),
+                                      },
+                                    ]
+                                  );
+                                }
+                              } catch (error) {
+                                Alert.alert(
+                                  '❌ Error',
+                                  'Error inesperado al crear backup. Operación cancelada.'
+                                );
+                              }
+                            },
                           },
                         ]
                       );
@@ -274,6 +428,14 @@ export default function ToolboxScreen() {
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
+              onPress={handleShowBackups}
+              className="flex-1 bg-success/10 px-4 py-3 rounded-xl active:opacity-80"
+            >
+              <Text className="text-center font-semibold text-xs" style={{ color: "#22C55E" }}>
+                💾 Backups
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
               onPress={handleShowEmmcInfo}
               className="flex-1 bg-warning/10 px-4 py-3 rounded-xl active:opacity-80"
             >
@@ -283,7 +445,7 @@ export default function ToolboxScreen() {
             </TouchableOpacity>
           </View>
 
-          {!selectedStep && !showEmmcInfo && !showDiagnostics && (
+          {!selectedStep && !showEmmcInfo && !showDiagnostics && !showBackups && (
             <View className="gap-3">
               <Text className="text-lg font-semibold" style={{ color: colors.foreground }}>
                 Pasos de Instalación
@@ -471,6 +633,92 @@ export default function ToolboxScreen() {
                     </View>
                   </View>
                 ))}
+              </View>
+            </View>
+          )}
+
+          {showBackups && (
+            <View className="gap-4">
+              <TouchableOpacity
+                onPress={() => setShowBackups(false)}
+                className="flex-row items-center gap-2"
+              >
+                <Text className="text-lg" style={{ color: colors.primary }}>
+                  ←
+                </Text>
+                <Text className="text-sm font-semibold" style={{ color: colors.primary }}>
+                  Volver a la lista
+                </Text>
+              </TouchableOpacity>
+
+              <View className="bg-surface rounded-xl p-4 border" style={{ borderColor: colors.border }}>
+                <Text className="text-lg font-bold mb-3" style={{ color: colors.foreground }}>
+                  💾 Gestión de Backups
+                </Text>
+                <Text className="text-xs mb-4" style={{ color: colors.muted }}>
+                  Los backups se crean automáticamente antes de modificar archivos críticos del sistema MIB2.
+                </Text>
+
+                {loadingBackups ? (
+                  <View className="items-center py-8">
+                    <ActivityIndicator size="large" color={colors.primary} />
+                    <Text className="text-sm mt-2" style={{ color: colors.muted }}>
+                      Cargando backups...
+                    </Text>
+                  </View>
+                ) : backups.length === 0 ? (
+                  <View className="items-center py-8">
+                    <Text className="text-4xl mb-2">📁</Text>
+                    <Text className="text-sm" style={{ color: colors.muted }}>
+                      No hay backups disponibles
+                    </Text>
+                  </View>
+                ) : (
+                  <View className="gap-3">
+                    {backups.map((backup, index) => (
+                      <View
+                        key={index}
+                        className="bg-background rounded-lg p-3 border"
+                        style={{ borderColor: colors.border }}
+                      >
+                        <View className="flex-row items-center justify-between mb-2">
+                          <Text className="text-sm font-semibold flex-1" style={{ color: colors.foreground }}>
+                            {backup.filename}
+                          </Text>
+                          <Text className="text-xs" style={{ color: colors.muted }}>
+                            {(backup.size / 1024).toFixed(2)} KB
+                          </Text>
+                        </View>
+                        <Text className="text-xs mb-1" style={{ color: colors.muted }}>
+                          📅 {backup.timestamp}
+                        </Text>
+                        {backup.checksum && (
+                          <Text className="text-xs mb-2 font-mono" style={{ color: colors.muted }}>
+                            MD5: {backup.checksum.substring(0, 16)}...
+                          </Text>
+                        )}
+                        <View className="flex-row gap-2 mt-2">
+                          <TouchableOpacity
+                            onPress={() => handleRestoreBackup(backup)}
+                            className="flex-1 bg-success/10 px-3 py-2 rounded-lg active:opacity-80"
+                          >
+                            <Text className="text-center text-xs font-semibold" style={{ color: "#22C55E" }}>
+                              ↻ Restaurar
+                            </Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            onPress={() => handleDeleteBackup(backup)}
+                            className="flex-1 bg-error/10 px-3 py-2 rounded-lg active:opacity-80"
+                          >
+                            <Text className="text-center text-xs font-semibold" style={{ color: "#EF4444" }}>
+                              🗑️ Eliminar
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    ))}
+                  </View>
+                )}
               </View>
             </View>
           )}

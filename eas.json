@@ -18,10 +18,8 @@
         "withoutCredentials": false
       },
       "env": {
-        "GRADLE_OPTS": "-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx4096m"
-      },
-      "prebuildCommand": "echo 'Prebuild iniciado'",
-      "postPrebuildCommand": "node eas-hooks/postPrebuild.js"
+        "GRADLE_OPTS": "-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx4096m -Dorg.gradle.internal.http.connectionTimeout=120000 -Dorg.gradle.internal.http.socketTimeout=120000"
+      }
     },
     "production": {
       "android": {

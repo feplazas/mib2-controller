@@ -1230,3 +1230,30 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [x] Modificar gradle.properties para aumentar timeout
 - [x] Modificar build.gradle para agregar repositorios públicos
 - [ ] Ejecutar nuevo build con EAS con hooks aplicados
+
+
+## 🔧 Correcciones y Mejoras Finales (2026-01-13)
+
+### Bug: Duplicación de Tab Toolbox
+- [x] Corregir duplicación del tab "toolbox" en la barra de navegación inferior
+- [x] Verificar configuración de tabs en app/(tabs)/_layout.tsx
+
+### Integración de NetworkInfo
+- [x] Integrar módulo NetworkInfo en pantalla Home (index.tsx)
+- [x] Mostrar IP detectada del adaptador USB-Ethernet
+- [x] Mostrar subred automática antes del escaneo
+- [x] Reemplazar hardcoded 192.168.1.x con detección dinámica
+- [x] Agregar indicador visual de estado de red
+
+### UI de Gestión de Backups
+- [x] Agregar sección de backups en pantalla Toolbox
+- [x] Listar backups disponibles con fecha y tamaño
+- [x] Botones de restauración para cada backup
+- [x] Visualización de checksums MD5
+- [x] Confirmación antes de restaurar
+
+### Backup Automático en Parcheo
+- [x] Implementar backup automático antes del Paso 2 (Parcheo)
+- [x] Mostrar confirmación con ruta del backup creado
+- [x] Mostrar tamaño del archivo respaldado
+- [x] Validar integridad del backup antes de continuar
