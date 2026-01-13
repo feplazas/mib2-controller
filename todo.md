@@ -1274,3 +1274,50 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [x] Mostrar toolboxInfo.firmwareCompatible con indicador visual
 - [x] Mostrar toolboxInfo.hardwareVersion si está disponible
 - [x] Actualizar automáticamente al detectar Toolbox
+
+
+## 🏪 Preparación para Google Play Store (2026-01-13)
+
+### Políticas y Documentación Legal
+- [x] Crear política de privacidad (Privacy Policy)
+- [x] Crear términos de servicio (Terms of Service)
+- [x] Documentar recolección de datos (Data Safety)
+- [x] Justificar permisos sensibles (ACCESS_NETWORK_STATE, INTERNET, etc.)
+- [x] Agregar disclaimer sobre riesgos de modificación de MIB2
+
+### Permisos y Configuración de Android
+- [ ] Revisar y documentar todos los permisos en AndroidManifest.xml
+- [ ] Agregar justificaciones de permisos para Play Console
+- [ ] Configurar target SDK 34 (Android 14)
+- [ ] Verificar compatibilidad con Android 15
+- [ ] Configurar ProGuard/R8 para ofuscación de código
+
+### Assets Visuales
+- [x] Generar ícono de app (512x512 PNG)
+- [x] Generar feature graphic (1024x500 PNG)
+- [ ] Capturar screenshots de teléfono (mínimo 2, máximo 8)
+- [ ] Capturar screenshots de tablet 7" (opcional)
+- [ ] Capturar screenshots de tablet 10" (opcional)
+- [ ] Crear video promocional (opcional)
+
+### Configuración de Build
+- [x] Configurar versionCode y versionName
+- [x] Generar keystore de release (EAS maneja automáticamente)
+- [x] Configurar signing en app.json/eas.json
+- [x] Habilitar App Bundle (AAB) en lugar de APK
+- [x] Configurar splits por ABI (arm64-v8a, armeabi-v7a)
+
+### Play Store Listing
+- [x] Escribir título de la app (máximo 50 caracteres)
+- [x] Escribir descripción corta (máximo 80 caracteres)
+- [x] Escribir descripción completa (máximo 4000 caracteres)
+- [x] Seleccionar categoría (Herramientas / Tools)
+- [x] Agregar tags y keywords
+- [x] Configurar clasificación de contenido
+
+### Cumplimiento y Seguridad
+- [ ] Declarar uso de permisos sensibles
+- [ ] Completar cuestionario de Data Safety
+- [ ] Declarar público objetivo (mayores de 18 años)
+- [ ] Agregar advertencias de seguridad en descripción
+- [ ] Configurar países de distribución
