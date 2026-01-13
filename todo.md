@@ -1257,3 +1257,20 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [x] Mostrar confirmación con ruta del backup creado
 - [x] Mostrar tamaño del archivo respaldado
 - [x] Validar integridad del backup antes de continuar
+
+
+## 🔒 Validaciones Reales (2026-01-13)
+
+### Validación de Conectividad del Adaptador
+- [x] Implementar validateAdapterConnectivity() en módulo NetworkInfo
+- [x] Validar acceso real a la red MIB2 antes de escaneo
+- [x] Integrar validación en handleQuickScan
+- [x] Integrar validación en handleFullScan
+- [x] Mostrar error específico si adaptador no tiene conectividad
+
+### Indicador de Versión de Firmware
+- [x] Agregar sección de firmware en pantalla Home
+- [x] Mostrar toolboxInfo.firmwareVersion después de conectar
+- [x] Mostrar toolboxInfo.firmwareCompatible con indicador visual
+- [x] Mostrar toolboxInfo.hardwareVersion si está disponible
+- [x] Actualizar automáticamente al detectar Toolbox

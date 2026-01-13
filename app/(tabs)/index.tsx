@@ -105,7 +105,19 @@ export default function HomeScreen() {
     if (usbStatus !== 'connected') {
       Alert.alert(
         'Adaptador USB Requerido',
-        'Debes conectar un adaptador USB-Ethernet antes de escanear la red.\n\n1. Conecta el adaptador USB-Ethernet al puerto USB de la unidad MIB2\n2. Conecta tu dispositivo Android a la misma red (WiFi o adaptador Ethernet)\n3. Ve a la pesta\u00f1a "USB" para verificar la conexi\u00f3n',
+        'Debes conectar un adaptador USB-Ethernet antes de escanear la red.\n\n1. Conecta el adaptador USB-Ethernet al puerto USB de la unidad MIB2\n2. Conecta tu dispositivo Android a la misma red (WiFi o adaptador Ethernet)\n3. Ve a la pestaña "USB" para verificar la conexión',
+        [{ text: 'Entendido' }]
+      );
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      return;
+    }
+
+    // Validar conectividad REAL del adaptador
+    const hasConnectivity = await validateAdapterConnectivity();
+    if (!hasConnectivity) {
+      Alert.alert(
+        'Sin Conectividad',
+        'El adaptador USB-Ethernet no tiene una IP válida asignada.\n\nVerifica que:\n1. El adaptador esté conectado correctamente\n2. La red esté configurada (DHCP o IP estática)\n3. El adaptador tenga acceso a la red MIB2',
         [{ text: 'Entendido' }]
       );
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
@@ -169,7 +181,19 @@ export default function HomeScreen() {
     if (usbStatus !== 'connected') {
       Alert.alert(
         'Adaptador USB Requerido',
-        'Debes conectar un adaptador USB-Ethernet antes de escanear la red.\n\n1. Conecta el adaptador USB-Ethernet al puerto USB de la unidad MIB2\n2. Conecta tu dispositivo Android a la misma red (WiFi o adaptador Ethernet)\n3. Ve a la pesta\u00f1a "USB" para verificar la conexi\u00f3n',
+        'Debes conectar un adaptador USB-Ethernet antes de escanear la red.\n\n1. Conecta el adaptador USB-Ethernet al puerto USB de la unidad MIB2\n2. Conecta tu dispositivo Android a la misma red (WiFi o adaptador Ethernet)\n3. Ve a la pestaña "USB" para verificar la conexión',
+        [{ text: 'Entendido' }]
+      );
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      return;
+    }
+
+    // Validar conectividad REAL del adaptador
+    const hasConnectivity = await validateAdapterConnectivity();
+    if (!hasConnectivity) {
+      Alert.alert(
+        'Sin Conectividad',
+        'El adaptador USB-Ethernet no tiene una IP válida asignada.\n\nVerifica que:\n1. El adaptador esté conectado correctamente\n2. La red esté configurada (DHCP o IP estática)\n3. El adaptador tenga acceso a la red MIB2',
         [{ text: 'Entendido' }]
       );
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
@@ -300,6 +324,41 @@ export default function HomeScreen() {
                     </View>
                   )}
                 </View>
+
+                {/* Firmware Info - REAL */}
+                {toolboxInfo && (toolboxInfo.firmwareVersion || toolboxInfo.hardwareVersion) && (
+                  <View className="bg-background rounded-lg p-3 mb-3">
+                    <View className="flex-row items-center justify-between mb-2">
+                      <Text className="text-sm font-semibold text-foreground">Firmware MIB2</Text>
+                      <View className={`px-2 py-1 rounded ${
+                        toolboxInfo.firmwareCompatible ? 'bg-success/20' : 'bg-warning/20'
+                      }`}>
+                        <Text className={`text-xs font-semibold ${
+                          toolboxInfo.firmwareCompatible ? 'text-success' : 'text-warning'
+                        }`}>
+                          {toolboxInfo.firmwareCompatible ? '✓ Compatible' : '⚠️ Telnet Cerrado'}
+                        </Text>
+                      </View>
+                    </View>
+                    {toolboxInfo.firmwareVersion && (
+                      <View className="flex-row justify-between mb-1">
+                        <Text className="text-xs text-muted">Versión:</Text>
+                        <Text className="text-xs text-foreground font-mono">{toolboxInfo.firmwareVersion}</Text>
+                      </View>
+                    )}
+                    {toolboxInfo.hardwareVersion && (
+                      <View className="flex-row justify-between">
+                        <Text className="text-xs text-muted">Hardware:</Text>
+                        <Text className="text-xs text-foreground font-mono">{toolboxInfo.hardwareVersion}</Text>
+                      </View>
+                    )}
+                    {!toolboxInfo.firmwareCompatible && (
+                      <Text className="text-xs text-warning mt-2">
+                        ⚠️ El puerto Telnet está cerrado. Se requiere acceso directo a eMMC.
+                      </Text>
+                    )}
+                  </View>
+                )}
 
                 {/* Toolbox Info */}
                 {toolboxInfo && (
