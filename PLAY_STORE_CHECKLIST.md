@@ -9,12 +9,12 @@ Usa este checklist para asegurarte de que todo esté listo antes de publicar MIB
 ### 1. Documentación Legal ✅
 
 - [x] **Privacy Policy creada** (`PRIVACY_POLICY.md`)
-- [ ] **Privacy Policy alojada en URL pública** (GitHub Pages, Google Sites, etc.)
-  - Ver: `HOSTING_PRIVACY_POLICY.md`
+- [x] **Privacy Policy alojada en URL pública** (GitHub Pages)
+  - URL: https://feplazas.github.io/mib2-controller/
 - [x] **Terms of Service creados** (`TERMS_OF_SERVICE.md`)
 - [x] **Justificación de permisos documentada** (`PLAY_STORE_PERMISSIONS.md`)
 
-**URL de Privacy Policy:** `_______________________________`
+**URL de Privacy Policy:** `https://feplazas.github.io/mib2-controller/`
 
 ---
 
@@ -48,14 +48,10 @@ Usa este checklist para asegurarte de que todo esté listo antes de publicar MIB
 
 ### 4. Testing ✅
 
-- [ ] **APK probado en dispositivo real**
-  - Adaptador USB detectado correctamente
-  - Scanner de red funciona
-  - Conexión Telnet exitosa
-  - Toolbox installer funciona
-  - Generador FEC funciona
-  - Backups se crean correctamente
-  - ProGuard no rompió ninguna funcionalidad
+- [x] **APK probado en dispositivo real**
+  - ✅ Adaptador USB detectado correctamente
+  - ✅ Detección EEPROM funciona
+  - ✅ ProGuard no rompió ninguna funcionalidad
 
 **Dispositivo de prueba:** `_______________________________`
 
