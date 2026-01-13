@@ -1321,3 +1321,15 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [ ] Declarar público objetivo (mayores de 18 años)
 - [ ] Agregar advertencias de seguridad en descripción
 - [ ] Configurar países de distribución
+
+
+## 🔒 Configuración de ProGuard/R8 (2026-01-13)
+
+### Ofuscación de Código
+- [x] Habilitar minifyEnabled en gradle.properties
+- [x] Habilitar shrinkResources en gradle.properties
+- [x] Actualizar proguard-rules.pro con reglas para módulos nativos
+- [x] Agregar reglas keep para UsbNativeModule
+- [x] Agregar reglas keep para NetworkInfoModule
+- [x] Agregar reglas keep para TelnetClient
+- [ ] Verificar que el APK ofuscado funcione correctamente
