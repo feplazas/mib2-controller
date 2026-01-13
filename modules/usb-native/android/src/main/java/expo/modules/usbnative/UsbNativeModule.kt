@@ -12,6 +12,8 @@ import android.util.Log
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.Promise
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 
 class UsbNativeModule : Module() {
   private val context: Context
@@ -257,13 +259,13 @@ class UsbNativeModule : Module() {
           bytesWritten++
           
           // Small delay between writes
-          Thread.sleep(10)
+          runBlocking { delay(10) }
         }
 
         // Delay post-escritura para permitir que el adaptador actualice su memoria
         // Esto es especialmente importante para adaptadores experimentales como AX88179A
         Log.d(TAG, "Wrote $bytesWritten bytes to EEPROM at offset $offset - waiting 500ms for device to update...")
-        Thread.sleep(500)
+        runBlocking { delay(500) }
         Log.d(TAG, "Write completed and device ready for verification")
         
         // Verificación opcional (puede omitirse para adaptadores con protección de escritura)
@@ -464,7 +466,7 @@ class UsbNativeModule : Module() {
         }
 
         // Esperar a que el hardware procese la escritura
-        Thread.sleep(100)
+        runBlocking { delay(100) }
 
         // Verificar si la escritura fue exitosa
         val verifyByte = ByteArray(1)
@@ -505,7 +507,7 @@ class UsbNativeModule : Module() {
             0,
             5000
           )
-          Thread.sleep(100)
+          runBlocking { delay(100) }
         }
 
         val eepromType = if (writeSuccessful) "external_eeprom" else "efuse"
@@ -574,7 +576,7 @@ class UsbNativeModule : Module() {
           5000
         )
         
-        Thread.sleep(10)
+        runBlocking { delay(10) }
         
         connection.controlTransfer(
           USB_DIR_OUT or USB_TYPE_VENDOR or USB_RECIP_DEVICE,
@@ -586,7 +588,7 @@ class UsbNativeModule : Module() {
           5000
         )
 
-        Thread.sleep(10)
+        runBlocking { delay(10) }
 
         // Write new PID (little endian)
         val pidLow = targetPID and 0xFF
@@ -601,8 +603,7 @@ class UsbNativeModule : Module() {
           0,
           5000
         )
-        
-        Thread.sleep(10)
+                runBlocking { delay(100) }
         
         connection.controlTransfer(
           USB_DIR_OUT or USB_TYPE_VENDOR or USB_RECIP_DEVICE,
@@ -617,7 +618,7 @@ class UsbNativeModule : Module() {
         Log.d(TAG, "Spoofing complete, verifying...")
 
         // Verify write
-        Thread.sleep(100)
+        runBlocking { delay(100) }
         
         val verifyVIDBytes = ByteArray(2)
         val verifyPIDBytes = ByteArray(2)

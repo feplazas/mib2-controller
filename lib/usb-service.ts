@@ -280,10 +280,10 @@ class UsbService {
    */
   private startMonitoring(): void {
     this.scanInterval = setInterval(() => {
-      this.scanDevices().catch(error => {
+      this.scanDevices().catch((error) => {
         console.error('[UsbService] Error in USB monitoring:', error);
       });
-    }, 5000);
+    }, 10000); // Optimizado: 10s en lugar de 5s para reducir consumo de batería
   }
 
   /**
