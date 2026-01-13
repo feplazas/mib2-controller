@@ -22,7 +22,7 @@ const MAX_QUEUE_SIZE = 100;
 
 export class CommandQueue {
   private static queue: QueuedCommand[] = [];
-  private static listeners: Array<(queue: QueuedCommand[]) => void> = [];
+  private static listeners: ((queue: QueuedCommand[]) => void)[] = [];
   private static isExecuting = false;
 
   /**

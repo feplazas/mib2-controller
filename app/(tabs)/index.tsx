@@ -595,7 +595,7 @@ export default function HomeScreen() {
                 4. Ingresa la dirección IP de la unidad (por defecto: 192.168.1.4)
               </Text>
               <Text className="text-sm text-muted leading-relaxed">
-                5. Presiona "Conectar a MIB2" para establecer la conexión
+                5. Presiona &quot;Conectar a MIB2&quot; para establecer la conexión
               </Text>
             </View>
           </View>

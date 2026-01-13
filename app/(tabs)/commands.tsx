@@ -1,4 +1,4 @@
-import { Alert, FlatList, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { Alert, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { useState, useRef, useEffect } from "react";
 import * as Haptics from "expo-haptics";
 import * as Clipboard from "expo-clipboard";
@@ -12,8 +12,7 @@ export default function CommandsScreen() {
   const colors = useColors();
   const { isConnected, isConnecting, connect, disconnect, sendCommand, messages, clearMessages } = useTelnet();
   const [commandInput, setCommandInput] = useState('');
-  const [commandHistory, setCommandHistory] = useState<string[]>([]);
-  const [historyIndex, setHistoryIndex] = useState(-1);
+
   const [showSuggestions, setShowSuggestions] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
   const inputRef = useRef<TextInput>(null);
@@ -44,10 +43,6 @@ export default function CommandsScreen() {
     }
 
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    
-    // Add to history
-    setCommandHistory(prev => [...prev, commandInput]);
-    setHistoryIndex(-1);
     
     // Send command
     sendCommand(commandInput);

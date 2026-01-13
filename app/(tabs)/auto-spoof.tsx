@@ -1,5 +1,5 @@
 import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
-import { useState } from 'react';
+import { useState , useRef } from 'react';
 import { ScreenContainer } from '@/components/screen-container';
 import { useUsbStatus } from '@/lib/usb-status-context';
 import { usbService } from '@/lib/usb-service';
@@ -10,8 +10,6 @@ import { SuccessResultModal } from '@/components/success-result-modal';
 import { EepromProgressIndicator } from '@/components/eeprom-progress-indicator';
 import * as Haptics from 'expo-haptics';
 import * as Sharing from 'expo-sharing';
-import { captureRef } from 'react-native-view-shot';
-import { useRef } from 'react';
 
 type SpoofStep = 'idle' | 'validating' | 'creating_backup' | 'writing_vid_low' | 'writing_vid_high' | 'writing_pid_low' | 'writing_pid_high' | 'verifying' | 'success' | 'error';
 
@@ -35,7 +33,7 @@ export default function AutoSpoofScreen() {
     deviceName: string;
     timestamp: Date;
   } | null>(null);
-  const resultModalRef = useRef(null);
+
   const [isTesting, setIsTesting] = useState(false);
   const [testResult, setTestResult] = useState<'success' | 'fail' | null>(null);
   const [skipVerification, setSkipVerification] = useState(false);

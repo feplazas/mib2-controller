@@ -379,12 +379,12 @@ export default function RecoveryScreen() {
             </Text>
             <Text className="text-xs text-muted leading-relaxed">
               1. Conecta el adaptador brickeado con cable OTG{'\n'}
-              2. Verifica que aparezca como "Brickeado" arriba{'\n'}
+              2. Verifica que aparezca como &quot;Brickeado&quot; arriba{'\n'}
               3. Selecciona un backup compatible (mismo chipset){'\n'}
-              4. Toca "Restaurar" y confirma la operación{'\n'}
+              4. Toca &quot;Restaurar&quot; y confirma la operación{'\n'}
               5. Desconecta y reconecta el adaptador{'\n'}
               6. Verifica que el VID/PID se haya restaurado{'\n\n'}
-              Si el método normal no funciona, usa "Forzar" como último recurso.
+              Si el método normal no funciona, usa &quot;Forzar&quot; como último recurso.
             </Text>
           </View>
         </View>

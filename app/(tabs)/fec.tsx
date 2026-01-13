@@ -14,12 +14,9 @@ import {
   validateVIN,
   validateVCRN,
   validateFECCode,
-  generateFECCode,
   generateExceptionList,
   generateToolboxInjectionCommand,
   generateFecInjectionCommands,
-  type FECCode,
-  type VehicleData,
 } from "@/lib/fec-generator";
 
 export default function FECScreen() {
