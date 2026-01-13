@@ -417,6 +417,19 @@ Los datos almacenados por la Aplicación utilizan formatos estándar y portables
 
 El usuario puede copiar estos archivos a otros dispositivos o sistemas de almacenamiento sin restricciones técnicas.
 
+### 9.5 Derecho de Oposición
+
+Dado que la Aplicación NO realiza procesamiento de datos personales con fines de marketing, perfilado o toma de decisiones automatizadas, no existe un "derecho de oposición" aplicable en el sentido tradicional.
+
+Sin embargo, el usuario puede optar por:
+- **Desactivar la funcionalidad de API externa:** No utilizar el generador de códigos FEC que requiere consultas a vwcoding.ru
+- **Desactivar notificaciones:** Denegar el permiso POST_NOTIFICATIONS
+- **No crear backups:** Optar por no crear backups automáticos (no recomendado por seguridad)
+
+### 9.6 Derecho a No Ser Objeto de Decisiones Automatizadas
+
+La Aplicación NO realiza ningún tipo de toma de decisiones automatizada que afecte al usuario. Todas las operaciones requieren confirmación explícita del usuario.
+
 ---
 
 ## 10. Cumplimiento de Normativas de Protección de Datos
@@ -468,6 +481,10 @@ La Aplicación cumple con los requisitos de la LOPDGDD en tanto que:
 - NO realiza transferencias internacionales de datos personales
 - NO utiliza sistemas de videovigilancia, geolocalización ni otras tecnologías de seguimiento
 - Proporciona información transparente sobre el procesamiento de datos técnicos
+
+### 10.4 Otras Jurisdicciones
+
+Para usuarios en otras jurisdicciones con leyes de protección de datos (Brasil - LGPD, Canadá - PIPEDA, Australia - Privacy Act, etc.), la Aplicación mantiene el mismo estándar de privacidad: **NO recopilación de datos personales, procesamiento local exclusivamente, y control total del usuario sobre sus datos técnicos.**
 
 ---
 
