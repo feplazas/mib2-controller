@@ -376,8 +376,153 @@ class UsbNativeModule : Module() {
       }
     }
 
-    AsyncFunction("spoofVIDPID") { targetVID: Int, targetPID: Int, promise: Promise ->
+    AsyncFunction("detectEEPROMType") { promise: Promise ->
       try {
+        val connection = currentConnection
+        val device = currentDevice
+        
+        if (connection == null || device == null) {
+          promise.reject("NO_DEVICE", "No device is currently open", null)
+          return@AsyncFunction
+        }
+
+        Log.d(TAG, "Starting REAL EEPROM vs eFuse detection for device ${device.deviceName}")
+
+        // Paso 1: Intentar lectura REAL de EEPROM
+        val testReadBytes = ByteArray(2)
+        val readResult = connection.controlTransfer(
+          USB_DIR_IN or USB_TYPE_VENDOR or USB_RECIP_DEVICE,
+          ASIX_CMD_READ_EEPROM,
+          0x00, // Offset 0 (seguro para lectura)
+          0,
+          testReadBytes,
+          2,
+          5000
+        )
+
+        if (readResult < 0) {
+          Log.w(TAG, "EEPROM read failed - device may not support EEPROM access")
+          promise.resolve(mapOf(
+            "type" to "unknown",
+            "writable" to false,
+            "reason" to "Read operation failed"
+          ))
+          return@AsyncFunction
+        }
+
+        Log.d(TAG, "EEPROM read successful: ${testReadBytes.joinToString("") { "%02X".format(it) }}")
+
+        // Paso 2: Intentar escritura de prueba REAL en offset seguro (0xFE - último byte, no afecta VID/PID)
+        val testOffset = 0xFE
+        val originalByte = ByteArray(1)
+        
+        // Leer byte original
+        val readOriginalResult = connection.controlTransfer(
+          USB_DIR_IN or USB_TYPE_VENDOR or USB_RECIP_DEVICE,
+          ASIX_CMD_READ_EEPROM,
+          testOffset,
+          0,
+          originalByte,
+          1,
+          5000
+        )
+
+        if (readOriginalResult < 0) {
+          Log.w(TAG, "Failed to read test offset - assuming eFuse")
+          promise.resolve(mapOf(
+            "type" to "efuse",
+            "writable" to false,
+            "reason" to "Cannot read test offset"
+          ))
+          return@AsyncFunction
+        }
+
+        val originalValue = originalByte[0].toInt() and 0xFF
+        val testValue = (originalValue xor 0xFF) and 0xFF // Invertir bits para prueba
+
+        Log.d(TAG, "Attempting REAL write test at offset 0x${String.format("%02X", testOffset)}: 0x${String.format("%02X", originalValue)} -> 0x${String.format("%02X", testValue)}")
+
+        // Intentar escritura REAL
+        val writeResult = connection.controlTransfer(
+          USB_DIR_OUT or USB_TYPE_VENDOR or USB_RECIP_DEVICE,
+          ASIX_CMD_WRITE_EEPROM,
+          testOffset,
+          testValue,
+          null,
+          0,
+          5000
+        )
+
+        if (writeResult < 0) {
+          Log.w(TAG, "Write operation failed - eFuse detected")
+          promise.resolve(mapOf(
+            "type" to "efuse",
+            "writable" to false,
+            "reason" to "Write operation rejected by hardware"
+          ))
+          return@AsyncFunction
+        }
+
+        // Esperar a que el hardware procese la escritura
+        Thread.sleep(100)
+
+        // Verificar si la escritura fue exitosa
+        val verifyByte = ByteArray(1)
+        val verifyResult = connection.controlTransfer(
+          USB_DIR_IN or USB_TYPE_VENDOR or USB_RECIP_DEVICE,
+          ASIX_CMD_READ_EEPROM,
+          testOffset,
+          0,
+          verifyByte,
+          1,
+          5000
+        )
+
+        if (verifyResult < 0) {
+          Log.w(TAG, "Verification read failed")
+          promise.resolve(mapOf(
+            "type" to "unknown",
+            "writable" to false,
+            "reason" to "Cannot verify write"
+          ))
+          return@AsyncFunction
+        }
+
+        val verifiedValue = verifyByte[0].toInt() and 0xFF
+        val writeSuccessful = (verifiedValue == testValue)
+
+        Log.d(TAG, "Write verification: expected 0x${String.format("%02X", testValue)}, got 0x${String.format("%02X", verifiedValue)}, success: $writeSuccessful")
+
+        // Restaurar valor original si la escritura fue exitosa
+        if (writeSuccessful) {
+          Log.d(TAG, "Restoring original value 0x${String.format("%02X", originalValue)}")
+          connection.controlTransfer(
+            USB_DIR_OUT or USB_TYPE_VENDOR or USB_RECIP_DEVICE,
+            ASIX_CMD_WRITE_EEPROM,
+            testOffset,
+            originalValue,
+            null,
+            0,
+            5000
+          )
+          Thread.sleep(100)
+        }
+
+        val eepromType = if (writeSuccessful) "external_eeprom" else "efuse"
+        Log.d(TAG, "REAL detection complete: $eepromType (writable: $writeSuccessful)")
+
+        promise.resolve(mapOf(
+          "type" to eepromType,
+          "writable" to writeSuccessful,
+          "reason" to if (writeSuccessful) "External EEPROM detected - safe for spoofing" else "eFuse detected - spoofing blocked"
+        ))
+      } catch (e: Exception) {
+        Log.e(TAG, "Error detecting EEPROM type: ${e.message}")
+        promise.reject("DETECTION_ERROR", e.message, e)
+      }
+    }
+
+    AsyncFunction("spoofVIDPID") { targetVID: Int, targetPID: Int, magicValue: Int, promise: Promise ->ry {
         val connection = currentConnection
         if (connection == null) {
           promise.reject("NO_CONNECTION", "No active device connection", null)

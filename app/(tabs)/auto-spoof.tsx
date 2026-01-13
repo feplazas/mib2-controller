@@ -90,18 +90,57 @@ export default function AutoSpoofScreen() {
       return;
     }
     
-    // Advertencia adicional para chipsets experimentales
-    if (compatibility === 'experimental') {
-      Alert.alert(
-        '⚠️ Chipset Experimental',
-        `${device.chipset} no está 100% confirmado pero debería funcionar.\n\n¿Deseas continuar con el spoofing?`,
-        [
-          { text: 'Cancelar', style: 'cancel' },
-          { text: 'Sí, Continuar', onPress: () => proceedWithSpoofing() },
-        ]
-      );
-      return;
-    }
+    // DETECCIÓN REAL de EEPROM vs eFuse
+    Alert.alert(
+      '🔍 Detectando Tipo de EEPROM',
+      'Se realizará una prueba REAL de escritura en un offset seguro para determinar si el chipset tiene EEPROM externa modificable o eFuse bloqueado.\n\nEsto NO modificará el VID/PID actual.',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Detectar Ahora', onPress: async () => {
+          try {
+            await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            
+            // Realizar detección REAL
+            const eepromType = await usbService.detectEEPROMType();
+            
+            if (!eepromType.writable) {
+              // eFuse detectado - BLOQUEAR spoofing
+              await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+              Alert.alert(
+                '❌ Spoofing Bloqueado',
+                `Tipo detectado: ${eepromType.type.toUpperCase()}\n\n` +
+                `Razón: ${eepromType.reason}\n\n` +
+                `⚠️ Este chipset NO puede ser modificado de forma segura. El spoofing ha sido BLOQUEADO para prevenir bricking del adaptador.`,
+                [{ text: 'Entendido' }]
+              );
+              return;
+            }
+            
+            // EEPROM externa detectada - PERMITIR spoofing
+            await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            Alert.alert(
+              '✅ EEPROM Externa Detectada',
+              `Tipo: ${eepromType.type.toUpperCase()}\n` +
+              `Estado: MODIFICABLE\n\n` +
+              `✅ El chipset tiene EEPROM externa y puede ser modificado de forma segura.\n\n` +
+              `¿Deseas continuar con el spoofing?`,
+              [
+                { text: 'Cancelar', style: 'cancel' },
+                { text: 'Sí, Continuar', onPress: () => proceedWithSpoofing() }
+              ]
+            );
+          } catch (error) {
+            await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+            Alert.alert(
+              '❌ Error de Detección',
+              `No se pudo detectar el tipo de EEPROM:\n\n${error}\n\n` +
+              `Por seguridad, el spoofing ha sido BLOQUEADO.`
+            );
+          }
+        }}
+      ]
+    );
+    return;
     
     proceedWithSpoofing();
   };

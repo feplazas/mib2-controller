@@ -333,6 +333,37 @@ class UsbService {
   isCompatibleForSpoofing(device: UsbDevice): boolean {
     return this.isASIXAdapter(device) || this.isDLinkAdapter(device);
   }
+
+  /**
+   * Detectar tipo de EEPROM (externa vs eFuse) mediante prueba REAL de escritura
+   * 
+   * Realiza:
+   * 1. Lectura REAL de EEPROM en offset seguro
+   * 2. Escritura de prueba REAL en offset seguro (no modifica VID/PID)
+   * 3. Verificación REAL de escritura
+   * 4. Restauración del valor original
+   * 
+   * @returns Tipo de EEPROM y si es modificable
+   */
+  async detectEEPROMType(): Promise<{ type: 'external_eeprom' | 'efuse' | 'unknown'; writable: boolean; reason: string }> {
+    if (Platform.OS !== 'android') {
+      throw new Error('EEPROM detection only available on Android');
+    }
+
+    try {
+      usbLogger.log('info', 'detectEEPROMType', '🔍 Iniciando detección REAL de tipo de EEPROM...');
+      
+      const result = await UsbNativeModule.detectEEPROMType();
+      
+      usbLogger.log('success', 'detectEEPROMType', `✅ Detección completada: ${result.type} (writable: ${result.writable})`);
+      usbLogger.log('info', 'detectEEPROMType', `📝 Razón: ${result.reason}`);
+      
+      return result;
+    } catch (error) {
+      usbLogger.log('error', 'detectEEPROMType', `❌ Error en detección de EEPROM: ${error}`);
+      throw error;
+    }
+  }
 }
 
 // Exportar instancia singleton

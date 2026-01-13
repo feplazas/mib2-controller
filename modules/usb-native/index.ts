@@ -33,6 +33,12 @@ export interface SpoofResult {
   newPID: number;
 }
 
+export interface EEPROMTypeResult {
+  type: 'external_eeprom' | 'efuse' | 'unknown';
+  writable: boolean;
+  reason: string;
+}
+
 interface UsbNativeModuleInterface {
   getDeviceList(): UsbDevice[];
   requestPermission(deviceId: number): Promise<boolean>;
@@ -41,6 +47,7 @@ interface UsbNativeModuleInterface {
   readEEPROM(offset: number, length: number): Promise<EEPROMReadResult>;
   writeEEPROM(offset: number, dataHex: string, magicValue: number, skipVerification: boolean): Promise<{ bytesWritten: number; verified: boolean }>;
   dumpEEPROM(): Promise<EEPROMDumpResult>;
+  detectEEPROMType(): Promise<EEPROMTypeResult>;
   spoofVIDPID(targetVID: number, targetPID: number): Promise<SpoofResult>;
 }
 

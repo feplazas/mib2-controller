@@ -1333,3 +1333,29 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [x] Agregar reglas keep para NetworkInfoModule
 - [x] Agregar reglas keep para TelnetClient
 - [ ] Verificar que el APK ofuscado funcione correctamente
+
+
+## 🚨 BUG CRÍTICO - Compatibilidad de Chipsets USB (13 Ene 2026)
+
+### Problema Detectado
+- [x] **CRÍTICO:** AX88179A está marcado como compatible cuando NO lo es
+- [x] La lógica de compatibilidad permite spoofing de chipsets incompatibles
+- [x] Riesgo de bricking del MIB2 si se hace spoofing con chipset incorrecto
+
+### Corrección Requerida
+- [x] Implementar detección REAL de EEPROM vs eFuse (sin simulaciones)
+- [x] Intentar lectura REAL de EEPROM vía control transfer USB
+- [x] Intentar escritura de prueba REAL en offset seguro (sin modificar VID/PID)
+- [x] Bloquear spoofing si escritura falla (eFuse detectado)
+- [x] Permitir spoofing SOLO si EEPROM es modificable (escritura exitosa)
+- [x] Actualizar UI para mostrar resultado de detección REAL
+
+### Chipsets Compatibles (ÚNICOS)
+- AX88772A con EEPROM externa
+- AX88772B con EEPROM externa
+
+### Chipsets Incompatibles (Bloquear Spoofing)
+- AX88179A (USB 3.0 Gigabit - arquitectura diferente)
+- AX88179 (USB 3.0 Gigabit)
+- RTL8153 (Realtek - no compatible)
+- Todos los demás chipsets no listados como compatibles
