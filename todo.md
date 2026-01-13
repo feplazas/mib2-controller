@@ -1166,3 +1166,47 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [x] Eliminar TODOS los mockups/simulaciones de la pantalla Telnet
 - [ ] Verificar que el adaptador tiene conexión Ethernet activa (IP asignada) - requiere API nativa
 - [ ] Obtener IP real del adaptador USB-Ethernet (no hardcodear 192.168.1.x) - requiere API nativa
+
+
+## ⚠️ CORRECCIONES CRÍTICAS URGENTES (Análisis MIB2Acceso.pdf)
+
+### PRIORIDAD MÁXIMA - MOCKUP DETECTADO
+- [x] **CRÍTICO:** Corregir pantalla Telnet/Home (index.tsx) - Verificar adaptador USB antes de escaneo
+- [x] Agregar validación `usbStatus === 'connected'` en handleQuickScan
+- [x] Agregar validación `usbStatus === 'connected'` en handleFullScan
+- [x] Agregar validación `usbStatus === 'connected'` en handleConnect (Telnet)
+- [x] Deshabilitar botones de escaneo cuando no hay adaptador USB conectado
+- [x] Mostrar Alert con instrucciones si usuario intenta escanear sin adaptador
+- [ ] Verificar que el adaptador tenga IP asignada antes de escanear red
+
+### PRIORIDAD ALTA - Validación de Red
+- [ ] Implementar función para obtener IP del adaptador USB-Ethernet conectado
+- [ ] Detectar subred automáticamente (no asumir 192.168.1.x)
+- [ ] Validar conectividad del adaptador antes de intentar escaneo
+- [ ] Agregar timeout de conexión para evitar bloqueos
+- [ ] Mostrar IP del adaptador en pantalla USB Status
+
+### PRIORIDAD ALTA - Advertencias de Bricking
+- [x] Agregar advertencia CRÍTICA en pantalla Toolbox sobre riesgo de bricking
+- [x] Implementar confirmación triple antes de ejecutar parcheo tsd.mibstd2.system.swap
+- [x] Agregar advertencia sobre firmware incompatible (Telnet cerrado)
+- [x] Documentar método de recovery vía eMMC si MIB2 se brickea
+- [ ] Agregar validación de versión de firmware antes de modificaciones
+
+### PRIORIDAD MEDIA - Validación de Firmware
+- [ ] Implementar comando Telnet para detectar versión de firmware MIB2
+- [ ] Validar compatibilidad de firmware antes de instalación de Toolbox
+- [ ] Advertir si Telnet está deshabilitado (requiere soldadura eMMC)
+- [ ] Detectar hardware 790 vs 790 B (limitaciones de Vista Sport)
+
+### PRIORIDAD MEDIA - Sistema de Backup MIB2
+- [ ] Implementar backup automático de tsd.mibstd2.system.swap antes de parchear
+- [ ] Crear función de restauración de archivos críticos de MIB2
+- [ ] Validar integridad de archivos después de modificar
+- [ ] Documentar procedimiento de recovery completo
+
+### PRIORIDAD BAJA - Mejoras de Guía Toolbox
+- [ ] Implementar ejecución REAL de comandos vía Telnet en guía de Toolbox
+- [ ] Validar respuestas del sistema QNX después de cada paso
+- [ ] Detectar automáticamente si Toolbox ya está instalado
+- [ ] Agregar logs detallados de cada paso de instalación

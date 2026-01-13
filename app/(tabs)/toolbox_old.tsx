@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ScrollView, Text, View, TouchableOpacity, Alert, Platform, ActivityIndicator } from "react-native";
 import * as Haptics from "expo-haptics";
 import * as Sharing from "expo-sharing";
@@ -93,32 +93,6 @@ export default function ToolboxScreen() {
     Alert.alert("Comando de Verificación", command, [{ text: "Cerrar" }]);
   };
 
-  const executeStepCommand = async (step: InstallationStep) => {
-    if (Platform.OS !== 'web') {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    }
-    setExecuting(true);
-    setStepStatuses(prev => ({ ...prev, [step.step]: 'inProgress' }));
-
-    try {
-      sendCommand(step.command!);
-      setTimeout(() => {
-        setStepStatuses(prev => ({ ...prev, [step.step]: 'completed' }));
-        setExecuting(false);
-        if (Platform.OS !== 'web') {
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        }
-      }, 2000);
-    } catch (error) {
-      setStepStatuses(prev => ({ ...prev, [step.step]: 'error' }));
-      setExecuting(false);
-      if (Platform.OS !== 'web') {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      }
-      Alert.alert('Error', 'Error al ejecutar comando');
-    }
-  };
-
   const handleExecuteStep = async (step: InstallationStep) => {
     if (!isConnected) {
       Alert.alert('No Conectado', 'Debes conectarte a la unidad MIB2 primero');
@@ -130,50 +104,6 @@ export default function ToolboxScreen() {
       return;
     }
 
-    const isCriticalStep = step.step === 2 || step.title.toLowerCase().includes('patch');
-
-    if (isCriticalStep) {
-      Alert.alert(
-        '⚠️ PASO CRÍTICO - Confirmación 1/3',
-        'Este paso modifica el binario del sistema tsd.mibstd2.system.swap.\n\nEsto altera la rutina de verificación de firmas digitales.\n\n¿Continuar?',
-        [
-          { text: 'Cancelar', style: 'cancel' },
-          {
-            text: 'Continuar',
-            style: 'destructive',
-            onPress: () => {
-              Alert.alert(
-                '⚠️ PASO CRÍTICO - Confirmación 2/3',
-                'Un error durante este proceso puede BRICKEAR la unidad MIB2.\n\nLa única forma de recuperarla sería mediante soldadura directa a la memoria eMMC.\n\n¿Estás seguro?',
-                [
-                  { text: 'Cancelar', style: 'cancel' },
-                  {
-                    text: 'Estoy Seguro',
-                    style: 'destructive',
-                    onPress: () => {
-                      Alert.alert(
-                        '⚠️ CONFIRMACIÓN FINAL - 3/3',
-                        'Una vez iniciado el proceso, NO lo interrumpas.\n\nAsegúrate de que:\n• La batería del vehículo está cargada\n• No apagarás el contacto\n• La conexión Telnet es estable\n\n¿Ejecutar parcheo AHORA?',
-                        [
-                          { text: 'Cancelar', style: 'cancel' },
-                          {
-                            text: 'EJECUTAR',
-                            style: 'destructive',
-                            onPress: () => executeStepCommand(step),
-                          },
-                        ]
-                      );
-                    },
-                  },
-                ]
-              );
-            },
-          },
-        ]
-      );
-      return;
-    }
-
     Alert.alert(
       'Ejecutar Paso',
       `¿Ejecutar: ${step.title}?`,
@@ -181,7 +111,32 @@ export default function ToolboxScreen() {
         { text: 'Cancelar', style: 'cancel' },
         {
           text: 'Ejecutar',
-          onPress: () => executeStepCommand(step),
+          onPress: async () => {
+            if (Platform.OS !== 'web') {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            }
+            setExecuting(true);
+            setStepStatuses(prev => ({ ...prev, [step.step]: 'inProgress' }));
+
+            try {
+              sendCommand(step.command!);
+              // Simular tiempo de ejecución
+              setTimeout(() => {
+                setStepStatuses(prev => ({ ...prev, [step.step]: 'completed' }));
+                setExecuting(false);
+                if (Platform.OS !== 'web') {
+                  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                }
+              }, 2000);
+            } catch (error) {
+              setStepStatuses(prev => ({ ...prev, [step.step]: 'error' }));
+              setExecuting(false);
+              if (Platform.OS !== 'web') {
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+              }
+              Alert.alert('Error', 'Error al ejecutar comando');
+            }
+          },
         },
       ]
     );
@@ -203,6 +158,7 @@ export default function ToolboxScreen() {
     return colors.muted;
   };
 
+  // Check prerequisites
   const telnetReady = isConnected;
   const usbReady = usbStatus === 'connected';
   const allReady = telnetReady && usbReady;
@@ -211,6 +167,7 @@ export default function ToolboxScreen() {
     <ScreenContainer className="p-4">
       <ScrollView showsVerticalScrollIndicator={false}>
         <View className="gap-6">
+          {/* Header */}
           <View className="gap-2">
             <Text className="text-3xl font-bold" style={{ color: colors.foreground }}>
               Instalación del Toolbox
@@ -239,6 +196,7 @@ export default function ToolboxScreen() {
             </Text>
           </View>
 
+          {/* Prerequisites Status */}
           <View className="bg-surface rounded-xl p-4 border" style={{ borderColor: colors.border }}>
             <Text className="text-lg font-semibold mb-3" style={{ color: colors.foreground }}>
               Estado de Prerequisitos
@@ -264,6 +222,7 @@ export default function ToolboxScreen() {
             </View>
           </View>
 
+          {/* Action Buttons */}
           <View className="flex-row gap-3">
             <TouchableOpacity
               onPress={handleShowDiagnostics}
@@ -283,6 +242,7 @@ export default function ToolboxScreen() {
             </TouchableOpacity>
           </View>
 
+          {/* Installation Steps List */}
           {!selectedStep && !showEmmcInfo && !showDiagnostics && (
             <View className="gap-3">
               <Text className="text-lg font-semibold" style={{ color: colors.foreground }}>
@@ -307,37 +267,59 @@ export default function ToolboxScreen() {
                     <Text className="text-base font-semibold flex-1" style={{ color: colors.foreground }}>
                       {step.title}
                     </Text>
-                    <Text className="text-2xl">{getStepIcon(step.step)}</Text>
                   </View>
-                  <Text className="text-xs ml-11" style={{ color: colors.muted }}>
-                    {step.description}
-                  </Text>
+                  {step.isOptional && (
+                    <View className="bg-primary/10 px-2 py-1 rounded self-start">
+                      <Text className="text-xs font-semibold" style={{ color: colors.primary }}>
+                        Opcional
+                      </Text>
+                    </View>
+                  )}
                 </TouchableOpacity>
               ))}
+
+              {/* Generate Script Button */}
+              <TouchableOpacity
+                onPress={handleGenerateScript}
+                className="bg-primary px-4 py-3 rounded-xl active:opacity-80 mt-3"
+              >
+                <Text className="text-center font-semibold" style={{ color: colors.background }}>
+                  Generar Script de Instalación
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={handleGenerateVerification}
+                className="bg-surface px-4 py-3 rounded-xl border active:opacity-80"
+                style={{ borderColor: colors.border }}
+              >
+                <Text className="text-center font-semibold" style={{ color: colors.foreground }}>
+                  Ver Comando de Verificación
+                </Text>
+              </TouchableOpacity>
             </View>
           )}
 
+          {/* Step Detail */}
           {selectedStep && (
             <View className="gap-4">
               <TouchableOpacity
                 onPress={() => setSelectedStep(null)}
                 className="flex-row items-center gap-2"
               >
-                <Text className="text-lg" style={{ color: colors.primary }}>
-                  ←
-                </Text>
-                <Text className="text-sm font-semibold" style={{ color: colors.primary }}>
-                  Volver a la lista
+                <Text className="text-base" style={{ color: colors.primary }}>
+                  ← Volver
                 </Text>
               </TouchableOpacity>
 
               <View className="bg-surface rounded-xl p-4 border" style={{ borderColor: colors.border }}>
-                <View className="flex-row items-center gap-3 mb-3">
+                {/* Step Number */}
+                <View className="flex-row items-center gap-3 mb-4">
                   <View
-                    className="w-10 h-10 rounded-full items-center justify-center"
+                    className="w-12 h-12 rounded-full items-center justify-center"
                     style={{ backgroundColor: colors.primary }}
                   >
-                    <Text className="text-base font-bold" style={{ color: colors.background }}>
+                    <Text className="text-xl font-bold" style={{ color: colors.background }}>
                       {selectedStep.step}
                     </Text>
                   </View>
@@ -346,126 +328,142 @@ export default function ToolboxScreen() {
                   </Text>
                 </View>
 
-                <Text className="text-sm leading-relaxed mb-4" style={{ color: colors.foreground }}>
-                  {selectedStep.description}
-                </Text>
+                {/* Description */}
+                <View className="mb-4">
+                  <Text className="text-sm" style={{ color: colors.foreground }}>
+                    {selectedStep.description}
+                  </Text>
+                </View>
 
+                {/* Command */}
                 {selectedStep.command && (
                   <View className="bg-background rounded-lg p-3 mb-4">
-                    <Text className="text-xs font-mono" style={{ color: colors.muted }}>
+                    <Text className="text-xs font-semibold mb-2" style={{ color: colors.foreground }}>
+                      Comando:
+                    </Text>
+                    <Text className="text-xs font-mono" style={{ color: colors.primary }}>
                       {selectedStep.command}
                     </Text>
                   </View>
                 )}
 
-                {selectedStep.warnings && selectedStep.warnings.length > 0 && (
-                  <View className="bg-warning/10 rounded-lg p-3 mb-4">
-                    {selectedStep.warnings.map((warning, idx) => (
-                      <Text key={idx} className="text-xs leading-relaxed mb-1" style={{ color: colors.foreground }}>
-                        💡 {warning}
-                      </Text>
-                    ))}
+                {/* Expected Output */}
+                {selectedStep.expectedOutput && (
+                  <View className="bg-success/10 rounded-lg p-3 mb-4">
+                    <Text className="text-xs font-semibold mb-2" style={{ color: "#22C55E" }}>
+                      Salida Esperada:
+                    </Text>
+                    <Text className="text-xs font-mono" style={{ color: "#22C55E" }}>
+                      {selectedStep.expectedOutput}
+                    </Text>
                   </View>
                 )}
 
-                {selectedStep.command && (
-                  <TouchableOpacity
-                    onPress={() => handleExecuteStep(selectedStep)}
-                    disabled={!allReady || executing}
-                    className="bg-primary px-6 py-3 rounded-xl active:opacity-80"
-                    style={{
-                      backgroundColor: !allReady || executing ? colors.muted : colors.primary,
-                      opacity: !allReady || executing ? 0.5 : 1,
-                    }}
-                  >
-                    {executing ? (
-                      <View className="flex-row items-center justify-center gap-2">
-                        <ActivityIndicator size="small" color={colors.background} />
-                        <Text className="text-center font-semibold" style={{ color: colors.background }}>
-                          Ejecutando...
-                        </Text>
-                      </View>
-                    ) : (
-                      <Text className="text-center font-semibold" style={{ color: colors.background }}>
-                        ▶️ Ejecutar Paso
+                {/* Warnings */}
+                {selectedStep.warnings && selectedStep.warnings.length > 0 && (
+                  <View className="bg-warning/10 rounded-lg p-3">
+                    <Text className="text-sm font-semibold mb-2" style={{ color: "#F59E0B" }}>
+                      ⚠️ Advertencias
+                    </Text>
+                    {selectedStep.warnings.map((warning, index) => (
+                      <Text key={index} className="text-xs mb-1" style={{ color: "#F59E0B" }}>
+                        • {warning}
                       </Text>
-                    )}
-                  </TouchableOpacity>
+                    ))}
+                  </View>
                 )}
               </View>
             </View>
           )}
 
+          {/* eMMC Access Info */}
           {showEmmcInfo && (
             <View className="gap-4">
               <TouchableOpacity
                 onPress={() => setShowEmmcInfo(false)}
                 className="flex-row items-center gap-2"
               >
-                <Text className="text-lg" style={{ color: colors.primary }}>
-                  ←
-                </Text>
-                <Text className="text-sm font-semibold" style={{ color: colors.primary }}>
-                  Volver a la lista
+                <Text className="text-base" style={{ color: colors.primary }}>
+                  ← Volver
                 </Text>
               </TouchableOpacity>
 
               <View className="bg-surface rounded-xl p-4 border" style={{ borderColor: colors.border }}>
-                <Text className="text-lg font-bold mb-3" style={{ color: colors.foreground }}>
+                <Text className="text-xl font-bold mb-3" style={{ color: colors.foreground }}>
                   {EMMC_ACCESS_INFO.title}
                 </Text>
-                <Text className="text-sm leading-relaxed mb-4" style={{ color: colors.foreground }}>
+
+                <Text className="text-sm mb-4" style={{ color: colors.foreground }}>
                   {EMMC_ACCESS_INFO.description}
                 </Text>
 
-                <Text className="text-base font-semibold mb-2" style={{ color: colors.foreground }}>
-                  Pasos:
-                </Text>
-                {EMMC_ACCESS_INFO.steps.map((step, index) => (
-                  <Text key={index} className="text-sm leading-relaxed mb-2" style={{ color: colors.foreground }}>
-                    {index + 1}. {step}
+                {/* Steps */}
+                <View className="mb-4">
+                  <Text className="text-sm font-semibold mb-2" style={{ color: colors.foreground }}>
+                    Pasos:
                   </Text>
-                ))}
-
-                <View className="bg-error/10 rounded-lg p-3 mt-4">
-                  {EMMC_ACCESS_INFO.warnings.map((warning, idx) => (
-                    <Text key={idx} className="text-xs leading-relaxed mb-1" style={{ color: '#EF4444' }}>
-                      ⚠️ {warning}
+                  {EMMC_ACCESS_INFO.steps.map((step, index) => (
+                    <Text key={index} className="text-xs mb-2" style={{ color: colors.muted }}>
+                      {index + 1}. {step}
                     </Text>
                   ))}
+                </View>
+
+                {/* Warnings */}
+                <View className="bg-error/10 rounded-lg p-3 mb-4">
+                  <Text className="text-sm font-semibold mb-2" style={{ color: "#EF4444" }}>
+                    ⚠️ Advertencias Críticas
+                  </Text>
+                  {EMMC_ACCESS_INFO.warnings.map((warning, index) => (
+                    <Text key={index} className="text-xs mb-1" style={{ color: "#EF4444" }}>
+                      {warning}
+                    </Text>
+                  ))}
+                </View>
+
+                {/* Technical Note */}
+                <View className="bg-primary/10 rounded-lg p-3">
+                  <Text className="text-sm font-semibold mb-2" style={{ color: colors.primary }}>
+                    📝 Nota Técnica
+                  </Text>
+                  <Text className="text-xs" style={{ color: colors.foreground }}>
+                    {EMMC_ACCESS_INFO.technicalNote}
+                  </Text>
                 </View>
               </View>
             </View>
           )}
 
+          {/* Diagnostic Commands */}
           {showDiagnostics && (
             <View className="gap-4">
               <TouchableOpacity
                 onPress={() => setShowDiagnostics(false)}
                 className="flex-row items-center gap-2"
               >
-                <Text className="text-lg" style={{ color: colors.primary }}>
-                  ←
-                </Text>
-                <Text className="text-sm font-semibold" style={{ color: colors.primary }}>
-                  Volver a la lista
+                <Text className="text-base" style={{ color: colors.primary }}>
+                  ← Volver
                 </Text>
               </TouchableOpacity>
 
-              <View className="bg-surface rounded-xl p-4 border" style={{ borderColor: colors.border }}>
-                <Text className="text-lg font-bold mb-3" style={{ color: colors.foreground }}>
+              <View className="gap-3">
+                <Text className="text-lg font-semibold" style={{ color: colors.foreground }}>
                   Comandos de Diagnóstico
                 </Text>
                 {DIAGNOSTIC_COMMANDS.map((cmd, index) => (
-                  <View key={index} className="mb-4">
-                    <Text className="text-sm font-semibold mb-1" style={{ color: colors.foreground }}>
+                  <View
+                    key={index}
+                    className="bg-surface rounded-xl p-4 border"
+                    style={{ borderColor: colors.border }}
+                  >
+                    <Text className="text-base font-semibold mb-2" style={{ color: colors.foreground }}>
                       {cmd.name}
                     </Text>
-                    <Text className="text-xs mb-2" style={{ color: colors.muted }}>
+                    <Text className="text-xs mb-3" style={{ color: colors.muted }}>
                       {cmd.description}
                     </Text>
-                    <View className="bg-background rounded-lg p-2">
-                      <Text className="text-xs font-mono" style={{ color: colors.muted }}>
+                    <View className="bg-background rounded-lg p-3">
+                      <Text className="text-xs font-mono" style={{ color: colors.primary }}>
                         {cmd.command}
                       </Text>
                     </View>
