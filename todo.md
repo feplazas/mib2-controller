@@ -1180,11 +1180,12 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [ ] Verificar que el adaptador tenga IP asignada antes de escanear red
 
 ### PRIORIDAD ALTA - Validación de Red
-- [ ] Implementar función para obtener IP del adaptador USB-Ethernet conectado
-- [ ] Detectar subred automáticamente (no asumir 192.168.1.x)
-- [ ] Validar conectividad del adaptador antes de intentar escaneo
+- [x] Implementar función para obtener IP del adaptador USB-Ethernet conectado
+- [x] Detectar subred automáticamente (no asumir 192.168.1.x)
+- [x] Validar conectividad del adaptador antes de intentar escaneo
 - [ ] Agregar timeout de conexión para evitar bloqueos
 - [ ] Mostrar IP del adaptador en pantalla USB Status
+- [x] Crear módulo de detección de red nativo (NetworkInfo)
 
 ### PRIORIDAD ALTA - Advertencias de Bricking
 - [x] Agregar advertencia CRÍTICA en pantalla Toolbox sobre riesgo de bricking
@@ -1194,16 +1195,20 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [ ] Agregar validación de versión de firmware antes de modificaciones
 
 ### PRIORIDAD MEDIA - Validación de Firmware
-- [ ] Implementar comando Telnet para detectar versión de firmware MIB2
-- [ ] Validar compatibilidad de firmware antes de instalación de Toolbox
-- [ ] Advertir si Telnet está deshabilitado (requiere soldadura eMMC)
+- [x] Implementar comando Telnet para detectar versión de firmware MIB2
+- [x] Validar compatibilidad de firmware antes de instalación de Toolbox
+- [x] Advertir si Telnet está deshabilitado (requiere soldadura eMMC)
 - [ ] Detectar hardware 790 vs 790 B (limitaciones de Vista Sport)
+- [x] Crear función de detección de firmware en toolbox-detector.ts
+- [ ] Mostrar versión de firmware en pantalla Home
 
 ### PRIORIDAD MEDIA - Sistema de Backup MIB2
-- [ ] Implementar backup automático de tsd.mibstd2.system.swap antes de parchear
-- [ ] Crear función de restauración de archivos críticos de MIB2
-- [ ] Validar integridad de archivos después de modificar
+- [x] Implementar backup automático de tsd.mibstd2.system.swap antes de parchear
+- [x] Crear función de restauración de archivos críticos de MIB2
+- [x] Validar integridad de archivos después de modificar
 - [ ] Documentar procedimiento de recovery completo
+- [x] Crear módulo de backup en toolbox-backup.ts
+- [ ] Agregar UI de gestión de backups en pantalla Toolbox
 
 ### PRIORIDAD BAJA - Mejoras de Guía Toolbox
 - [ ] Implementar ejecución REAL de comandos vía Telnet en guía de Toolbox
@@ -1220,3 +1225,8 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [ ] Agregar repositorios públicos estándar (Google, Maven Central)
 - [ ] Ejecutar nuevo build con EAS
 - [ ] Verificar descarga exitosa del APK
+
+- [x] Crear hook postPrebuild para aplicar correcciones después de expo prebuild
+- [x] Modificar gradle.properties para aumentar timeout
+- [x] Modificar build.gradle para agregar repositorios públicos
+- [ ] Ejecutar nuevo build con EAS con hooks aplicados

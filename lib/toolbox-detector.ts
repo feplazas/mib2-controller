@@ -15,6 +15,9 @@ export interface ToolboxInfo {
   };
   installPath?: string;
   configFiles?: string[];
+  firmwareVersion?: string;
+  firmwareCompatible?: boolean;
+  hardwareVersion?: string;
 }
 
 /**
@@ -64,8 +67,58 @@ export async function detectToolbox(executeCommand: (cmd: string) => Promise<any
         result.services = await detectServices(executeCommand);
       }
     }
+    // Detect firmware version
+    const firmwareInfo = await detectFirmwareVersion(executeCommand);
+    result.firmwareVersion = firmwareInfo.version;
+    result.firmwareCompatible = firmwareInfo.compatible;
+    result.hardwareVersion = firmwareInfo.hardware;
   } catch (error) {
     console.error('Error detecting toolbox:', error);
+  }
+
+  return result;
+}
+
+/**
+ * Detect MIB2 firmware version and hardware
+ */
+async function detectFirmwareVersion(executeCommand: (cmd: string) => Promise<any>): Promise<{
+  version: string;
+  compatible: boolean;
+  hardware: string;
+}> {
+  const result = {
+    version: 'Unknown',
+    compatible: true,
+    hardware: 'Unknown',
+  };
+
+  try {
+    // Try to get firmware version from /etc/version
+    const versionResponse = await executeCommand('cat /etc/version 2>/dev/null || echo "NOT_FOUND"');
+    if (versionResponse.success && !versionResponse.output.includes('NOT_FOUND')) {
+      result.version = versionResponse.output.trim();
+    } else {
+      // Try alternative paths
+      const altVersionResponse = await executeCommand('cat /net/rcc/mnt/efs-system/version.txt 2>/dev/null || cat /proc/version 2>/dev/null || echo "NOT_FOUND"');
+      if (altVersionResponse.success && !altVersionResponse.output.includes('NOT_FOUND')) {
+        result.version = altVersionResponse.output.trim().substring(0, 100); // Limit length
+      }
+    }
+
+    // Try to detect hardware version
+    const hwResponse = await executeCommand('cat /proc/cpuinfo | grep Hardware || echo "NOT_FOUND"');
+    if (hwResponse.success && !hwResponse.output.includes('NOT_FOUND')) {
+      result.hardware = hwResponse.output.trim();
+    }
+
+    // Validate compatibility (Telnet debe estar disponible)
+    const telnetCheck = await executeCommand('netstat -an | grep ":23 " | grep LISTEN || echo "TELNET_CLOSED"');
+    if (telnetCheck.success && telnetCheck.output.includes('TELNET_CLOSED')) {
+      result.compatible = false;
+    }
+  } catch (error) {
+    console.error('Error detecting firmware version:', error);
   }
 
   return result;
