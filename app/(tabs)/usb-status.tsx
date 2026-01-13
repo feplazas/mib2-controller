@@ -153,7 +153,10 @@ export default function UsbStatusScreen() {
     try {
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       
-      // Leer EEPROM completa (256 bytes)
+      // Realizar detección REAL de tipo de EEPROM
+      const eepromType = await usbService.detectEEPROMType();
+      
+      // Leer EEPROM completa para verificar integridad
       const result = await usbService.readEEPROM(0, 256);
       
       // Calcular checksum simple
@@ -167,22 +170,28 @@ export default function UsbStatusScreen() {
       const isCorrupt = result.data === 'FF'.repeat(128); // 256 bytes = 128 pares FF
       
       await Haptics.notificationAsync(
-        isCorrupt ? Haptics.NotificationFeedbackType.Warning : Haptics.NotificationFeedbackType.Success
+        eepromType.writable ? Haptics.NotificationFeedbackType.Success : Haptics.NotificationFeedbackType.Warning
       );
       
+      // Determinar icono según tipo
+      const typeIcon = eepromType.type === 'external_eeprom' ? '✅' : eepromType.type === 'efuse' ? '❌' : '⚠️';
+      const typeLabel = eepromType.type === 'external_eeprom' ? 'EEPROM Externa' : eepromType.type === 'efuse' ? 'eFuse' : 'Desconocido';
+      
       Alert.alert(
-        isCorrupt ? '⚠️ EEPROM Corrupta' : '✅ Test EEPROM Exitoso',
-        `Resultado del test:\n\n` +
+        `${typeIcon} Test EEPROM Completado`,
         `📊 Tamaño: 256 bytes\n` +
         `🔢 Checksum: 0x${checksum.toString(16).toUpperCase().padStart(2, '0')}\n` +
         `${isCorrupt ? '❌ Estado: CORRUPTA (todos los bytes son 0xFF)' : '✅ Estado: OK (datos válidos)'}\n\n` +
-        `${isCorrupt ? 'La EEPROM parece estar vacía o dañada.' : 'La EEPROM contiene datos válidos.'}`
+        `🔍 Tipo Detectado: ${typeLabel}\n` +
+        `📝 Modificable: ${eepromType.writable ? 'SÍ ✅' : 'NO ❌'}\n\n` +
+        `💡 ${eepromType.reason}\n\n` +
+        `${eepromType.writable ? '✅ Este adaptador PUEDE ser modificado de forma segura mediante spoofing.' : '⚠️ Este adaptador NO puede ser modificado. El spoofing está BLOQUEADO para prevenir bricking.'}`
       );
     } catch (error: any) {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       Alert.alert(
-        '❌ Error al Leer EEPROM',
-        error.message || 'No se pudo leer la EEPROM. Verifica que el dispositivo esté conectado correctamente.'
+        '❌ Error al Testear EEPROM',
+        error.message || 'No se pudo realizar el test. Verifica que el dispositivo esté conectado correctamente.'
       );
     } finally {
       setIsTestingEEPROM(false);

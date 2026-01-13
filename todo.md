@@ -1359,3 +1359,13 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - AX88179 (USB 3.0 Gigabit)
 - RTL8153 (Realtek - no compatible)
 - Todos los demás chipsets no listados como compatibles
+
+
+## 🧪 Botón Test EEPROM en Pantalla USB (13 Ene 2026)
+
+- [x] Agregar botón "Test EEPROM" en pantalla usb-status.tsx
+- [x] Implementar función handleTestEEPROM con detección manual
+- [x] Mostrar modal con resultados de detección (tipo, writable, reason)
+- [x] Agregar indicador visual de tipo detectado (EEPROM externa vs eFuse)
+- [x] Agregar estado de loading durante test
+- [x] Mostrar checksum e integridad de EEPROM
