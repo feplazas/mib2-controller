@@ -5,7 +5,9 @@ node_modules/
 
 # Expo
 .expo/
+.expo-shared/
 dist/
+dist-android/
 web-build/
 expo-env.d.ts
 
@@ -60,3 +62,17 @@ Thumbs.db
 *.tgz
 *.tar.gz
 .cache/
+*.apk
+*.aab
+*.ipa
+
+# Android build artifacts
+android/app/build/
+android/app/.cxx/
+android/.gradle/
+android/build/
+
+# iOS build artifacts
+ios/Pods/
+ios/build/
+ios/*.xcworkspace

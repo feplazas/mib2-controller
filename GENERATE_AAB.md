@@ -24,7 +24,7 @@ Este documento explica cómo generar el **Android App Bundle (AAB)** final para 
 cd /home/ubuntu/mib2_controller
 
 # Configurar token de Expo
-export EXPO_TOKEN="DQ7Snv-Q1CMOjHkNHDZ8cd-7xAuE13dNuq7vfnZj"
+export EXPO_TOKEN="TU_TOKEN_AQUI"
 
 # Generar AAB para producción
 eas build --platform android --profile production --non-interactive
@@ -339,7 +339,7 @@ Guarda una copia del AAB en lugar seguro:
 
 ```bash
 cd /home/ubuntu/mib2_controller && \
-export EXPO_TOKEN="DQ7Snv-Q1CMOjHkNHDZ8cd-7xAuE13dNuq7vfnZj" && \
+export EXPO_TOKEN="TU_TOKEN_AQUI" && \
 eas build --platform android --profile production --non-interactive
 ```
 

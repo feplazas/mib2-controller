@@ -130,7 +130,7 @@ Usa este checklist para asegurarte de que todo esté listo antes de publicar MIB
 - [ ] **AAB generado con EAS Build**
   ```bash
   cd /home/ubuntu/mib2_controller
-  export EXPO_TOKEN="DQ7Snv-Q1CMOjHkNHDZ8cd-7xAuE13dNuq7vfnZj"
+  export EXPO_TOKEN="TU_TOKEN_AQUI"
   eas build --platform android --profile production --non-interactive
   ```
   - Ver: `GENERATE_AAB.md`
