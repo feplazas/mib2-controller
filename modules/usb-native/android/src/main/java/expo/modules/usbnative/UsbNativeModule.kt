@@ -522,7 +522,8 @@ class UsbNativeModule : Module() {
       }
     }
 
-    AsyncFunction("spoofVIDPID") { targetVID: Int, targetPID: Int, magicValue: Int, promise: Promise ->ry {
+    AsyncFunction("spoofVIDPID") { targetVID: Int, targetPID: Int, magicValue: Int, promise: Promise ->
+      try {
         val connection = currentConnection
         if (connection == null) {
           promise.reject("NO_CONNECTION", "No active device connection", null)

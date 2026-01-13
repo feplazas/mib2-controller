@@ -1369,3 +1369,12 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [x] Agregar indicador visual de tipo detectado (EEPROM externa vs eFuse)
 - [x] Agregar estado de loading durante test
 - [x] Mostrar checksum e integridad de EEPROM
+
+
+## 🚨 BUG - Error de Compilación de Kotlin (13 Ene 2026)
+
+- [x] **CRÍTICO:** Internal compiler error en usb-native:compileReleaseKotlin
+- [x] Revisar sintaxis de función detectEEPROMType en UsbNativeModule.kt
+- [x] Verificar imports y dependencias del módulo USB
+- [x] Corregir error de sintaxis en línea 525 (faltaba 'try' antes de AsyncFunction)
+- [ ] Regenerar APK después de corrección
