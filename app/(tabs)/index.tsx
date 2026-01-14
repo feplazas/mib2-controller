@@ -170,7 +170,7 @@ export default function HomeScreen() {
           ]
         );
       } else {
-        Alert.alert('Múltiples Dispositivos', `Se encontraron ${results.length} dispositivos. Selecciona uno de la lista.`);
+        showAlert('alerts.multiples_dispositivos', t('alerts.multiples_dispositivos_encontrados', { count: results.length }));
       }
     } catch (error) {
       showAlert('alerts.error', 'alerts.error_al_escanear_la_red');
@@ -227,7 +227,7 @@ export default function HomeScreen() {
               if (results.length === 0) {
                 showAlert('alerts.sin_resultados', 'alerts.no_se_encontraron_unidades_mib2_en_la_red');
               } else {
-                Alert.alert('Escaneo Completo', `Se encontraron ${results.length} dispositivos`);
+                showAlert('alerts.escaneo_completo', t('alerts.escaneo_completo_dispositivos', { count: results.length }));
               }
             } catch (error) {
               showAlert('alerts.error', 'alerts.error_al_escanear_la_red');

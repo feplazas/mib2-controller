@@ -351,7 +351,7 @@ export default function RecoveryScreen() {
                           await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
                         } catch (error: any) {
                           await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-                          Alert.alert('❌ Error', `No se pudo compartir el backup:\n${error.message}`);
+                          showAlert('alerts.error', t('alerts.no_se_pudo_compartir_backup', { error: error.message }));
                         }
                       }}
                       disabled={isRestoring}

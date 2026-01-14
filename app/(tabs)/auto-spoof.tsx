@@ -367,7 +367,7 @@ export default function AutoSpoofScreen() {
     } catch (error: any) {
       dispatch({ type: 'SET_TEST_RESULT', payload: 'fail' });
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert('Error', `No se pudo realizar el test:\n\n${error.message}`);
+      showAlert('alerts.error', t('alerts.no_se_pudo_realizar_test', { error: error.message }));
     } finally {
       // handled by SET_TEST_RESULT;
     }

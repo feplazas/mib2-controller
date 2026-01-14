@@ -307,6 +307,11 @@
     "se_encontraron_resultslength_dispositivos_seleccio": "Se encontraron ${results.length} dispositivos. Selecciona uno de la lista.",
     "selecciona_al_menos_un_código_fec": "Selecciona al menos un código FEC",
     "selecciona_al_menos_un_código_fec_para_generar_el": "Selecciona al menos un código FEC para generar el comando.",
-    "selecciona_al_menos_un_código_fec_para_generar_la": "Selecciona al menos un código FEC para generar la lista."
+    "selecciona_al_menos_un_código_fec_para_generar_la": "Selecciona al menos un código FEC para generar la lista.",
+    "no_se_pudo_compartir_backup": "No se pudo compartir el backup:\n{{error}}",
+    "no_se_pudo_realizar_test": "No se pudo realizar el test:\n\n{{error}}",
+    "no_se_pudieron_exportar_logs": "No se pudieron exportar los logs:\n{{error}}",
+    "multiples_dispositivos_encontrados": "Se encontraron {{count}} dispositivos. Selecciona uno de la lista.",
+    "escaneo_completo_dispositivos": "Se encontraron {{count}} dispositivos"
   }
 }

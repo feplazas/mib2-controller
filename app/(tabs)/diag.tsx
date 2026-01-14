@@ -6,6 +6,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { ScreenContainer } from '@/components/screen-container';
 import { usbLogger, type UsbLogEntry, type LogLevel } from '@/lib/usb-logger';
 import { useTranslation } from "@/lib/language-context";
+import { showAlert } from '@/lib/translated-alert';
 
 export default function DiagScreen() {
   const t = useTranslation();
@@ -80,7 +81,7 @@ export default function DiagScreen() {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } catch (error: any) {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert('❌ Error', `No se pudieron exportar los logs:\n${error.message}`);
+      showAlert('alerts.error', t('alerts.no_se_pudieron_exportar_logs', { error: error.message }));
     }
   };
 

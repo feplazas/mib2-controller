@@ -1434,3 +1434,8 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [x] Generar claves de traducción en ES/EN/DE (75 claves agregadas a cada idioma)
 - [x] Crear y ejecutar script de migración automática (57 de 63 Alert.alert migrados)
 - [x] Validar compilación TypeScript después de migración (0 errores)
+
+## Migración Manual Alert.alert con Template Strings
+- [x] Agregar claves de traducción con interpolación (5 claves en ES/EN/DE)
+- [x] Migrar 5 Alert.alert con template strings (recovery, auto-spoof, diag, index x2)
+- [x] Validar compilación TypeScript (0 errores, 0 Alert.alert restantes)
