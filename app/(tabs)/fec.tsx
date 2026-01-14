@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { t } from "@/lib/i18n";
+import { useTranslation } from "@/lib/language-context";
 import { ScrollView, Text, View, TouchableOpacity, TextInput, Alert, Platform, Linking } from "react-native";
 import * as Haptics from "expo-haptics";
 import * as Sharing from "expo-sharing";
@@ -21,6 +21,7 @@ import {
 } from "@/lib/fec-generator";
 
 export default function FECScreen() {
+  const t = useTranslation();
   const colors = useColors();
   const { isConnected, sendCommand } = useTelnet();
   const [vin, setVin] = useState("");

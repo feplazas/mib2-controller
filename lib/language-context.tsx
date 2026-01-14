@@ -9,6 +9,8 @@ interface LanguageContextType {
   availableLanguages: string[];
   changeLanguage: (language: string) => Promise<void>;
   isLoading: boolean;
+  // Contador para forzar re-render cuando cambia idioma
+  renderKey: number;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -16,6 +18,7 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [currentLanguage, setCurrentLanguage] = useState<string>(getLocale());
   const [isLoading, setIsLoading] = useState(true);
+  const [renderKey, setRenderKey] = useState(0);
 
   // Cargar idioma guardado al iniciar
   useEffect(() => {
@@ -46,6 +49,8 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     try {
       setLocale(language);
       setCurrentLanguage(language);
+      // Forzar re-render de todos los componentes hijos
+      setRenderKey(prev => prev + 1);
       await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, language);
       console.log('[LanguageProvider] Language changed to:', language);
     } catch (error) {
@@ -58,6 +63,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     availableLanguages: getAvailableLocales(),
     changeLanguage,
     isLoading,
+    renderKey,
   };
 
   return (
@@ -73,4 +79,14 @@ export function useLanguage(): LanguageContextType {
     throw new Error('useLanguage must be used within LanguageProvider');
   }
   return context;
+}
+
+// Hook reactivo para traducciones que se actualiza cuando cambia el idioma
+export function useTranslation() {
+  const { renderKey } = useLanguage();
+  
+  // El renderKey cambia cuando se actualiza el idioma, forzando re-render
+  return useCallback((key: string, options?: object): string => {
+    return require('./i18n').default.t(key, options);
+  }, [renderKey]);
 }

@@ -17,11 +17,12 @@ import {
   type InstallationStep,
 } from "@/lib/toolbox-installer";
 import { listBackups, restoreBackup, deleteBackup, backupCriticalBinary, type BackupInfo } from "@/lib/toolbox-backup";
-import { t } from "@/lib/i18n";
+import { useTranslation } from "@/lib/language-context";
 
 type StepStatus = 'pending' | 'inProgress' | 'completed' | 'error';
 
 export default function ToolboxScreen() {
+  const t = useTranslation();
   const colors = useColors();
   const { isConnected, sendCommand } = useTelnet();
   const { status: usbStatus } = useUsbStatus();

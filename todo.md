@@ -1407,3 +1407,6 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [x] Integrar traducciones en pantalla Diag
 - [x] Descomentar código de BroadcastReceiver en usb-status-context.tsx
 - [ ] Ejecutar rebuild nativo completo (prebuild + run:android)
+
+## Bugs Reportados
+- [x] Bug: Selector de idioma no actualiza UI al cambiar entre ES/EN/DE (requiere reinicio)

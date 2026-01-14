@@ -7,9 +7,10 @@ import { ScreenContainer } from "@/components/screen-container";
 import { useTelnet } from "@/lib/telnet-provider";
 import { MIB2_COMMANDS } from "@/lib/telnet-client";
 import { useColors } from "@/hooks/use-colors";
-import { t } from "@/lib/i18n";
+import { useTranslation } from "@/lib/language-context";
 
 export default function CommandsScreen() {
+  const t = useTranslation();
   const colors = useColors();
   const { isConnected, isConnecting, connect, disconnect, sendCommand, messages, clearMessages } = useTelnet();
   const [commandInput, setCommandInput] = useState('');

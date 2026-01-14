@@ -9,12 +9,13 @@ import { useUsbStatus } from "@/lib/usb-status-context";
 import { usbService } from "@/lib/usb-service";
 import * as Clipboard from 'expo-clipboard';
 import { useLanguage } from "@/lib/language-context";
-import { t } from "@/lib/i18n";
+import { useTranslation } from "@/lib/language-context";
 
 export default function SettingsScreen() {
+  const t = useTranslation();
   const { config, updateConfig, clearMessages } = useTelnet();
   const { isExpertMode, isPinSet, enableExpertMode, disableExpertMode, setPin, changePin, resetPin } = useExpertMode();
-  const { currentLanguage, availableLanguages, changeLanguage } = useLanguage();
+  const { currentLanguage, availableLanguages, changeLanguage, renderKey } = useLanguage();
   
   const [host, setHost] = useState(config.host);
   const [port, setPort] = useState(config.port.toString());

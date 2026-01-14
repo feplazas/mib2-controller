@@ -10,9 +10,10 @@ import { useTelnet } from "@/lib/telnet-provider";
 import { quickScan, scanNetwork, parseSubnet, type ScanResult, type ScanProgress } from "@/lib/network-scanner";
 import { detectToolbox, type ToolboxInfo } from "@/lib/toolbox-detector";
 import { detectUSBEthernetAdapter, detectSubnet, validateAdapterConnectivity, type NetworkInterface } from "@/modules/network-info";
-import { t } from "@/lib/i18n";
+import { useTranslation } from "@/lib/language-context";
 
 export default function HomeScreen() {
+  const t = useTranslation();
   const { isConnected, isConnecting, config, updateConfig, connect, disconnect, sendCommand } = useTelnet();
   const { status: usbStatus, device: usbDevice } = useUsbStatus();
   const [host, setHost] = useState(config.host);

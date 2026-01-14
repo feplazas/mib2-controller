@@ -5,9 +5,10 @@ import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system/legacy';
 import { ScreenContainer } from '@/components/screen-container';
 import { usbLogger, type UsbLogEntry, type LogLevel } from '@/lib/usb-logger';
-import { t } from "@/lib/i18n";
+import { useTranslation } from "@/lib/language-context";
 
 export default function DiagScreen() {
+  const t = useTranslation();
   const [logs, setLogs] = useState<UsbLogEntry[]>([]);
   const [filter, setFilter] = useState<LogLevel | 'all'>('all');
   const [autoScroll, setAutoScroll] = useState(true);

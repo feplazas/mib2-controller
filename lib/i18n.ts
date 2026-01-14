@@ -16,9 +16,18 @@ i18n.defaultLocale = 'es';
 i18n.locale = getLocales()[0]?.languageCode ?? 'es';
 i18n.enableFallback = true;
 
-// Función helper para traducir
+// Función helper para traducir (no reactiva - usar useTranslation en componentes)
 export function t(key: string, options?: object): string {
   return i18n.t(key, options);
+}
+
+// Hook reactivo para traducción en componentes
+// NOTA: Este hook debe usarse dentro de LanguageProvider
+// El renderKey del contexto fuerza re-render cuando cambia el idioma
+export function useTranslation() {
+  return (key: string, options?: object): string => {
+    return i18n.t(key, options);
+  };
 }
 
 // Función para cambiar idioma manualmente
