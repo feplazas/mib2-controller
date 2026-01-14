@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useCallback, useEffect } fr
 import { AppState, AppStateStatus, Platform } from 'react-native';
 import { usbService, UsbDevice } from './usb-service';
 import { profilesService, VIDPIDProfile } from './profiles-service';
-import * as UsbEventModule from '@/modules/usb-events';
+// import * as UsbEventModule from '@/modules/usb-events'; // Comentado temporalmente - requiere rebuild nativo
 
 export type UsbStatus = 'disconnected' | 'detected' | 'connected';
 
@@ -143,37 +143,34 @@ export function UsbStatusProvider({ children }: { children: React.ReactNode }) {
       }, 10000);
       return () => clearInterval(interval);
     }
-  }, [scanDevices, useBroadcastReceiver]);
+  }, []);
 
-  // BroadcastReceiver para detección automática de USB (solo Android)
+  // Configurar BroadcastReceiver para detección automática de USB
+  // COMENTADO TEMPORALMENTE - Requiere rebuild nativo completo del módulo usb-events
+  /*
   useEffect(() => {
-    if (Platform.OS !== 'android' || !useBroadcastReceiver) {
+    if (!useBroadcastReceiver) {
+      console.log('[UsbStatusProvider] BroadcastReceiver disabled, using polling only');
       return;
     }
 
     console.log('[UsbStatusProvider] Starting BroadcastReceiver for USB events');
     
-    // Iniciar escucha de eventos USB
     const result = UsbEventModule.startListening();
     if (!result.success) {
       console.warn('[UsbStatusProvider] Failed to start BroadcastReceiver:', result.message);
       return;
     }
 
-    // Listener para dispositivos conectados
-    const attachedSub = UsbEventModule.addUsbAttachedListener((deviceInfo) => {
+    const attachedSub = UsbEventModule.addUsbAttachedListener((deviceInfo: any) => {
       console.log('[UsbStatusProvider] USB device attached:', deviceInfo);
-      // Escanear inmediatamente para actualizar lista
       scanDevices();
     });
 
-    // Listener para dispositivos desconectados
-    const detachedSub = UsbEventModule.addUsbDetachedListener((deviceInfo) => {
+    const detachedSub = UsbEventModule.addUsbDetachedListener((deviceInfo: any) => {
       console.log('[UsbStatusProvider] USB device detached:', deviceInfo);
-      // Escanear inmediatamente para actualizar lista
       scanDevices();
       
-      // Si el dispositivo desconectado es el actual, marcar como desconectado
       if (device && device.vendorId === deviceInfo.vendorId && device.productId === deviceInfo.productId) {
         setDevice(null);
         setDetectedProfile(null);
@@ -182,7 +179,6 @@ export function UsbStatusProvider({ children }: { children: React.ReactNode }) {
       }
     });
 
-    // Cleanup
     return () => {
       console.log('[UsbStatusProvider] Stopping BroadcastReceiver');
       attachedSub.remove();
@@ -190,6 +186,7 @@ export function UsbStatusProvider({ children }: { children: React.ReactNode }) {
       UsbEventModule.stopListening();
     };
   }, [useBroadcastReceiver, scanDevices, device]);
+  */
 
   const value: UsbStatusContextType = {
     status,
