@@ -69,6 +69,7 @@ const config: ExpoConfig = {
   plugins: [
     "./plugins/withUsbHost.js",
     "./plugins/gradle-fix-plugin.js",
+    "./plugins/withLocaleChangeDetection",
     "expo-router",
     [
       "expo-audio",

@@ -1451,3 +1451,8 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [x] Eliminar AsyncStorage (idioma se detecta automáticamente del sistema)
 - [x] Validar compilación TypeScript (0 errores)
 - [ ] Generar APK final sin selector manual
+
+- [ ] Generar APK con config plugin de detección de idioma nativo
+- [ ] Validar que app se muestra en idioma del sistema (ES/EN/DE)
+- [ ] Validar que app cambia de idioma cuando se cambia el sistema
+- [ ] Generar build de producción si validación exitosa
