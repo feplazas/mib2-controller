@@ -34,17 +34,15 @@ export const unstable_settings = {
   anchor: "(tabs)",
 };
 
-// Componente interno que usa useLanguage
+// Componente interno con providers
 function RootLayoutContent() {
-  const { renderKey } = useLanguage();
-  
   return (
     <ThemeProvider>
       <ProfilesProvider>
         <ExpertModeProvider>
           <TelnetProvider>
             <UsbStatusProvider>
-              <RootLayoutInner key={renderKey} />
+              <RootLayoutInner />
             </UsbStatusProvider>
           </TelnetProvider>
         </ExpertModeProvider>
@@ -53,7 +51,7 @@ function RootLayoutContent() {
   );
 }
 
-// Componente que contiene el Stack y se remonta cuando cambia renderKey
+// Componente que contiene el Stack
 function RootLayoutInner() {
   const initialInsets = initialWindowMetrics?.insets ?? DEFAULT_WEB_INSETS;
   const initialFrame = initialWindowMetrics?.frame ?? DEFAULT_WEB_FRAME;

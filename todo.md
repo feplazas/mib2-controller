@@ -1439,3 +1439,15 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [x] Agregar claves de traducción con interpolación (5 claves en ES/EN/DE)
 - [x] Migrar 5 Alert.alert con template strings (recovery, auto-spoof, diag, index x2)
 - [x] Validar compilación TypeScript (0 errores, 0 Alert.alert restantes)
+
+## Generación APK Final para Validación
+- [x] Verificar compilación TypeScript (0 errores)
+- [x] Generar APK con EAS Build (Build ID: 88591b05-54f2-400d-833d-c6e1b3802be3)
+- [x] Reportar APK al usuario con instrucciones de validación
+
+## Eliminación Selector Manual de Idioma
+- [x] Eliminar selector de idioma de Settings UI
+- [x] Simplificar LanguageProvider (eliminado renderKey, changeLanguage, AsyncStorage)
+- [x] Eliminar AsyncStorage (idioma se detecta automáticamente del sistema)
+- [x] Validar compilación TypeScript (0 errores)
+- [ ] Generar APK final sin selector manual
