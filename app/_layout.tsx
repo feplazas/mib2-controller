@@ -12,7 +12,7 @@ import { TelnetProvider } from "@/lib/telnet-provider";
 import { ExpertModeProvider } from "@/lib/expert-mode-provider";
 import { ProfilesProvider } from "@/lib/profiles-provider";
 import { UsbStatusProvider } from "@/lib/usb-status-context";
-import { LanguageProvider } from "@/lib/language-context";
+import { LanguageProvider, useLanguage } from "@/lib/language-context";
 import {
   SafeAreaFrameContext,
   SafeAreaInsetsContext,
@@ -34,7 +34,27 @@ export const unstable_settings = {
   anchor: "(tabs)",
 };
 
-export default function RootLayout() {
+// Componente interno que usa useLanguage
+function RootLayoutContent() {
+  const { renderKey } = useLanguage();
+  
+  return (
+    <ThemeProvider>
+      <ProfilesProvider>
+        <ExpertModeProvider>
+          <TelnetProvider>
+            <UsbStatusProvider>
+              <RootLayoutInner key={renderKey} />
+            </UsbStatusProvider>
+          </TelnetProvider>
+        </ExpertModeProvider>
+      </ProfilesProvider>
+    </ThemeProvider>
+  );
+}
+
+// Componente que contiene el Stack y se remonta cuando cambia renderKey
+function RootLayoutInner() {
   const initialInsets = initialWindowMetrics?.insets ?? DEFAULT_WEB_INSETS;
   const initialFrame = initialWindowMetrics?.frame ?? DEFAULT_WEB_FRAME;
 
@@ -119,41 +139,26 @@ export default function RootLayout() {
 
   if (shouldOverrideSafeArea) {
     return (
-      <LanguageProvider>
-        <ThemeProvider>
-          <ProfilesProvider>
-            <ExpertModeProvider>
-              <TelnetProvider>
-                <UsbStatusProvider>
-                  <SafeAreaProvider initialMetrics={providerInitialMetrics}>
-                <SafeAreaFrameContext.Provider value={frame}>
-                  <SafeAreaInsetsContext.Provider value={insets}>
-                    {content}
-                  </SafeAreaInsetsContext.Provider>
-                </SafeAreaFrameContext.Provider>
-                  </SafeAreaProvider>
-                </UsbStatusProvider>
-              </TelnetProvider>
-            </ExpertModeProvider>
-          </ProfilesProvider>
-        </ThemeProvider>
-      </LanguageProvider>
+      <SafeAreaProvider initialMetrics={providerInitialMetrics}>
+        <SafeAreaFrameContext.Provider value={frame}>
+          <SafeAreaInsetsContext.Provider value={insets}>
+            {content}
+          </SafeAreaInsetsContext.Provider>
+        </SafeAreaFrameContext.Provider>
+      </SafeAreaProvider>
     );
   }
 
   return (
+    <SafeAreaProvider initialMetrics={providerInitialMetrics}>{content}</SafeAreaProvider>
+  );
+}
+
+// Layout root que envuelve todo con LanguageProvider
+export default function RootLayout() {
+  return (
     <LanguageProvider>
-      <ThemeProvider>
-        <ProfilesProvider>
-          <ExpertModeProvider>
-            <TelnetProvider>
-              <UsbStatusProvider>
-                <SafeAreaProvider initialMetrics={providerInitialMetrics}>{content}</SafeAreaProvider>
-              </UsbStatusProvider>
-            </TelnetProvider>
-          </ExpertModeProvider>
-        </ProfilesProvider>
-      </ThemeProvider>
+      <RootLayoutContent />
     </LanguageProvider>
   );
 }

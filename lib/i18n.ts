@@ -13,8 +13,17 @@ const i18n = new I18n({
 
 // Configurar locale por defecto
 i18n.defaultLocale = 'es';
-i18n.locale = getLocales()[0]?.languageCode ?? 'es';
+
+// Detectar idioma del sistema automáticamente
+const systemLanguage = getLocales()[0]?.languageCode ?? 'es';
+// Solo usar idiomas soportados, fallback a español
+const supportedLanguages = ['es', 'en', 'de'];
+i18n.locale = supportedLanguages.includes(systemLanguage) ? systemLanguage : 'es';
+
 i18n.enableFallback = true;
+
+console.log('[i18n] System language detected:', systemLanguage);
+console.log('[i18n] Using locale:', i18n.locale);
 
 // Función helper para traducir (no reactiva - usar useTranslation en componentes)
 export function t(key: string, options?: object): string {

@@ -1423,3 +1423,8 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [x] Traducir descripción a inglés y alemán
 - [x] Actualizar política de privacidad con URLs finales
 - [x] Crear documento PLAY_STORE_LISTING.md con todas las descripciones
+
+## Bugs Críticos de Idioma
+- [x] Bug: Implementado remount de Stack completo con renderKey
+- [x] Feature: Detección automática de idioma del sistema al iniciar app
+- [x] Bug: Creado helper translated-alert.ts para Alert traducidos
