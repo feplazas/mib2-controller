@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setLocale, getLocale, getAvailableLocales } from './i18n';
 
@@ -68,7 +68,9 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <LanguageContext.Provider value={value}>
-      {children}
+      <React.Fragment key={renderKey}>
+        {children}
+      </React.Fragment>
     </LanguageContext.Provider>
   );
 }
@@ -85,8 +87,11 @@ export function useLanguage(): LanguageContextType {
 export function useTranslation() {
   const { renderKey } = useLanguage();
   
-  // El renderKey cambia cuando se actualiza el idioma, forzando re-render
-  return useCallback((key: string, options?: object): string => {
-    return require('./i18n').default.t(key, options);
+  // Usar useMemo para crear nueva función cada vez que cambia renderKey
+  // Esto fuerza a los componentes a re-evaluar todas las llamadas a t()
+  return useMemo(() => {
+    return (key: string, options?: object): string => {
+      return require('./i18n').default.t(key, options);
+    };
   }, [renderKey]);
 }
