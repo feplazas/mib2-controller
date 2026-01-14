@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useCallback, useEffect } fr
 import { AppState, AppStateStatus, Platform } from 'react-native';
 import { usbService, UsbDevice } from './usb-service';
 import { profilesService, VIDPIDProfile } from './profiles-service';
-// import * as UsbEventModule from '@/modules/usb-events'; // Comentado temporalmente - requiere rebuild nativo
+import * as UsbEventModule from '@/modules/usb-events';
 
 export type UsbStatus = 'disconnected' | 'detected' | 'connected';
 
@@ -146,8 +146,6 @@ export function UsbStatusProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   // Configurar BroadcastReceiver para detección automática de USB
-  // COMENTADO TEMPORALMENTE - Requiere rebuild nativo completo del módulo usb-events
-  /*
   useEffect(() => {
     if (!useBroadcastReceiver) {
       console.log('[UsbStatusProvider] BroadcastReceiver disabled, using polling only');
@@ -186,7 +184,6 @@ export function UsbStatusProvider({ children }: { children: React.ReactNode }) {
       UsbEventModule.stopListening();
     };
   }, [useBroadcastReceiver, scanDevices, device]);
-  */
 
   const value: UsbStatusContextType = {
     status,

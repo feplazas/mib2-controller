@@ -1391,11 +1391,19 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 ## Integración de Internacionalización (i18n)
 - [x] Crear selector de idioma en Settings con persistencia en AsyncStorage
 - [x] Integrar traducciones en pantalla Home (index.tsx)
-- [ ] Integrar traducciones en pantalla Scanner
+- [x] Integrar traducciones en pantalla Scanner (no existe archivo separado)
 - [x] Integrar traducciones en pantalla Toolbox
 - [x] Integrar traducciones en pantalla FEC
 - [x] Integrar traducciones en pantalla Recovery
 - [x] Integrar traducciones en pantalla Commands
-- [ ] Integrar traducciones en pantalla Auto Spoof
-- [ ] Integrar traducciones en pantalla Telnet
+- [x] Integrar traducciones en pantalla Auto Spoof
+- [x] Integrar traducciones en pantalla Telnet (no existe archivo separado)
 - [ ] Integrar traducciones en componentes compartidos y alertas
+
+## Completar Integración i18n y BroadcastReceiver
+- [x] Integrar traducciones en pantalla Scanner (no existe archivo separado)
+- [x] Integrar traducciones en pantalla Auto Spoof
+- [x] Integrar traducciones en pantalla Telnet (no existe archivo separado)
+- [x] Integrar traducciones en pantalla Diag
+- [x] Descomentar código de BroadcastReceiver en usb-status-context.tsx
+- [ ] Ejecutar rebuild nativo completo (prebuild + run:android)

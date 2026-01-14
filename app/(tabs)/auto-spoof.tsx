@@ -12,6 +12,7 @@ import * as Haptics from 'expo-haptics';
 import * as Sharing from 'expo-sharing';
 import { spoofReducer, initialSpoofState, getStepText, getStepIcon } from '@/lib/spoof-reducer';
 import type { SpoofStep } from '@/lib/spoof-reducer';
+import { t } from "@/lib/i18n";
 
 export default function AutoSpoofScreen() {
   const { status, device } = useUsbStatus();
