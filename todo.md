@@ -1410,3 +1410,10 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 
 ## Bugs Reportados
 - [x] Bug: Selector de idioma no actualiza UI al cambiar entre ES/EN/DE (requiere reinicio)
+
+## Correcciones Expo Doctor (Pre-Producción)
+- [x] Instalar expo-asset (peer dependency de expo-audio)
+- [x] Actualizar paquetes Expo a versiones correctas del SDK 54
+- [x] Eliminar package-lock.json (solo usar pnpm-lock.yaml)
+- [x] Configurar exclusiones en package.json para módulos nativos personalizados
+- [x] Validar con expo doctor sin errores críticos
