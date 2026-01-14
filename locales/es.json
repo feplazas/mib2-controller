@@ -149,7 +149,24 @@
     "eeprom_external": "EEPROM externa (modificable)",
     "eeprom_efuse": "eFuse integrado (NO modificable)",
     "chipset_compatible": "Chipset compatible",
-    "chipset_incompatible": "Chipset incompatible"
+    "chipset_incompatible": "Chipset incompatible",
+    "start": "Iniciar Spoofing",
+    "stop": "Detener",
+    "progress": "Progreso",
+    "completed": "Completado",
+    "error": "Error",
+    "warning": "Advertencia",
+    "confirm": "Confirmar",
+    "cancel": "Cancelar"
+  },
+  "diag": {
+    "title": "Diagnóstico",
+    "system_info": "Información del Sistema",
+    "firmware": "Firmware",
+    "version": "Versión",
+    "status": "Estado",
+    "connected": "Conectado",
+    "disconnected": "Desconectado"
   },
   "telnet": {
     "title": "Cliente Telnet",

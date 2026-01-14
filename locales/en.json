@@ -149,7 +149,15 @@
     "eeprom_external": "External EEPROM (modifiable)",
     "eeprom_efuse": "Integrated eFuse (NOT modifiable)",
     "chipset_compatible": "Compatible chipset",
-    "chipset_incompatible": "Incompatible chipset"
+    "chipset_incompatible": "Incompatible chipset",
+    "start": "Start Spoofing",
+    "stop": "Stop",
+    "progress": "Progress",
+    "completed": "Completed",
+    "error": "Error",
+    "warning": "Warning",
+    "confirm": "Confirm",
+    "cancel": "Cancel"
   },
   "telnet": {
     "title": "Telnet Client",
@@ -214,5 +222,14 @@
     "command_executed": "Command executed successfully",
     "settings_saved": "Settings saved",
     "pin_set": "PIN set successfully"
+  },
+  "diag": {
+    "title": "Diagnostics",
+    "system_info": "System Information",
+    "firmware": "Firmware",
+    "version": "Version",
+    "status": "Status",
+    "connected": "Connected",
+    "disconnected": "Disconnected"
   }
 }
