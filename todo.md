@@ -1417,3 +1417,9 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [x] Eliminar package-lock.json (solo usar pnpm-lock.yaml)
 - [x] Configurar exclusiones en package.json para módulos nativos personalizados
 - [x] Validar con expo doctor sin errores críticos
+
+## Documentación Play Store
+- [x] Redactar descripción corta y larga en español
+- [x] Traducir descripción a inglés y alemán
+- [x] Actualizar política de privacidad con URLs finales
+- [x] Crear documento PLAY_STORE_LISTING.md con todas las descripciones
