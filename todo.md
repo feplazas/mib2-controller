@@ -1378,3 +1378,12 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [x] Verificar imports y dependencias del módulo USB
 - [x] Corregir error de sintaxis en línea 525 (faltaba 'try' antes de AsyncFunction)
 - [ ] Regenerar APK después de corrección
+
+## Optimizaciones de Revisión Externa (14 Ene 2026)
+
+- [x] Implementar BroadcastReceiver nativo en Kotlin para detección USB
+- [x] Integrar BroadcastReceiver con usb-status-context
+- [x] Configurar i18n con expo-localization
+- [x] Traducir pantallas principales (Home, Scanner, Toolbox)
+- [x] Traducir pantallas secundarias (FEC, Recovery, Commands)
+- [x] Traducir mensajes de error y alertas críticas

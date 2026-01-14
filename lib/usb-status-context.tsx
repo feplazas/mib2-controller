@@ -1,7 +1,8 @@
-import { createContext, useContext, useState, useCallback, useEffect } from 'react';
-import { AppState, AppStateStatus } from 'react-native';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import { AppState, AppStateStatus, Platform } from 'react-native';
 import { usbService, UsbDevice } from './usb-service';
 import { profilesService, VIDPIDProfile } from './profiles-service';
+import * as UsbEventModule from '@/modules/usb-events';
 
 export type UsbStatus = 'disconnected' | 'detected' | 'connected';
 
@@ -26,6 +27,7 @@ export function UsbStatusProvider({ children }: { children: React.ReactNode }) {
   const [isScanning, setIsScanning] = useState(false);
   const [detectedProfile, setDetectedProfile] = useState<VIDPIDProfile | null>(null);
   const [recommendedProfile, setRecommendedProfile] = useState<VIDPIDProfile | null>(null);
+  const [useBroadcastReceiver, setUseBroadcastReceiver] = useState(true); // Híbrido: BroadcastReceiver + polling
 
   // Escanear dispositivos USB
   const scanDevices = useCallback(async () => {
@@ -132,14 +134,62 @@ export function UsbStatusProvider({ children }: { children: React.ReactNode }) {
     };
   }, [scanDevices]);
 
-  // Escaneo periódico cada 5 segundos
+  // Escaneo periódico cada 10 segundos (reducido de 5s por optimización)
+  // Solo si BroadcastReceiver no está disponible o deshabilitado
   useEffect(() => {
-    const interval = setInterval(() => {
-      scanDevices();
-    }, 5000);
+    if (!useBroadcastReceiver) {
+      const interval = setInterval(() => {
+        scanDevices();
+      }, 10000);
+      return () => clearInterval(interval);
+    }
+  }, [scanDevices, useBroadcastReceiver]);
 
-    return () => clearInterval(interval);
-  }, [scanDevices]);
+  // BroadcastReceiver para detección automática de USB (solo Android)
+  useEffect(() => {
+    if (Platform.OS !== 'android' || !useBroadcastReceiver) {
+      return;
+    }
+
+    console.log('[UsbStatusProvider] Starting BroadcastReceiver for USB events');
+    
+    // Iniciar escucha de eventos USB
+    const result = UsbEventModule.startListening();
+    if (!result.success) {
+      console.warn('[UsbStatusProvider] Failed to start BroadcastReceiver:', result.message);
+      return;
+    }
+
+    // Listener para dispositivos conectados
+    const attachedSub = UsbEventModule.addUsbAttachedListener((deviceInfo) => {
+      console.log('[UsbStatusProvider] USB device attached:', deviceInfo);
+      // Escanear inmediatamente para actualizar lista
+      scanDevices();
+    });
+
+    // Listener para dispositivos desconectados
+    const detachedSub = UsbEventModule.addUsbDetachedListener((deviceInfo) => {
+      console.log('[UsbStatusProvider] USB device detached:', deviceInfo);
+      // Escanear inmediatamente para actualizar lista
+      scanDevices();
+      
+      // Si el dispositivo desconectado es el actual, marcar como desconectado
+      if (device && device.vendorId === deviceInfo.vendorId && device.productId === deviceInfo.productId) {
+        setDevice(null);
+        setDetectedProfile(null);
+        setRecommendedProfile(null);
+        setStatus('disconnected');
+      }
+    });
+
+    // Cleanup
+    return () => {
+      console.log('[UsbStatusProvider] Stopping BroadcastReceiver');
+      attachedSub.remove();
+      detachedSub.remove();
+      UsbEventModule.stopListening();
+    };
+  }, [useBroadcastReceiver, scanDevices, device]);
 
   const value: UsbStatusContextType = {
     status,
