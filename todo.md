@@ -1428,3 +1428,9 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [x] Bug: Implementado remount de Stack completo con renderKey
 - [x] Feature: Detección automática de idioma del sistema al iniciar app
 - [x] Bug: Creado helper translated-alert.ts para Alert traducidos
+
+## Migración Alert.alert a Helpers Traducidos
+- [x] Analizar patrones de Alert.alert y extraer textos únicos (63 encontrados, 22 títulos, 55 mensajes)
+- [x] Generar claves de traducción en ES/EN/DE (75 claves agregadas a cada idioma)
+- [x] Crear y ejecutar script de migración automática (57 de 63 Alert.alert migrados)
+- [x] Validar compilación TypeScript después de migración (0 errores)

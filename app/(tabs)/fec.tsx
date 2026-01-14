@@ -8,6 +8,7 @@ import * as FileSystem from "expo-file-system/legacy";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { useTelnet } from "@/lib/telnet-provider";
+import { showAlert } from '@/lib/translated-alert';
 import {
   PREDEFINED_FEC_CODES,
   FEC_INJECTION_INFO,
@@ -44,12 +45,12 @@ export default function FECScreen() {
 
   const handleAddCustomCode = () => {
     if (!validateFECCode(customCode)) {
-      Alert.alert("Código Inválido", "El código FEC debe tener 8 dígitos hexadecimales.");
+      showAlert('alerts.código_inválido', 'alerts.el_código_fec_debe_tener_8_dígitos_hexadecimales');
       return;
     }
 
     if (selectedCodes.includes(customCode.toUpperCase())) {
-      Alert.alert("Código Duplicado", "Este código ya está en la lista.");
+      showAlert('alerts.código_duplicado', 'alerts.este_código_ya_está_en_la_lista');
       return;
     }
 
@@ -63,7 +64,7 @@ export default function FECScreen() {
 
   const handleGenerateExceptionList = async () => {
     if (selectedCodes.length === 0) {
-      Alert.alert("Sin Códigos", "Selecciona al menos un código FEC para generar la lista.");
+      showAlert('alerts.sin_códigos', 'alerts.selecciona_al_menos_un_código_fec_para_generar_la');
       return;
     }
 
@@ -93,14 +94,14 @@ export default function FECScreen() {
         ]
       );
     } catch (error) {
-      Alert.alert("Error", "No se pudo generar el archivo ExceptionList.txt");
+      showAlert('alerts.error', 'alerts.no_se_pudo_generar_el_archivo_exceptionlisttxt');
       console.error(error);
     }
   };
 
   const handleGenerateInjectionCommand = () => {
     if (selectedCodes.length === 0) {
-      Alert.alert("Sin Códigos", "Selecciona al menos un código FEC para generar el comando.");
+      showAlert('alerts.sin_códigos', 'alerts.selecciona_al_menos_un_código_fec_para_generar_el');
       return;
     }
 
@@ -110,12 +111,12 @@ export default function FECScreen() {
 
   const handleInjectViaTelnet = () => {
     if (!isConnected) {
-      Alert.alert('No Conectado', 'Debes conectarte a la unidad MIB2 primero');
+      showAlert('alerts.no_conectado', 'alerts.debes_conectarte_a_la_unidad_mib2_primero');
       return;
     }
 
     if (selectedCodes.length === 0) {
-      Alert.alert('Sin Códigos', 'Selecciona al menos un código FEC');
+      showAlert('alerts.sin_códigos', 'alerts.selecciona_al_menos_un_código_fec');
       return;
     }
 
@@ -137,7 +138,7 @@ export default function FECScreen() {
                 sendCommand(cmd);
               }
             });
-            Alert.alert('Inyectando', 'Códigos FEC enviados. La unidad se reiniciará.');
+            showAlert('alerts.inyectando', 'alerts.códigos_fec_enviados_la_unidad_se_reiniciará');
           },
         },
       ]
@@ -152,7 +153,7 @@ export default function FECScreen() {
     if (supported) {
       await Linking.openURL(FEC_GENERATOR_URL);
     } else {
-      Alert.alert('Error', 'No se pudo abrir el generador online');
+      showAlert('alerts.error', 'alerts.no_se_pudo_abrir_el_generador_online');
     }
   };
 

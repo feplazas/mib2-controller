@@ -12,6 +12,7 @@ import { detectToolbox, type ToolboxInfo } from "@/lib/toolbox-detector";
 import { detectUSBEthernetAdapter, detectSubnet, validateAdapterConnectivity, type NetworkInterface } from "@/modules/network-info";
 import { useTranslation } from "@/lib/language-context";
 
+import { showAlert } from '@/lib/translated-alert';
 export default function HomeScreen() {
   const t = useTranslation();
   const { isConnected, isConnecting, config, updateConfig, connect, disconnect, sendCommand } = useTelnet();
@@ -139,7 +140,7 @@ export default function HomeScreen() {
       setScanProgress(null);
 
       if (results.length === 0) {
-        Alert.alert('Sin Resultados', 'No se encontraron unidades MIB2 en las IPs comunes');
+        showAlert('alerts.sin_resultados', 'alerts.no_se_encontraron_unidades_mib2_en_las_ips_comunes');
       } else if (results.length === 1) {
         // Auto-select and connect
         setHost(results[0].host);
@@ -162,7 +163,7 @@ export default function HomeScreen() {
                   setTimeout(() => handleDetectToolbox(), 1000);
                 } catch (error) {
                   Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-                  Alert.alert('Error', 'No se pudo conectar a la unidad MIB2');
+                  showAlert('alerts.error', 'alerts.no_se_pudo_conectar_a_la_unidad_mib2');
                 }
               },
             },
@@ -172,7 +173,7 @@ export default function HomeScreen() {
         Alert.alert('Múltiples Dispositivos', `Se encontraron ${results.length} dispositivos. Selecciona uno de la lista.`);
       }
     } catch (error) {
-      Alert.alert('Error', 'Error al escanear la red');
+      showAlert('alerts.error', 'alerts.error_al_escanear_la_red');
     } finally {
       setScanning(false);
     }
@@ -224,12 +225,12 @@ export default function HomeScreen() {
               setScanProgress(null);
 
               if (results.length === 0) {
-                Alert.alert('Sin Resultados', 'No se encontraron unidades MIB2 en la red');
+                showAlert('alerts.sin_resultados', 'alerts.no_se_encontraron_unidades_mib2_en_la_red');
               } else {
                 Alert.alert('Escaneo Completo', `Se encontraron ${results.length} dispositivos`);
               }
             } catch (error) {
-              Alert.alert('Error', 'Error al escanear la red');
+              showAlert('alerts.error', 'alerts.error_al_escanear_la_red');
             } finally {
               setScanning(false);
             }

@@ -14,6 +14,7 @@ import { spoofReducer, initialSpoofState, getStepText, getStepIcon } from '@/lib
 import type { SpoofStep } from '@/lib/spoof-reducer';
 import { useTranslation } from "@/lib/language-context";
 
+import { showAlert } from '@/lib/translated-alert';
 export default function AutoSpoofScreen() {
   const t = useTranslation();
   const { status, device } = useUsbStatus();
@@ -21,7 +22,7 @@ export default function AutoSpoofScreen() {
 
   const executeAutoSpoof = async () => {
     if (!device) {
-      Alert.alert('Error', 'No hay dispositivo USB conectado');
+      showAlert('alerts.error', 'alerts.no_hay_dispositivo_usb_conectado');
       return;
     }
 
@@ -96,7 +97,7 @@ export default function AutoSpoofScreen() {
     
     // Validación adicional: Verificar que el dispositivo aún está conectado
     if (status !== 'connected') {
-      Alert.alert('Error', 'El dispositivo USB se desconectó. Por favor reconecta y vuelve a intentar.');
+      showAlert('alerts.error', 'alerts.el_dispositivo_usb_se_desconectó_por_favor_reconec');
       return;
     }
 
@@ -375,7 +376,7 @@ export default function AutoSpoofScreen() {
   // Función REAL de Spoof Rápido (una sola confirmación)
   const handleQuickSpoof = async () => {
     if (!device) {
-      Alert.alert('Error', 'No hay dispositivo USB conectado');
+      showAlert('alerts.error', 'alerts.no_hay_dispositivo_usb_conectado');
       return;
     }
 
@@ -446,11 +447,11 @@ export default function AutoSpoofScreen() {
           dialogTitle: 'Compartir Resultado de Spoofing',
         });
       } else {
-        Alert.alert('Error', 'La función de compartir no está disponible en este dispositivo');
+        showAlert('alerts.error', 'alerts.la_función_de_compartir_no_está_disponible_en_este');
       }
     } catch (error) {
       console.error('Error sharing result:', error);
-      Alert.alert('Error', 'No se pudo compartir el resultado');
+      showAlert('alerts.error', 'alerts.no_se_pudo_compartir_el_resultado');
     }
   };
 

@@ -8,6 +8,7 @@ import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { useTelnet } from "@/lib/telnet-provider";
 import { useUsbStatus } from "@/lib/usb-status-context";
+import { showAlert } from '@/lib/translated-alert';
 import {
   TOOLBOX_INSTALLATION_STEPS,
   EMMC_ACCESS_INFO,
@@ -75,7 +76,7 @@ export default function ToolboxScreen() {
 
   const loadBackupsList = async () => {
     if (!isConnected) {
-      Alert.alert('Error', 'Debes estar conectado por Telnet para ver los backups');
+      showAlert('alerts.error', 'alerts.debes_estar_conectado_por_telnet_para_ver_los_back');
       return;
     }
 
@@ -87,7 +88,7 @@ export default function ToolboxScreen() {
       });
       setBackups(backupsList);
     } catch (error) {
-      Alert.alert('Error', 'No se pudieron cargar los backups');
+      showAlert('alerts.error', 'alerts.no_se_pudieron_cargar_los_backups');
     } finally {
       setLoadingBackups(false);
     }
@@ -113,7 +114,7 @@ export default function ToolboxScreen() {
               );
 
               if (result.success) {
-                Alert.alert('✅ Éxito', 'Backup restaurado correctamente');
+                showAlert('alerts.éxito', 'alerts.backup_restaurado_correctamente');
                 if (Platform.OS !== "web") {
                   Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
                 }
@@ -124,7 +125,7 @@ export default function ToolboxScreen() {
                 }
               }
             } catch (error) {
-              Alert.alert('❌ Error', 'Error inesperado al restaurar backup');
+              showAlert('alerts.error', 'alerts.error_inesperado_al_restaurar_backup');
             }
           },
         },
@@ -152,13 +153,13 @@ export default function ToolboxScreen() {
               );
 
               if (success) {
-                Alert.alert('✅ Éxito', 'Backup eliminado');
+                showAlert('alerts.éxito', 'alerts.backup_eliminado');
                 await loadBackupsList();
               } else {
-                Alert.alert('❌ Error', 'No se pudo eliminar el backup');
+                showAlert('alerts.error', 'alerts.no_se_pudo_eliminar_el_backup');
               }
             } catch (error) {
-              Alert.alert('❌ Error', 'Error inesperado al eliminar backup');
+              showAlert('alerts.error', 'alerts.error_inesperado_al_eliminar_backup');
             }
           },
         },
@@ -193,7 +194,7 @@ export default function ToolboxScreen() {
         ]
       );
     } catch (error) {
-      Alert.alert("Error", "No se pudo generar el script de instalación");
+      showAlert('alerts.error', 'alerts.no_se_pudo_generar_el_script_de_instalación');
       console.error(error);
     }
   };
@@ -225,18 +226,18 @@ export default function ToolboxScreen() {
       if (Platform.OS !== 'web') {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       }
-      Alert.alert('Error', 'Error al ejecutar comando');
+      showAlert('alerts.error', 'alerts.error_al_ejecutar_comando');
     }
   };
 
   const handleExecuteStep = async (step: InstallationStep) => {
     if (!isConnected) {
-      Alert.alert('No Conectado', 'Debes conectarte a la unidad MIB2 primero');
+      showAlert('alerts.no_conectado', 'alerts.debes_conectarte_a_la_unidad_mib2_primero');
       return;
     }
 
     if (!step.command) {
-      Alert.alert('Sin Comando', 'Este paso no tiene un comando asociado');
+      showAlert('alerts.sin_comando', 'alerts.este_paso_no_tiene_un_comando_asociado');
       return;
     }
 
@@ -271,10 +272,7 @@ export default function ToolboxScreen() {
                             style: 'destructive',
                             onPress: async () => {
                               // Crear backup automático antes del parcheo
-                              Alert.alert(
-                                '💾 Creando Backup',
-                                'Creando backup del binario crítico antes de continuar...'
-                              );
+                              showAlert('alerts.creando_backup', 'alerts.creando_backup_del_binario_crítico_antes_de_contin');
                               
                               try {
                                 const backupResult = await backupCriticalBinary(
@@ -310,10 +308,7 @@ export default function ToolboxScreen() {
                                   );
                                 }
                               } catch (error) {
-                                Alert.alert(
-                                  '❌ Error',
-                                  'Error inesperado al crear backup. Operación cancelada.'
-                                );
+                                showAlert('alerts.error', 'alerts.error_inesperado_al_crear_backup_operación_cancela');
                               }
                             },
                           },

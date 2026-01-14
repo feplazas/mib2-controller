@@ -9,6 +9,7 @@ import { ChipsetStatusBadge } from '@/components/chipset-status-badge';
 import { getChipsetCompatibility, canAttemptSpoofing } from '@/lib/chipset-compatibility';
 import { ScanningIndicator } from '@/components/scanning-indicator';
 
+import { showAlert } from '@/lib/translated-alert';
 export default function UsbStatusScreen() {
   const { status, device, devices, isScanning, scanDevices, connectToDevice, disconnectDevice, detectedProfile, recommendedProfile } = useUsbStatus();
   const [refreshing, setRefreshing] = useState(false);
@@ -52,7 +53,7 @@ export default function UsbStatusScreen() {
 
   const handleCreateBackup = async () => {
     if (!device) {
-      Alert.alert('Error', 'No hay dispositivo USB conectado');
+      showAlert('alerts.error', 'alerts.no_hay_dispositivo_usb_conectado');
       return;
     }
 
@@ -100,7 +101,7 @@ export default function UsbStatusScreen() {
     const targetDevice = device || (devices.length > 0 ? devices[0] : null);
     
     if (!targetDevice) {
-      Alert.alert('Error', 'No hay dispositivo USB detectado');
+      showAlert('alerts.error', 'alerts.no_hay_dispositivo_usb_detectado');
       return;
     }
 
@@ -145,7 +146,7 @@ export default function UsbStatusScreen() {
 
   const handleTestEEPROM = async () => {
     if (!device) {
-      Alert.alert('Error', 'No hay dispositivo USB conectado');
+      showAlert('alerts.error', 'alerts.no_hay_dispositivo_usb_conectado');
       return;
     }
 
@@ -219,10 +220,7 @@ export default function UsbStatusScreen() {
               await disconnectDevice();
               
               await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-              Alert.alert(
-                '✅ Desconectado',
-                'El dispositivo USB se desconectó correctamente.'
-              );
+              showAlert('alerts.desconectado', 'alerts.el_dispositivo_usb_se_desconectó_correctamente');
             } catch (error: any) {
               await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
               Alert.alert(

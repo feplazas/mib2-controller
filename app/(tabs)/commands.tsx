@@ -9,6 +9,7 @@ import { MIB2_COMMANDS } from "@/lib/telnet-client";
 import { useColors } from "@/hooks/use-colors";
 import { useTranslation } from "@/lib/language-context";
 
+import { showAlert } from '@/lib/translated-alert';
 export default function CommandsScreen() {
   const t = useTranslation();
   const colors = useColors();
@@ -40,7 +41,7 @@ export default function CommandsScreen() {
     if (!commandInput.trim()) return;
 
     if (!isConnected) {
-      Alert.alert('No Conectado', 'Debes conectarte a la unidad MIB2 primero');
+      showAlert('alerts.no_conectado', 'alerts.debes_conectarte_a_la_unidad_mib2_primero');
       return;
     }
 

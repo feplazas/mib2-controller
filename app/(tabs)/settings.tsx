@@ -11,6 +11,7 @@ import * as Clipboard from 'expo-clipboard';
 import { useLanguage } from "@/lib/language-context";
 import { useTranslation } from "@/lib/language-context";
 
+import { showAlert } from '@/lib/translated-alert';
 export default function SettingsScreen() {
   const t = useTranslation();
   const { config, updateConfig, clearMessages } = useTelnet();
@@ -41,10 +42,10 @@ export default function SettingsScreen() {
       });
 
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      Alert.alert('Éxito', 'Configuración guardada correctamente');
+      showAlert('alerts.éxito', 'alerts.configuración_guardada_correctamente');
     } catch (error) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert('Error', 'No se pudo guardar la configuración');
+      showAlert('alerts.error', 'alerts.no_se_pudo_guardar_la_configuración');
     }
   };
 
@@ -71,19 +72,19 @@ export default function SettingsScreen() {
 
   const handleSetupPin = async () => {
     if (pinInput.length < 4) {
-      Alert.alert('PIN Inválido', 'El PIN debe tener al menos 4 dígitos');
+      showAlert('alerts.pin_inválido', 'alerts.el_pin_debe_tener_al_menos_4_dígitos');
       return;
     }
 
     if (pinInput !== pinConfirm) {
-      Alert.alert('Error', 'Los PINs no coinciden');
+      showAlert('alerts.error', 'alerts.los_pins_no_coinciden');
       return;
     }
 
     try {
       await setPin(pinInput);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      Alert.alert('Éxito', 'PIN configurado correctamente');
+      showAlert('alerts.éxito', 'alerts.pin_configurado_correctamente');
       setShowPinSetup(false);
       setPinInput('');
       setPinConfirm('');
@@ -98,7 +99,7 @@ export default function SettingsScreen() {
       // Disable expert mode
       await disableExpertMode();
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      Alert.alert('Modo Experto Desactivado', 'Los comandos avanzados están ahora ocultos');
+      showAlert('alerts.modo_experto_desactivado', 'alerts.los_comandos_avanzados_están_ahora_ocultos');
     } else {
       // Enable expert mode - requires PIN
       if (!isPinSet) {
@@ -118,7 +119,7 @@ export default function SettingsScreen() {
 
   const handleEnableExpertMode = async () => {
     if (pinInput.length < 4) {
-      Alert.alert('PIN Inválido', 'Ingresa tu PIN de seguridad');
+      showAlert('alerts.pin_inválido', 'alerts.ingresa_tu_pin_de_seguridad');
       return;
     }
 
@@ -126,24 +127,24 @@ export default function SettingsScreen() {
     
     if (success) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      Alert.alert('Modo Experto Activado', 'Ahora tienes acceso a comandos avanzados');
+      showAlert('alerts.modo_experto_activado', 'alerts.ahora_tienes_acceso_a_comandos_avanzados');
       setShowPinEntry(false);
       setPinInput('');
     } else {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert('PIN Incorrecto', 'El PIN ingresado no es válido');
+      showAlert('alerts.pin_incorrecto', 'alerts.el_pin_ingresado_no_es_válido');
       setPinInput('');
     }
   };
 
   const handleChangePin = async () => {
     if (oldPinInput.length < 4 || pinInput.length < 4) {
-      Alert.alert('PIN Inválido', 'Los PINs deben tener al menos 4 dígitos');
+      showAlert('alerts.pin_inválido', 'alerts.los_pins_deben_tener_al_menos_4_dígitos');
       return;
     }
 
     if (pinInput !== pinConfirm) {
-      Alert.alert('Error', 'Los nuevos PINs no coinciden');
+      showAlert('alerts.error', 'alerts.los_nuevos_pins_no_coinciden');
       return;
     }
 
@@ -151,14 +152,14 @@ export default function SettingsScreen() {
     
     if (success) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      Alert.alert('Éxito', 'PIN cambiado correctamente');
+      showAlert('alerts.éxito', 'alerts.pin_cambiado_correctamente');
       setShowPinChange(false);
       setOldPinInput('');
       setPinInput('');
       setPinConfirm('');
     } else {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert('Error', 'El PIN actual es incorrecto');
+      showAlert('alerts.error', 'alerts.el_pin_actual_es_incorrecto');
       setOldPinInput('');
     }
   };
@@ -175,7 +176,7 @@ export default function SettingsScreen() {
           onPress: async () => {
             await resetPin();
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-            Alert.alert('PIN Restablecido', 'El PIN ha sido eliminado');
+            showAlert('alerts.pin_restablecido', 'alerts.el_pin_ha_sido_eliminado');
           },
         },
       ]
@@ -596,7 +597,7 @@ export default function SettingsScreen() {
                       onPress: () => {
                         clearMessages();
                         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-                        Alert.alert('Éxito', 'Historial eliminado');
+                        showAlert('alerts.éxito', 'alerts.historial_eliminado');
                       },
                     },
                   ]
@@ -741,7 +742,7 @@ export default function SettingsScreen() {
                     
                     await Clipboard.setStringAsync(debugInfo);
                     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-                    Alert.alert('✅ Copiado', 'Información de debug copiada al portapapeles');
+                    showAlert('alerts.copiado', 'alerts.información_de_debug_copiada_al_portapapeles');
                   }}
                   className="bg-primary rounded-xl p-4 active:opacity-80"
                 >

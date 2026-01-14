@@ -9,6 +9,7 @@ import { backupService, type EEPROMBackup } from '@/lib/backup-service';
 import { usbService } from '@/lib/usb-service';
 import { useTranslation } from "@/lib/language-context";
 
+import { showAlert } from '@/lib/translated-alert';
 export default function RecoveryScreen() {
   const t = useTranslation();
   const { status, device, devices, scanDevices } = useUsbStatus();
@@ -52,7 +53,7 @@ export default function RecoveryScreen() {
 
   const handleRestore = async (backup: EEPROMBackup) => {
     if (!device) {
-      Alert.alert('Error', 'No hay dispositivo USB conectado');
+      showAlert('alerts.error', 'alerts.no_hay_dispositivo_usb_conectado');
       return;
     }
 
@@ -323,21 +324,21 @@ export default function RecoveryScreen() {
                           await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                           
                           if (!backup.filepath) {
-                            Alert.alert('❌ Error', 'No se encontró la ruta del archivo de backup');
+                            showAlert('alerts.error', 'alerts.no_se_encontró_la_ruta_del_archivo_de_backup');
                             return;
                           }
 
                           // Verificar que el archivo existe
                           const fileInfo = await FileSystem.getInfoAsync(backup.filepath);
                           if (!fileInfo.exists) {
-                            Alert.alert('❌ Error', 'El archivo de backup no existe en el sistema');
+                            showAlert('alerts.error', 'alerts.el_archivo_de_backup_no_existe_en_el_sistema');
                             return;
                           }
 
                           // Verificar si se puede compartir
                           const canShare = await Sharing.isAvailableAsync();
                           if (!canShare) {
-                            Alert.alert('❌ Error', 'La función de compartir no está disponible en este dispositivo');
+                            showAlert('alerts.error', 'alerts.la_función_de_compartir_no_está_disponible_en_este');
                             return;
                           }
 

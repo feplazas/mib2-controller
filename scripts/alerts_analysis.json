@@ -1,0 +1,503 @@
+{
+  "total": 63,
+  "unique_titles": [
+    "Código Duplicado",
+    "Código Inválido",
+    "Error",
+    "Escaneo Completo",
+    "Inyectando",
+    "Modo Experto Activado",
+    "Modo Experto Desactivado",
+    "Múltiples Dispositivos",
+    "No Conectado",
+    "PIN Incorrecto",
+    "PIN Inválido",
+    "PIN Restablecido",
+    "Sin Comando",
+    "Sin Códigos",
+    "Sin Resultados",
+    "Éxito",
+    "✅ Copiado",
+    "✅ Desconectado",
+    "✅ Logs Exportados",
+    "✅ Éxito",
+    "❌ Error",
+    "💾 Creando Backup"
+  ],
+  "unique_messages": [
+    "Ahora tienes acceso a comandos avanzados",
+    "Archivo guardado en:\\n${filename}\\n\\nPuedes encontrarlo en la carpeta de documentos de la app.",
+    "Backup eliminado",
+    "Backup restaurado correctamente",
+    "Configuración guardada correctamente",
+    "Creando backup del binario crítico antes de continuar...",
+    "Códigos FEC enviados. La unidad se reiniciará.",
+    "Debes conectarte a la unidad MIB2 primero",
+    "Debes estar conectado por Telnet para ver los backups",
+    "El PIN actual es incorrecto",
+    "El PIN debe tener al menos 4 dígitos",
+    "El PIN ha sido eliminado",
+    "El PIN ingresado no es válido",
+    "El archivo de backup no existe en el sistema",
+    "El código FEC debe tener 8 dígitos hexadecimales.",
+    "El dispositivo USB se desconectó correctamente.",
+    "El dispositivo USB se desconectó. Por favor reconecta y vuelve a intentar.",
+    "Error al ejecutar comando",
+    "Error al escanear la red",
+    "Error inesperado al crear backup. Operación cancelada.",
+    "Error inesperado al eliminar backup",
+    "Error inesperado al restaurar backup",
+    "Este código ya está en la lista.",
+    "Este paso no tiene un comando asociado",
+    "Historial eliminado",
+    "Información de debug copiada al portapapeles",
+    "Ingresa tu PIN de seguridad",
+    "La función de compartir no está disponible en este dispositivo",
+    "Los PINs deben tener al menos 4 dígitos",
+    "Los PINs no coinciden",
+    "Los comandos avanzados están ahora ocultos",
+    "Los nuevos PINs no coinciden",
+    "No hay dispositivo USB conectado",
+    "No hay dispositivo USB detectado",
+    "No se encontraron unidades MIB2 en la red",
+    "No se encontraron unidades MIB2 en las IPs comunes",
+    "No se encontró la ruta del archivo de backup",
+    "No se pudieron cargar los backups",
+    "No se pudieron exportar los logs:\\n${error.message}",
+    "No se pudo abrir el generador online",
+    "No se pudo compartir el backup:\\n${error.message}",
+    "No se pudo compartir el resultado",
+    "No se pudo conectar a la unidad MIB2",
+    "No se pudo eliminar el backup",
+    "No se pudo generar el archivo ExceptionList.txt",
+    "No se pudo generar el script de instalación",
+    "No se pudo guardar la configuración",
+    "No se pudo realizar el test:\\n\\n${error.message}",
+    "PIN cambiado correctamente",
+    "PIN configurado correctamente",
+    "Se encontraron ${results.length} dispositivos",
+    "Se encontraron ${results.length} dispositivos. Selecciona uno de la lista.",
+    "Selecciona al menos un código FEC",
+    "Selecciona al menos un código FEC para generar el comando.",
+    "Selecciona al menos un código FEC para generar la lista."
+  ],
+  "by_title": {
+    "Error": [
+      "No se pudo realizar el test:\\n\\n${error.message}",
+      "No se pudo conectar a la unidad MIB2",
+      "Error al ejecutar comando",
+      "No se pudo compartir el resultado",
+      "No se pudieron cargar los backups",
+      "El PIN actual es incorrecto",
+      "No hay dispositivo USB detectado",
+      "No se pudo generar el archivo ExceptionList.txt",
+      "El dispositivo USB se desconectó. Por favor reconecta y vuelve a intentar.",
+      "No se pudo guardar la configuración",
+      "Los PINs no coinciden",
+      "No hay dispositivo USB conectado",
+      "No se pudo abrir el generador online",
+      "Debes estar conectado por Telnet para ver los backups",
+      "La función de compartir no está disponible en este dispositivo",
+      "Error al escanear la red",
+      "No se pudo generar el script de instalación",
+      "Los nuevos PINs no coinciden"
+    ],
+    "❌ Error": [
+      "No se encontró la ruta del archivo de backup",
+      "No se pudieron exportar los logs:\\n${error.message}",
+      "Error inesperado al restaurar backup",
+      "No se pudo eliminar el backup",
+      "No se pudo compartir el backup:\\n${error.message}",
+      "Error inesperado al eliminar backup",
+      "Error inesperado al crear backup. Operación cancelada.",
+      "El archivo de backup no existe en el sistema",
+      "La función de compartir no está disponible en este dispositivo"
+    ],
+    "✅ Logs Exportados": [
+      "Archivo guardado en:\\n${filename}\\n\\nPuedes encontrarlo en la carpeta de documentos de la app."
+    ],
+    "No Conectado": [
+      "Debes conectarte a la unidad MIB2 primero"
+    ],
+    "✅ Éxito": [
+      "Backup eliminado",
+      "Backup restaurado correctamente"
+    ],
+    "Sin Comando": [
+      "Este paso no tiene un comando asociado"
+    ],
+    "💾 Creando Backup": [
+      "Creando backup del binario crítico antes de continuar..."
+    ],
+    "Código Inválido": [
+      "El código FEC debe tener 8 dígitos hexadecimales."
+    ],
+    "Código Duplicado": [
+      "Este código ya está en la lista."
+    ],
+    "Sin Códigos": [
+      "Selecciona al menos un código FEC para generar la lista.",
+      "Selecciona al menos un código FEC",
+      "Selecciona al menos un código FEC para generar el comando."
+    ],
+    "Inyectando": [
+      "Códigos FEC enviados. La unidad se reiniciará."
+    ],
+    "Sin Resultados": [
+      "No se encontraron unidades MIB2 en la red",
+      "No se encontraron unidades MIB2 en las IPs comunes"
+    ],
+    "Múltiples Dispositivos": [
+      "Se encontraron ${results.length} dispositivos. Selecciona uno de la lista."
+    ],
+    "Escaneo Completo": [
+      "Se encontraron ${results.length} dispositivos"
+    ],
+    "Éxito": [
+      "Historial eliminado",
+      "Configuración guardada correctamente",
+      "PIN configurado correctamente",
+      "PIN cambiado correctamente"
+    ],
+    "PIN Inválido": [
+      "Los PINs deben tener al menos 4 dígitos",
+      "El PIN debe tener al menos 4 dígitos",
+      "Ingresa tu PIN de seguridad"
+    ],
+    "Modo Experto Desactivado": [
+      "Los comandos avanzados están ahora ocultos"
+    ],
+    "Modo Experto Activado": [
+      "Ahora tienes acceso a comandos avanzados"
+    ],
+    "PIN Incorrecto": [
+      "El PIN ingresado no es válido"
+    ],
+    "PIN Restablecido": [
+      "El PIN ha sido eliminado"
+    ],
+    "✅ Copiado": [
+      "Información de debug copiada al portapapeles"
+    ],
+    "✅ Desconectado": [
+      "El dispositivo USB se desconectó correctamente."
+    ]
+  },
+  "all_alerts": [
+    {
+      "file": "app/(tabs)/recovery.tsx",
+      "title": "Error",
+      "message": "No hay dispositivo USB conectado"
+    },
+    {
+      "file": "app/(tabs)/recovery.tsx",
+      "title": "❌ Error",
+      "message": "No se encontró la ruta del archivo de backup"
+    },
+    {
+      "file": "app/(tabs)/recovery.tsx",
+      "title": "❌ Error",
+      "message": "El archivo de backup no existe en el sistema"
+    },
+    {
+      "file": "app/(tabs)/recovery.tsx",
+      "title": "❌ Error",
+      "message": "La función de compartir no está disponible en este dispositivo"
+    },
+    {
+      "file": "app/(tabs)/recovery.tsx",
+      "title": "❌ Error",
+      "message": "No se pudo compartir el backup:\\n${error.message}"
+    },
+    {
+      "file": "app/(tabs)/auto-spoof.tsx",
+      "title": "Error",
+      "message": "No hay dispositivo USB conectado"
+    },
+    {
+      "file": "app/(tabs)/auto-spoof.tsx",
+      "title": "Error",
+      "message": "El dispositivo USB se desconectó. Por favor reconecta y vuelve a intentar."
+    },
+    {
+      "file": "app/(tabs)/auto-spoof.tsx",
+      "title": "Error",
+      "message": "No hay dispositivo USB conectado"
+    },
+    {
+      "file": "app/(tabs)/auto-spoof.tsx",
+      "title": "Error",
+      "message": "La función de compartir no está disponible en este dispositivo"
+    },
+    {
+      "file": "app/(tabs)/auto-spoof.tsx",
+      "title": "Error",
+      "message": "No se pudo compartir el resultado"
+    },
+    {
+      "file": "app/(tabs)/auto-spoof.tsx",
+      "title": "Error",
+      "message": "No se pudo realizar el test:\\n\\n${error.message}"
+    },
+    {
+      "file": "app/(tabs)/diag.tsx",
+      "title": "✅ Logs Exportados",
+      "message": "Archivo guardado en:\\n${filename}\\n\\nPuedes encontrarlo en la carpeta de documentos de la app."
+    },
+    {
+      "file": "app/(tabs)/diag.tsx",
+      "title": "❌ Error",
+      "message": "No se pudieron exportar los logs:\\n${error.message}"
+    },
+    {
+      "file": "app/(tabs)/commands.tsx",
+      "title": "No Conectado",
+      "message": "Debes conectarte a la unidad MIB2 primero"
+    },
+    {
+      "file": "app/(tabs)/toolbox.tsx",
+      "title": "Error",
+      "message": "Debes estar conectado por Telnet para ver los backups"
+    },
+    {
+      "file": "app/(tabs)/toolbox.tsx",
+      "title": "Error",
+      "message": "No se pudieron cargar los backups"
+    },
+    {
+      "file": "app/(tabs)/toolbox.tsx",
+      "title": "✅ Éxito",
+      "message": "Backup restaurado correctamente"
+    },
+    {
+      "file": "app/(tabs)/toolbox.tsx",
+      "title": "❌ Error",
+      "message": "Error inesperado al restaurar backup"
+    },
+    {
+      "file": "app/(tabs)/toolbox.tsx",
+      "title": "✅ Éxito",
+      "message": "Backup eliminado"
+    },
+    {
+      "file": "app/(tabs)/toolbox.tsx",
+      "title": "❌ Error",
+      "message": "No se pudo eliminar el backup"
+    },
+    {
+      "file": "app/(tabs)/toolbox.tsx",
+      "title": "❌ Error",
+      "message": "Error inesperado al eliminar backup"
+    },
+    {
+      "file": "app/(tabs)/toolbox.tsx",
+      "title": "Error",
+      "message": "No se pudo generar el script de instalación"
+    },
+    {
+      "file": "app/(tabs)/toolbox.tsx",
+      "title": "Error",
+      "message": "Error al ejecutar comando"
+    },
+    {
+      "file": "app/(tabs)/toolbox.tsx",
+      "title": "No Conectado",
+      "message": "Debes conectarte a la unidad MIB2 primero"
+    },
+    {
+      "file": "app/(tabs)/toolbox.tsx",
+      "title": "Sin Comando",
+      "message": "Este paso no tiene un comando asociado"
+    },
+    {
+      "file": "app/(tabs)/toolbox.tsx",
+      "title": "💾 Creando Backup",
+      "message": "Creando backup del binario crítico antes de continuar..."
+    },
+    {
+      "file": "app/(tabs)/toolbox.tsx",
+      "title": "❌ Error",
+      "message": "Error inesperado al crear backup. Operación cancelada."
+    },
+    {
+      "file": "app/(tabs)/fec.tsx",
+      "title": "Código Inválido",
+      "message": "El código FEC debe tener 8 dígitos hexadecimales."
+    },
+    {
+      "file": "app/(tabs)/fec.tsx",
+      "title": "Código Duplicado",
+      "message": "Este código ya está en la lista."
+    },
+    {
+      "file": "app/(tabs)/fec.tsx",
+      "title": "Sin Códigos",
+      "message": "Selecciona al menos un código FEC para generar la lista."
+    },
+    {
+      "file": "app/(tabs)/fec.tsx",
+      "title": "Error",
+      "message": "No se pudo generar el archivo ExceptionList.txt"
+    },
+    {
+      "file": "app/(tabs)/fec.tsx",
+      "title": "Sin Códigos",
+      "message": "Selecciona al menos un código FEC para generar el comando."
+    },
+    {
+      "file": "app/(tabs)/fec.tsx",
+      "title": "No Conectado",
+      "message": "Debes conectarte a la unidad MIB2 primero"
+    },
+    {
+      "file": "app/(tabs)/fec.tsx",
+      "title": "Sin Códigos",
+      "message": "Selecciona al menos un código FEC"
+    },
+    {
+      "file": "app/(tabs)/fec.tsx",
+      "title": "Inyectando",
+      "message": "Códigos FEC enviados. La unidad se reiniciará."
+    },
+    {
+      "file": "app/(tabs)/fec.tsx",
+      "title": "Error",
+      "message": "No se pudo abrir el generador online"
+    },
+    {
+      "file": "app/(tabs)/index.tsx",
+      "title": "Sin Resultados",
+      "message": "No se encontraron unidades MIB2 en las IPs comunes"
+    },
+    {
+      "file": "app/(tabs)/index.tsx",
+      "title": "Error",
+      "message": "No se pudo conectar a la unidad MIB2"
+    },
+    {
+      "file": "app/(tabs)/index.tsx",
+      "title": "Error",
+      "message": "Error al escanear la red"
+    },
+    {
+      "file": "app/(tabs)/index.tsx",
+      "title": "Sin Resultados",
+      "message": "No se encontraron unidades MIB2 en la red"
+    },
+    {
+      "file": "app/(tabs)/index.tsx",
+      "title": "Error",
+      "message": "Error al escanear la red"
+    },
+    {
+      "file": "app/(tabs)/index.tsx",
+      "title": "Múltiples Dispositivos",
+      "message": "Se encontraron ${results.length} dispositivos. Selecciona uno de la lista."
+    },
+    {
+      "file": "app/(tabs)/index.tsx",
+      "title": "Escaneo Completo",
+      "message": "Se encontraron ${results.length} dispositivos"
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "title": "Éxito",
+      "message": "Configuración guardada correctamente"
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "title": "Error",
+      "message": "No se pudo guardar la configuración"
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "title": "PIN Inválido",
+      "message": "El PIN debe tener al menos 4 dígitos"
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "title": "Error",
+      "message": "Los PINs no coinciden"
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "title": "Éxito",
+      "message": "PIN configurado correctamente"
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "title": "Modo Experto Desactivado",
+      "message": "Los comandos avanzados están ahora ocultos"
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "title": "PIN Inválido",
+      "message": "Ingresa tu PIN de seguridad"
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "title": "Modo Experto Activado",
+      "message": "Ahora tienes acceso a comandos avanzados"
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "title": "PIN Incorrecto",
+      "message": "El PIN ingresado no es válido"
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "title": "PIN Inválido",
+      "message": "Los PINs deben tener al menos 4 dígitos"
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "title": "Error",
+      "message": "Los nuevos PINs no coinciden"
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "title": "Éxito",
+      "message": "PIN cambiado correctamente"
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "title": "Error",
+      "message": "El PIN actual es incorrecto"
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "title": "PIN Restablecido",
+      "message": "El PIN ha sido eliminado"
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "title": "Éxito",
+      "message": "Historial eliminado"
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "title": "✅ Copiado",
+      "message": "Información de debug copiada al portapapeles"
+    },
+    {
+      "file": "app/(tabs)/usb-status.tsx",
+      "title": "Error",
+      "message": "No hay dispositivo USB conectado"
+    },
+    {
+      "file": "app/(tabs)/usb-status.tsx",
+      "title": "Error",
+      "message": "No hay dispositivo USB detectado"
+    },
+    {
+      "file": "app/(tabs)/usb-status.tsx",
+      "title": "Error",
+      "message": "No hay dispositivo USB conectado"
+    },
+    {
+      "file": "app/(tabs)/usb-status.tsx",
+      "title": "✅ Desconectado",
+      "message": "El dispositivo USB se desconectó correctamente."
+    }
+  ]
+}
