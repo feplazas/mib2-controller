@@ -1387,3 +1387,15 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [x] Traducir pantallas principales (Home, Scanner, Toolbox)
 - [x] Traducir pantallas secundarias (FEC, Recovery, Commands)
 - [x] Traducir mensajes de error y alertas críticas
+
+## Integración de Internacionalización (i18n)
+- [x] Crear selector de idioma en Settings con persistencia en AsyncStorage
+- [x] Integrar traducciones en pantalla Home (index.tsx)
+- [ ] Integrar traducciones en pantalla Scanner
+- [x] Integrar traducciones en pantalla Toolbox
+- [x] Integrar traducciones en pantalla FEC
+- [x] Integrar traducciones en pantalla Recovery
+- [x] Integrar traducciones en pantalla Commands
+- [ ] Integrar traducciones en pantalla Auto Spoof
+- [ ] Integrar traducciones en pantalla Telnet
+- [ ] Integrar traducciones en componentes compartidos y alertas

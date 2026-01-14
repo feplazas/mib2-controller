@@ -7,6 +7,7 @@ import { ScreenContainer } from "@/components/screen-container";
 import { useTelnet } from "@/lib/telnet-provider";
 import { MIB2_COMMANDS } from "@/lib/telnet-client";
 import { useColors } from "@/hooks/use-colors";
+import { t } from "@/lib/i18n";
 
 export default function CommandsScreen() {
   const colors = useColors();

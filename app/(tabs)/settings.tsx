@@ -8,10 +8,13 @@ import { useExpertMode } from "@/lib/expert-mode-provider";
 import { useUsbStatus } from "@/lib/usb-status-context";
 import { usbService } from "@/lib/usb-service";
 import * as Clipboard from 'expo-clipboard';
+import { useLanguage } from "@/lib/language-context";
+import { t } from "@/lib/i18n";
 
 export default function SettingsScreen() {
   const { config, updateConfig, clearMessages } = useTelnet();
   const { isExpertMode, isPinSet, enableExpertMode, disableExpertMode, setPin, changePin, resetPin } = useExpertMode();
+  const { currentLanguage, availableLanguages, changeLanguage } = useLanguage();
   
   const [host, setHost] = useState(config.host);
   const [port, setPort] = useState(config.port.toString());
@@ -188,6 +191,52 @@ export default function SettingsScreen() {
             <Text className="text-sm text-muted mt-1">
               Ajusta los parámetros de la aplicación
             </Text>
+          </View>
+
+
+          {/* Language Selector */}
+          <View className="bg-surface rounded-2xl p-6 border border-border">
+            <View className="mb-4">
+              <Text className="text-lg font-semibold text-foreground">
+                {t('settings.language')}
+              </Text>
+              <Text className="text-xs text-muted mt-1">
+                Select your preferred language
+              </Text>
+            </View>
+            
+            <View className="gap-2">
+              {availableLanguages.map((lang) => {
+                const languageNames = {
+                  es: 'Español',
+                  en: 'English',
+                  de: 'Deutsch'
+                };
+                const isSelected = currentLanguage === lang;
+                
+                return (
+                  <TouchableOpacity
+                    key={lang}
+                    onPress={() => {
+                      changeLanguage(lang);
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    }}
+                    className={`flex-row items-center justify-between px-4 py-3 rounded-xl border ${
+                      isSelected 
+                        ? 'bg-primary/20 border-primary' 
+                        : 'bg-background border-border'
+                    } active:opacity-80`}
+                  >
+                    <Text className={`font-semibold ${isSelected ? 'text-primary' : 'text-foreground'}`}>
+                      {languageNames[lang as keyof typeof languageNames]}
+                    </Text>
+                    {isSelected && (
+                      <Text className="text-primary text-xl">✓</Text>
+                    )}
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
           </View>
 
           {/* Expert Mode Section */}

@@ -17,6 +17,7 @@ import {
   type InstallationStep,
 } from "@/lib/toolbox-installer";
 import { listBackups, restoreBackup, deleteBackup, backupCriticalBinary, type BackupInfo } from "@/lib/toolbox-backup";
+import { t } from "@/lib/i18n";
 
 type StepStatus = 'pending' | 'inProgress' | 'completed' | 'error';
 

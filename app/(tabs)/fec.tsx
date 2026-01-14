@@ -1,4 +1,5 @@
-import { useState } from "react";
+import {
+import { t } from "@/lib/i18n"; useState } from "react";
 import { ScrollView, Text, View, TouchableOpacity, TextInput, Alert, Platform, Linking } from "react-native";
 import * as Haptics from "expo-haptics";
 import * as Sharing from "expo-sharing";

@@ -7,6 +7,7 @@ import { ScreenContainer } from '@/components/screen-container';
 import { useUsbStatus } from '@/lib/usb-status-context';
 import { backupService, type EEPROMBackup } from '@/lib/backup-service';
 import { usbService } from '@/lib/usb-service';
+import { t } from "@/lib/i18n";
 
 export default function RecoveryScreen() {
   const { status, device, devices, scanDevices } = useUsbStatus();
