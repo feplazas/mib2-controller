@@ -4,6 +4,7 @@ import * as Sharing from 'expo-sharing';
 import { usbService } from './usb-service';
 import type { UsbDevice } from './usb-service';
 import CryptoJS from 'crypto-js';
+import { encryptionService } from './encryption-service';
 
 const BACKUP_STORAGE_KEY = '@mib2_eeprom_backups';
 // Use SAF (Storage Access Framework) directory for Android - accessible from file manager
@@ -18,11 +19,12 @@ export interface EEPROMBackup {
   productId: number;
   chipset: string;
   serialNumber: string;
-  data: string; // Hex string of complete EEPROM dump (256 bytes)
+  data: string; // Hex string of complete EEPROM dump (256 bytes) - CIFRADO con AES-256
   size: number;
   checksum: string; // MD5 hash of data for integrity verification
   notes?: string;
   filepath?: string; // Ruta del archivo de backup en FileSystem
+  encrypted: boolean; // Indica si el backup está cifrado
 }
 
 /**
@@ -42,6 +44,9 @@ class BackupService {
       // Calcular checksum MD5 de los datos
       const checksum = CryptoJS.MD5(dump.data).toString();
       
+      // Cifrar datos de EEPROM con AES-256
+      const encryptedData = await encryptionService.encrypt(dump.data);
+      
       // Crear objeto de backup
       const backup: EEPROMBackup = {
         id: `backup_${Date.now()}_${device.vendorId}_${device.productId}`,
@@ -51,10 +56,11 @@ class BackupService {
         productId: device.productId,
         chipset: device.chipset || 'Unknown',
         serialNumber: device.serialNumber || 'N/A',
-        data: dump.data,
+        data: encryptedData, // Datos cifrados
         size: dump.size,
         checksum,
         notes: notes || `Backup automático antes de spoofing`,
+        encrypted: true,
       };
       
       // Guardar backup
@@ -174,18 +180,25 @@ class BackupService {
         throw new Error('Backup no encontrado');
       }
       
+      // Descifrar datos si están cifrados
+      let decryptedData = backup.data;
+      if (backup.encrypted) {
+        console.log('[BackupService] Decrypting backup data...');
+        decryptedData = await encryptionService.decrypt(backup.data);
+      }
+      
       // Validar tamaño de datos
       if (backup.size !== 256) {
         throw new Error(`Tamaño de backup inválido: ${backup.size} bytes (esperado: 256)`);
       }
       
       // Validar formato hexadecimal
-      if (!/^[0-9A-Fa-f]+$/.test(backup.data)) {
+      if (!/^[0-9A-Fa-f]+$/.test(decryptedData)) {
         throw new Error('Formato de datos inválido (no es hexadecimal)');
       }
       
-      // Validar integridad con checksum MD5
-      const calculatedChecksum = CryptoJS.MD5(backup.data).toString();
+      // Validar integridad con checksum MD5 (de datos descifrados)
+      const calculatedChecksum = CryptoJS.MD5(decryptedData).toString();
       if (backup.checksum && calculatedChecksum !== backup.checksum) {
         throw new Error(`Checksum inválido: datos corruptos detectados\nEsperado: ${backup.checksum}\nCalculado: ${calculatedChecksum}`);
       }
@@ -195,8 +208,8 @@ class BackupService {
       let bytesWritten = 0;
       
       // Escribir VID (offsets 0x88-0x89)
-      const vidLow = backup.data.substring(0x88 * 2, 0x88 * 2 + 2);
-      const vidHigh = backup.data.substring(0x89 * 2, 0x89 * 2 + 2);
+      const vidLow = decryptedData.substring(0x88 * 2, 0x88 * 2 + 2);
+      const vidHigh = decryptedData.substring(0x89 * 2, 0x89 * 2 + 2);
       await usbService.writeEEPROM(0x88, vidLow);
       await new Promise(resolve => setTimeout(resolve, 100));
       await usbService.writeEEPROM(0x89, vidHigh);
@@ -204,8 +217,8 @@ class BackupService {
       bytesWritten += 2;
       
       // Escribir PID (offsets 0x8A-0x8B)
-      const pidLow = backup.data.substring(0x8A * 2, 0x8A * 2 + 2);
-      const pidHigh = backup.data.substring(0x8B * 2, 0x8B * 2 + 2);
+      const pidLow = decryptedData.substring(0x8A * 2, 0x8A * 2 + 2);
+      const pidHigh = decryptedData.substring(0x8B * 2, 0x8B * 2 + 2);
       await usbService.writeEEPROM(0x8A, pidLow);
       await new Promise(resolve => setTimeout(resolve, 100));
       await usbService.writeEEPROM(0x8B, pidHigh);

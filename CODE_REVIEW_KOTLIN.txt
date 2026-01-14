@@ -1,3 +1,131 @@
+# MIB2 CONTROLLER - CÓDIGO KOTLIN CONSOLIDADO
+# Generado: 2026-01-14 09:48:02
+# Propósito: Revisión por IA externa
+
+
+================================================================================
+FILE: modules/network-info/android/src/main/java/com/mib2controller/networkinfo/NetworkInfoModule.kt
+================================================================================
+
+package com.mib2controller.networkinfo
+
+import android.content.Context
+import com.facebook.react.bridge.Promise
+import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.ReactContextBaseJavaModule
+import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.bridge.WritableArray
+import com.facebook.react.bridge.WritableMap
+import com.facebook.react.bridge.Arguments
+import java.net.NetworkInterface
+import java.net.InetAddress
+
+class NetworkInfoModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
+
+    override fun getName(): String {
+        return "NetworkInfoModule"
+    }
+
+    @ReactMethod
+    fun getNetworkInterfaces(promise: Promise) {
+        try {
+            val interfaces = Arguments.createArray()
+            val networkInterfaces = NetworkInterface.getNetworkInterfaces()
+
+            while (networkInterfaces.hasMoreElements()) {
+                val networkInterface = networkInterfaces.nextElement()
+                
+                // Saltar interfaces inactivas o loopback
+                if (!networkInterface.isUp || networkInterface.isLoopback) {
+                    continue
+                }
+
+                val inetAddresses = networkInterface.inetAddresses
+                while (inetAddresses.hasMoreElements()) {
+                    val inetAddress = inetAddresses.nextElement()
+                    
+                    // Solo IPv4
+                    if (inetAddress is java.net.Inet4Address) {
+                        val interfaceInfo = Arguments.createMap()
+                        
+                        interfaceInfo.putString("name", networkInterface.name)
+                        interfaceInfo.putString("ipAddress", inetAddress.hostAddress)
+                        interfaceInfo.putString("subnet", calculateSubnet(inetAddress, networkInterface))
+                        interfaceInfo.putString("gateway", "")  // No disponible fácilmente en Android
+                        interfaceInfo.putBoolean("isUSB", isUSBInterface(networkInterface.name))
+                        interfaceInfo.putBoolean("isEthernet", isEthernetInterface(networkInterface.name))
+                        
+                        interfaces.pushMap(interfaceInfo)
+                    }
+                }
+            }
+
+            promise.resolve(interfaces)
+        } catch (e: Exception) {
+            promise.reject("NETWORK_INFO_ERROR", "Error al obtener interfaces de red: ${e.message}", e)
+        }
+    }
+
+    private fun calculateSubnet(inetAddress: InetAddress, networkInterface: NetworkInterface): String {
+        try {
+            val prefixLength = networkInterface.interfaceAddresses
+                .find { it.address == inetAddress }
+                ?.networkPrefixLength ?: 24
+
+            val ip = inetAddress.hostAddress ?: return "255.255.255.0"
+            val parts = ip.split(".")
+            
+            // Calcular máscara de subred basada en prefixLength
+            // Para /24 (común): 255.255.255.0
+            // Para /16: 255.255.0.0
+            return when {
+                prefixLength >= 24 -> "255.255.255.0"
+                prefixLength >= 16 -> "255.255.0.0"
+                else -> "255.0.0.0"
+            }
+        } catch (e: Exception) {
+            return "255.255.255.0"
+        }
+    }
+
+    private fun isUSBInterface(name: String): Boolean {
+        // Nombres comunes de interfaces USB en Android
+        val usbPatterns = listOf("usb", "rndis", "ncm")
+        return usbPatterns.any { name.lowercase().contains(it) }
+    }
+
+    private fun isEthernetInterface(name: String): Boolean {
+        // Nombres comunes de interfaces Ethernet en Android
+        val ethernetPatterns = listOf("eth", "usb", "rndis", "ncm")
+        return ethernetPatterns.any { name.lowercase().contains(it) }
+    }
+}
+
+================================================================================
+FILE: modules/network-info/android/src/main/java/com/mib2controller/networkinfo/NetworkInfoPackage.kt
+================================================================================
+
+package com.mib2controller.networkinfo
+
+import com.facebook.react.ReactPackage
+import com.facebook.react.bridge.NativeModule
+import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.uimanager.ViewManager
+
+class NetworkInfoPackage : ReactPackage {
+    override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
+        return listOf(NetworkInfoModule(reactContext))
+    }
+
+    override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
+        return emptyList()
+    }
+}
+
+================================================================================
+FILE: modules/usb-native/android/src/main/java/expo/modules/usbnative/UsbNativeModule.kt
+================================================================================
+
 package expo.modules.usbnative
 
 import android.app.PendingIntent
@@ -13,8 +141,7 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.Promise
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.runBlocking
 
 class UsbNativeModule : Module() {
   private val context: Context
@@ -260,13 +387,13 @@ class UsbNativeModule : Module() {
           bytesWritten++
           
           // Small delay between writes
-          delay(10)
+          runBlocking { delay(10) }
         }
 
         // Delay post-escritura para permitir que el adaptador actualice su memoria
         // Esto es especialmente importante para adaptadores experimentales como AX88179A
         Log.d(TAG, "Wrote $bytesWritten bytes to EEPROM at offset $offset - waiting 500ms for device to update...")
-        delay(500)
+        runBlocking { delay(500) }
         Log.d(TAG, "Write completed and device ready for verification")
         
         // Verificación opcional (puede omitirse para adaptadores con protección de escritura)
@@ -467,7 +594,7 @@ class UsbNativeModule : Module() {
         }
 
         // Esperar a que el hardware procese la escritura
-        delay(100)
+        runBlocking { delay(100) }
 
         // Verificar si la escritura fue exitosa
         val verifyByte = ByteArray(1)
@@ -508,7 +635,7 @@ class UsbNativeModule : Module() {
             0,
             5000
           )
-          delay(100)
+          runBlocking { delay(100) }
         }
 
         val eepromType = if (writeSuccessful) "external_eeprom" else "efuse"
@@ -577,7 +704,7 @@ class UsbNativeModule : Module() {
           5000
         )
         
-        delay(10)
+        runBlocking { delay(10) }
         
         connection.controlTransfer(
           USB_DIR_OUT or USB_TYPE_VENDOR or USB_RECIP_DEVICE,
@@ -589,7 +716,7 @@ class UsbNativeModule : Module() {
           5000
         )
 
-        delay(10)
+        runBlocking { delay(10) }
 
         // Write new PID (little endian)
         val pidLow = targetPID and 0xFF
@@ -604,7 +731,7 @@ class UsbNativeModule : Module() {
           0,
           5000
         )
-        delay(100)
+                runBlocking { delay(100) }
         
         connection.controlTransfer(
           USB_DIR_OUT or USB_TYPE_VENDOR or USB_RECIP_DEVICE,
@@ -619,7 +746,7 @@ class UsbNativeModule : Module() {
         Log.d(TAG, "Spoofing complete, verifying...")
 
         // Verify write
-        delay(100)
+        runBlocking { delay(100) }
         
         val verifyVIDBytes = ByteArray(2)
         val verifyPIDBytes = ByteArray(2)

@@ -58,24 +58,24 @@ class NetworkInfoModule(reactContext: ReactApplicationContext) : ReactContextBas
     }
 
     private fun calculateSubnet(inetAddress: InetAddress, networkInterface: NetworkInterface): String {
-        try {
+        return try {
             val prefixLength = networkInterface.interfaceAddresses
                 .find { it.address == inetAddress }
                 ?.networkPrefixLength ?: 24
-
-            val ip = inetAddress.hostAddress ?: return "255.255.255.0"
-            val parts = ip.split(".")
             
-            // Calcular máscara de subred basada en prefixLength
-            // Para /24 (común): 255.255.255.0
-            // Para /16: 255.255.0.0
-            return when {
-                prefixLength >= 24 -> "255.255.255.0"
-                prefixLength >= 16 -> "255.255.0.0"
-                else -> "255.0.0.0"
-            }
+            // Convertir prefixLength (ej. 24) a máscara (ej. 255.255.255.0)
+            // usando operaciones de bits para precisión en cualquier CIDR
+            val shift = 32 - prefixLength
+            val mask = (0xffffffffL shl shift).toInt()
+            
+            String.format("%d.%d.%d.%d",
+                (mask shr 24) and 0xff,
+                (mask shr 16) and 0xff,
+                (mask shr 8) and 0xff,
+                mask and 0xff
+            )
         } catch (e: Exception) {
-            return "255.255.255.0"
+            "255.255.255.0"
         }
     }
 

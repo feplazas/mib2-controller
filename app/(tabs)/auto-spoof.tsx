@@ -1,5 +1,5 @@
 import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
-import { useState , useRef } from 'react';
+import { useReducer } from 'react';
 import { ScreenContainer } from '@/components/screen-container';
 import { useUsbStatus } from '@/lib/usb-status-context';
 import { usbService } from '@/lib/usb-service';
@@ -10,67 +10,12 @@ import { SuccessResultModal } from '@/components/success-result-modal';
 import { EepromProgressIndicator } from '@/components/eeprom-progress-indicator';
 import * as Haptics from 'expo-haptics';
 import * as Sharing from 'expo-sharing';
-
-type SpoofStep = 'idle' | 'validating' | 'creating_backup' | 'writing_vid_low' | 'writing_vid_high' | 'writing_pid_low' | 'writing_pid_high' | 'verifying' | 'success' | 'error';
+import { spoofReducer, initialSpoofState, getStepText, getStepIcon } from '@/lib/spoof-reducer';
+import type { SpoofStep } from '@/lib/spoof-reducer';
 
 export default function AutoSpoofScreen() {
   const { status, device } = useUsbStatus();
-  const [isExecuting, setIsExecuting] = useState(false);
-  const [currentStep, setCurrentStep] = useState<SpoofStep>('idle');
-  const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
-  const [eepromProgress, setEepromProgress] = useState(0);
-  const [eepromBytesProcessed, setEepromBytesProcessed] = useState(0);
-  const [eepromTotalBytes, setEepromTotalBytes] = useState(0);
-  const [eepromOperation, setEepromOperation] = useState<'read' | 'write'>('read');
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [spoofingResult, setSpoofingResult] = useState<{
-    originalVID: string;
-    originalPID: string;
-    newVID: string;
-    newPID: string;
-    chipset: string;
-    deviceName: string;
-    timestamp: Date;
-  } | null>(null);
-
-  const [isTesting, setIsTesting] = useState(false);
-  const [testResult, setTestResult] = useState<'success' | 'fail' | null>(null);
-  const [skipVerification, setSkipVerification] = useState(false);
-
-  const getStepText = (step: SpoofStep): string => {
-    switch (step) {
-      case 'idle':
-        return 'Listo para iniciar';
-      case 'validating':
-        return 'Validando compatibilidad del chipset...';
-      case 'creating_backup':
-        return 'Creando backup de seguridad de EEPROM...';
-      case 'writing_vid_low':
-        return 'Escribiendo VID byte bajo (0x88)...';
-      case 'writing_vid_high':
-        return 'Escribiendo VID byte alto (0x89)...';
-      case 'writing_pid_low':
-        return 'Escribiendo PID byte bajo (0x8A)...';
-      case 'writing_pid_high':
-        return 'Escribiendo PID byte alto (0x8B)...';
-      case 'verifying':
-        return 'Verificando escritura...';
-      case 'success':
-        return '✅ Spoofing completado exitosamente';
-      case 'error':
-        return '❌ Error durante el spoofing';
-      default:
-        return '';
-    }
-  };
-
-  const getStepIcon = (step: SpoofStep): string => {
-    if (currentStep === step && isExecuting) return '⏳';
-    if (currentStep === 'success' && ['validating', 'creating_backup', 'writing_vid_low', 'writing_vid_high', 'writing_pid_low', 'writing_pid_high', 'verifying'].includes(step)) return '✅';
-    if (currentStep === 'error') return '❌';
-    return '⚪';
-  };
+  const [state, dispatch] = useReducer(spoofReducer, initialSpoofState);
 
   const executeAutoSpoof = async () => {
     if (!device) {
@@ -223,10 +168,10 @@ export default function AutoSpoofScreen() {
   const performSpoof = async () => {
     if (!device) return;
 
-    setIsExecuting(true);
-    setErrorMessage('');
-    setSuccessMessage('');
-    setCurrentStep('validating');
+    dispatch({ type: 'START_EXECUTION' });
+    dispatch({ type: 'SET_ERROR', payload: '' });
+    // handled by SET_SUCCESS;
+    dispatch({ type: 'SET_STEP', payload: 'validating' });
 
     try {
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -239,14 +184,14 @@ export default function AutoSpoofScreen() {
       await new Promise(resolve => setTimeout(resolve, 500));
 
       // Paso 2: Crear backup automático
-      setCurrentStep('creating_backup');
-      setEepromOperation('read');
-      setEepromTotalBytes(256); // EEPROM típica de 256 bytes
+      dispatch({ type: 'SET_STEP', payload: 'creating_backup' });
+      dispatch({ type: 'RESET_PROGRESS', payload: { operation: 'read', totalBytes: state.eepromProgress.totalBytes } });
+      // handled by RESET_PROGRESS; // EEPROM típica de 256 bytes
       
       // Simular progreso de lectura de backup
       for (let i = 0; i <= 100; i += 10) {
-        setEepromProgress(i);
-        setEepromBytesProcessed(Math.floor((i / 100) * 256));
+        dispatch({ type: 'UPDATE_PROGRESS', payload: { progress: i } });
+        dispatch({ type: 'UPDATE_PROGRESS', payload: { bytesProcessed: Math.floor((i / 100) * 256) } });
         await new Promise(resolve => setTimeout(resolve, 50));
       }
       
@@ -254,41 +199,41 @@ export default function AutoSpoofScreen() {
       await new Promise(resolve => setTimeout(resolve, 200));
 
       // Resetear progreso para escritura
-      setEepromOperation('write');
-      setEepromProgress(0);
-      setEepromBytesProcessed(0);
-      setEepromTotalBytes(4); // 4 bytes a escribir (VID low, VID high, PID low, PID high)
+      dispatch({ type: 'RESET_PROGRESS', payload: { operation: 'write', totalBytes: state.eepromProgress.totalBytes } });
+      dispatch({ type: 'UPDATE_PROGRESS', payload: { progress: 0 } });
+      dispatch({ type: 'UPDATE_PROGRESS', payload: { bytesProcessed: 0 } });
+      // handled by RESET_PROGRESS; // 4 bytes a escribir (VID low, VID high, PID low, PID high)
       
       // Paso 3: Escribir VID byte bajo (0x88 = 0x01)
-      setCurrentStep('writing_vid_low');
-      setEepromProgress(25);
-      setEepromBytesProcessed(1);
-      await usbService.writeEEPROM(0x88, '01', skipVerification);
+      dispatch({ type: 'SET_STEP', payload: 'writing_vid_low' });
+      dispatch({ type: 'UPDATE_PROGRESS', payload: { progress: 25 } });
+      dispatch({ type: 'UPDATE_PROGRESS', payload: { bytesProcessed: 1 } });
+      await usbService.writeEEPROM(0x88, '01', state.skipVerification);
       await new Promise(resolve => setTimeout(resolve, 100));
 
       // Paso 4: Escribir VID byte alto (0x89 = 0x20)
-      setCurrentStep('writing_vid_high');
-      setEepromProgress(50);
-      setEepromBytesProcessed(2);
-      await usbService.writeEEPROM(0x89, '20', skipVerification);
+      dispatch({ type: 'SET_STEP', payload: 'writing_vid_high' });
+      dispatch({ type: 'UPDATE_PROGRESS', payload: { progress: 50 } });
+      dispatch({ type: 'UPDATE_PROGRESS', payload: { bytesProcessed: 2 } });
+      await usbService.writeEEPROM(0x89, '20', state.skipVerification);
       await new Promise(resolve => setTimeout(resolve, 100));
 
       // Paso 5: Escribir PID byte bajo (0x8A = 0x05)
-      setCurrentStep('writing_pid_low');
-      setEepromProgress(75);
-      setEepromBytesProcessed(3);
-      await usbService.writeEEPROM(0x8A, '05', skipVerification);
+      dispatch({ type: 'SET_STEP', payload: 'writing_pid_low' });
+      dispatch({ type: 'UPDATE_PROGRESS', payload: { progress: 75 } });
+      dispatch({ type: 'UPDATE_PROGRESS', payload: { bytesProcessed: 3 } });
+      await usbService.writeEEPROM(0x8A, '05', state.skipVerification);
       await new Promise(resolve => setTimeout(resolve, 100));
 
       // Paso 6: Escribir PID byte alto (0x8B = 0x3C)
-      setCurrentStep('writing_pid_high');
-      setEepromProgress(100);
-      setEepromBytesProcessed(4);
-      await usbService.writeEEPROM(0x8B, '3C', skipVerification);
+      dispatch({ type: 'SET_STEP', payload: 'writing_pid_high' });
+      dispatch({ type: 'UPDATE_PROGRESS', payload: { progress: 100 } });
+      dispatch({ type: 'UPDATE_PROGRESS', payload: { bytesProcessed: 4 } });
+      await usbService.writeEEPROM(0x8B, '3C', state.skipVerification);
       await new Promise(resolve => setTimeout(resolve, 100));
 
       // Paso 7: Verificar escritura
-      setCurrentStep('verifying');
+      dispatch({ type: 'SET_STEP', payload: 'verifying' });
       const vidLow = await usbService.readEEPROM(0x88, 1);
       const vidHigh = await usbService.readEEPROM(0x89, 1);
       const pidLow = await usbService.readEEPROM(0x8A, 1);
@@ -299,24 +244,11 @@ export default function AutoSpoofScreen() {
       }
 
       // Éxito
-      setCurrentStep('success');
-      
-      // Capturar resultado para modal
-      setSpoofingResult({
-        originalVID: usbService.formatVIDPID(device.vendorId, 0).split(':')[0],
-        originalPID: usbService.formatVIDPID(0, device.productId).split(':')[1],
-        newVID: '0x2001',
-        newPID: '0x3C05',
-        chipset: device.chipset || 'Desconocido',
-        deviceName: device.deviceName,
-        timestamp: new Date(),
-      });
-      
-      const verificationNote = skipVerification 
+      const verificationNote = state.skipVerification 
         ? '\n⚠️ IMPORTANTE: Verificación omitida. Debes reconectar el adaptador para confirmar que el spoofing fue exitoso.\n'
         : '';
       
-      setSuccessMessage(
+      const successMsg = 
         'Spoofing completado exitosamente.\n\n' +
         '📋 Valores escritos:\n' +
         '• VID: 0x2001 (D-Link)\n' +
@@ -328,22 +260,37 @@ export default function AutoSpoofScreen() {
         '3️⃣ Vuelve a conectar el adaptador\n' +
         '4️⃣ Ve a "Estado USB" para verificar VID/PID\n' +
         '5️⃣ Si no cambió, usa "Test de Spoofing" para diagnóstico\n\n' +
-        '📡 Si el VID/PID no cambia después de reconectar, ve a la pestaña "Diag" para ver logs detallados de la operación.'
-      );
+        '📡 Si el VID/PID no cambia después de reconectar, ve a la pestaña "Diag" para ver logs detallados de la operación.';
+      
+      dispatch({ 
+        type: 'SET_SUCCESS', 
+        payload: { 
+          message: successMsg,
+          result: {
+            originalVID: usbService.formatVIDPID(device.vendorId, 0).split(':')[0],
+            originalPID: usbService.formatVIDPID(0, device.productId).split(':')[1],
+            newVID: '0x2001',
+            newPID: '0x3C05',
+            chipset: device.chipset || 'Desconocido',
+            deviceName: device.deviceName,
+            timestamp: new Date(),
+          }
+        } 
+      });
       
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       
       // Mostrar modal de éxito después de un breve delay
       setTimeout(() => {
-        setShowSuccessModal(true);
+        dispatch({ type: 'SHOW_SUCCESS_MODAL', payload: true });
       }, 1000);
 
     } catch (error: any) {
-      setCurrentStep('error');
-      setErrorMessage(error.message || 'Error desconocido durante el spoofing');
+      dispatch({ type: 'SET_STEP', payload: 'error' });
+      dispatch({ type: 'SET_ERROR', payload: error.message || 'Error desconocido durante el spoofing' });
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     } finally {
-      setIsExecuting(false);
+      // handled by reducer;
     }
   };
 
@@ -351,8 +298,8 @@ export default function AutoSpoofScreen() {
 
   // Función REAL de Test de Spoofing
   const handleTestSpoofing = async () => {
-    setIsTesting(true);
-    setTestResult(null);
+    dispatch({ type: 'START_TEST' });
+    dispatch({ type: 'SET_TEST_RESULT', payload: null });
     
     try {
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -371,7 +318,7 @@ export default function AutoSpoofScreen() {
           '4. Espera a que el sistema lo reconozca\n' +
           '5. Intenta el test nuevamente'
         );
-        setTestResult('fail');
+        dispatch({ type: 'SET_TEST_RESULT', payload: 'fail' });
         await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         return;
       }
@@ -384,7 +331,7 @@ export default function AutoSpoofScreen() {
       const isSuccess = detectedDevice.vendorId === targetVID && detectedDevice.productId === targetPID;
       
       if (isSuccess) {
-        setTestResult('success');
+        dispatch({ type: 'SET_TEST_RESULT', payload: 'success' });
         await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         Alert.alert(
           '✅ Spoofing Exitoso',
@@ -396,7 +343,7 @@ export default function AutoSpoofScreen() {
           `✅ El spoofing fue EXITOSO. El adaptador ahora es compatible con MIB2.`
         );
       } else {
-        setTestResult('fail');
+        dispatch({ type: 'SET_TEST_RESULT', payload: 'fail' });
         await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
         Alert.alert(
           '⚠️ Spoofing No Detectado',
@@ -415,11 +362,11 @@ export default function AutoSpoofScreen() {
         );
       }
     } catch (error: any) {
-      setTestResult('fail');
+      dispatch({ type: 'SET_TEST_RESULT', payload: 'fail' });
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       Alert.alert('Error', `No se pudo realizar el test:\n\n${error.message}`);
     } finally {
-      setIsTesting(false);
+      // handled by SET_TEST_RESULT;
     }
   };
 
@@ -467,19 +414,19 @@ export default function AutoSpoofScreen() {
   
   const handleShareResult = async () => {
     try {
-      if (!spoofingResult) return;
+      if (!state.spoofingResult) return;
       
       // Crear texto formateado para compartir
       const shareText = `🎉 Spoofing MIB2 Exitoso\n\n` +
-        `💻 Dispositivo: ${spoofingResult.deviceName}\n` +
-        `🔧 Chipset: ${spoofingResult.chipset}\n` +
-        `📅 Fecha: ${spoofingResult.timestamp.toLocaleString('es-ES')}\n\n` +
+        `💻 Dispositivo: ${state.spoofingResult.deviceName}\n` +
+        `🔧 Chipset: ${state.spoofingResult.chipset}\n` +
+        `📅 Fecha: ${state.spoofingResult.timestamp.toLocaleString('es-ES')}\n\n` +
         `❌ Antes:\n` +
-        `  VID: ${spoofingResult.originalVID}\n` +
-        `  PID: ${spoofingResult.originalPID}\n\n` +
+        `  VID: ${state.spoofingResult.originalVID}\n` +
+        `  PID: ${state.spoofingResult.originalPID}\n\n` +
         `✅ Después:\n` +
-        `  VID: ${spoofingResult.newVID}\n` +
-        `  PID: ${spoofingResult.newPID}\n\n` +
+        `  VID: ${state.spoofingResult.newVID}\n` +
+        `  PID: ${state.spoofingResult.newPID}\n\n` +
         `#MIB2Controller #USBSpoofing #ASIX`;
 
       // Verificar si sharing está disponible
@@ -595,81 +542,81 @@ export default function AutoSpoofScreen() {
           </View>
 
           {/* Progreso */}
-          {isExecuting && (
+          {state.isExecuting && (
             <View className="bg-surface rounded-2xl p-6 border border-border">
               <Text className="text-lg font-bold text-foreground mb-4">
                 ⏳ Progreso
               </Text>
               <View className="gap-3">
                 <View className="flex-row items-center gap-2">
-                  <Text className="text-xl">{getStepIcon('validating')}</Text>
+                  <Text className="text-xl">{getStepIcon(state.currentStep, 'validating', state.isExecuting)}</Text>
                   <Text className="text-sm text-muted flex-1">Validando chipset</Text>
                 </View>
                 <View className="flex-row items-center gap-2">
-                  <Text className="text-xl">{getStepIcon('creating_backup')}</Text>
+                  <Text className="text-xl">{getStepIcon(state.currentStep, 'creating_backup', state.isExecuting)}</Text>
                   <Text className="text-sm text-muted flex-1">Creando backup de seguridad</Text>
                 </View>
                 <View className="flex-row items-center gap-2">
-                  <Text className="text-xl">{getStepIcon('writing_vid_low')}</Text>
+                  <Text className="text-xl">{getStepIcon(state.currentStep, 'writing_vid_low', state.isExecuting)}</Text>
                   <Text className="text-sm text-muted flex-1">Escribiendo VID byte bajo (0x88)</Text>
                 </View>
                 <View className="flex-row items-center gap-2">
-                  <Text className="text-xl">{getStepIcon('writing_vid_high')}</Text>
+                  <Text className="text-xl">{getStepIcon(state.currentStep, 'writing_vid_high', state.isExecuting)}</Text>
                   <Text className="text-sm text-muted flex-1">Escribiendo VID byte alto (0x89)</Text>
                 </View>
                 <View className="flex-row items-center gap-2">
-                  <Text className="text-xl">{getStepIcon('writing_pid_low')}</Text>
+                  <Text className="text-xl">{getStepIcon(state.currentStep, 'writing_pid_low', state.isExecuting)}</Text>
                   <Text className="text-sm text-muted flex-1">Escribiendo PID byte bajo (0x8A)</Text>
                 </View>
                 <View className="flex-row items-center gap-2">
-                  <Text className="text-xl">{getStepIcon('writing_pid_high')}</Text>
+                  <Text className="text-xl">{getStepIcon(state.currentStep, 'writing_pid_high', state.isExecuting)}</Text>
                   <Text className="text-sm text-muted flex-1">Escribiendo PID byte alto (0x8B)</Text>
                 </View>
                 <View className="flex-row items-center gap-2">
-                  <Text className="text-xl">{getStepIcon('verifying')}</Text>
+                  <Text className="text-xl">{getStepIcon(state.currentStep, 'verifying', state.isExecuting)}</Text>
                   <Text className="text-sm text-muted flex-1">Verificando escritura</Text>
                 </View>
               </View>
               <View className="mt-4 p-4 bg-background rounded-lg">
                 <Text className="text-sm text-foreground font-medium text-center">
-                  {getStepText(currentStep)}
+                  {getStepText(state.currentStep)}
                 </Text>
               </View>
             </View>
           )}
 
           {/* Indicador de Progreso EEPROM */}
-          {isExecuting && eepromTotalBytes > 0 && (
+          {state.isExecuting && state.eepromProgress.totalBytes > 0 && (
             <EepromProgressIndicator
-              progress={eepromProgress}
-              bytesProcessed={eepromBytesProcessed}
-              totalBytes={eepromTotalBytes}
-              operation={eepromOperation}
+              progress={state.eepromProgress.progress}
+              bytesProcessed={state.eepromProgress.bytesProcessed}
+              totalBytes={state.eepromProgress.totalBytes}
+              operation={state.eepromProgress.operation}
               estimatedTimeRemaining={
-                eepromProgress > 0 && eepromProgress < 100
-                  ? Math.round(((100 - eepromProgress) / eepromProgress) * 2) // Estimación simple
+                state.eepromProgress.progress > 0 && state.eepromProgress.progress < 100
+                  ? Math.round(((100 - state.eepromProgress.progress) / state.eepromProgress.progress) * 2) // Estimación simple
                   : undefined
               }
             />
           )}
 
           {/* Mensaje de Éxito */}
-          {currentStep === 'success' && successMessage && (
+          {state.currentStep === 'success' && state.successMessage && (
             <View className="bg-green-500/10 rounded-2xl p-6 border border-green-500">
               <Text className="text-sm text-foreground whitespace-pre-line">
-                {successMessage}
+                {state.successMessage}
               </Text>
             </View>
           )}
 
           {/* Mensaje de Error */}
-          {currentStep === 'error' && errorMessage && (
+          {state.currentStep === 'error' && state.errorMessage && (
             <View className="bg-red-500/10 rounded-2xl p-6 border border-red-500">
               <Text className="text-lg font-bold text-red-500 mb-2">
                 Error
               </Text>
               <Text className="text-sm text-foreground">
-                {errorMessage}
+                {state.errorMessage}
               </Text>
             </View>
           )}
@@ -701,16 +648,16 @@ export default function AutoSpoofScreen() {
           {/* Checkbox Forzar sin Verificación */}
           <TouchableOpacity
             onPress={() => {
-              setSkipVerification(!skipVerification);
+              dispatch({ type: 'TOGGLE_SKIP_VERIFICATION' });
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             }}
-            disabled={isExecuting}
+            disabled={state.isExecuting}
             className="flex-row items-start gap-3 p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/30"
           >
             <View className={`w-6 h-6 rounded border-2 items-center justify-center ${
-              skipVerification ? 'bg-yellow-500 border-yellow-500' : 'border-yellow-500'
+              state.skipVerification ? 'bg-yellow-500 border-yellow-500' : 'border-yellow-500'
             }`}>
-              {skipVerification && <Text className="text-background font-bold">✓</Text>}
+              {state.skipVerification && <Text className="text-background font-bold">✓</Text>}
             </View>
             <View className="flex-1">
               <Text className="text-base font-semibold text-yellow-500 mb-1">
@@ -727,31 +674,31 @@ export default function AutoSpoofScreen() {
             {/* Botón Test de Spoofing */}
             <TouchableOpacity
               onPress={handleTestSpoofing}
-              disabled={isTesting}
+              disabled={state.isTesting}
               className={`rounded-xl p-4 items-center border-2 ${
-                testResult === 'success'
+                state.testResult === 'success'
                   ? 'bg-green-500/10 border-green-500'
-                  : testResult === 'fail'
+                  : state.testResult === 'fail'
                   ? 'bg-red-500/10 border-red-500'
-                  : isTesting
+                  : state.isTesting
                   ? 'bg-muted/20 border-muted opacity-50'
                   : 'bg-blue-500/10 border-blue-500 active:opacity-80'
               }`}
             >
               <View className="flex-row items-center gap-2">
                 <Text className="text-xl">
-                  {isTesting ? '⏳' : testResult === 'success' ? '✅' : testResult === 'fail' ? '❌' : '🧪'}
+                  {state.isTesting ? '⏳' : state.testResult === 'success' ? '✅' : state.testResult === 'fail' ? '❌' : '🧪'}
                 </Text>
                 <Text className={`text-base font-bold ${
-                  testResult === 'success'
+                  state.testResult === 'success'
                     ? 'text-green-500'
-                    : testResult === 'fail'
+                    : state.testResult === 'fail'
                     ? 'text-red-500'
-                    : isTesting
+                    : state.isTesting
                     ? 'text-muted'
                     : 'text-blue-500'
                 }`}>
-                  {isTesting ? 'Testeando...' : 'Test de Spoofing'}
+                  {state.isTesting ? 'Testeando...' : 'Test de Spoofing'}
                 </Text>
               </View>
               <Text className="text-xs text-muted mt-1">
@@ -762,9 +709,9 @@ export default function AutoSpoofScreen() {
             {/* Botón Spoof Rápido */}
             <TouchableOpacity
               onPress={handleQuickSpoof}
-              disabled={!canExecute || isExecuting}
+              disabled={!canExecute || state.isExecuting}
               className={`rounded-xl p-4 items-center border-2 ${
-                canExecute && !isExecuting
+                canExecute && !state.isExecuting
                   ? 'bg-orange-500/10 border-orange-500 active:opacity-80'
                   : 'bg-muted/20 border-muted opacity-50'
               }`}
@@ -772,9 +719,9 @@ export default function AutoSpoofScreen() {
               <View className="flex-row items-center gap-2">
                 <Text className="text-xl">🔄</Text>
                 <Text className={`text-base font-bold ${
-                  canExecute && !isExecuting ? 'text-orange-500' : 'text-muted'
+                  canExecute && !state.isExecuting ? 'text-orange-500' : 'text-muted'
                 }`}>
-                  {isExecuting ? 'Ejecutando...' : 'Spoof Rápido'}
+                  {state.isExecuting ? 'Ejecutando...' : 'Spoof Rápido'}
                 </Text>
               </View>
               <Text className="text-xs text-muted mt-1">
@@ -786,22 +733,22 @@ export default function AutoSpoofScreen() {
           {/* Botón de Ejecución Principal */}
           <TouchableOpacity
             onPress={executeAutoSpoof}
-            disabled={!canExecute || isExecuting}
+            disabled={!canExecute || state.isExecuting}
             className={`rounded-2xl p-6 items-center ${
-              canExecute && !isExecuting
+              canExecute && !state.isExecuting
                 ? 'bg-primary'
                 : 'bg-muted opacity-50'
             }`}
           >
             <Text className="text-2xl font-bold text-background mb-2">
-              {isExecuting ? '⏳ Ejecutando...' : '🚀 Ejecutar Spoofing Automático'}
+              {state.isExecuting ? '⏳ Ejecutando...' : '🚀 Ejecutar Spoofing Automático'}
             </Text>
-            {!canExecute && !isExecuting && (
+            {!canExecute && !state.isExecuting && (
               <Text className="text-xs text-background opacity-70">
                 Conecta un adaptador compatible para continuar
               </Text>
             )}
-            {canExecute && !isExecuting && (
+            {canExecute && !state.isExecuting && (
               <Text className="text-xs text-background/80 mt-1">
                 Con triple confirmación y validaciones completas
               </Text>
@@ -812,11 +759,11 @@ export default function AutoSpoofScreen() {
       
       {/* Success Result Modal */}
       <SuccessResultModal
-        visible={showSuccessModal}
-        result={spoofingResult}
+        visible={state.showSuccessModal}
+        result={state.spoofingResult}
         onClose={() => {
-          setShowSuccessModal(false);
-          setSpoofingResult(null);
+          dispatch({ type: 'SHOW_SUCCESS_MODAL', payload: false });
+          // handled by SET_SUCCESS;
         }}
         onShare={handleShareResult}
       />
