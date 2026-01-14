@@ -1,10 +1,10 @@
-import React, { createContext, useContext, ReactNode, useEffect, useState } from 'react';
+import React, { createContext, useContext, ReactNode, useEffect, useState, useCallback } from 'react';
 import * as RNLocalize from 'react-native-localize';
 import i18n from './i18n';
 
 /**
  * Language Context - Uses react-native-localize for reliable locale detection
- * This library works correctly in production builds unlike expo-localization
+ * CRITICAL FIX: useTranslation now uses currentLanguage as dependency to force re-render
  */
 
 interface LanguageContextType {
@@ -66,15 +66,21 @@ export function useLanguage() {
 
 /**
  * Hook to get translation function
- * Returns a function that translates keys using i18n
+ * CRITICAL FIX: Now uses currentLanguage as dependency to force re-evaluation
+ * when language changes, ensuring all components re-render with new translations
  */
 export function useTranslation() {
-  const { isReady } = useLanguage();
+  const { currentLanguage, isReady } = useLanguage();
   
-  return (key: string, params?: Record<string, any>) => {
+  // Use useCallback with currentLanguage as dependency
+  // This ensures the function reference changes when language changes
+  // forcing all components using this hook to re-render
+  return useCallback((key: string, params?: Record<string, any>) => {
     if (!isReady) {
       return key; // Fallback while loading
     }
+    // Force i18n to use current language (defensive programming)
+    i18n.locale = currentLanguage;
     return i18n.t(key, params);
-  };
+  }, [currentLanguage, isReady]);
 }
