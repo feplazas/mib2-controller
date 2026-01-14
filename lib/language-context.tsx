@@ -1,11 +1,10 @@
 import React, { createContext, useContext, ReactNode, useEffect, useState } from 'react';
-import { getLocales } from 'expo-localization';
+import { Platform, NativeModules } from 'react-native';
 import i18n from './i18n';
 
 /**
- * Language Context - Simplified version that ONLY uses system locale
- * No manual language selection, no AsyncStorage, no complexity
- * The app automatically displays in the device's system language
+ * Language Context - Uses React Native's built-in locale detection
+ * Works reliably in production builds by using Platform.select and NativeModules
  */
 
 interface LanguageContextType {
@@ -15,27 +14,65 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
+/**
+ * Get system language using React Native's native modules
+ * This is more reliable than expo-localization in production builds
+ */
+function getSystemLanguage(): string {
+  try {
+    let systemLocale = 'en';
+    
+    if (Platform.OS === 'android') {
+      // Android: Use NativeModules to get locale
+      const localeString = NativeModules.I18nManager?.localeIdentifier || 
+                          NativeModules.SettingsManager?.settings?.AppleLocale ||
+                          NativeModules.SettingsManager?.settings?.AppleLanguages?.[0] ||
+                          'en_US';
+      
+      console.log('[getSystemLanguage] Android localeIdentifier:', localeString);
+      
+      // Extract language code (e.g., "en_US" -> "en", "es_ES" -> "es")
+      systemLocale = localeString.split('_')[0].toLowerCase();
+    } else if (Platform.OS === 'ios') {
+      // iOS: Use NativeModules
+      const localeString = NativeModules.SettingsManager?.settings?.AppleLocale ||
+                          NativeModules.SettingsManager?.settings?.AppleLanguages?.[0] ||
+                          'en';
+      
+      console.log('[getSystemLanguage] iOS locale:', localeString);
+      
+      systemLocale = localeString.split('_')[0].split('-')[0].toLowerCase();
+    }
+    
+    console.log('[getSystemLanguage] Detected language:', systemLocale);
+    return systemLocale;
+  } catch (error) {
+    console.error('[getSystemLanguage] Error detecting language:', error);
+    return 'en';
+  }
+}
+
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [isReady, setIsReady] = useState(false);
   const [currentLanguage, setCurrentLanguage] = useState('en');
 
   useEffect(() => {
-    // Detectar idioma del sistema DESPUÉS de que React Native esté listo
-    const systemLocale = getLocales()[0]?.languageCode || 'en';
+    // Detect system language AFTER React Native is ready
+    const systemLanguage = getSystemLanguage();
     const supportedLanguages = ['es', 'en', 'de'];
-    const detectedLanguage = supportedLanguages.includes(systemLocale) ? systemLocale : 'en';
+    const detectedLanguage = supportedLanguages.includes(systemLanguage) ? systemLanguage : 'en';
     
-    // Setear idioma en i18n
+    // Set i18n locale
     i18n.locale = detectedLanguage;
     setCurrentLanguage(detectedLanguage);
     setIsReady(true);
 
-    console.log('[LanguageProvider] System locale detected:', systemLocale);
+    console.log('[LanguageProvider] System language:', systemLanguage);
     console.log('[LanguageProvider] Using language:', detectedLanguage);
     console.log('[LanguageProvider] i18n.locale set to:', i18n.locale);
   }, []);
 
-  // No renderizar hijos hasta que el idioma esté listo
+  // Don't render children until language is ready
   if (!isReady) {
     return null;
   }
@@ -64,7 +101,7 @@ export function useTranslation() {
   
   return (key: string, params?: Record<string, any>) => {
     if (!isReady) {
-      return key; // Fallback mientras carga
+      return key; // Fallback while loading
     }
     return i18n.t(key, params);
   };
