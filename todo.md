@@ -1602,3 +1602,10 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [x] Traducir "Escaneando dispositivos USB..." en logs en vivo
 - [x] Traducir "Encontrados X dispositivos USB" en logs en vivo
 - [x] Traducir todos los mensajes de logs USB y EEPROM (ES/EN/DE)
+
+## Corrección de Logo y Dependencias (15 Ene 2026)
+
+- [x] Restaurar nuevo logo (LOGOMIB2.png) en assets
+- [x] Instalar eslint-config-expo
+- [x] Verificar expo doctor 17/17 checks (passed)
+- [ ] Generar APK final con logo corregido
