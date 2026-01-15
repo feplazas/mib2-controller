@@ -1533,3 +1533,34 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [x] Agregar claves de traducción para FAQ en es.json
 - [x] Agregar claves de traducción para FAQ en en.json
 - [x] Agregar claves de traducción para FAQ en de.json
+
+
+## Corrección Sistema de Traducciones (15 Ene 2026)
+
+### Problema Identificado
+- Textos hardcodeados en español que no pasan por t()
+- Dos sistemas de i18n (simple-i18n + i18n-js) sin sincronizar
+- translated-alert.ts no usa el idioma del LanguageProvider
+- Traducciones EN/DE incompletas o con valores en español
+
+### Fase 1: Unificar Sistema i18n
+- [x] Crear lib/language-store.ts para almacenar idioma actual
+- [x] Actualizar LanguageProvider para sincronizar con language-store
+- [x] Reescribir translated-alert.ts para usar simple-i18n + language-store
+- [x] Eliminar dependencia de i18n-js en alerts
+
+### Fase 2: Migrar Textos Hardcodeados
+- [x] index.tsx: Adaptador USB Requerido, Encontrado, Conectar, Escaneo, etc.
+- [ ] tools.tsx: Estado USB, Información del adaptador, etc.
+- [ ] usb-status.tsx: textos hardcodeados
+- [ ] toolbox.tsx: textos hardcodeados
+- [ ] recovery.tsx: textos hardcodeados
+- [x] auto-spoof.tsx: textos hardcodeados
+- [ ] diag.tsx: textos hardcodeados
+- [ ] commands.tsx: textos hardcodeados
+
+### Fase 3: Completar Traducciones EN/DE
+- [x] Agregar claves home.* en en.json (50+ claves)
+- [x] Agregar claves home.* en de.json (50+ claves)
+- [x] Agregar claves auto_spoof.* en en.json (15 claves)
+- [x] Agregar claves auto_spoof.* en de.json (15 claves)

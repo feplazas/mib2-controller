@@ -3,6 +3,7 @@ import { AppState, AppStateStatus } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as RNLocalize from 'react-native-localize';
 import { getTranslation, getFallbackLanguage, isSupportedLanguage } from './simple-i18n';
+import { setCurrentLanguage as setLanguageStore } from './language-store';
 
 /**
  * Language Context - Supports both automatic system detection and manual override
@@ -53,9 +54,11 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       if (language === 'auto') {
         const systemLang = detectSystemLanguage();
         setCurrentLanguage(systemLang);
+        setLanguageStore(systemLang as 'es' | 'en' | 'de');
         console.log('[LanguageProvider] Using system language:', systemLang);
       } else {
         setCurrentLanguage(language);
+        setLanguageStore(language as 'es' | 'en' | 'de');
         console.log('[LanguageProvider] Using manual language:', language);
       }
     } catch (error) {
@@ -78,22 +81,26 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
           if (savedLanguage === 'auto') {
             const systemLang = detectSystemLanguage();
             setCurrentLanguage(systemLang);
+            setLanguageStore(systemLang as 'es' | 'en' | 'de');
             console.log('[LanguageProvider] Using system language:', systemLang);
           } else {
             setCurrentLanguage(savedLanguage);
+            setLanguageStore(savedLanguage as 'es' | 'en' | 'de');
             console.log('[LanguageProvider] Using saved language:', savedLanguage);
           }
         } else {
           // No saved preference, use system language
-          const systemLang = detectSystemLanguage();
-          setCurrentLanguage(systemLang);
-          setSelectedLanguage('auto');
-          console.log('[LanguageProvider] No saved preference, using system:', systemLang);
+        const systemLang = detectSystemLanguage();
+        setCurrentLanguage(systemLang);
+        setLanguageStore(systemLang as 'es' | 'en' | 'de');
+        setSelectedLanguage('auto');
+        console.log('[LanguageProvider] No saved preference, using system:', systemLang);
         }
       } catch (error) {
         console.error('[LanguageProvider] Error loading language:', error);
         const systemLang = detectSystemLanguage();
         setCurrentLanguage(systemLang);
+        setLanguageStore(systemLang as 'es' | 'en' | 'de');
         setSelectedLanguage('auto');
       }
       
@@ -110,6 +117,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
         console.log('[LanguageProvider] App became active - re-detecting system language');
         const systemLang = detectSystemLanguage();
         setCurrentLanguage(systemLang);
+        setLanguageStore(systemLang as 'es' | 'en' | 'de');
       }
     };
 

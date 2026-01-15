@@ -103,18 +103,12 @@ export default function AutoSpoofScreen() {
 
     // Validación: Advertir sobre cable OTG y alimentación
     Alert.alert(
-      '🔌 Verificación de Requisitos',
-      '✅ ANTES DE CONTINUAR, VERIFICA:\n\n' +
-      '1. Cable OTG conectado correctamente\n' +
-      '2. Adaptador USB enchufado firmemente\n' +
-      '3. Batería del teléfono >20%\n' +
-      '4. NO desconectarás el adaptador durante el proceso\n\n' +
-      '⚠️ Desconectar durante la escritura puede INUTILIZAR el adaptador permanentemente.\n\n' +
-      '¿Todos los requisitos están cumplidos?',
+      t('auto_spoof.requirements_title'),
+      t('auto_spoof.requirements_message'),
       [
-        { text: 'Cancelar', style: 'cancel' },
+        { text: t('auto_spoof.cancel'), style: 'cancel' },
         {
-          text: 'Sí, Continuar',
+          text: t('auto_spoof.yes_continue'),
           onPress: () => showCriticalWarning(),
         },
       ]
@@ -124,21 +118,12 @@ export default function AutoSpoofScreen() {
   const showCriticalWarning = () => {
     // Confirmación con advertencias
     Alert.alert(
-      '⚠️ Advertencia Crítica',
-      'Esta operación modificará permanentemente la EEPROM del adaptador USB.\n\n' +
-      '⚠️ RIESGOS:\n' +
-      '• Puede inutilizar el dispositivo ("bricking")\n' +
-      '• No se puede deshacer fácilmente\n' +
-      '• Requiere reconexión física del adaptador\n\n' +
-      '✅ REQUISITOS:\n' +
-      '• Adaptador ASIX AX88772A o AX88772B\n' +
-      '• EEPROM externa (NO eFuse)\n' +
-      '• Alimentación estable durante el proceso\n\n' +
-      '¿Deseas continuar?',
+      t('auto_spoof.critical_warning_title'),
+      t('auto_spoof.critical_warning_message'),
       [
-        { text: 'Cancelar', style: 'cancel' },
+        { text: t('auto_spoof.cancel'), style: 'cancel' },
         {
-          text: 'Continuar',
+          text: t('auto_spoof.continue'),
           style: 'destructive',
           onPress: () => showFinalConfirmation(),
         },
@@ -627,23 +612,23 @@ export default function AutoSpoofScreen() {
           {/* Advertencias de Seguridad */}
           <View className="bg-red-500/10 rounded-2xl p-6 border border-red-500">
             <Text className="text-lg font-bold text-red-500 mb-3">
-              ⚠️ Advertencias Importantes
+              {t('auto_spoof.important_warnings')}
             </Text>
             <View className="gap-2">
               <Text className="text-sm text-foreground">
-                • Esta operación es IRREVERSIBLE sin backup
+                • {t('auto_spoof.warning_1')}
               </Text>
               <Text className="text-sm text-foreground">
-                • NO desconectes el adaptador durante el proceso
+                • {t('auto_spoof.warning_4')}
               </Text>
               <Text className="text-sm text-foreground">
-                • Solo funciona con ASIX AX88772A/B con EEPROM externa
+                • {t('auto_spoof.warning_2')}
               </Text>
               <Text className="text-sm text-foreground">
-                • Dispositivos con eFuse NO son compatibles
+                • {t('auto_spoof.warning_3')}
               </Text>
               <Text className="text-sm text-foreground">
-                • Se creará un backup automático antes de escribir
+                • {t('auto_spoof.warning_5')}
               </Text>
             </View>
           </View>

@@ -1,8 +1,10 @@
 import { Alert, AlertButton, AlertOptions } from 'react-native';
-import i18n from './i18n';
+import { getTranslation } from './simple-i18n';
+import { getCurrentLanguage } from './language-store';
 
 /**
  * Helper para mostrar Alert con textos traducidos automáticamente
+ * Usa el mismo sistema de i18n que el resto de la app (simple-i18n + language-store)
  * 
  * Uso:
  * ```tsx
@@ -17,8 +19,9 @@ export function showAlert(
   buttons?: AlertButton[],
   options?: AlertOptions
 ) {
-  const title = i18n.t(titleKey);
-  const message = messageKey ? i18n.t(messageKey) : undefined;
+  const lang = getCurrentLanguage();
+  const title = getTranslation(titleKey, lang);
+  const message = messageKey ? getTranslation(messageKey, lang) : undefined;
   
   Alert.alert(title, message, buttons, options);
 }
@@ -46,14 +49,15 @@ export function showConfirmAlert(
   onConfirm: () => void,
   onCancel?: () => void
 ) {
+  const lang = getCurrentLanguage();
   showAlert(titleKey, messageKey, [
     {
-      text: i18n.t('common.cancel'),
+      text: getTranslation('common.cancel', lang),
       style: 'cancel',
       onPress: onCancel,
     },
     {
-      text: i18n.t('common.confirm'),
+      text: getTranslation('common.confirm', lang),
       onPress: onConfirm,
     },
   ]);
