@@ -9,7 +9,7 @@ import { useUsbStatus } from "@/lib/usb-status-context";
 import { usbService } from "@/lib/usb-service";
 import * as Clipboard from 'expo-clipboard';
 
-import { useTranslation } from "@/lib/language-context";
+import { useTranslation, useLanguage, LanguageOption } from "@/lib/language-context";
 
 import { showAlert } from '@/lib/translated-alert';
 export default function SettingsScreen() {
@@ -30,6 +30,8 @@ export default function SettingsScreen() {
   const [pinConfirm, setPinConfirm] = useState('');
   const [oldPinInput, setOldPinInput] = useState('');
   const [showDebugInfo, setShowDebugInfo] = useState(false);
+  const [showLanguageSelector, setShowLanguageSelector] = useState(false);
+  const { selectedLanguage, setLanguage: setAppLanguage } = useLanguage();
   const { status, device, devices } = useUsbStatus();
 
   const handleSaveSettings = async () => {
@@ -196,7 +198,89 @@ export default function SettingsScreen() {
           </View>
 
 
-          {/* Language is automatically detected from system settings */}
+          {/* Language Section */}
+          <View className="bg-surface rounded-2xl p-6 border border-border">
+            <View className="flex-row items-center justify-between">
+              <View className="flex-1 mr-4">
+                <Text className="text-lg font-semibold text-foreground">
+                  {t('settings.language')}
+                </Text>
+                <Text className="text-xs text-muted mt-1">
+                  {t('settings.language_description')}
+                </Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  setShowLanguageSelector(true);
+                }}
+                className="bg-primary/20 border border-primary px-4 py-2 rounded-xl active:opacity-80"
+              >
+                <Text className="text-primary font-semibold">
+                  {selectedLanguage === 'auto' ? t('settings.language_auto') : 
+                   selectedLanguage === 'es' ? 'Español' :
+                   selectedLanguage === 'en' ? 'English' : 'Deutsch'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Language Selector Modal */}
+          {showLanguageSelector && (
+            <View className="bg-primary/10 border border-primary rounded-2xl p-6">
+              <Text className="text-lg font-semibold text-foreground mb-4">
+                {t('settings.select_language')}
+              </Text>
+              <View className="gap-2">
+                {[
+                  { value: 'auto' as LanguageOption, label: t('settings.language_auto'), flag: '🌐', desc: t('settings.language_auto_desc') },
+                  { value: 'es' as LanguageOption, label: 'Español', flag: '🇪🇸', desc: 'Spanish' },
+                  { value: 'en' as LanguageOption, label: 'English', flag: '🇬🇧', desc: 'English' },
+                  { value: 'de' as LanguageOption, label: 'Deutsch', flag: '🇩🇪', desc: 'German' },
+                ].map((option) => (
+                  <TouchableOpacity
+                    key={option.value}
+                    onPress={async () => {
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                      await setAppLanguage(option.value);
+                      setShowLanguageSelector(false);
+                      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                    }}
+                    className={`flex-row items-center p-4 rounded-xl border ${
+                      selectedLanguage === option.value
+                        ? 'bg-primary border-primary'
+                        : 'bg-background border-border'
+                    } active:opacity-80`}
+                  >
+                    <Text className="text-2xl mr-3">{option.flag}</Text>
+                    <View className="flex-1">
+                      <Text className={`font-semibold ${
+                        selectedLanguage === option.value ? 'text-white' : 'text-foreground'
+                      }`}>
+                        {option.label}
+                      </Text>
+                      <Text className={`text-xs ${
+                        selectedLanguage === option.value ? 'text-white/70' : 'text-muted'
+                      }`}>
+                        {option.desc}
+                      </Text>
+                    </View>
+                    {selectedLanguage === option.value && (
+                      <Text className="text-white text-lg">✓</Text>
+                    )}
+                  </TouchableOpacity>
+                ))}
+              </View>
+              <TouchableOpacity
+                onPress={() => setShowLanguageSelector(false)}
+                className="mt-4 bg-muted/20 border border-border px-4 py-3 rounded-xl active:opacity-80"
+              >
+                <Text className="text-foreground font-semibold text-center">
+                  {t('common.cancel')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
 
           {/* Expert Mode Section */}
           <View className="bg-surface rounded-2xl p-6 border border-border">

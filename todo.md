@@ -1499,3 +1499,22 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [x] Traducir advertencias de seguridad
 - [x] Traducir instrucciones de conexión
 - [x] Traducir mensajes de hardware/firmware
+
+
+## Selector de Idioma Manual (15 Ene 2026)
+
+### LanguageProvider con Override Manual
+- [x] Agregar estado manualLanguage a LanguageProvider
+- [x] Implementar función setLanguage() para cambiar idioma manualmente
+- [x] Guardar preferencia de idioma en AsyncStorage
+- [x] Cargar preferencia guardada al iniciar app
+- [x] Priorizar idioma manual sobre idioma del sistema
+- [x] Implementar opción "Automático" para usar idioma del sistema
+
+### Selector de Idioma en Settings
+- [x] Crear sección "Idioma" en pantalla Settings
+- [x] Mostrar idioma actual seleccionado
+- [x] Implementar picker/modal con opciones: Automático, Español, English, Deutsch
+- [x] Actualizar UI inmediatamente al cambiar idioma
+- [x] Agregar feedback háptico al cambiar idioma
+- [x] Mostrar bandera o icono junto a cada opción
