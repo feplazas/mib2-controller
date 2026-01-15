@@ -72,14 +72,14 @@ class EncryptionService {
       const plaintext = decrypted.toString(CryptoJS.enc.Utf8);
       
       if (!plaintext) {
-        throw new Error('Descifrado falló - clave incorrecta o datos corruptos');
+        throw new Error('common.error_decrypt_failed');
       }
       
       console.log('[EncryptionService] Data decrypted successfully');
       return plaintext;
     } catch (error) {
       console.error('[EncryptionService] Decryption error:', error);
-      throw new Error(`Error al descifrar datos: ${error}`);
+      throw new Error('common.error_decrypt_failed');
     }
   }
 

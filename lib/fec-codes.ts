@@ -1,44 +1,44 @@
 /**
  * FEC (Feature Enablement Code) Library
- * Códigos FEC conocidos y documentados para MIB2 STD2
+ * Known and documented FEC codes for MIB2 STD2
  */
 
 export interface FecCode {
   code: string;
-  name: string;
-  description: string;
+  nameKey: string;
+  descriptionKey: string;
   category: 'connectivity' | 'navigation' | 'display' | 'performance' | 'other';
   tested: boolean;
-  notes?: string;
+  notesKey?: string;
 }
 
 export const FEC_CODES: FecCode[] = [
   // Connectivity
   {
     code: '00010001',
-    name: 'Apple CarPlay',
-    description: 'Activa Apple CarPlay para iPhone',
+    nameKey: 'fec.apple_carplay',
+    descriptionKey: 'fec.apple_carplay_desc',
     category: 'connectivity',
     tested: true,
   },
   {
     code: '00010002',
-    name: 'Android Auto',
-    description: 'Activa Android Auto para dispositivos Android',
+    nameKey: 'fec.android_auto',
+    descriptionKey: 'fec.android_auto_desc',
     category: 'connectivity',
     tested: true,
   },
   {
     code: '00010004',
-    name: 'MirrorLink',
-    description: 'Activa MirrorLink para dispositivos compatibles',
+    nameKey: 'fec.mirrorlink',
+    descriptionKey: 'fec.mirrorlink_desc',
     category: 'connectivity',
     tested: true,
   },
   {
     code: '00010008',
-    name: 'App-Connect (Full-Link)',
-    description: 'Activa todas las funciones de App-Connect',
+    nameKey: 'fec.app_connect',
+    descriptionKey: 'fec.app_connect_desc',
     category: 'connectivity',
     tested: true,
   },
@@ -46,29 +46,29 @@ export const FEC_CODES: FecCode[] = [
   // Navigation
   {
     code: '09400008',
-    name: 'Mapas Europa',
-    description: 'Activa región de mapas Europa (EU)',
+    nameKey: 'fec.maps_europe',
+    descriptionKey: 'fec.maps_europe_desc',
     category: 'navigation',
     tested: true,
   },
   {
     code: '09410008',
-    name: 'Mapas Norteamérica',
-    description: 'Activa región de mapas Norteamérica (NAR)',
+    nameKey: 'fec.maps_north_america',
+    descriptionKey: 'fec.maps_north_america_desc',
     category: 'navigation',
     tested: true,
   },
   {
     code: '09420008',
-    name: 'Mapas China',
-    description: 'Activa región de mapas China (CN)',
+    nameKey: 'fec.maps_china',
+    descriptionKey: 'fec.maps_china_desc',
     category: 'navigation',
     tested: false,
   },
   {
     code: '09430008',
-    name: 'Mapas Resto del Mundo',
-    description: 'Activa región de mapas ROW (Rest of World)',
+    nameKey: 'fec.maps_row',
+    descriptionKey: 'fec.maps_row_desc',
     category: 'navigation',
     tested: false,
   },
@@ -76,15 +76,15 @@ export const FEC_CODES: FecCode[] = [
   // Performance & Diagnostics
   {
     code: '00060001',
-    name: 'Performance Monitor',
-    description: 'Activa monitor de rendimiento del vehículo',
+    nameKey: 'fec.performance_monitor',
+    descriptionKey: 'fec.performance_monitor_desc',
     category: 'performance',
     tested: true,
   },
   {
     code: '00060100',
-    name: 'Vehicle Data Interface',
-    description: 'Interfaz de datos del vehículo',
+    nameKey: 'fec.vehicle_data_interface',
+    descriptionKey: 'fec.vehicle_data_interface_desc',
     category: 'performance',
     tested: false,
   },
@@ -92,15 +92,15 @@ export const FEC_CODES: FecCode[] = [
   // Display
   {
     code: '00050001',
-    name: 'Ambient Light Control',
-    description: 'Control de iluminación ambiental',
+    nameKey: 'fec.ambient_light',
+    descriptionKey: 'fec.ambient_light_desc',
     category: 'display',
     tested: false,
   },
   {
     code: '00050002',
-    name: 'Digital Cockpit',
-    description: 'Activa funciones del cockpit digital',
+    nameKey: 'fec.digital_cockpit',
+    descriptionKey: 'fec.digital_cockpit_desc',
     category: 'display',
     tested: false,
   },
@@ -108,72 +108,82 @@ export const FEC_CODES: FecCode[] = [
   // Other
   {
     code: '00070001',
-    name: 'Voice Control',
-    description: 'Control por voz avanzado',
+    nameKey: 'fec.voice_control',
+    descriptionKey: 'fec.voice_control_desc',
     category: 'other',
     tested: false,
   },
   {
     code: '00080001',
-    name: 'Gesture Control',
-    description: 'Control por gestos',
+    nameKey: 'fec.gesture_control',
+    descriptionKey: 'fec.gesture_control_desc',
     category: 'other',
     tested: false,
   },
 ];
 
-export const FEC_CATEGORIES = {
-  connectivity: 'Conectividad',
-  navigation: 'Navegación',
-  display: 'Pantalla',
-  performance: 'Rendimiento',
-  other: 'Otros',
+// Category keys for translation
+export const FEC_CATEGORY_KEYS = {
+  connectivity: 'fec.category_connectivity',
+  navigation: 'fec.category_navigation',
+  display: 'fec.category_display',
+  performance: 'fec.category_performance',
+  other: 'fec.category_other',
 } as const;
 
 export function getFecCodesByCategory(category: FecCode['category']): FecCode[] {
   return FEC_CODES.filter((code) => code.category === category);
 }
 
-export function searchFecCodes(query: string): FecCode[] {
+export function searchFecCodes(query: string, t: (key: string) => string): FecCode[] {
   const lowerQuery = query.toLowerCase();
   return FEC_CODES.filter(
     (code) =>
-      code.name.toLowerCase().includes(lowerQuery) ||
-      code.description.toLowerCase().includes(lowerQuery) ||
+      t(code.nameKey).toLowerCase().includes(lowerQuery) ||
+      t(code.descriptionKey).toLowerCase().includes(lowerQuery) ||
       code.code.includes(query)
   );
 }
 
 /**
- * Comandos Telnet para inyectar códigos FEC
+ * Telnet commands for FEC code injection - returns translation keys
+ */
+export function generateFecInjectionCommandKeys(codes: string[]): { key: string; params?: Record<string, string> }[] {
+  return [
+    { key: 'fec.cmd_mount_filesystem' },
+    { key: 'fec.cmd_mount', params: {} },
+    { key: 'fec.cmd_inject_codes' },
+    ...codes.map((code) => ({ key: 'fec.cmd_echo', params: { code } })),
+    { key: 'fec.cmd_reboot_apply' },
+    { key: 'fec.cmd_reboot', params: {} },
+  ];
+}
+
+/**
+ * Generate raw commands (for actual execution)
  */
 export function generateFecInjectionCommands(codes: string[]): string[] {
   return [
-    '# Montar sistema de archivos',
     'mount -uw /net/rcc/dev/shmem',
-    '',
-    '# Inyectar códigos FEC',
     ...codes.map((code) => `echo "${code}" >> /net/rcc/dev/shmem/addfec.txt`),
-    '',
-    '# Reiniciar unidad para aplicar cambios',
     'reboot',
   ];
 }
 
 /**
- * URL del generador FEC online
+ * FEC online generator URL
  */
 export const FEC_GENERATOR_URL = 'https://vwcoding.ru/en/utils/fec/';
 
 /**
- * Validar formato de código FEC (8 caracteres hexadecimales)
+ * Validate FEC code format (8 hexadecimal characters)
  */
 export function isValidFecCode(code: string): boolean {
   return /^[0-9A-Fa-f]{8}$/.test(code);
 }
 
 /**
- * Formatear código FEC (agregar ceros si es necesario)
+ * Format FEC code (add leading zeros if necessary)
  */
 export function formatFecCode(code: string): string {
   const cleaned = code.replace(/[^0-9A-Fa-f]/g, '').toUpperCase();

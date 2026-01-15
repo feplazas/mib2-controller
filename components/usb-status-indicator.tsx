@@ -1,7 +1,7 @@
-import { View, Text, TouchableOpacity, Pressable } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
-import { memo } from 'react';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/lib/language-context';
 
 export type UsbStatus = 'disconnected' | 'detected' | 'connected';
 
@@ -19,8 +19,9 @@ interface UsbStatusIndicatorProps {
  * - 🟡 Amarillo: Detectado (dispositivo encontrado, sin permisos)
  * - 🟢 Verde: Conectado (dispositivo conectado y listo)
  */
-export const UsbStatusIndicator = memo(function UsbStatusIndicator({ status, deviceName, onPress }: UsbStatusIndicatorProps) {
+export function UsbStatusIndicator({ status, deviceName, onPress }: UsbStatusIndicatorProps) {
   const router = useRouter();
+  const t = useTranslation();
 
   const handlePress = () => {
     if (onPress) {
@@ -35,14 +36,14 @@ export const UsbStatusIndicator = memo(function UsbStatusIndicator({ status, dev
     disconnected: {
       color: 'bg-red-500',
       icon: '🔴',
-      text: 'Sin Dispositivo USB',
-      description: 'Conecta un adaptador USB-Ethernet',
+      text: t('usb.no_device'),
+      description: t('usb.connect_adapter_desc'),
     },
     detected: {
       color: 'bg-yellow-500',
       icon: '🟡',
-      text: 'Dispositivo Detectado',
-      description: deviceName || 'Toca para solicitar permisos',
+      text: t('usb.device_detected'),
+      description: deviceName || t('usb.tap_for_permissions'),
     },
     connected: {
       color: 'bg-green-500',
@@ -84,4 +85,4 @@ export const UsbStatusIndicator = memo(function UsbStatusIndicator({ status, dev
       </View>
     </Pressable>
   );
-});
+}

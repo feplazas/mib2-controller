@@ -82,7 +82,7 @@ export class TelnetClient {
 
         this.socket.on("close", () => {
           this.connected = false;
-          this.emitMessage("info", "Conexión cerrada");
+          this.emitMessage("info", "connection_closed");
           this.onDisconnectCallback?.();
         });
       } catch (error) {
@@ -93,7 +93,7 @@ export class TelnetClient {
 
   sendCommand(command: string): void {
     if (!this.connected || !this.socket) {
-      this.emitMessage("error", "No conectado");
+      this.emitMessage("error", "not_connected");
       return;
     }
 
@@ -101,7 +101,7 @@ export class TelnetClient {
       this.emitMessage("command", `$ ${command}`);
       this.socket.write(`${command}\n`);
     } catch (error) {
-      this.emitMessage("error", `Error al enviar comando: ${(error as Error).message}`);
+      this.emitMessage("error", `send_error:${(error as Error).message}`);
     }
   }
 

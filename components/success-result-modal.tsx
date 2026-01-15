@@ -1,6 +1,7 @@
 import { View, Text, Modal, TouchableOpacity, ScrollView } from 'react-native';
 import Animated, { FadeIn, ZoomIn } from 'react-native-reanimated';
 import { useColors } from '@/hooks/use-colors';
+import { useTranslation } from '@/lib/language-context';
 import * as Haptics from 'expo-haptics';
 
 interface SpoofingResult {
@@ -27,6 +28,7 @@ export function SuccessResultModal({
   onShare,
 }: SuccessResultModalProps) {
   const colors = useColors();
+  const t = useTranslation();
 
   if (!result) return null;
 
@@ -62,33 +64,33 @@ export function SuccessResultModal({
                 <Text className="text-6xl">✅</Text>
               </View>
               <Text className="text-2xl font-bold text-foreground text-center">
-                ¡Spoofing Exitoso!
+                {t('success.spoofing_success')}
               </Text>
               <Text className="text-base text-muted text-center mt-2">
-                El VID/PID se modificó correctamente
+                {t('success.vid_pid_modified')}
               </Text>
             </Animated.View>
 
             {/* Device Info */}
             <View className="bg-background rounded-2xl p-4 mb-6">
               <Text className="text-sm font-semibold text-foreground mb-3">
-                Información del Dispositivo
+                {t('success.device_info')}
               </Text>
               <View className="gap-2">
                 <View className="flex-row justify-between">
-                  <Text className="text-sm text-muted">Dispositivo:</Text>
+                  <Text className="text-sm text-muted">{t('success.device')}:</Text>
                   <Text className="text-sm text-foreground font-medium">
                     {result.deviceName}
                   </Text>
                 </View>
                 <View className="flex-row justify-between">
-                  <Text className="text-sm text-muted">Chipset:</Text>
+                  <Text className="text-sm text-muted">{t('success.chipset')}:</Text>
                   <Text className="text-sm text-foreground font-medium">
                     {result.chipset}
                   </Text>
                 </View>
                 <View className="flex-row justify-between">
-                  <Text className="text-sm text-muted">Fecha:</Text>
+                  <Text className="text-sm text-muted">{t('success.date')}:</Text>
                   <Text className="text-sm text-foreground font-medium">
                     {result.timestamp.toLocaleString('es-ES', {
                       day: '2-digit',
@@ -107,7 +109,7 @@ export function SuccessResultModal({
               {/* Before */}
               <View className="bg-red-900/20 rounded-2xl p-4 border border-red-700">
                 <Text className="text-sm font-semibold text-red-400 mb-3">
-                  ❌ Antes (Original)
+                  {t('success.before_original')}
                 </Text>
                 <View className="gap-2">
                   <View className="flex-row justify-between">
@@ -133,7 +135,7 @@ export function SuccessResultModal({
               {/* After */}
               <View className="bg-green-900/20 rounded-2xl p-4 border border-green-700">
                 <Text className="text-sm font-semibold text-green-400 mb-3">
-                  ✅ Después (Modificado)
+                  {t('success.after_modified')}
                 </Text>
                 <View className="gap-2">
                   <View className="flex-row justify-between">
@@ -155,17 +157,17 @@ export function SuccessResultModal({
             {/* Next Steps */}
             <View className="bg-yellow-900/20 rounded-2xl p-4 border border-yellow-700 mb-6">
               <Text className="text-sm font-semibold text-yellow-400 mb-2">
-                📝 Próximos Pasos
+                {t('success.next_steps')}
               </Text>
               <View className="gap-1">
                 <Text className="text-sm text-yellow-300">
-                  1. Desconecta y reconecta el adaptador
+                  {t('success.step1')}
                 </Text>
                 <Text className="text-sm text-yellow-300">
-                  2. Conecta al puerto USB del MIB2
+                  {t('success.step2')}
                 </Text>
                 <Text className="text-sm text-yellow-300">
-                  3. Verifica que el MIB2 lo reconozca
+                  {t('success.step3')}
                 </Text>
               </View>
             </View>

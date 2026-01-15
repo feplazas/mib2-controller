@@ -96,12 +96,12 @@ export default function ToolboxScreen() {
 
   const handleRestoreBackup = async (backup: BackupInfo) => {
     Alert.alert(
-      '⚠️ Restaurar Backup',
-      `¿Estás seguro de que deseas restaurar este backup?\n\nArchivo: ${backup.filename}\nFecha: ${backup.timestamp}\nTamaño: ${(backup.size / 1024).toFixed(2)} KB\n\nEsto sobrescribirá el archivo actual.`,
+      t('toolbox.restore_backup_title'),
+      t('toolbox.restore_backup_message', { filename: backup.filename, date: backup.timestamp, size: (backup.size / 1024).toFixed(2) }),
       [
-        { text: 'Cancelar', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Restaurar',
+          text: t('toolbox.restore'),
           style: 'destructive',
           onPress: async () => {
             try {
@@ -119,7 +119,7 @@ export default function ToolboxScreen() {
                   Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
                 }
               } else {
-                Alert.alert('❌ Error', result.error || 'No se pudo restaurar el backup');
+                Alert.alert(t('common.error'), result.error || t('toolbox.restore_error'));
                 if (Platform.OS !== "web") {
                   Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
                 }
@@ -135,12 +135,12 @@ export default function ToolboxScreen() {
 
   const handleDeleteBackup = async (backup: BackupInfo) => {
     Alert.alert(
-      'Eliminar Backup',
-      `¿Estás seguro de que deseas eliminar este backup?\n\n${backup.filename}\n${backup.timestamp}`,
+      t('toolbox.delete_backup_title'),
+      t('toolbox.delete_backup_message', { filename: backup.filename, date: backup.timestamp }),
       [
-        { text: 'Cancelar', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Eliminar',
+          text: t('toolbox.delete'),
           style: 'destructive',
           onPress: async () => {
             try {
@@ -179,12 +179,12 @@ export default function ToolboxScreen() {
       }
 
       Alert.alert(
-        "Script Generado",
-        "El script de instalación ha sido creado exitosamente.",
+        t('toolbox.script_generated'),
+        t('toolbox.script_generated_message'),
         [
           { text: "OK" },
           {
-            text: "Compartir",
+            text: t('common.share'),
             onPress: async () => {
               if (await Sharing.isAvailableAsync()) {
                 await Sharing.shareAsync(fileUri);
@@ -201,7 +201,7 @@ export default function ToolboxScreen() {
 
   const handleGenerateVerification = () => {
     const command = generateToolboxVerificationCommand();
-    Alert.alert("Comando de Verificación", command, [{ text: "Cerrar" }]);
+    Alert.alert(t('toolbox.verification_command'), command, [{ text: t('common.close') }]);
   };
 
   const executeStepCommand = async (step: InstallationStep) => {
@@ -241,34 +241,34 @@ export default function ToolboxScreen() {
       return;
     }
 
-    const isCriticalStep = step.step === 2 || step.title.toLowerCase().includes('patch');
+    const isCriticalStep = step.step === 2 || step.titleKey.toLowerCase().includes('patch');
 
     if (isCriticalStep) {
       Alert.alert(
-        '⚠️ PASO CRÍTICO - Confirmación 1/3',
-        'Este paso modifica el binario del sistema tsd.mibstd2.system.swap.\n\nEsto altera la rutina de verificación de firmas digitales.\n\n¿Continuar?',
+        t('toolbox.critical_step_1'),
+        t('toolbox.critical_step_1_message'),
         [
-          { text: 'Cancelar', style: 'cancel' },
+          { text: t('common.cancel'), style: 'cancel' },
           {
-            text: 'Continuar',
+            text: t('common.continue'),
             style: 'destructive',
             onPress: () => {
               Alert.alert(
-                '⚠️ PASO CRÍTICO - Confirmación 2/3',
-                'Un error durante este proceso puede BRICKEAR la unidad MIB2.\n\nLa única forma de recuperarla sería mediante soldadura directa a la memoria eMMC.\n\n¿Estás seguro?',
+                t('toolbox.critical_step_2'),
+                t('toolbox.critical_step_2_message'),
                 [
-                  { text: 'Cancelar', style: 'cancel' },
+                  { text: t('common.cancel'), style: 'cancel' },
                   {
-                    text: 'Estoy Seguro',
+                    text: t('toolbox.im_sure'),
                     style: 'destructive',
                     onPress: () => {
                       Alert.alert(
-                        '⚠️ CONFIRMACIÓN FINAL - 3/3',
-                        'Una vez iniciado el proceso, NO lo interrumpas.\n\nAsegúrate de que:\n• La batería del vehículo está cargada\n• No apagarás el contacto\n• La conexión Telnet es estable\n\n¿Ejecutar parcheo AHORA?',
+                        t('toolbox.critical_step_3'),
+                        t('toolbox.critical_step_3_message'),
                         [
-                          { text: 'Cancelar', style: 'cancel' },
+                          { text: t('common.cancel'), style: 'cancel' },
                           {
-                            text: 'EJECUTAR',
+                            text: t('toolbox.execute'),
                             style: 'destructive',
                             onPress: async () => {
                               // Crear backup automático antes del parcheo
@@ -284,23 +284,23 @@ export default function ToolboxScreen() {
 
                                 if (backupResult.success && backupResult.backup) {
                                   Alert.alert(
-                                    '✅ Backup Creado',
-                                    `Backup guardado exitosamente:\n\nRuta: ${backupResult.backup.backupPath}\nTamaño: ${(backupResult.backup.size / 1024).toFixed(2)} KB\nChecksum: ${backupResult.backup.checksum?.substring(0, 16)}...\n\nProcediendo con el parcheo...`,
+                                    t('toolbox.backup_created'),
+                                    t('toolbox.backup_created_message', { path: backupResult.backup.backupPath, size: (backupResult.backup.size / 1024).toFixed(2), checksum: backupResult.backup.checksum?.substring(0, 16) }),
                                     [
                                       {
-                                        text: 'Continuar',
+                                        text: t('common.continue'),
                                         onPress: () => executeStepCommand(step),
                                       },
                                     ]
                                   );
                                 } else {
                                   Alert.alert(
-                                    '❌ Error en Backup',
-                                    `No se pudo crear el backup: ${backupResult.error}\n\n¿Deseas continuar sin backup? (NO RECOMENDADO)`,
+                                    t('toolbox.backup_error'),
+                                    t('toolbox.backup_error_message', { error: backupResult.error }),
                                     [
-                                      { text: 'Cancelar', style: 'cancel' },
+                                      { text: t('common.cancel'), style: 'cancel' },
                                       {
-                                        text: 'Continuar Sin Backup',
+                                        text: t('toolbox.continue_without_backup'),
                                         style: 'destructive',
                                         onPress: () => executeStepCommand(step),
                                       },
@@ -326,12 +326,12 @@ export default function ToolboxScreen() {
     }
 
     Alert.alert(
-      'Ejecutar Paso',
-      `¿Ejecutar: ${step.title}?`,
+      t('toolbox.execute_step'),
+      t('toolbox.execute_step_confirm', { title: t(step.titleKey) }),
       [
-        { text: 'Cancelar', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Ejecutar',
+          text: t('toolbox.execute'),
           onPress: () => executeStepCommand(step),
         },
       ]
@@ -364,10 +364,10 @@ export default function ToolboxScreen() {
         <View className="gap-6">
           <View className="gap-2">
             <Text className="text-3xl font-bold" style={{ color: colors.foreground }}>
-              Instalación del Toolbox
+              {t('toolbox.title')}
             </Text>
             <Text className="text-sm" style={{ color: colors.muted }}>
-              Guía paso a paso para instalar el MIB2 STD2 Toolbox
+              {t('toolbox.subtitle')}
             </Text>
           </View>
 
@@ -376,40 +376,40 @@ export default function ToolboxScreen() {
             <View className="flex-row items-center gap-2 mb-2">
               <Text className="text-2xl">⚠️</Text>
               <Text className="text-lg font-bold" style={{ color: '#EF4444' }}>
-                ADVERTENCIA CRÍTICA
+                {t('toolbox.critical_warning')}
               </Text>
             </View>
             <Text className="text-sm leading-relaxed" style={{ color: colors.foreground }}>
-              La instalación del MIB2 Toolbox modifica archivos del sistema QNX. <Text className="font-bold" style={{ color: '#EF4444' }}>Un error puede BRICKEAR la unidad MIB2</Text> (valor: miles de dólares).
+              {t('toolbox.warning_text_1')}
             </Text>
             <Text className="text-sm leading-relaxed mt-2" style={{ color: colors.foreground }}>
-              El parcheo de <Text className="font-mono text-xs">tsd.mibstd2.system.swap</Text> altera la rutina de verificación de firmas digitales. <Text className="font-bold">No interrumpas el proceso una vez iniciado.</Text>
+              {t('toolbox.warning_text_2')}
             </Text>
             <Text className="text-sm leading-relaxed mt-2" style={{ color: colors.foreground }}>
-              Si algo falla, la única forma de recuperar la unidad es mediante acceso directo a la memoria eMMC (soldadura).
+              {t('toolbox.warning_text_3')}
             </Text>
           </View>
 
           <View className="bg-surface rounded-xl p-4 border" style={{ borderColor: colors.border }}>
             <Text className="text-lg font-semibold mb-3" style={{ color: colors.foreground }}>
-              Estado de Prerequisitos
+              {t('toolbox.prerequisites_status')}
             </Text>
             <View className="gap-2">
               <View className="flex-row items-center gap-2">
                 <Text className="text-2xl">{telnetReady ? '✅' : '❌'}</Text>
                 <Text className="text-sm" style={{ color: colors.foreground }}>
-                  Conexión Telnet {telnetReady ? 'Activa' : 'Inactiva'}
+                  {t('toolbox.telnet_connection')} {telnetReady ? t('toolbox.active') : t('toolbox.inactive')}
                 </Text>
               </View>
               <View className="flex-row items-center gap-2">
                 <Text className="text-2xl">{usbReady ? '✅' : '❌'}</Text>
                 <Text className="text-sm" style={{ color: colors.foreground }}>
-                  Adaptador USB {usbReady ? 'Conectado' : 'Desconectado'}
+                  {t('toolbox.usb_adapter')} {usbReady ? t('usb.status_connected') : t('usb.status_disconnected')}
                 </Text>
               </View>
               {!allReady && (
                 <Text className="text-xs mt-2" style={{ color: '#F59E0B' }}>
-                  ⚠️ Completa los prerequisitos antes de instalar
+                  ⚠️ {t('toolbox.complete_prerequisites')}
                 </Text>
               )}
             </View>
@@ -421,7 +421,7 @@ export default function ToolboxScreen() {
               className="flex-1 bg-primary/10 px-4 py-3 rounded-xl active:opacity-80"
             >
               <Text className="text-center font-semibold text-xs" style={{ color: colors.primary }}>
-                🔍 Diagnósticos
+                🔍 {t('toolbox.diagnostics')}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -429,7 +429,7 @@ export default function ToolboxScreen() {
               className="flex-1 bg-success/10 px-4 py-3 rounded-xl active:opacity-80"
             >
               <Text className="text-center font-semibold text-xs" style={{ color: "#22C55E" }}>
-                💾 Backups
+                💾 {t('toolbox.backups')}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -437,7 +437,7 @@ export default function ToolboxScreen() {
               className="flex-1 bg-warning/10 px-4 py-3 rounded-xl active:opacity-80"
             >
               <Text className="text-center font-semibold text-xs" style={{ color: "#F59E0B" }}>
-                ⚙️ Método eMMC
+                ⚙️ {t('toolbox.emmc_method')}
               </Text>
             </TouchableOpacity>
           </View>
@@ -445,7 +445,7 @@ export default function ToolboxScreen() {
           {!selectedStep && !showEmmcInfo && !showDiagnostics && !showBackups && (
             <View className="gap-3">
               <Text className="text-lg font-semibold" style={{ color: colors.foreground }}>
-                Pasos de Instalación
+                {t('toolbox.installation_steps')}
               </Text>
               {TOOLBOX_INSTALLATION_STEPS.map((step) => (
                 <TouchableOpacity
@@ -464,12 +464,12 @@ export default function ToolboxScreen() {
                       </Text>
                     </View>
                     <Text className="text-base font-semibold flex-1" style={{ color: colors.foreground }}>
-                      {step.title}
+                      {t(step.titleKey)}
                     </Text>
                     <Text className="text-2xl">{getStepIcon(step.step)}</Text>
                   </View>
                   <Text className="text-xs ml-11" style={{ color: colors.muted }}>
-                    {step.description}
+                    {t(step.descriptionKey)}
                   </Text>
                 </TouchableOpacity>
               ))}
@@ -486,7 +486,7 @@ export default function ToolboxScreen() {
                   ←
                 </Text>
                 <Text className="text-sm font-semibold" style={{ color: colors.primary }}>
-                  Volver a la lista
+                  {t('toolbox.back_to_list')}
                 </Text>
               </TouchableOpacity>
 
@@ -501,12 +501,12 @@ export default function ToolboxScreen() {
                     </Text>
                   </View>
                   <Text className="text-xl font-bold flex-1" style={{ color: colors.foreground }}>
-                    {selectedStep.title}
+                    {t(selectedStep.titleKey)}
                   </Text>
                 </View>
 
                 <Text className="text-sm leading-relaxed mb-4" style={{ color: colors.foreground }}>
-                  {selectedStep.description}
+                  {t(selectedStep.descriptionKey)}
                 </Text>
 
                 {selectedStep.command && (
@@ -517,11 +517,11 @@ export default function ToolboxScreen() {
                   </View>
                 )}
 
-                {selectedStep.warnings && selectedStep.warnings.length > 0 && (
+                {selectedStep.warningKeys && selectedStep.warningKeys.length > 0 && (
                   <View className="bg-warning/10 rounded-lg p-3 mb-4">
-                    {selectedStep.warnings.map((warning, idx) => (
+                    {selectedStep.warningKeys.map((warningKey: string, idx: number) => (
                       <Text key={idx} className="text-xs leading-relaxed mb-1" style={{ color: colors.foreground }}>
-                        💡 {warning}
+                        💡 {t(warningKey)}
                       </Text>
                     ))}
                   </View>
@@ -541,12 +541,12 @@ export default function ToolboxScreen() {
                       <View className="flex-row items-center justify-center gap-2">
                         <ActivityIndicator size="small" color={colors.background} />
                         <Text className="text-center font-semibold" style={{ color: colors.background }}>
-                          Ejecutando...
+                          {t('toolbox.executing')}
                         </Text>
                       </View>
                     ) : (
                       <Text className="text-center font-semibold" style={{ color: colors.background }}>
-                        ▶️ Ejecutar Paso
+                        ▶️ {t('toolbox.execute_step')}
                       </Text>
                     )}
                   </TouchableOpacity>
@@ -565,31 +565,31 @@ export default function ToolboxScreen() {
                   ←
                 </Text>
                 <Text className="text-sm font-semibold" style={{ color: colors.primary }}>
-                  Volver a la lista
+                  {t('toolbox.back_to_list')}
                 </Text>
               </TouchableOpacity>
 
               <View className="bg-surface rounded-xl p-4 border" style={{ borderColor: colors.border }}>
                 <Text className="text-lg font-bold mb-3" style={{ color: colors.foreground }}>
-                  {EMMC_ACCESS_INFO.title}
+                  {t(EMMC_ACCESS_INFO.titleKey)}
                 </Text>
                 <Text className="text-sm leading-relaxed mb-4" style={{ color: colors.foreground }}>
-                  {EMMC_ACCESS_INFO.description}
+                  {t(EMMC_ACCESS_INFO.descriptionKey)}
                 </Text>
 
                 <Text className="text-base font-semibold mb-2" style={{ color: colors.foreground }}>
-                  Pasos:
+                  {t('toolbox.steps')}:
                 </Text>
-                {EMMC_ACCESS_INFO.steps.map((step, index) => (
+                {EMMC_ACCESS_INFO.stepKeys.map((stepKey, index) => (
                   <Text key={index} className="text-sm leading-relaxed mb-2" style={{ color: colors.foreground }}>
-                    {index + 1}. {step}
+                    {index + 1}. {t(stepKey)}
                   </Text>
                 ))}
 
                 <View className="bg-error/10 rounded-lg p-3 mt-4">
-                  {EMMC_ACCESS_INFO.warnings.map((warning, idx) => (
+                  {EMMC_ACCESS_INFO.warningKeys.map((warningKey: string, idx: number) => (
                     <Text key={idx} className="text-xs leading-relaxed mb-1" style={{ color: '#EF4444' }}>
-                      ⚠️ {warning}
+                      ⚠️ {t(warningKey)}
                     </Text>
                   ))}
                 </View>
@@ -607,21 +607,21 @@ export default function ToolboxScreen() {
                   ←
                 </Text>
                 <Text className="text-sm font-semibold" style={{ color: colors.primary }}>
-                  Volver a la lista
+                  {t('toolbox.back_to_list')}
                 </Text>
               </TouchableOpacity>
 
               <View className="bg-surface rounded-xl p-4 border" style={{ borderColor: colors.border }}>
                 <Text className="text-lg font-bold mb-3" style={{ color: colors.foreground }}>
-                  Comandos de Diagnóstico
+                  {t('toolbox.diagnostic_commands')}
                 </Text>
                 {DIAGNOSTIC_COMMANDS.map((cmd, index) => (
                   <View key={index} className="mb-4">
                     <Text className="text-sm font-semibold mb-1" style={{ color: colors.foreground }}>
-                      {cmd.name}
+                      {t(cmd.nameKey)}
                     </Text>
                     <Text className="text-xs mb-2" style={{ color: colors.muted }}>
-                      {cmd.description}
+                      {t(cmd.descriptionKey)}
                     </Text>
                     <View className="bg-background rounded-lg p-2">
                       <Text className="text-xs font-mono" style={{ color: colors.muted }}>
@@ -644,30 +644,30 @@ export default function ToolboxScreen() {
                   ←
                 </Text>
                 <Text className="text-sm font-semibold" style={{ color: colors.primary }}>
-                  Volver a la lista
+                  {t('toolbox.back_to_list')}
                 </Text>
               </TouchableOpacity>
 
               <View className="bg-surface rounded-xl p-4 border" style={{ borderColor: colors.border }}>
                 <Text className="text-lg font-bold mb-3" style={{ color: colors.foreground }}>
-                  💾 Gestión de Backups
+                  💾 {t('toolbox.backup_management')}
                 </Text>
                 <Text className="text-xs mb-4" style={{ color: colors.muted }}>
-                  Los backups se crean automáticamente antes de modificar archivos críticos del sistema MIB2.
+                  {t('toolbox.backups_auto_created')}
                 </Text>
 
                 {loadingBackups ? (
                   <View className="items-center py-8">
                     <ActivityIndicator size="large" color={colors.primary} />
                     <Text className="text-sm mt-2" style={{ color: colors.muted }}>
-                      Cargando backups...
+                      {t('toolbox.loading_backups')}
                     </Text>
                   </View>
                 ) : backups.length === 0 ? (
                   <View className="items-center py-8">
                     <Text className="text-4xl mb-2">📁</Text>
                     <Text className="text-sm" style={{ color: colors.muted }}>
-                      No hay backups disponibles
+                      {t('toolbox.no_backups_available')}
                     </Text>
                   </View>
                 ) : (
@@ -708,7 +708,7 @@ export default function ToolboxScreen() {
                             className="flex-1 bg-error/10 px-3 py-2 rounded-lg active:opacity-80"
                           >
                             <Text className="text-center text-xs font-semibold" style={{ color: "#EF4444" }}>
-                              🗑️ Eliminar
+                              🗑️ {t('common.delete')}
                             </Text>
                           </TouchableOpacity>
                         </View>

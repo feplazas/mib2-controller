@@ -79,12 +79,12 @@ export default function FECScreen() {
       }
 
       Alert.alert(
-        "ExceptionList Generada",
-        "El archivo ExceptionList.txt ha sido creado exitosamente.",
+        t('fec.exception_list_generated'),
+        t('fec.exception_list_generated_message'),
         [
           { text: "OK" },
           {
-            text: "Compartir",
+            text: t('common.share'),
             onPress: async () => {
               if (await Sharing.isAvailableAsync()) {
                 await Sharing.shareAsync(fileUri);
@@ -106,7 +106,7 @@ export default function FECScreen() {
     }
 
     const command = generateToolboxInjectionCommand(selectedCodes);
-    Alert.alert("Comando de Inyección", command, [{ text: "Cerrar" }]);
+    Alert.alert(t('fec.injection_command'), command, [{ text: t('common.close') }]);
   };
 
   const handleInjectViaTelnet = () => {
@@ -121,12 +121,12 @@ export default function FECScreen() {
     }
 
     Alert.alert(
-      'Confirmar Inyección',
-      `¿Inyectar ${selectedCodes.length} código(s) FEC vía Telnet?\n\nLa unidad se reiniciará automáticamente.`,
+      t('fec.confirm_injection'),
+      t('fec.confirm_injection_message', { count: selectedCodes.length }),
       [
-        { text: 'Cancelar', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Inyectar',
+          text: t('fec.inject'),
           style: 'destructive',
           onPress: () => {
             if (Platform.OS !== 'web') {
@@ -171,10 +171,10 @@ export default function FECScreen() {
           {/* Header */}
           <View className="gap-2">
             <Text className="text-3xl font-bold" style={{ color: colors.foreground }}>
-              Generador de Códigos FEC
+              {t('fec.title')}
             </Text>
             <Text className="text-sm" style={{ color: colors.muted }}>
-              Feature Enable Codes para activación de funciones SWaP
+              {t('fec.subtitle')}
             </Text>
           </View>
 
@@ -184,7 +184,7 @@ export default function FECScreen() {
             className="bg-primary px-4 py-3 rounded-xl active:opacity-80"
           >
             <Text className="text-center font-semibold text-base" style={{ color: colors.background }}>
-              🌐 Abrir Generador Online (vwcoding.ru)
+              🌐 {t('fec.open_generator')}
             </Text>
           </TouchableOpacity>
 
@@ -194,7 +194,7 @@ export default function FECScreen() {
             className="bg-primary/10 px-4 py-3 rounded-xl active:opacity-80"
           >
             <Text className="text-center font-semibold" style={{ color: colors.primary }}>
-              {showInfo ? "Ocultar" : "Mostrar"} Información del Proceso
+              {showInfo ? t('fec.hide') : t('fec.show')} {t('fec.process_info')}
             </Text>
           </TouchableOpacity>
 
@@ -202,17 +202,17 @@ export default function FECScreen() {
           {showInfo && (
             <View className="bg-surface rounded-xl p-4 border" style={{ borderColor: colors.border }}>
               <Text className="text-lg font-bold mb-3" style={{ color: colors.foreground }}>
-                {FEC_INJECTION_INFO.title}
+                {t(FEC_INJECTION_INFO.titleKey)}
               </Text>
 
               {/* Steps */}
               {FEC_INJECTION_INFO.steps.map((step) => (
                 <View key={step.step} className="mb-3">
                   <Text className="text-sm font-semibold" style={{ color: colors.foreground }}>
-                    {step.step}. {step.title}
+                    {step.step}. {t(step.titleKey)}
                   </Text>
                   <Text className="text-xs mt-1" style={{ color: colors.muted }}>
-                    {step.description}
+                    {t(step.descriptionKey)}
                   </Text>
                 </View>
               ))}
@@ -220,11 +220,11 @@ export default function FECScreen() {
               {/* Warnings */}
               <View className="bg-error/10 rounded-lg p-3 mt-3">
                 <Text className="text-sm font-semibold mb-2" style={{ color: "#EF4444" }}>
-                  ⚠️ Advertencias
+                  ⚠️ {t('fec.warnings')}
                 </Text>
-                {FEC_INJECTION_INFO.warnings.map((warning, index) => (
+                {FEC_INJECTION_INFO.warningKeys.map((warningKey: string, index: number) => (
                   <Text key={index} className="text-xs mb-1" style={{ color: "#EF4444" }}>
-                    • {warning}
+                    • {t(warningKey)}
                   </Text>
                 ))}
               </View>
@@ -232,10 +232,10 @@ export default function FECScreen() {
               {/* Technical Note */}
               <View className="bg-primary/10 rounded-lg p-3 mt-3">
                 <Text className="text-sm font-semibold mb-2" style={{ color: colors.primary }}>
-                  📝 Nota Técnica
+                  📝 {t('fec.technical_note')}
                 </Text>
                 <Text className="text-xs" style={{ color: colors.foreground }}>
-                  {FEC_INJECTION_INFO.technicalNote}
+                  {t(FEC_INJECTION_INFO.technicalNoteKey)}
                 </Text>
               </View>
             </View>
@@ -244,14 +244,14 @@ export default function FECScreen() {
           {/* Vehicle Data Section */}
           <View className="bg-surface rounded-xl p-4 border" style={{ borderColor: colors.border }}>
             <Text className="text-lg font-semibold mb-3" style={{ color: colors.foreground }}>
-              Datos del Vehículo (Opcional)
+              {t('fec.vehicle_data')}
             </Text>
             <Text className="text-xs mb-3" style={{ color: colors.muted }}>
-              Para generación de códigos personalizados basados en VIN/VCRN
+              {t('fec.vehicle_data_desc')}
             </Text>
 
             <Text className="text-sm font-semibold mb-2" style={{ color: colors.foreground }}>
-              VIN (17 caracteres)
+              {t('fec.vin_label')}
             </Text>
             <TextInput
               value={vin}
@@ -265,7 +265,7 @@ export default function FECScreen() {
             />
 
             <Text className="text-sm font-semibold mb-2" style={{ color: colors.foreground }}>
-              VCRN (Número de Serie)
+              {t('fec.vcrn_label')}
             </Text>
             <TextInput
               value={vcrn}
@@ -278,12 +278,12 @@ export default function FECScreen() {
 
             {vin && !validateVIN(vin) && (
               <Text className="text-xs mt-2" style={{ color: "#EF4444" }}>
-                VIN inválido (debe tener 17 caracteres alfanuméricos)
+                {t('fec.vin_invalid')}
               </Text>
             )}
             {vcrn && !validateVCRN(vcrn) && (
               <Text className="text-xs mt-2" style={{ color: "#EF4444" }}>
-                VCRN inválido (debe tener entre 8 y 20 caracteres)
+                {t('fec.vcrn_invalid')}
               </Text>
             )}
           </View>
@@ -291,7 +291,7 @@ export default function FECScreen() {
           {/* Predefined Codes */}
           <View className="gap-3">
             <Text className="text-lg font-semibold" style={{ color: colors.foreground }}>
-              Códigos FEC Predefinidos
+              {t('fec.predefined_codes')}
             </Text>
             {PREDEFINED_FEC_CODES.map((fec) => (
               <TouchableOpacity
@@ -305,7 +305,7 @@ export default function FECScreen() {
               >
                 <View className="flex-row items-center justify-between mb-2">
                   <Text className="text-base font-semibold" style={{ color: colors.foreground }}>
-                    {fec.name}
+                    {t(fec.nameKey)}
                   </Text>
                   <View
                     className="w-6 h-6 rounded-full items-center justify-center"
@@ -323,10 +323,10 @@ export default function FECScreen() {
                   </View>
                 </View>
                 <Text className="text-xs mb-2" style={{ color: colors.muted }}>
-                  {fec.description}
+                  {t(fec.descriptionKey)}
                 </Text>
                 <Text className="text-xs font-mono" style={{ color: colors.primary }}>
-                  Código: {fec.code}
+                  {t('fec.code')}: {fec.code}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -335,7 +335,7 @@ export default function FECScreen() {
           {/* Custom Code Input */}
           <View className="bg-surface rounded-xl p-4 border" style={{ borderColor: colors.border }}>
             <Text className="text-lg font-semibold mb-3" style={{ color: colors.foreground }}>
-              Agregar Código Personalizado
+              {t('fec.add_custom_code')}
             </Text>
             <TextInput
               value={customCode}
@@ -352,7 +352,7 @@ export default function FECScreen() {
               className="bg-primary px-4 py-3 rounded-xl active:opacity-80"
             >
               <Text className="text-center font-semibold" style={{ color: colors.background }}>
-                Agregar Código
+                {t('fec.add_code')}
               </Text>
             </TouchableOpacity>
           </View>
@@ -361,7 +361,7 @@ export default function FECScreen() {
           {selectedCodes.length > 0 && (
             <View className="bg-success/10 rounded-xl p-4 border" style={{ borderColor: "#22C55E" }}>
               <Text className="text-lg font-semibold mb-3" style={{ color: "#22C55E" }}>
-                Códigos Seleccionados ({selectedCodes.length})
+                {t('fec.selected_codes')} ({selectedCodes.length})
               </Text>
               {selectedCodes.map((code) => (
                 <View key={code} className="flex-row items-center justify-between mb-2">
@@ -374,7 +374,7 @@ export default function FECScreen() {
                     style={{ backgroundColor: "#EF4444" }}
                   >
                     <Text className="text-xs font-semibold" style={{ color: "#FFF" }}>
-                      Quitar
+                      {t('fec.remove')}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -390,7 +390,7 @@ export default function FECScreen() {
                 className="bg-primary px-4 py-3 rounded-xl active:opacity-80"
               >
                 <Text className="text-center font-semibold" style={{ color: colors.background }}>
-                  Generar ExceptionList.txt
+                  {t('fec.generate_exception_list')}
                 </Text>
               </TouchableOpacity>
 
@@ -400,7 +400,7 @@ export default function FECScreen() {
                 style={{ borderColor: colors.border }}
               >
                 <Text className="text-center font-semibold" style={{ color: colors.foreground }}>
-                  Ver Comando de Inyección
+                  {t('fec.view_injection_command')}
                 </Text>
               </TouchableOpacity>
 
@@ -414,7 +414,7 @@ export default function FECScreen() {
                   className="text-center font-semibold text-base"
                   style={{ color: isConnected ? colors.background : colors.muted }}
                 >
-                  {isConnected ? '⚡ Inyectar vía Telnet' : '🔌 Conectar Telnet Primero'}
+                  {isConnected ? `⚡ ${t('fec.inject_via_telnet')}` : `🔌 ${t('fec.connect_telnet_first')}`}
                 </Text>
               </TouchableOpacity>
             </View>

@@ -1,88 +1,88 @@
 /**
- * Generador de Códigos FEC (Feature Enable Codes)
- * Para activación de funciones SWaP en unidades MIB2
+ * FEC Code Generator (Feature Enable Codes)
+ * For SWaP function activation on MIB2 units
  * 
- * Basado en el documento técnico MIB2Acceso.pdf
+ * Based on MIB2Acceso.pdf technical document
  */
 
 export interface FECCode {
   code: string;
-  name: string;
-  description: string;
+  nameKey: string;
+  descriptionKey: string;
   category: 'connectivity' | 'performance' | 'multimedia';
 }
 
 /**
- * Códigos FEC predefinidos para funciones comunes
+ * Predefined FEC codes for common functions
  */
 export const PREDEFINED_FEC_CODES: FECCode[] = [
   {
     code: '00010001',
-    name: 'Apple CarPlay',
-    description: 'Habilita integración de Apple CarPlay en el sistema de infotainment',
+    nameKey: 'fec.carplay_name',
+    descriptionKey: 'fec.carplay_desc',
     category: 'connectivity',
   },
   {
     code: '00010002',
-    name: 'Android Auto',
-    description: 'Habilita integración de Android Auto en el sistema de infotainment',
+    nameKey: 'fec.android_auto_name',
+    descriptionKey: 'fec.android_auto_desc',
     category: 'connectivity',
   },
   {
     code: '00010004',
-    name: 'MirrorLink',
-    description: 'Habilita MirrorLink para dispositivos compatibles',
+    nameKey: 'fec.mirrorlink_name',
+    descriptionKey: 'fec.mirrorlink_desc',
     category: 'connectivity',
   },
   {
     code: '00010008',
-    name: 'App-Connect (Full-Link)',
-    description: 'Habilita todas las funciones de App-Connect',
+    nameKey: 'fec.appconnect_name',
+    descriptionKey: 'fec.appconnect_desc',
     category: 'connectivity',
   },
   {
     code: '00060001',
-    name: 'Performance Monitor',
-    description: 'Habilita el monitor de rendimiento en el cuadro digital',
+    nameKey: 'fec.perf_monitor_name',
+    descriptionKey: 'fec.perf_monitor_desc',
     category: 'performance',
   },
   {
     code: '09400008',
-    name: 'Mapas Europa',
-    description: 'Activa región de mapas Europa (EU)',
+    nameKey: 'fec.maps_europe_name',
+    descriptionKey: 'fec.maps_europe_desc',
     category: 'multimedia',
   },
   {
     code: '09410008',
-    name: 'Mapas Norteamérica',
-    description: 'Activa región de mapas Norteamérica (NAR)',
+    nameKey: 'fec.maps_northamerica_name',
+    descriptionKey: 'fec.maps_northamerica_desc',
     category: 'multimedia',
   },
 ];
 
 /**
- * URL del generador FEC online
+ * FEC generator online URL
  */
 export const FEC_GENERATOR_URL = 'https://vwcoding.ru/en/utils/fec/';
 
 /**
- * Generar comandos Telnet para inyectar códigos FEC
+ * Generate Telnet commands for FEC code injection
  */
 export function generateFecInjectionCommands(codes: string[]): string[] {
   return [
-    '# Montar sistema de archivos',
+    '# Mount file system',
     'mount -uw /net/rcc/dev/shmem',
     '',
-    '# Inyectar códigos FEC',
+    '# Inject FEC codes',
     ...codes.map((code) => `echo "${code}" >> /net/rcc/dev/shmem/addfec.txt`),
     '',
-    '# Reiniciar unidad para aplicar cambios',
+    '# Reboot unit to apply changes',
     'reboot',
   ];
 }
 
 /**
- * Interfaz para datos del vehículo
+ * Vehicle data interface
  */
 export interface VehicleData {
   vin: string;  // Vehicle Identification Number
@@ -90,7 +90,7 @@ export interface VehicleData {
 }
 
 /**
- * Validar formato de VIN (17 caracteres alfanuméricos)
+ * Validate VIN format (17 alphanumeric characters)
  */
 export function validateVIN(vin: string): boolean {
   const vinRegex = /^[A-HJ-NPR-Z0-9]{17}$/;
@@ -98,35 +98,43 @@ export function validateVIN(vin: string): boolean {
 }
 
 /**
- * Validar formato de VCRN
+ * Validate VCRN format
  */
 export function validateVCRN(vcrn: string): boolean {
-  // VCRN típicamente es un número de serie de la unidad
+  // VCRN is typically a unit serial number
   return vcrn.length >= 8 && vcrn.length <= 20;
 }
 
 /**
- * Generar código FEC basado en VIN y VCRN
- * 
- * NOTA: Este es un algoritmo simplificado para demostración.
- * El algoritmo real de VW es propietario y más complejo.
- * Para uso en producción, se requiere acceso a la base de datos oficial de VW
- * o uso de herramientas como OBDeleven que tienen acceso a los algoritmos reales.
+ * Error keys for FEC generation
  */
-export function generateFECCode(vehicleData: VehicleData, featureCode: string): string {
+export const FEC_ERROR_KEYS = {
+  invalidVin: 'fec.error_invalid_vin',
+  invalidVcrn: 'fec.error_invalid_vcrn',
+};
+
+/**
+ * Generate FEC code based on VIN and VCRN
+ * 
+ * NOTE: This is a simplified algorithm for demonstration.
+ * The real VW algorithm is proprietary and more complex.
+ * For production use, access to official VW database is required
+ * or use tools like OBDeleven that have access to real algorithms.
+ */
+export function generateFECCode(vehicleData: VehicleData, featureCode: string): { code: string } | { errorKey: string } {
   const { vin, vcrn } = vehicleData;
   
-  // Validar inputs
+  // Validate inputs
   if (!validateVIN(vin)) {
-    throw new Error('VIN inválido. Debe tener 17 caracteres alfanuméricos.');
+    return { errorKey: FEC_ERROR_KEYS.invalidVin };
   }
   
   if (!validateVCRN(vcrn)) {
-    throw new Error('VCRN inválido. Debe tener entre 8 y 20 caracteres.');
+    return { errorKey: FEC_ERROR_KEYS.invalidVcrn };
   }
   
-  // Algoritmo simplificado (placeholder)
-  // En la realidad, esto requiere la clave privada de VW
+  // Simplified algorithm (placeholder)
+  // In reality, this requires VW's private key
   const vinHash = simpleHash(vin);
   const vcrnHash = simpleHash(vcrn);
   const featureHash = simpleHash(featureCode);
@@ -134,12 +142,12 @@ export function generateFECCode(vehicleData: VehicleData, featureCode: string): 
   const combinedHash = (vinHash + vcrnHash + featureHash) % 0xFFFFFFFF;
   const fecCode = combinedHash.toString(16).toUpperCase().padStart(8, '0');
   
-  return fecCode;
+  return { code: fecCode };
 }
 
 /**
- * Función hash simple para demostración
- * (NO usar en producción - solo para propósitos educativos)
+ * Simple hash function for demonstration
+ * (DO NOT use in production - for educational purposes only)
  */
 function simpleHash(str: string): number {
   let hash = 0;
@@ -152,25 +160,14 @@ function simpleHash(str: string): number {
 }
 
 /**
- * Generar contenido del archivo ExceptionList.txt
+ * Generate ExceptionList.txt file content
  */
 export function generateExceptionList(fecCodes: string[]): string {
   const header = `# ExceptionList.txt
 # Generated by MIB2 Controller
 # Date: ${new Date().toISOString()}
 # 
-# Este archivo contiene códigos FEC que serán aceptados por el sistema
-# independientemente de la validación criptográfica.
-# 
-# IMPORTANTE: Este método "parchea" el sistema para aceptar códigos sin
-# verificación de firma digital de VW AG.
-#
-# Instrucciones:
-# 1. Copiar este archivo a la tarjeta SD de la unidad MIB2
-# 2. Ejecutar el MIB2 Toolbox para aplicar el parcheo
-# 3. Los códigos listados serán aceptados como válidos
-#
-# Códigos FEC:
+# FEC codes:
 `;
 
   const codes = fecCodes.map(code => `${code}`).join('\n');
@@ -179,23 +176,23 @@ export function generateExceptionList(fecCodes: string[]): string {
 }
 
 /**
- * Obtener código FEC predefinido por nombre
+ * Get predefined FEC code by name key
  */
-export function getPredefinedFECCode(name: string): FECCode | undefined {
+export function getPredefinedFECCode(nameKey: string): FECCode | undefined {
   return PREDEFINED_FEC_CODES.find(
-    code => code.name.toLowerCase() === name.toLowerCase()
+    code => code.nameKey.toLowerCase() === nameKey.toLowerCase()
   );
 }
 
 /**
- * Obtener todos los códigos FEC por categoría
+ * Get all FEC codes by category
  */
 export function getFECCodesByCategory(category: FECCode['category']): FECCode[] {
   return PREDEFINED_FEC_CODES.filter(code => code.category === category);
 }
 
 /**
- * Validar formato de código FEC (8 dígitos hexadecimales)
+ * Validate FEC code format (8 hexadecimal digits)
  */
 export function validateFECCode(code: string): boolean {
   const fecRegex = /^[0-9A-F]{8}$/i;
@@ -203,67 +200,67 @@ export function validateFECCode(code: string): boolean {
 }
 
 /**
- * Información sobre el proceso de inyección de códigos FEC
+ * FEC code injection process information
  */
 export const FEC_INJECTION_INFO = {
-  title: 'Proceso de Inyección de Códigos FEC',
+  titleKey: 'fec.injection_title',
   steps: [
     {
       step: 1,
-      title: 'Generar Códigos',
-      description: 'Utilizar el generador de FEC basado en VIN y VCRN, o usar códigos predefinidos.',
+      titleKey: 'fec.step1_title',
+      descriptionKey: 'fec.step1_desc',
     },
     {
       step: 2,
-      title: 'Crear ExceptionList.txt',
-      description: 'Generar el archivo ExceptionList.txt con los códigos FEC deseados.',
+      titleKey: 'fec.step2_title',
+      descriptionKey: 'fec.step2_desc',
     },
     {
       step: 3,
-      title: 'Instalar MIB2 Toolbox',
-      description: 'Asegurarse de que el MIB2 STD2 Toolbox esté instalado en la unidad.',
+      titleKey: 'fec.step3_title',
+      descriptionKey: 'fec.step3_desc',
     },
     {
       step: 4,
-      title: 'Aplicar Parcheo',
-      description: 'Ejecutar la función "Patch tsd.mibstd2.system.swap" desde el menú verde (GEM) del Toolbox.',
+      titleKey: 'fec.step4_title',
+      descriptionKey: 'fec.step4_desc',
     },
     {
       step: 5,
-      title: 'Inyectar Códigos',
-      description: 'Una vez parcheado el sistema, consultar la ExceptionList.txt generada. Los códigos serán aceptados como "Legal" independientemente de la firma criptográfica.',
+      titleKey: 'fec.step5_title',
+      descriptionKey: 'fec.step5_desc',
     },
   ],
-  warnings: [
-    '⚠️ Este método sortea la validación de firmware digital de VW AG',
-    '⚠️ Solo funciona en unidades 1-SD que carecen de las rutinas de validación necesarias',
-    '⚠️ El parcheo modifica el binario del sistema (tsd.mibstd2.system.swap)',
-    '⚠️ Realizar backup antes de aplicar cualquier modificación',
+  warningKeys: [
+    'fec.warning1',
+    'fec.warning2',
+    'fec.warning3',
+    'fec.warning4',
   ],
-  technicalNote: 'El MIB STD2 Toolbox automatiza el proceso de "parcheo". En lugar de intentar crackear la clave privada de VW (computacionalmente inviable), el Toolbox modifica el binario del sistema para alterar la rutina de verificación de firmas. Una vez parcheado, el sistema se instruye para consultar una "Lista de Excepciones" (ExceptionList.txt) generada por el usuario.',
+  technicalNoteKey: 'fec.technical_note',
 };
 
 /**
- * Generar comando para inyección vía Toolbox
+ * Generate Toolbox injection command
  */
 export function generateToolboxInjectionCommand(fecCodes: string[]): string {
-  return `# Comandos para inyección de códigos FEC vía MIB2 Toolbox
-# Ejecutar desde Telnet (root@192.168.1.4)
+  return `# FEC code injection commands via MIB2 Toolbox
+# Execute from Telnet (root@192.168.1.4)
 
-# 1. Verificar que el Toolbox esté instalado
+# 1. Verify Toolbox is installed
 ls -la /net/mmx/mnt/app/eso/hmi/lsd/jars/
 
-# 2. Crear ExceptionList.txt en la tarjeta SD
+# 2. Create ExceptionList.txt on SD card
 cat > /media/mp000/ExceptionList.txt << EOF
 ${fecCodes.join('\n')}
 EOF
 
-# 3. Aplicar parcheo (desde el menú verde GEM del Toolbox)
-# Seleccionar: "Patch tsd.mibstd2.system.swap"
+# 3. Apply patch (from Toolbox GEM green menu)
+# Select: "Patch tsd.mibstd2.system.swap"
 
-# 4. Verificar códigos inyectados
-# Los códigos FEC ahora serán aceptados como válidos
+# 4. Verify injected codes
+# FEC codes will now be accepted as valid
 
-echo "Códigos FEC inyectados exitosamente"
+echo "FEC codes injected successfully"
 `;
 }

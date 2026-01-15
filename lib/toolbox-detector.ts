@@ -161,25 +161,25 @@ async function detectServices(executeCommand: (cmd: string) => Promise<any>): Pr
 /**
  * Get Toolbox installation recommendations
  */
-export function getToolboxRecommendations(info: ToolboxInfo): string[] {
-  const recommendations: string[] = [];
+export function getToolboxRecommendationKeys(info: ToolboxInfo): string[] {
+  const recommendationKeys: string[] = [];
 
   if (!info.installed) {
-    recommendations.push('MIB2 Toolbox no está instalado. Se recomienda instalarlo para acceso completo.');
-    recommendations.push('Visita foros especializados para obtener la última versión del Toolbox.');
+    recommendationKeys.push('toolbox.not_installed');
+    recommendationKeys.push('toolbox.visit_forums');
   } else {
     if (!info.services?.telnet) {
-      recommendations.push('Telnet no está activo. Habilítalo desde el Toolbox para usar esta app.');
+      recommendationKeys.push('toolbox.telnet_not_active');
     }
     if (!info.services?.ftp) {
-      recommendations.push('FTP no está activo. Considéralo para transferencia de archivos.');
+      recommendationKeys.push('toolbox.ftp_not_active');
     }
     if (info.version && info.version.includes('old')) {
-      recommendations.push('Versión antigua del Toolbox detectada. Considera actualizar.');
+      recommendationKeys.push('toolbox.old_version');
     }
   }
 
-  return recommendations;
+  return recommendationKeys;
 }
 
 /**
