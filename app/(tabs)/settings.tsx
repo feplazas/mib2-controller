@@ -32,6 +32,7 @@ export default function SettingsScreen() {
   const [showDebugInfo, setShowDebugInfo] = useState(false);
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
   const { selectedLanguage, setLanguage: setAppLanguage } = useLanguage();
+  const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const { status, device, devices } = useUsbStatus();
 
   const handleSaveSettings = async () => {
@@ -281,6 +282,87 @@ export default function SettingsScreen() {
               </TouchableOpacity>
             </View>
           )}
+
+          {/* Help/FAQ Section */}
+          <View className="bg-surface rounded-2xl p-6 border border-border">
+            <View className="mb-4">
+              <Text className="text-lg font-semibold text-foreground">
+                {t('settings.help_title')}
+              </Text>
+              <Text className="text-xs text-muted mt-1">
+                {t('settings.help_description')}
+              </Text>
+            </View>
+            
+            <View className="gap-2">
+              {[
+                {
+                  id: 1,
+                  icon: '🔌',
+                  question: t('settings.faq_adapter_q'),
+                  answer: t('settings.faq_adapter_a'),
+                },
+                {
+                  id: 2,
+                  icon: '🛠️',
+                  question: t('settings.faq_spoofing_q'),
+                  answer: t('settings.faq_spoofing_a'),
+                },
+                {
+                  id: 3,
+                  icon: '📶',
+                  question: t('settings.faq_connection_q'),
+                  answer: t('settings.faq_connection_a'),
+                },
+                {
+                  id: 4,
+                  icon: '🧰',
+                  question: t('settings.faq_toolbox_q'),
+                  answer: t('settings.faq_toolbox_a'),
+                },
+                {
+                  id: 5,
+                  icon: '🔑',
+                  question: t('settings.faq_fec_q'),
+                  answer: t('settings.faq_fec_a'),
+                },
+                {
+                  id: 6,
+                  icon: '⚠️',
+                  question: t('settings.faq_risk_q'),
+                  answer: t('settings.faq_risk_a'),
+                },
+              ].map((faq) => (
+                <TouchableOpacity
+                  key={faq.id}
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    setExpandedFaq(expandedFaq === faq.id ? null : faq.id);
+                  }}
+                  className="bg-background border border-border rounded-xl overflow-hidden active:opacity-80"
+                >
+                  <View className="flex-row items-center p-4">
+                    <Text className="text-xl mr-3">{faq.icon}</Text>
+                    <Text className="flex-1 text-foreground font-medium text-sm">
+                      {faq.question}
+                    </Text>
+                    <Text className="text-muted text-lg">
+                      {expandedFaq === faq.id ? '▲' : '▼'}
+                    </Text>
+                  </View>
+                  {expandedFaq === faq.id && (
+                    <View className="px-4 pb-4 pt-0">
+                      <View className="bg-primary/5 rounded-lg p-3">
+                        <Text className="text-muted text-sm leading-5">
+                          {faq.answer}
+                        </Text>
+                      </View>
+                    </View>
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
 
           {/* Expert Mode Section */}
           <View className="bg-surface rounded-2xl p-6 border border-border">

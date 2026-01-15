@@ -1518,3 +1518,18 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [x] Actualizar UI inmediatamente al cambiar idioma
 - [x] Agregar feedback háptico al cambiar idioma
 - [x] Mostrar bandera o icono junto a cada opción
+
+
+## Sección de Ayuda/FAQ (15 Ene 2026)
+
+### Implementación en Settings
+- [x] Crear sección "Ayuda" debajo del selector de idioma
+- [x] Implementar lista de preguntas frecuentes expandibles
+- [x] Agregar animación de expansión/colapso para cada pregunta
+- [x] Incluir preguntas sobre: adaptadores compatibles, spoofing, conexión MIB2, Toolbox, FEC codes
+- [x] Agregar iconos junto a cada categoría de pregunta
+
+### Traducciones FAQ
+- [x] Agregar claves de traducción para FAQ en es.json
+- [x] Agregar claves de traducción para FAQ en en.json
+- [x] Agregar claves de traducción para FAQ en de.json
