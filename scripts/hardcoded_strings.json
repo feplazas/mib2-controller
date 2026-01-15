@@ -1,0 +1,1741 @@
+{
+  "app/(tabs)/auto-spoof.tsx": [
+    {
+      "text": "🔧 Spoofing Automático",
+      "line": 464,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Reprogramación automática de EEPROM para adaptadores ASIX compatibles",
+      "line": 467,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "📱 Dispositivo Conectado",
+      "line": 474,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "No hay dispositivo conectado",
+      "line": 505,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Creando backup de seguridad",
+      "line": 560,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Error",
+      "line": 618,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "• Esta operación es IRREVERSIBLE sin backup",
+      "line": 633,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "• NO desconectes el adaptador durante el proceso",
+      "line": 636,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "• Solo funciona con ASIX AX88772A/B con EEPROM externa",
+      "line": 639,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "• Dispositivos con eFuse NO son compatibles",
+      "line": 642,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "• Se creará un backup automático antes de escribir",
+      "line": 645,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "⚠️ Forzar sin Verificación",
+      "line": 666,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Omite la verificación post-escritura. Úsalo solo si la verificación normal falla debido a protección de escritura del adaptador. Después del spoofing, desconecta y reconecta el adaptador para verificar manualmente.",
+      "line": 669,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Verifica si el adaptador tiene VID/PID 0x2001:0x3C05",
+      "line": 707,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Ejecuta spoofing con una sola confirmación",
+      "line": 730,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Conecta un adaptador compatible para continuar",
+      "line": 750,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Con triple confirmación y validaciones completas",
+      "line": 755,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Cancelar",
+      "line": 44,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Cancelar",
+      "line": 74,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Sí, Continuar",
+      "line": 75,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Cancelar",
+      "line": 115,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Sí, Continuar",
+      "line": 117,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Cancelar",
+      "line": 139,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Continuar",
+      "line": 141,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "NO, Cancelar",
+      "line": 161,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "SÍ, Ejecutar",
+      "line": 163,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Cancelar",
+      "line": 408,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "SÍ, Ejecutar",
+      "line": 410,
+      "pattern": "(?:text|title|label|message|de"
+    }
+  ],
+  "app/(tabs)/commands.tsx": [
+    {
+      "text": "Desconectar",
+      "line": 139,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Comandos Rápidos",
+      "line": 254,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    }
+  ],
+  "app/(tabs)/diag.tsx": [
+    {
+      "text": "🔍 Diagnóstico USB",
+      "line": 122,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Logs en tiempo real de todas las operaciones USB",
+      "line": 125,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Éxitos",
+      "line": 204,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Cancelar",
+      "line": 43,
+      "pattern": "(?:text|title|label|message|de"
+    }
+  ],
+  "app/(tabs)/fec.tsx": [
+    {
+      "text": "Generador de Códigos FEC",
+      "line": 173,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Feature Enable Codes para activación de funciones SWaP",
+      "line": 176,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "📝 Nota Técnica",
+      "line": 234,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Datos del Vehículo (Opcional)",
+      "line": 246,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Para generación de códigos personalizados basados en VIN/VCRN",
+      "line": 249,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "VCRN (Número de Serie)",
+      "line": 267,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "VIN inválido (debe tener 17 caracteres alfanuméricos)",
+      "line": 280,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "VCRN inválido (debe tener entre 8 y 20 caracteres)",
+      "line": 285,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Códigos FEC Predefinidos",
+      "line": 293,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Agregar Código Personalizado",
+      "line": 337,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Agregar Código",
+      "line": 354,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Ver Comando de Inyección",
+      "line": 402,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Cancelar",
+      "line": 127,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Comando de Inyección",
+      "line": 109,
+      "pattern": "Alert\\.alert\\([\"\\']([^\"\\']+)[\""
+    },
+    {
+      "text": "alerts.código_inválido",
+      "line": 48,
+      "pattern": "showAlert\\([\"\\']([^\"\\']+)[\"\\']"
+    },
+    {
+      "text": "alerts.código_duplicado",
+      "line": 53,
+      "pattern": "showAlert\\([\"\\']([^\"\\']+)[\"\\']"
+    },
+    {
+      "text": "alerts.sin_códigos",
+      "line": 67,
+      "pattern": "showAlert\\([\"\\']([^\"\\']+)[\"\\']"
+    },
+    {
+      "text": "alerts.sin_códigos",
+      "line": 104,
+      "pattern": "showAlert\\([\"\\']([^\"\\']+)[\"\\']"
+    },
+    {
+      "text": "alerts.sin_códigos",
+      "line": 119,
+      "pattern": "showAlert\\([\"\\']([^\"\\']+)[\"\\']"
+    }
+  ],
+  "app/(tabs)/index.tsx": [
+    {
+      "text": "Control remoto para unidades MIB2 STD2 Technisat Preh",
+      "line": 268,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Adaptador de Red Detectado",
+      "line": 284,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "IP del Adaptador:",
+      "line": 292,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Última actividad:",
+      "line": 323,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Versión:",
+      "line": 348,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "⚠️ El puerto Telnet está cerrado. Se requiere acceso directo a eMMC.",
+      "line": 359,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "🔍 Búsqueda Rápida",
+      "line": 450,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Dirección IP",
+      "line": 528,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Desconectar",
+      "line": 560,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Conectar a MIB2",
+      "line": 574,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Instrucciones de Conexión",
+      "line": 584,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "1. Conecta el adaptador USB-Ethernet al puerto USB de la unidad MIB2",
+      "line": 588,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "2. Conecta tu dispositivo Android a la misma red (WiFi o adaptador Ethernet)",
+      "line": 591,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "3. Verifica que la unidad MIB2 tenga Telnet habilitado (root/root)",
+      "line": 594,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "4. Ingresa la dirección IP de la unidad (por defecto: 192.168.1.4)",
+      "line": 597,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "5. Presiona &quot;Conectar a MIB2&quot; para establecer la conexión",
+      "line": 600,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "⚠️ Advertencia",
+      "line": 608,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Esta aplicación permite ejecutar comandos directamente en la unidad MIB2. \n              Usa con precaución y solo si sabes lo que estás haciendo. Los comandos \n              incorrectos pueden dañar el sistema.",
+      "line": 609,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Cancelar",
+      "line": 156,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Conectar",
+      "line": 158,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Cancelar",
+      "line": 210,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Escanear",
+      "line": 212,
+      "pattern": "(?:text|title|label|message|de"
+    }
+  ],
+  "app/(tabs)/recovery.tsx": [
+    {
+      "text": "🛠️ Recuperación",
+      "line": 139,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "📂 Ver Ubicación",
+      "line": 223,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Tamaño:",
+      "line": 268,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "💡 Instrucciones de Recuperación",
+      "line": 380,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Cancelar",
+      "line": 68,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Cancelar",
+      "line": 116,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Forzar Restauración",
+      "line": 118,
+      "pattern": "(?:text|title|label|message|de"
+    }
+  ],
+  "app/(tabs)/settings.tsx": [
+    {
+      "text": "Configuración",
+      "line": 192,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Ajusta los parámetros de la aplicación",
+      "line": 193,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Tienes acceso a comandos que pueden dañar la unidad MIB2. Procede con extrema precaución.",
+      "line": 225,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Configurar PIN de Seguridad",
+      "line": 255,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Configurar PIN de Seguridad",
+      "line": 265,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Nuevo PIN (mínimo 4 dígitos)",
+      "line": 270,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Cancelar",
+      "line": 306,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Guardar PIN",
+      "line": 314,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "PIN de Seguridad",
+      "line": 331,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Cancelar",
+      "line": 352,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Cancelar",
+      "line": 428,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Configuración de Conexión",
+      "line": 447,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Dirección IP",
+      "line": 453,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Dirección IP de la unidad MIB2 en la red local",
+      "line": 463,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Usuario para autenticación Telnet",
+      "line": 495,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Contraseña",
+      "line": 501,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Contraseña para autenticación Telnet",
+      "line": 512,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Guardar",
+      "line": 531,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Gestión de Datos",
+      "line": 540,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Limpiar Historial de Comandos",
+      "line": 565,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "🔌 Estado de Conexión",
+      "line": 592,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "📱 Dispositivo Actual",
+      "line": 618,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "⚙️ Información Técnica",
+      "line": 654,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Módulo Nativo:",
+      "line": 659,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "📋 Copiar Info de Debug",
+      "line": 706,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Información de la App",
+      "line": 716,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Versión",
+      "line": 722,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Creada por",
+      "line": 726,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Compatible con",
+      "line": 734,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "⚠️ Advertencia de Seguridad",
+      "line": 742,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Esta aplicación permite ejecutar comandos con privilegios root en la unidad MIB2. \n              El uso incorrecto puede resultar en daños permanentes al sistema. \n              Usa esta herramienta bajo tu propia responsabilidad.",
+      "line": 745,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Creada por Felipe Plazas",
+      "line": 757,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Para unidades MIB2 STD2 Technisat/Preh",
+      "line": 760,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Cancelar",
+      "line": 57,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Cancelar",
+      "line": 110,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Cancelar",
+      "line": 172,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Cancelar",
+      "line": 550,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Error",
+      "line": 93,
+      "pattern": "Alert\\.alert\\([\"\\']([^\"\\']+)[\""
+    },
+    {
+      "text": "alerts.éxito",
+      "line": 45,
+      "pattern": "showAlert\\([\"\\']([^\"\\']+)[\"\\']"
+    },
+    {
+      "text": "alerts.pin_inválido",
+      "line": 75,
+      "pattern": "showAlert\\([\"\\']([^\"\\']+)[\"\\']"
+    },
+    {
+      "text": "alerts.éxito",
+      "line": 87,
+      "pattern": "showAlert\\([\"\\']([^\"\\']+)[\"\\']"
+    },
+    {
+      "text": "alerts.pin_inválido",
+      "line": 122,
+      "pattern": "showAlert\\([\"\\']([^\"\\']+)[\"\\']"
+    },
+    {
+      "text": "alerts.pin_inválido",
+      "line": 142,
+      "pattern": "showAlert\\([\"\\']([^\"\\']+)[\"\\']"
+    },
+    {
+      "text": "alerts.éxito",
+      "line": 155,
+      "pattern": "showAlert\\([\"\\']([^\"\\']+)[\"\\']"
+    },
+    {
+      "text": "alerts.éxito",
+      "line": 557,
+      "pattern": "showAlert\\([\"\\']([^\"\\']+)[\"\\']"
+    }
+  ],
+  "app/(tabs)/toolbox.tsx": [
+    {
+      "text": "Instalación del Toolbox",
+      "line": 366,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Guía paso a paso para instalar el MIB2 STD2 Toolbox",
+      "line": 369,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "ADVERTENCIA CRÍTICA",
+      "line": 378,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Un error puede BRICKEAR la unidad MIB2",
+      "line": 383,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "No interrumpas el proceso una vez iniciado.",
+      "line": 386,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Si algo falla, la única forma de recuperar la unidad es mediante acceso directo a la memoria eMMC (soldadura).",
+      "line": 388,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Estado de Prerequisitos",
+      "line": 394,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "⚠️ Completa los prerequisitos antes de instalar",
+      "line": 411,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "🔍 Diagnósticos",
+      "line": 423,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "⚙️ Método eMMC",
+      "line": 439,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Pasos de Instalación",
+      "line": 447,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Volver a la lista",
+      "line": 488,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Volver a la lista",
+      "line": 567,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Volver a la lista",
+      "line": 609,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Comandos de Diagnóstico",
+      "line": 615,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Volver a la lista",
+      "line": 646,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "💾 Gestión de Backups",
+      "line": 652,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Los backups se crean automáticamente antes de modificar archivos críticos del sistema MIB2.",
+      "line": 655,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "No hay backups disponibles",
+      "line": 669,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Cancelar",
+      "line": 102,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Cancelar",
+      "line": 141,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Cancelar",
+      "line": 251,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Continuar",
+      "line": 253,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Cancelar",
+      "line": 260,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Cancelar",
+      "line": 269,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Continuar",
+      "line": 291,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Cancelar",
+      "line": 301,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Continuar Sin Backup",
+      "line": 303,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Cancelar",
+      "line": 332,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "❌ Error",
+      "line": 122,
+      "pattern": "Alert\\.alert\\([\"\\']([^\"\\']+)[\""
+    },
+    {
+      "text": "Comando de Verificación",
+      "line": 204,
+      "pattern": "Alert\\.alert\\([\"\\']([^\"\\']+)[\""
+    },
+    {
+      "text": "alerts.éxito",
+      "line": 117,
+      "pattern": "showAlert\\([\"\\']([^\"\\']+)[\"\\']"
+    },
+    {
+      "text": "alerts.éxito",
+      "line": 156,
+      "pattern": "showAlert\\([\"\\']([^\"\\']+)[\"\\']"
+    }
+  ],
+  "app/(tabs)/tools.tsx": [
+    {
+      "text": "Utilidades avanzadas para MIB2",
+      "line": 20,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Generar códigos FEC personalizados",
+      "line": 7,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Asistente de instalación",
+      "line": 8,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Información del adaptador conectado",
+      "line": 10,
+      "pattern": "(?:text|title|label|message|de"
+    }
+  ],
+  "app/(tabs)/usb-status.tsx": [
+    {
+      "text": "Estado de Conexión USB",
+      "line": 285,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Información en tiempo real de tu dispositivo USB",
+      "line": 288,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "📱 Información del Dispositivo",
+      "line": 315,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Solicitar permisos y abrir conexión USB",
+      "line": 418,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Leer y verificar integridad de EEPROM (256 bytes)",
+      "line": 443,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Desconectar",
+      "line": 455,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Cerrar conexión USB de forma segura",
+      "line": 459,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Copia de seguridad preventiva de EEPROM",
+      "line": 524,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "📊 Estadísticas",
+      "line": 585,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Estado del Servicio:",
+      "line": 605,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Este dispositivo no es compatible con MIB2. Se recomienda aplicar el siguiente perfil:",
+      "line": 625,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "No hay dispositivos conectados",
+      "line": 684,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Conecta un adaptador USB-Ethernet compatible para comenzar",
+      "line": 687,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "• Conecta el adaptador USB con un cable OTG",
+      "line": 708,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "• Asegúrate de que el adaptador tenga alimentación",
+      "line": 711,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "• Los adaptadores ASIX son los más compatibles",
+      "line": 714,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "• Desliza hacia abajo para actualizar el estado",
+      "line": 717,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Cancelar",
+      "line": 64,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Cancelar",
+      "line": 207,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Desconectar",
+      "line": 209,
+      "pattern": "(?:text|title|label|message|de"
+    }
+  ],
+  "app/dev/theme-lab.tsx": [
+    {
+      "text": "Error",
+      "line": 176,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    }
+  ],
+  "components/onboarding-modal.tsx": [
+    {
+      "text": "Conectar Adaptador USB",
+      "line": 20,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Conecta tu adaptador USB-Ethernet al dispositivo Android usando un cable OTG con alimentación externa.",
+      "line": 21,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "La app detectará automáticamente el chipset y mostrará si es compatible para spoofing MIB2.",
+      "line": 33,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Usa Auto Spoof para modificar automáticamente el VID/PID del adaptador a valores compatibles con MIB2.",
+      "line": 47,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Después del spoofing, verifica que el VID/PID se modificó correctamente y prueba la conexión con MIB2.",
+      "line": 60,
+      "pattern": "(?:text|title|label|message|de"
+    }
+  ],
+  "components/success-result-modal.tsx": [
+    {
+      "text": "¡Spoofing Exitoso!",
+      "line": 64,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "El VID/PID se modificó correctamente",
+      "line": 67,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "Información del Dispositivo",
+      "line": 74,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "✅ Después (Modificado)",
+      "line": 135,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "📝 Próximos Pasos",
+      "line": 157,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "1. Desconecta y reconecta el adaptador",
+      "line": 161,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "2. Conecta al puerto USB del MIB2",
+      "line": 164,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    },
+    {
+      "text": "3. Verifica que el MIB2 lo reconozca",
+      "line": 167,
+      "pattern": "<Text[^>]*>([^<{]+)</Text>"
+    }
+  ],
+  "components/usb-status-indicator.tsx": [
+    {
+      "text": "Sin Dispositivo USB",
+      "line": 37,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Conecta un adaptador USB-Ethernet",
+      "line": 38,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Dispositivo Detectado",
+      "line": 43,
+      "pattern": "(?:text|title|label|message|de"
+    }
+  ],
+  "lib/profiles-provider.tsx": [
+    {
+      "text": "Configuración por defecto",
+      "line": 45,
+      "pattern": "(?:text|title|label|message|de"
+    }
+  ],
+  "lib/telnet-provider.tsx": [
+    {
+      "text": "No conectado a MIB2",
+      "line": 159,
+      "pattern": "(?:text|title|label|message|de"
+    }
+  ],
+  "lib/fec-codes.ts": [
+    {
+      "text": "Activa Apple CarPlay para iPhone",
+      "line": 20,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Activa Android Auto para dispositivos Android",
+      "line": 27,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Activa MirrorLink para dispositivos compatibles",
+      "line": 34,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Activa todas las funciones de App-Connect",
+      "line": 41,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Activa región de mapas Europa (EU)",
+      "line": 50,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Activa región de mapas Norteamérica (NAR)",
+      "line": 57,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Activa región de mapas China (CN)",
+      "line": 64,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Activa región de mapas ROW (Rest of World)",
+      "line": 71,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Activa monitor de rendimiento del vehículo",
+      "line": 80,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Interfaz de datos del vehículo",
+      "line": 87,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Control de iluminación ambiental",
+      "line": 96,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Activa funciones del cockpit digital",
+      "line": 103,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Control por voz avanzado",
+      "line": 112,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Control por gestos",
+      "line": 119,
+      "pattern": "(?:text|title|label|message|de"
+    }
+  ],
+  "lib/fec-generator.ts": [
+    {
+      "text": "Habilita integración de Apple CarPlay en el sistema de infotainment",
+      "line": 22,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Habilita integración de Android Auto en el sistema de infotainment",
+      "line": 28,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Habilita MirrorLink para dispositivos compatibles",
+      "line": 34,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Habilita todas las funciones de App-Connect",
+      "line": 40,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Habilita el monitor de rendimiento en el cuadro digital",
+      "line": 46,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Activa región de mapas Europa (EU)",
+      "line": 52,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Activa región de mapas Norteamérica (NAR)",
+      "line": 58,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Proceso de Inyección de Códigos FEC",
+      "line": 209,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Generar Códigos",
+      "line": 213,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Utilizar el generador de FEC basado en VIN y VCRN, o usar códigos predefinidos.",
+      "line": 214,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Generar el archivo ExceptionList.txt con los códigos FEC deseados.",
+      "line": 219,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Asegurarse de que el MIB2 STD2 Toolbox esté instalado en la unidad.",
+      "line": 224,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Ejecutar la función",
+      "line": 229,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Inyectar Códigos",
+      "line": 233,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Una vez parcheado el sistema, consultar la ExceptionList.txt generada. Los códigos serán aceptados como",
+      "line": 234,
+      "pattern": "(?:text|title|label|message|de"
+    }
+  ],
+  "lib/macros.ts": [
+    {
+      "text": "Crea un backup completo de adaptaciones y configuración",
+      "line": 30,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Crear directorio de backups",
+      "line": 42,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Backup de adaptaciones",
+      "line": 47,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Backup de configuración de skin",
+      "line": 52,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Crea un backup solo de las adaptaciones",
+      "line": 66,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Crear directorio de backups",
+      "line": 74,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Activa Green Menu, Video en Movimiento y líneas guía de cámara",
+      "line": 94,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Backup de seguridad",
+      "line": 102,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Activar Video en Movimiento",
+      "line": 112,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Activar líneas guía de cámara",
+      "line": 117,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Activa solo adaptaciones seguras (Green Menu y líneas guía)",
+      "line": 130,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Backup de seguridad",
+      "line": 138,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Activar líneas guía de cámara",
+      "line": 148,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Verificar uso de memoria",
+      "line": 171,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Verificar espacio en disco",
+      "line": 176,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Verificar tiempo de actividad",
+      "line": 192,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Verifica configuración de red y conectividad",
+      "line": 200,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Mostrar interfaces de red",
+      "line": 208,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Mostrar tabla de rutas",
+      "line": 213,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Probar conectividad con gateway",
+      "line": 223,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Obtiene información detallada del firmware y hardware",
+      "line": 232,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Versión de firmware",
+      "line": 240,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Versión de hardware",
+      "line": 245,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Número de serie",
+      "line": 250,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Información del sistema",
+      "line": 255,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Verificar espacio antes de limpiar",
+      "line": 273,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Eliminar logs antiguos (>7 días)",
+      "line": 284,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Verificar espacio después de limpiar",
+      "line": 290,
+      "pattern": "(?:text|title|label|message|de"
+    }
+  ],
+  "lib/mib2-commands.ts": [
+    {
+      "text": "Obtiene la versión actual del firmware instalado",
+      "line": 40,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Muestra información del sistema operativo QNX",
+      "line": 50,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Muestra información del procesador",
+      "line": 60,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Obtiene el número de serie de la unidad",
+      "line": 70,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Muestra la versión de hardware de la unidad",
+      "line": 80,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Muestra el uso actual de memoria",
+      "line": 92,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Lista todos los dispositivos y puntos de montaje",
+      "line": 102,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Muestra configuración de interfaces de red",
+      "line": 112,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Lista todos los procesos activos",
+      "line": 122,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Muestra el uso de espacio en disco",
+      "line": 132,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Muestra la temperatura actual del sistema",
+      "line": 142,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Lista todas las adaptaciones disponibles",
+      "line": 154,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Crea un backup de las adaptaciones actuales",
+      "line": 164,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Activa el menú de ingeniería (Green Menu)",
+      "line": 175,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Desactiva el menú de ingeniería (Green Menu)",
+      "line": 186,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Permite reproducir video mientras el vehículo está en movimiento",
+      "line": 196,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Activa las líneas guía en la cámara de reversa",
+      "line": 207,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Lista todos los skins instalados",
+      "line": 219,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Muestra el skin actualmente activo",
+      "line": 229,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Crea un backup del skin actual",
+      "line": 239,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Restaura el skin de fábrica",
+      "line": 249,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Muestra el estado de la conexión WiFi",
+      "line": 261,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Muestra la tabla de rutas de red",
+      "line": 271,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Prueba conectividad con el gateway",
+      "line": 281,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Muestra los servidores DNS configurados",
+      "line": 291,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Lista el contenido del directorio raíz",
+      "line": 303,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Lista archivos en la partición de persistencia",
+      "line": 313,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Lista archivos en la partición del sistema",
+      "line": 323,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Muestra información de particiones",
+      "line": 333,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Reinicia la unidad MIB2",
+      "line": 345,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Termina un proceso específico (requiere PID)",
+      "line": 356,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Elimina los archivos de log del sistema",
+      "line": 367,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Restaura todas las adaptaciones a valores de fábrica",
+      "line": 377,
+      "pattern": "(?:text|title|label|message|de"
+    }
+  ],
+  "lib/safety-validator.ts": [
+    {
+      "text": "MIB2 STD2 Revisión A",
+      "line": 50,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "MIB2 STD2 Revisión B",
+      "line": 60,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "MIB2 STD2 Revisión B+ (Vista Sport)",
+      "line": 70,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Hardware con Limitaciones",
+      "line": 137,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Firmware con Problemas Conocidos",
+      "line": 174,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Hardware No Identificado",
+      "line": 197,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "No se puede validar la compatibilidad de códigos FEC sin identificar el hardware.",
+      "line": 198,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Firmware No Identificado",
+      "line": 210,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "No se puede garantizar que el método de inyección funcione con este firmware.",
+      "line": 211,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Validación de Inyección FEC",
+      "line": 223,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "La inyección de códigos FEC sortea la validación de firmware digital de VW AG.",
+      "line": 224,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "⚠️ ADVERTENCIA CRÍTICA: XDS+ en Modo",
+      "line": 241,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "NO configurar el XDS+ en modo",
+      "line": 242,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Recomendación: VAQ Tracción Aumentada",
+      "line": 254,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Para maximizar tracción, ajustar el VAQ a",
+      "line": 255,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Limitación: Vista Sport",
+      "line": 266,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "La Vista Sport solo está disponible en unidades de hardware 790 B+.",
+      "line": 267,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "⚠️ ADVERTENCIA CRÍTICA: Acceso Directo eMMC",
+      "line": 277,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "El acceso directo al chip eMMC es un método avanzado que puede dañar permanentemente la unidad.",
+      "line": 278,
+      "pattern": "(?:text|title|label|message|de"
+    }
+  ],
+  "lib/toolbox-installer.ts": [
+    {
+      "text": "Conectar Adaptador USB-Ethernet",
+      "line": 22,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Conectar el adaptador D-Link DUB-E100 al puerto USB de la unidad MIB2. Conectar el cable Ethernet desde el adaptador al dispositivo Android (vía adaptador USB-C a Ethernet) o a un router WiFi.",
+      "line": 23,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "La unidad MIB2 generalmente tiene una dirección IP estática preasignada en la subred 192.168.1.x (frecuentemente 192.168.1.4 para el host). Configurar el dispositivo con una IP estática en el mismo rango (ej. 192.168.1.10).",
+      "line": 32,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Verificar que se puede hacer ping a la unidad MIB2 antes de intentar conectar por Telnet.",
+      "line": 41,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Conectar por Telnet",
+      "line": 47,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "El servicio Telnet (puerto 23) puede estar activo pero protegido o inactivo por defecto. En versiones de firmware antiguas o específicas de Technisat ZR (Zentralrechner), este puerto puede estar abierto, permitiendo una conexión remota desde una laptop configurada con una IP estática en el mismo rango.",
+      "line": 48,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Iniciar Sesión como Root",
+      "line": 61,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Una vez establecida la sesión Telnet, se obtiene acceso a la shell de comandos de QNX (ksh).",
+      "line": 62,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Verificar Sistema de Archivos",
+      "line": 69,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Desde aquí, las restricciones de la interfaz gráfica (HMI) son irrelevantes. Se puede montar manualmente la tarjeta SD (que el sistema reconoce como un dispositivo de almacenamiento masivo en /media/mp000 o similar) y ejecutar scripts de shell (install.sh) directamente.",
+      "line": 70,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Descargar el MIB2 STD2 Toolbox desde el repositorio oficial de GitHub y copiarlo a una tarjeta SD.",
+      "line": 81,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Ejecutar Script de Instalación",
+      "line": 92,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Este método",
+      "line": 93,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Aplicar Parcheo del Sistema",
+      "line": 110,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Una vez instalado el Toolbox, ejecutar la función de parcheo desde el menú verde (GEM - Green Engineering Menu) accesible tras la instalación.",
+      "line": 111,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Verificar Instalación",
+      "line": 121,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Verificar que el Toolbox se instaló correctamente y está accesible desde el sistema.",
+      "line": 122,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Reiniciar la unidad MIB2 para que los cambios surtan efecto.",
+      "line": 133,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Método Alternativo: Acceso Directo eMMC (Avanzado)",
+      "line": 146,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Si el puerto Telnet está cerrado y no se puede activar mediante codificación VCDS, el último recurso es el acceso directo al almacenamiento no volátil.",
+      "line": 147,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Muestra información del sistema operativo QNX",
+      "line": 171,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Muestra la versión del firmware instalado",
+      "line": 176,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Lista todos los procesos en ejecución",
+      "line": 181,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Muestra el espacio disponible en los sistemas de archivos",
+      "line": 186,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Muestra la configuración de las interfaces de red",
+      "line": 191,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Muestra los puertos en escucha (Telnet, FTP, SSH, etc.)",
+      "line": 196,
+      "pattern": "(?:text|title|label|message|de"
+    },
+    {
+      "text": "Muestra información detallada del hardware y procesos",
+      "line": 201,
+      "pattern": "(?:text|title|label|message|de"
+    }
+  ]
+}

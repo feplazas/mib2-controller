@@ -1457,3 +1457,45 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [ ] Validar que app cambia de idioma cuando se cambia el sistema
 - [ ] Generar build de producción si validación exitosa
 - [x] BUG CRÍTICO: Idioma no cambia - useTranslation no re-renderiza componentes - RESUELTO con sistema simple sin i18n-js
+
+- [x] Auditar y extraer TODOS los strings hardcodeados en español
+- [x] Generar claves de traducción organizadas (common.*, home.*, settings.*, etc.)
+- [x] Migrar automáticamente strings a t() en todos los archivos
+- [x] Sincronizar i18n.locale con detectedLanguage en LanguageProvider
+
+
+## Traducciones EN/DE Completas (15 Ene 2026)
+
+### Archivos de Traducción Generados
+- [x] Crear locales/en.json con 621 strings traducidos al inglés
+- [x] Crear locales/de.json con 621 strings traducidos al alemán
+- [x] Mantener locales/es.json como idioma base (español)
+- [x] Validar estructura JSON (todas las secciones presentes)
+- [x] Verificar compilación TypeScript (0 errores)
+
+### Cobertura de Traducciones
+- [x] Sección common: 291 claves (botones, labels, instrucciones)
+- [x] Sección tabs: 10 claves (nombres de pestañas)
+- [x] Sección home: 25 claves (pantalla principal)
+- [x] Sección scanner: 12 claves (escaneo de red)
+- [x] Sección toolbox: 18 claves (herramientas MIB2)
+- [x] Sección fec: 27 claves (generador FEC)
+- [x] Sección recovery: 18 claves (recuperación EEPROM)
+- [x] Sección commands: 33 claves (terminal Telnet)
+- [x] Sección auto_spoof: 31 claves (spoofing automático)
+- [x] Sección diag: 9 claves (diagnóstico)
+- [x] Sección telnet: 13 claves (conexión Telnet)
+- [x] Sección settings: 19 claves (configuración)
+- [x] Sección errors: 14 claves (mensajes de error)
+- [x] Sección warnings: 7 claves (advertencias)
+- [x] Sección success: 7 claves (mensajes de éxito)
+- [x] Sección alerts: 80 claves (alertas y notificaciones)
+- [x] Sección usb: 7 claves (estado USB)
+
+### Scripts de Traducción
+- [x] Crear scripts/generate_complete_translations.py
+- [x] Implementar diccionario de 200+ traducciones técnicas MIB2
+- [x] Traducir comandos del sistema QNX
+- [x] Traducir advertencias de seguridad
+- [x] Traducir instrucciones de conexión
+- [x] Traducir mensajes de hardware/firmware
