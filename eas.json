@@ -30,6 +30,17 @@
       "env": {
         "GRADLE_OPTS": "-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx4096m -Dorg.gradle.internal.http.connectionTimeout=120000 -Dorg.gradle.internal.http.socketTimeout=120000"
       }
+    },
+    "production-apk": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk",
+        "withoutCredentials": false
+      },
+      "env": {
+        "NODE_ENV": "production",
+        "GRADLE_OPTS": "-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx4096m -Dorg.gradle.internal.http.connectionTimeout=120000 -Dorg.gradle.internal.http.socketTimeout=120000"
+      }
     }
   },
   "submit": {
