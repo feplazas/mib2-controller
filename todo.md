@@ -1520,3 +1520,9 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [x] Descargar AAB para subir a Play Store
 - Build ID: 5acd901d-a8a7-42e5-a15e-5f85cd8ecb87
 - AAB URL: https://expo.dev/artifacts/eas/cdkDXoL36tfk5gnDxqA7mX.aab
+
+## Corrección de Dependencias (15 Ene 2026)
+
+- [x] Instalar eslint-config-expo faltante
+- [x] Ejecutar npx expo install --check
+- [x] Verificar que expo doctor pasa todos los checks (17/17 passed)
