@@ -1,13 +1,14 @@
 import React, { createContext, useContext, ReactNode, useEffect, useState, useCallback } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 import * as RNLocalize from 'react-native-localize';
-import i18n from './i18n';
+import { getTranslation, getFallbackLanguage } from './simple-i18n';
 
 /**
- * Language Context - Detects system language and updates when app returns to foreground
+ * Language Context - Detects system language and provides reactive translations
  * 
- * SOLUTION: Uses AppState listener to re-detect language when user changes system settings
- * and returns to the app. This ensures the app always shows the correct language.
+ * SOLUTION: Instead of using i18n-js which doesn't trigger re-renders,
+ * we use React state (currentLanguage) that components subscribe to.
+ * When currentLanguage changes, ALL components using useTranslation re-render automatically.
  */
 
 interface LanguageContextType {
@@ -35,17 +36,14 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     console.log('[LanguageProvider] Primary locale:', primaryLocale);
     console.log('[LanguageProvider] Language code:', systemLanguage);
     
-    // Check if language is supported
-    const supportedLanguages = ['es', 'en', 'de'];
-    const detectedLanguage = supportedLanguages.includes(systemLanguage) ? systemLanguage : 'en';
+    // Get fallback language if not supported
+    const detectedLanguage = getFallbackLanguage(systemLanguage);
     
-    // Set i18n locale
-    i18n.locale = detectedLanguage;
+    // Update state - this will trigger re-render of all components using useTranslation
     setCurrentLanguage(detectedLanguage);
     setIsReady(true);
 
     console.log('[LanguageProvider] Using language:', detectedLanguage);
-    console.log('[LanguageProvider] i18n.locale set to:', i18n.locale);
   }, []);
 
   // Initial language detection on mount
@@ -101,20 +99,22 @@ export function useLanguage() {
 
 /**
  * Hook to get translation function
- * Uses currentLanguage as dependency to force re-evaluation when language changes
+ * 
+ * CRITICAL: This hook returns a function that uses currentLanguage from context.
+ * When currentLanguage changes in the context, React automatically re-renders
+ * ALL components that call this hook, because they're subscribed to the context value.
  */
 export function useTranslation() {
   const { currentLanguage, isReady } = useLanguage();
   
-  // Use useCallback with currentLanguage as dependency
-  // This ensures the function reference changes when language changes
-  // forcing all components using this hook to re-render
+  // Return a translation function
+  // Components will re-render when currentLanguage changes because they're subscribed to the context
   return useCallback((key: string, params?: Record<string, any>) => {
     if (!isReady) {
       return key; // Fallback while loading
     }
-    // Force i18n to use current language (defensive programming)
-    i18n.locale = currentLanguage;
-    return i18n.t(key, params);
+    const translation = getTranslation(key, currentLanguage, params);
+    console.log(`[useTranslation] key=${key}, lang=${currentLanguage}, result=${translation}`);
+    return translation;
   }, [currentLanguage, isReady]);
 }

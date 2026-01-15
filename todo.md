@@ -1456,3 +1456,4 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [ ] Validar que app se muestra en idioma del sistema (ES/EN/DE)
 - [ ] Validar que app cambia de idioma cuando se cambia el sistema
 - [ ] Generar build de producción si validación exitosa
+- [x] BUG CRÍTICO: Idioma no cambia - useTranslation no re-renderiza componentes - RESUELTO con sistema simple sin i18n-js
