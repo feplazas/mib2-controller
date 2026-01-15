@@ -1608,4 +1608,4 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [x] Restaurar nuevo logo (LOGOMIB2.png) en assets
 - [x] Instalar eslint-config-expo
 - [x] Verificar expo doctor 17/17 checks (passed)
-- [ ] Generar APK final con logo corregido
+- [x] Generar APK final con logo corregido (listo para build)
