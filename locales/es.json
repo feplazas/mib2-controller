@@ -1530,5 +1530,36 @@
     "unknown": "Desconocido",
     "default_description": "Configuración por defecto",
     "cannot_delete_only_profile": "No puedes eliminar el único perfil"
+  },
+  "logs": {
+    "usb": {
+      "scanning": "Escaneando dispositivos USB...",
+      "found_devices": "Encontrados {{count}} dispositivos USB",
+      "scan_error": "Error al escanear dispositivos",
+      "requesting_permission": "Solicitando permisos para dispositivo {{deviceId}}...",
+      "permission_granted": "Permisos concedidos para dispositivo {{deviceId}}",
+      "permission_denied": "Permisos denegados para dispositivo {{deviceId}}",
+      "permission_error": "Error al solicitar permisos",
+      "opening_connection": "Abriendo conexión a dispositivo {{deviceId}}...",
+      "device_connected": "Dispositivo {{deviceId}} conectado exitosamente",
+      "could_not_open_device": "No se pudo abrir dispositivo {{deviceId}}",
+      "open_error": "Error al abrir dispositivo",
+      "closing_device": "Cerrando dispositivo USB...",
+      "device_disconnected": "Dispositivo desconectado exitosamente",
+      "could_not_close": "No se pudo cerrar el dispositivo",
+      "close_error": "Error al cerrar dispositivo"
+    },
+    "eeprom": {
+      "reading": "Leyendo {{length}} bytes desde EEPROM offset {{offset}}...",
+      "read_success": "Lectura exitosa: {{length}} bytes",
+      "read_error": "Error al leer EEPROM",
+      "writing": "Escribiendo en EEPROM offset {{offset}} {{mode}}...",
+      "write_success": "Escritura y verificación exitosa: {{bytes}} bytes",
+      "write_no_verify": "Escritura completada: {{bytes}} bytes (verificación omitida)",
+      "write_error": "Error al escribir EEPROM",
+      "dumping": "Volcando EEPROM completa (256 bytes)...",
+      "dump_success": "Volcado exitoso: {{size}} bytes",
+      "dump_error": "Error al volcar EEPROM"
+    }
   }
 }

@@ -1596,3 +1596,9 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [x] "Conecta un adaptador USB-Ethernet" → "Connect a USB-Ethernet adapter"
 - [x] "Escaneando dispositivos USB..." → "Scanning USB devices..."
 - [x] "Encontrados 0 dispositivos USB" → "Found 0 USB devices"
+
+## Logs en vivo del módulo diagnóstico (15 Ene 2026)
+
+- [x] Traducir "Escaneando dispositivos USB..." en logs en vivo
+- [x] Traducir "Encontrados X dispositivos USB" en logs en vivo
+- [x] Traducir todos los mensajes de logs USB y EEPROM (ES/EN/DE)

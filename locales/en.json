@@ -1530,5 +1530,36 @@
     "unknown": "Unknown",
     "default_description": "Default configuration",
     "cannot_delete_only_profile": "You cannot delete the only profile"
+  },
+  "logs": {
+    "usb": {
+      "scanning": "Scanning USB devices...",
+      "found_devices": "Found {{count}} USB devices",
+      "scan_error": "Error scanning devices",
+      "requesting_permission": "Requesting permissions for device {{deviceId}}...",
+      "permission_granted": "Permissions granted for device {{deviceId}}",
+      "permission_denied": "Permissions denied for device {{deviceId}}",
+      "permission_error": "Error requesting permissions",
+      "opening_connection": "Opening connection to device {{deviceId}}...",
+      "device_connected": "Device {{deviceId}} connected successfully",
+      "could_not_open_device": "Could not open device {{deviceId}}",
+      "open_error": "Error opening device",
+      "closing_device": "Closing USB device...",
+      "device_disconnected": "Device disconnected successfully",
+      "could_not_close": "Could not close device",
+      "close_error": "Error closing device"
+    },
+    "eeprom": {
+      "reading": "Reading {{length}} bytes from EEPROM offset {{offset}}...",
+      "read_success": "Read successful: {{length}} bytes",
+      "read_error": "Error reading EEPROM",
+      "writing": "Writing to EEPROM offset {{offset}} {{mode}}...",
+      "write_success": "Write and verification successful: {{bytes}} bytes",
+      "write_no_verify": "Write completed: {{bytes}} bytes (verification skipped)",
+      "write_error": "Error writing EEPROM",
+      "dumping": "Dumping complete EEPROM (256 bytes)...",
+      "dump_success": "Dump successful: {{size}} bytes",
+      "dump_error": "Error dumping EEPROM"
+    }
   }
 }

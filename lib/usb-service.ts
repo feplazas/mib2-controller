@@ -48,16 +48,15 @@ class UsbService {
     }
 
     try {
-      usbLogger.info('scan', 'Escaneando dispositivos USB...');
+      usbLogger.info('scan', 'logs.usb.scanning');
       this.devices = UsbNativeModule.getDeviceList();
-      usbLogger.success('scan', `Encontrados ${this.devices.length} dispositivos USB`, 
-        this.devices.map(d => `${d.deviceName} (${d.vendorId.toString(16)}:${d.productId.toString(16)})`)  
+      usbLogger.success('scan', 'logs.usb.found_devices', { count: this.devices.length }  
       );
       
       this.notifyListeners();
       return this.devices;
     } catch (error: any) {
-      usbLogger.error('scan', 'Error al escanear dispositivos', error.message);
+      usbLogger.error('scan', 'logs.usb.scan_error', error.message);
       return [];
     }
   }
@@ -71,16 +70,16 @@ class UsbService {
     }
 
     try {
-      usbLogger.info('permission', `Solicitando permisos para dispositivo ${deviceId}...`);
+      usbLogger.info('permission', 'logs.usb.requesting_permission', { deviceId });
       const granted = await UsbNativeModule.requestPermission(deviceId);
       if (granted) {
-        usbLogger.success('permission', `Permisos concedidos para dispositivo ${deviceId}`);
+        usbLogger.success('permission', 'logs.usb.permission_granted', { deviceId });
       } else {
-        usbLogger.warning('permission', `Permisos denegados para dispositivo ${deviceId}`);
+        usbLogger.warning('permission', 'logs.usb.permission_denied', { deviceId });
       }
       return granted;
     } catch (error: any) {
-      usbLogger.error('permission', 'Error al solicitar permisos', error.message);
+      usbLogger.error('permission', 'logs.usb.permission_error', error.message);
       return false;
     }
   }
@@ -94,17 +93,17 @@ class UsbService {
     }
 
     try {
-      usbLogger.info('connect', `Abriendo conexión a dispositivo ${deviceId}...`);
+      usbLogger.info('connect', 'logs.usb.opening_connection', { deviceId });
       const opened = await UsbNativeModule.openDevice(deviceId);
       if (opened) {
         this.currentDeviceId = deviceId;
-        usbLogger.success('connect', `Dispositivo ${deviceId} conectado exitosamente`);
+        usbLogger.success('connect', 'logs.usb.device_connected', { deviceId });
       } else {
-        usbLogger.error('connect', `No se pudo abrir dispositivo ${deviceId}`);
+        usbLogger.error('connect', 'logs.usb.could_not_open_device', { deviceId });
       }
       return opened;
     } catch (error: any) {
-      usbLogger.error('connect', 'Error al abrir dispositivo', error.message);
+      usbLogger.error('connect', 'logs.usb.open_error', error.message);
       return false;
     }
   }
@@ -118,17 +117,17 @@ class UsbService {
     }
 
     try {
-      usbLogger.info('disconnect', 'Cerrando dispositivo USB...');
+      usbLogger.info('disconnect', 'logs.usb.closing_device');
       const closed = UsbNativeModule.closeDevice();
       if (closed) {
         this.currentDeviceId = null;
-        usbLogger.success('disconnect', 'Dispositivo desconectado exitosamente');
+        usbLogger.success('disconnect', 'logs.usb.device_disconnected');
       } else {
-        usbLogger.warning('disconnect', 'No se pudo cerrar el dispositivo');
+        usbLogger.warning('disconnect', 'logs.usb.could_not_close');
       }
       return closed;
     } catch (error: any) {
-      usbLogger.error('disconnect', 'Error al cerrar dispositivo', error.message);
+      usbLogger.error('disconnect', 'logs.usb.close_error', error.message);
       return false;
     }
   }
@@ -146,12 +145,12 @@ class UsbService {
     }
 
     try {
-      usbLogger.info('read', `Leyendo ${length} bytes desde EEPROM offset 0x${offset.toString(16)}...`);
+      usbLogger.info('read', 'logs.eeprom.reading', { length, offset: `0x${offset.toString(16)}` });
       const result = await UsbNativeModule.readEEPROM(offset, length);
-      usbLogger.success('read', `Lectura exitosa: ${length} bytes`, `Data: ${result.data.substring(0, 32)}${result.data.length > 32 ? '...' : ''}`);
+      usbLogger.success('read', 'logs.eeprom.read_success', { length });
       return result;
     } catch (error: any) {
-      usbLogger.error('read', 'Error al leer EEPROM', error.message);
+      usbLogger.error('read', 'logs.eeprom.read_error', error.message);
       throw error;
     }
   }
@@ -170,18 +169,18 @@ class UsbService {
 
     try {
       const mode = skipVerification ? '(NO VERIFY)' : '(with verify)';
-      usbLogger.info('write', `Escribiendo en EEPROM offset 0x${offset.toString(16)} ${mode}...`, `Data: ${dataHex}`);
+      usbLogger.info('write', 'logs.eeprom.writing', { offset: `0x${offset.toString(16)}`, mode });
       const result = await UsbNativeModule.writeEEPROM(offset, dataHex, MAGIC_VALUE, skipVerification);
       
       if (skipVerification) {
-        usbLogger.warning('write', `Escritura completada: ${result.bytesWritten} bytes (verificación omitida)`);
+        usbLogger.warning('write', 'logs.eeprom.write_no_verify', { bytes: result.bytesWritten });
       } else {
-        usbLogger.success('write', `Escritura y verificación exitosa: ${result.bytesWritten} bytes`);
+        usbLogger.success('write', 'logs.eeprom.write_success', { bytes: result.bytesWritten });
       }
       
       return result;
     } catch (error: any) {
-      usbLogger.error('write', 'Error al escribir EEPROM', error.message);
+      usbLogger.error('write', 'logs.eeprom.write_error', error.message);
       throw error;
     }
   }
@@ -199,12 +198,12 @@ class UsbService {
     }
 
     try {
-      usbLogger.info('dump', 'Volcando EEPROM completa (256 bytes)...');
+      usbLogger.info('dump', 'logs.eeprom.dumping');
       const result = await UsbNativeModule.dumpEEPROM();
-      usbLogger.success('dump', `Volcado exitoso: ${result.size} bytes`);
+      usbLogger.success('dump', 'logs.eeprom.dump_success', { size: result.size });
       return result;
     } catch (error: any) {
-      usbLogger.error('dump', 'Error al volcar EEPROM', error.message);
+      usbLogger.error('dump', 'logs.eeprom.dump_error', error.message);
       throw error;
     }
   }

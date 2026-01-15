@@ -1530,5 +1530,36 @@
     "unknown": "Unbekannt",
     "default_description": "Standardkonfiguration",
     "cannot_delete_only_profile": "Sie können das einzige Profil nicht löschen"
+  },
+  "logs": {
+    "usb": {
+      "scanning": "USB-Geräte werden gescannt...",
+      "found_devices": "{{count}} USB-Geräte gefunden",
+      "scan_error": "Fehler beim Scannen der Geräte",
+      "requesting_permission": "Berechtigungen für Gerät {{deviceId}} werden angefordert...",
+      "permission_granted": "Berechtigungen für Gerät {{deviceId}} erteilt",
+      "permission_denied": "Berechtigungen für Gerät {{deviceId}} verweigert",
+      "permission_error": "Fehler beim Anfordern der Berechtigungen",
+      "opening_connection": "Verbindung zu Gerät {{deviceId}} wird geöffnet...",
+      "device_connected": "Gerät {{deviceId}} erfolgreich verbunden",
+      "could_not_open_device": "Gerät {{deviceId}} konnte nicht geöffnet werden",
+      "open_error": "Fehler beim Öffnen des Geräts",
+      "closing_device": "USB-Gerät wird geschlossen...",
+      "device_disconnected": "Gerät erfolgreich getrennt",
+      "could_not_close": "Gerät konnte nicht geschlossen werden",
+      "close_error": "Fehler beim Schließen des Geräts"
+    },
+    "eeprom": {
+      "reading": "{{length}} Bytes von EEPROM-Offset {{offset}} werden gelesen...",
+      "read_success": "Lesen erfolgreich: {{length}} Bytes",
+      "read_error": "Fehler beim Lesen des EEPROM",
+      "writing": "Schreiben in EEPROM-Offset {{offset}} {{mode}}...",
+      "write_success": "Schreiben und Verifizierung erfolgreich: {{bytes}} Bytes",
+      "write_no_verify": "Schreiben abgeschlossen: {{bytes}} Bytes (Verifizierung übersprungen)",
+      "write_error": "Fehler beim Schreiben des EEPROM",
+      "dumping": "Vollständiges EEPROM wird ausgelesen (256 Bytes)...",
+      "dump_success": "Auslesen erfolgreich: {{size}} Bytes",
+      "dump_error": "Fehler beim Auslesen des EEPROM"
+    }
   }
 }
