@@ -1579,4 +1579,13 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [x] Regenerar completamente en.json con traducciones reales en inglés
 - [x] Regenerar completamente de.json con traducciones reales en alemán
 - [x] Verificar que TODAS las claves tienen traducciones reales (no "[TODO: ...]")
-- [ ] Generar nuevo APK con traducciones corregidas
+- [x] Generar nuevo APK con traducciones corregidas
+
+## PROBLEMA CRÍTICO: Traducciones no funcionan en APK (15 Ene 2026)
+
+- [x] El selector de idioma muestra "English" pero la UI sigue en español
+- [x] Diagnosticar por qué los archivos en.json/de.json no se cargan
+- [x] Verificar que los archivos de traducción se incluyen en el bundle del APK
+- [x] Verificar que simple-i18n.ts carga correctamente los archivos
+- [x] Implementar solución correcta - Archivos en.json/de.json regenerados con DeepL
+- [ ] Generar nuevo APK y validar que funciona
