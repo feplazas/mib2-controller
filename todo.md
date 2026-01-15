@@ -1625,5 +1625,5 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 
 ### GitHub
 - [x] Actualizar .gitignore con exclusiones de secretos
-- [ ] Commit de todos los cambios
-- [ ] Push al repositorio
+- [x] Commit de todos los cambios (3d9b6d6)
+- [x] Push al repositorio (github.com/feplazas/mib2-controller)
