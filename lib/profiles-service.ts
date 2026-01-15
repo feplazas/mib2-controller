@@ -23,7 +23,8 @@ export interface VIDPIDProfile {
   chipset: string;
   category: 'mib2_compatible' | 'common_adapters' | 'custom';
   compatible: boolean;
-  notes: string;
+  notes?: string;
+  notesKey?: string;
   icon: string;
 }
 
@@ -55,7 +56,7 @@ const PREDEFINED_PROFILES: VIDPIDProfile[] = [
     chipset: 'ASIX AX88772A',
     category: 'mib2_compatible',
     compatible: true,
-    notes: 'Versión alternativa del DUB-E100, también compatible con MIB2.',
+    notesKey: 'profiles.dub_e100_b1_notes',
     icon: '✅',
   },
   
@@ -70,7 +71,7 @@ const PREDEFINED_PROFILES: VIDPIDProfile[] = [
     chipset: 'Realtek RTL8153',
     category: 'common_adapters',
     compatible: false,
-    notes: 'Adaptador Gigabit común. Requiere spoofing para MIB2.',
+    notesKey: 'profiles.tplink_ue300_notes',
     icon: '🔧',
   },
   {
@@ -83,7 +84,7 @@ const PREDEFINED_PROFILES: VIDPIDProfile[] = [
     chipset: 'Realtek RTL8152',
     category: 'common_adapters',
     compatible: false,
-    notes: 'Adaptador Fast Ethernet de TP-Link. Requiere spoofing.',
+    notesKey: 'profiles.tplink_ue200_notes',
     icon: '🔧',
   },
   {
@@ -96,7 +97,7 @@ const PREDEFINED_PROFILES: VIDPIDProfile[] = [
     chipset: 'ASIX AX88772B',
     category: 'common_adapters',
     compatible: false,
-    notes: 'Adaptador ASIX común. Ideal para spoofing a D-Link DUB-E100.',
+    notesKey: 'profiles.tplink_wl_notes',
     icon: '🔧',
   },
   {
@@ -109,7 +110,7 @@ const PREDEFINED_PROFILES: VIDPIDProfile[] = [
     chipset: 'ASIX AX88772',
     category: 'common_adapters',
     compatible: false,
-    notes: 'Chipset ASIX genérico. Compatible con spoofing.',
+    notesKey: 'profiles.asix_generic_notes',
     icon: '🔧',
   },
   {
@@ -122,7 +123,7 @@ const PREDEFINED_PROFILES: VIDPIDProfile[] = [
     chipset: 'ASIX AX88772A',
     category: 'common_adapters',
     compatible: false,
-    notes: 'Chipset ASIX genérico (versión A). Compatible con spoofing.',
+    notesKey: 'profiles.asix_generic_a_notes',
     icon: '🔧',
   },
   {
@@ -135,7 +136,7 @@ const PREDEFINED_PROFILES: VIDPIDProfile[] = [
     chipset: 'Realtek RTL8153',
     category: 'common_adapters',
     compatible: false,
-    notes: 'Chipset Realtek Gigabit común. Requiere spoofing.',
+    notesKey: 'profiles.realtek_rtl8153_notes',
     icon: '🔧',
   },
   {
@@ -228,7 +229,7 @@ const PREDEFINED_PROFILES: VIDPIDProfile[] = [
     chipset: 'Microchip LAN9512/9514',
     category: 'common_adapters',
     compatible: false,
-    notes: 'Chipset Microchip común en Raspberry Pi. NO compatible con spoofing.',
+    notesKey: 'profiles.microchip_lan9512_notes',
     icon: '🔧',
   },
   {
@@ -241,7 +242,7 @@ const PREDEFINED_PROFILES: VIDPIDProfile[] = [
     chipset: 'Microchip LAN7800',
     category: 'common_adapters',
     compatible: false,
-    notes: 'Chipset Microchip Gigabit USB 3.0. NO compatible con spoofing.',
+    notesKey: 'profiles.microchip_lan7800_notes',
     icon: '🔧',
   },
   {
@@ -254,7 +255,7 @@ const PREDEFINED_PROFILES: VIDPIDProfile[] = [
     chipset: 'Davicom DM9601',
     category: 'common_adapters',
     compatible: false,
-    notes: 'Chipset Davicom económico. NO compatible con spoofing.',
+    notesKey: 'profiles.davicom_dm9601_notes',
     icon: '🔧',
   },
 ];
@@ -523,17 +524,17 @@ class ProfilesService {
       
       // Validar estructura
       if (!profile.name || !profile.vendorId || !profile.productId) {
-        throw new Error('JSON inválido: faltan campos requeridos');
+        throw new Error('profiles.error_invalid_json');
       }
       
       // Guardar como perfil personalizado
       const saved = await this.saveCustomProfile({
         name: profile.name,
-        manufacturer: profile.manufacturer || 'Desconocido',
-        model: profile.model || 'Desconocido',
+        manufacturer: profile.manufacturer || '',
+        model: profile.model || '',
         vendorId: profile.vendorId,
         productId: profile.productId,
-        chipset: profile.chipset || 'Desconocido',
+        chipset: profile.chipset || '',
         compatible: profile.compatible || false,
         notes: profile.notes || '',
         icon: profile.icon || '🔧',
@@ -542,7 +543,7 @@ class ProfilesService {
       return saved;
     } catch (error) {
       console.error('[ProfilesService] Error importing profile:', error);
-      throw new Error('No se pudo importar el perfil: JSON inválido');
+      throw new Error('profiles.error_import_failed');
     }
   }
 
@@ -601,14 +602,14 @@ class ProfilesService {
         readPidLow.data.toLowerCase() !== pidLow.toLowerCase() ||
         readPidHigh.data.toLowerCase() !== pidHigh.toLowerCase()
       ) {
-        throw new Error('Verificación falló: valores escritos no coinciden');
+        throw new Error('profiles.error_verification_failed');
       }
       
       console.log(`[ProfilesService] Profile applied successfully: ${profile.name}`);
       return { success: true, backupId };
     } catch (error) {
       console.error('[ProfilesService] Error applying profile:', error);
-      throw new Error(`No se pudo aplicar el perfil: ${error}`);
+      throw new Error('profiles.error_apply_failed');
     }
   }
 
@@ -630,7 +631,7 @@ class ProfilesService {
   /**
    * Validar si un dispositivo puede ser spoofed
    */
-  async canDeviceBeSpoof(device: UsbDevice): Promise<{ canSpoof: boolean; reason?: string }> {
+  async canDeviceBeSpoof(device: UsbDevice): Promise<{ canSpoof: boolean; reason?: string; reasonKey?: string }> {
     // Verificar si es chipset ASIX
     const isASIX = device.chipset?.toLowerCase().includes('asix') || 
                    device.vendorId === 0x0B95;
@@ -642,34 +643,34 @@ class ProfilesService {
       if (chipsetLower.includes('realtek')) {
         return {
           canSpoof: false,
-          reason: 'Chipsets Realtek NO son compatibles con spoofing en Android. Requieren drivers kernel de Linux/Windows y herramientas específicas (PG Tool). Considera conseguir un adaptador ASIX.',
+          reasonKey: 'profiles.realtek_not_compatible',
         };
       }
       
       if (chipsetLower.includes('microchip') || chipsetLower.includes('lan')) {
         return {
           canSpoof: false,
-          reason: 'Chipsets Microchip NO soportan modificación de VID/PID. Solo chipsets ASIX AX88772/A/B son compatibles.',
+          reasonKey: 'profiles.microchip_not_compatible',
         };
       }
       
       if (chipsetLower.includes('broadcom')) {
         return {
           canSpoof: false,
-          reason: 'Chipsets Broadcom NO soportan modificación de VID/PID. Solo chipsets ASIX AX88772/A/B son compatibles.',
+          reasonKey: 'profiles.broadcom_not_compatible',
         };
       }
       
       if (chipsetLower.includes('davicom')) {
         return {
           canSpoof: false,
-          reason: 'Chipsets Davicom NO soportan modificación de VID/PID. Solo chipsets ASIX AX88772/A/B son compatibles.',
+          reasonKey: 'profiles.davicom_not_compatible',
         };
       }
       
       return {
         canSpoof: false,
-        reason: 'Solo chipsets ASIX AX88772/A/B soportan spoofing de EEPROM para MIB2.',
+        reasonKey: 'profiles.only_asix_compatible',
       };
     }
     

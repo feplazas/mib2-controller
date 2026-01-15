@@ -169,7 +169,7 @@ class UsbService {
     }
 
     try {
-      const mode = skipVerification ? '(SIN VERIFICACIÓN)' : '(con verificación)';
+      const mode = skipVerification ? '(NO VERIFY)' : '(with verify)';
       usbLogger.info('write', `Escribiendo en EEPROM offset 0x${offset.toString(16)} ${mode}...`, `Data: ${dataHex}`);
       const result = await UsbNativeModule.writeEEPROM(offset, dataHex, MAGIC_VALUE, skipVerification);
       
@@ -351,16 +351,16 @@ class UsbService {
     }
 
     try {
-      usbLogger.log('info', 'detectEEPROMType', '🔍 Iniciando detección REAL de tipo de EEPROM...');
+      usbLogger.log('info', 'detectEEPROMType', '🔍 Starting REAL EEPROM type detection...');
       
       const result = await UsbNativeModule.detectEEPROMType();
       
-      usbLogger.log('success', 'detectEEPROMType', `✅ Detección completada: ${result.type} (writable: ${result.writable})`);
-      usbLogger.log('info', 'detectEEPROMType', `📝 Razón: ${result.reason}`);
+      usbLogger.log('success', 'detectEEPROMType', `✅ Detection completed: ${result.type} (writable: ${result.writable})`);
+      usbLogger.log('info', 'detectEEPROMType', `📝 Reason: ${result.reason}`);
       
       return result;
     } catch (error) {
-      usbLogger.log('error', 'detectEEPROMType', `❌ Error en detección de EEPROM: ${error}`);
+      usbLogger.log('error', 'detectEEPROMType', `❌ EEPROM detection error: ${error}`);
       throw error;
     }
   }

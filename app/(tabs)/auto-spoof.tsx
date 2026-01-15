@@ -5,7 +5,7 @@ import { useUsbStatus } from '@/lib/usb-status-context';
 import { usbService } from '@/lib/usb-service';
 import { backupService } from '@/lib/backup-service';
 import { ChipsetStatusBadge } from '@/components/chipset-status-badge';
-import { getChipsetCompatibility, canAttemptSpoofing, getCompatibilityMessage } from '@/lib/chipset-compatibility';
+import { getChipsetCompatibility, canAttemptSpoofing, getCompatibilityMessageKey } from '@/lib/chipset-compatibility';
 import { SuccessResultModal } from '@/components/success-result-modal';
 import { EepromProgressIndicator } from '@/components/eeprom-progress-indicator';
 import * as Haptics from 'expo-haptics';
@@ -47,7 +47,7 @@ export default function AutoSpoofScreen() {
     if (!canAttemptSpoofing(compatibility)) {
       Alert.alert(
         t('auto_spoof.device_not_compatible'),
-        getCompatibilityMessage(compatibility, device.chipset || t('common.unknown'))
+        t(getCompatibilityMessageKey(compatibility), { chipset: device.chipset || t('common.unknown') })
       );
       return;
     }
@@ -346,7 +346,7 @@ export default function AutoSpoofScreen() {
     if (!canAttemptSpoofing(compatibility)) {
       Alert.alert(
         t('auto_spoof.device_not_compatible'),
-        getCompatibilityMessage(compatibility, device.chipset || t('common.unknown'))
+        t(getCompatibilityMessageKey(compatibility), { chipset: device.chipset || t('common.unknown') })
       );
       return;
     }

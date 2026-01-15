@@ -305,7 +305,7 @@ export default function FECScreen() {
               >
                 <View className="flex-row items-center justify-between mb-2">
                   <Text className="text-base font-semibold" style={{ color: colors.foreground }}>
-                    {fec.name}
+                    {t(fec.nameKey)}
                   </Text>
                   <View
                     className="w-6 h-6 rounded-full items-center justify-center"
@@ -323,7 +323,7 @@ export default function FECScreen() {
                   </View>
                 </View>
                 <Text className="text-xs mb-2" style={{ color: colors.muted }}>
-                  {fec.description}
+                  {t(fec.descriptionKey)}
                 </Text>
                 <Text className="text-xs font-mono" style={{ color: colors.primary }}>
                   {t('fec.code')}: {fec.code}

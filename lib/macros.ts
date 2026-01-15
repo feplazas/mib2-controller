@@ -6,15 +6,15 @@
 
 export interface MacroStep {
   command: string;
-  description: string;
+  descriptionKey: string;
   delay?: number; // Delay in milliseconds before next command
   optional?: boolean; // If true, failure won't stop the macro
 }
 
 export interface CommandMacro {
   id: string;
-  name: string;
-  description: string;
+  nameKey: string;
+  descriptionKey: string;
   category: 'backup' | 'adaptation' | 'diagnostic' | 'maintenance' | 'custom';
   steps: MacroStep[];
   estimatedDuration: number; // in seconds
@@ -26,8 +26,8 @@ export const PREDEFINED_MACROS: CommandMacro[] = [
   // ========== BACKUP MACROS ==========
   {
     id: 'full_backup',
-    name: 'Backup Completo',
-    description: 'Crea un backup completo de adaptaciones y configuración',
+    nameKey: 'macros.full_backup',
+    descriptionKey: 'macros.full_backup_desc',
     category: 'backup',
     estimatedDuration: 30,
     riskLevel: 'safe',
@@ -35,35 +35,35 @@ export const PREDEFINED_MACROS: CommandMacro[] = [
     steps: [
       {
         command: 'date',
-        description: 'Obtener fecha actual',
+        descriptionKey: 'macros.step_get_date',
       },
       {
         command: 'mkdir -p /net/rcc/mnt/efs-persist/backups',
-        description: 'Crear directorio de backups',
+        descriptionKey: 'macros.step_create_backup_dir',
         optional: true,
       },
       {
         command: 'cp -r /net/rcc/mnt/efs-persist/Adaptation /net/rcc/mnt/efs-persist/backups/Adaptation_$(date +%Y%m%d_%H%M%S)',
-        description: 'Backup de adaptaciones',
+        descriptionKey: 'macros.step_backup_adaptations',
         delay: 2000,
       },
       {
         command: 'cp /net/rcc/mnt/efs-persist/skin.cfg /net/rcc/mnt/efs-persist/backups/skin_$(date +%Y%m%d_%H%M%S).cfg',
-        description: 'Backup de configuración de skin',
+        descriptionKey: 'macros.step_backup_skin',
         delay: 1000,
         optional: true,
       },
       {
         command: 'ls -lh /net/rcc/mnt/efs-persist/backups/',
-        description: 'Verificar backups creados',
+        descriptionKey: 'macros.step_verify_backups',
         delay: 1000,
       },
     ],
   },
   {
     id: 'backup_adaptations',
-    name: 'Backup de Adaptaciones',
-    description: 'Crea un backup solo de las adaptaciones',
+    nameKey: 'macros.backup_adaptations',
+    descriptionKey: 'macros.backup_adaptations_desc',
     category: 'backup',
     estimatedDuration: 10,
     riskLevel: 'safe',
@@ -71,17 +71,17 @@ export const PREDEFINED_MACROS: CommandMacro[] = [
     steps: [
       {
         command: 'mkdir -p /net/rcc/mnt/efs-persist/backups',
-        description: 'Crear directorio de backups',
+        descriptionKey: 'macros.step_create_backup_dir',
         optional: true,
       },
       {
         command: 'cp -r /net/rcc/mnt/efs-persist/Adaptation /net/rcc/mnt/efs-persist/backups/Adaptation_backup_$(date +%Y%m%d)',
-        description: 'Copiar adaptaciones',
+        descriptionKey: 'macros.step_copy_adaptations',
         delay: 2000,
       },
       {
         command: 'ls -la /net/rcc/mnt/efs-persist/backups/',
-        description: 'Listar backups',
+        descriptionKey: 'macros.step_list_backups',
         delay: 1000,
       },
     ],
@@ -90,8 +90,8 @@ export const PREDEFINED_MACROS: CommandMacro[] = [
   // ========== ADAPTATION MACROS ==========
   {
     id: 'enable_all_features',
-    name: 'Activar Todas las Características',
-    description: 'Activa Green Menu, Video en Movimiento y líneas guía de cámara',
+    nameKey: 'macros.enable_all_features',
+    descriptionKey: 'macros.enable_all_features_desc',
     category: 'adaptation',
     estimatedDuration: 15,
     riskLevel: 'high',
@@ -99,35 +99,35 @@ export const PREDEFINED_MACROS: CommandMacro[] = [
     steps: [
       {
         command: 'cp -r /net/rcc/mnt/efs-persist/Adaptation /net/rcc/mnt/efs-persist/Adaptation_backup_pre_activation',
-        description: 'Backup de seguridad',
+        descriptionKey: 'macros.step_safety_backup',
         delay: 2000,
       },
       {
         command: 'echo "1" > /net/rcc/mnt/efs-persist/Adaptation/GreenMenu',
-        description: 'Activar Green Menu',
+        descriptionKey: 'macros.step_enable_green_menu',
         delay: 1000,
       },
       {
         command: 'echo "1" > /net/rcc/mnt/efs-persist/Adaptation/VideoInMotion',
-        description: 'Activar Video en Movimiento',
+        descriptionKey: 'macros.step_enable_vim',
         delay: 1000,
       },
       {
         command: 'echo "1" > /net/rcc/mnt/efs-persist/Adaptation/CameraGuidelines',
-        description: 'Activar líneas guía de cámara',
+        descriptionKey: 'macros.step_enable_camera_guidelines',
         delay: 1000,
       },
       {
         command: 'ls -la /net/rcc/mnt/efs-persist/Adaptation/',
-        description: 'Verificar adaptaciones',
+        descriptionKey: 'macros.step_verify_adaptations',
         delay: 1000,
       },
     ],
   },
   {
     id: 'safe_adaptations',
-    name: 'Adaptaciones Seguras',
-    description: 'Activa solo adaptaciones seguras (Green Menu y líneas guía)',
+    nameKey: 'macros.safe_adaptations',
+    descriptionKey: 'macros.safe_adaptations_desc',
     category: 'adaptation',
     estimatedDuration: 10,
     riskLevel: 'moderate',
@@ -135,22 +135,22 @@ export const PREDEFINED_MACROS: CommandMacro[] = [
     steps: [
       {
         command: 'cp -r /net/rcc/mnt/efs-persist/Adaptation /net/rcc/mnt/efs-persist/Adaptation_backup_safe',
-        description: 'Backup de seguridad',
+        descriptionKey: 'macros.step_safety_backup',
         delay: 2000,
       },
       {
         command: 'echo "1" > /net/rcc/mnt/efs-persist/Adaptation/GreenMenu',
-        description: 'Activar Green Menu',
+        descriptionKey: 'macros.step_enable_green_menu',
         delay: 1000,
       },
       {
         command: 'echo "1" > /net/rcc/mnt/efs-persist/Adaptation/CameraGuidelines',
-        description: 'Activar líneas guía de cámara',
+        descriptionKey: 'macros.step_enable_camera_guidelines',
         delay: 1000,
       },
       {
         command: 'cat /net/rcc/mnt/efs-persist/Adaptation/GreenMenu',
-        description: 'Verificar Green Menu',
+        descriptionKey: 'macros.step_verify_green_menu',
         delay: 500,
       },
     ],
@@ -159,8 +159,8 @@ export const PREDEFINED_MACROS: CommandMacro[] = [
   // ========== DIAGNOSTIC MACROS ==========
   {
     id: 'system_health_check',
-    name: 'Chequeo de Salud del Sistema',
-    description: 'Verifica memoria, disco, temperatura y procesos',
+    nameKey: 'macros.system_health_check',
+    descriptionKey: 'macros.system_health_check_desc',
     category: 'diagnostic',
     estimatedDuration: 20,
     riskLevel: 'safe',
@@ -168,36 +168,36 @@ export const PREDEFINED_MACROS: CommandMacro[] = [
     steps: [
       {
         command: 'free',
-        description: 'Verificar uso de memoria',
+        descriptionKey: 'macros.step_check_memory',
         delay: 1000,
       },
       {
         command: 'df -h',
-        description: 'Verificar espacio en disco',
+        descriptionKey: 'macros.step_check_disk',
         delay: 1000,
       },
       {
         command: 'cat /sys/class/thermal/thermal_zone0/temp',
-        description: 'Verificar temperatura',
+        descriptionKey: 'macros.step_check_temp',
         delay: 1000,
         optional: true,
       },
       {
         command: 'ps aux | head -20',
-        description: 'Listar procesos principales',
+        descriptionKey: 'macros.step_list_processes',
         delay: 1000,
       },
       {
         command: 'uptime',
-        description: 'Verificar tiempo de actividad',
+        descriptionKey: 'macros.step_check_uptime',
         delay: 500,
       },
     ],
   },
   {
     id: 'network_diagnostic',
-    name: 'Diagnóstico de Red',
-    description: 'Verifica configuración de red y conectividad',
+    nameKey: 'macros.network_diagnostic',
+    descriptionKey: 'macros.network_diagnostic_desc',
     category: 'diagnostic',
     estimatedDuration: 15,
     riskLevel: 'safe',
@@ -205,22 +205,22 @@ export const PREDEFINED_MACROS: CommandMacro[] = [
     steps: [
       {
         command: 'ifconfig',
-        description: 'Mostrar interfaces de red',
+        descriptionKey: 'macros.step_show_interfaces',
         delay: 1000,
       },
       {
         command: 'route -n',
-        description: 'Mostrar tabla de rutas',
+        descriptionKey: 'macros.step_show_routes',
         delay: 1000,
       },
       {
         command: 'cat /etc/resolv.conf',
-        description: 'Mostrar servidores DNS',
+        descriptionKey: 'macros.step_show_dns',
         delay: 500,
       },
       {
         command: 'ping -c 4 192.168.1.1',
-        description: 'Probar conectividad con gateway',
+        descriptionKey: 'macros.step_test_gateway',
         delay: 5000,
         optional: true,
       },
@@ -228,8 +228,8 @@ export const PREDEFINED_MACROS: CommandMacro[] = [
   },
   {
     id: 'firmware_info',
-    name: 'Información de Firmware',
-    description: 'Obtiene información detallada del firmware y hardware',
+    nameKey: 'macros.firmware_info',
+    descriptionKey: 'macros.firmware_info_desc',
     category: 'diagnostic',
     estimatedDuration: 10,
     riskLevel: 'safe',
@@ -237,22 +237,22 @@ export const PREDEFINED_MACROS: CommandMacro[] = [
     steps: [
       {
         command: 'cat /net/rcc/mnt/efs-persist/FW/version.txt',
-        description: 'Versión de firmware',
+        descriptionKey: 'macros.step_fw_version',
         delay: 500,
       },
       {
         command: 'cat /net/rcc/mnt/efs-persist/HWVersion',
-        description: 'Versión de hardware',
+        descriptionKey: 'macros.step_hw_version',
         delay: 500,
       },
       {
         command: 'cat /net/rcc/mnt/efs-persist/serialnumber',
-        description: 'Número de serie',
+        descriptionKey: 'macros.step_serial_number',
         delay: 500,
       },
       {
         command: 'uname -a',
-        description: 'Información del sistema',
+        descriptionKey: 'macros.step_system_info',
         delay: 500,
       },
     ],
@@ -261,8 +261,8 @@ export const PREDEFINED_MACROS: CommandMacro[] = [
   // ========== MAINTENANCE MACROS ==========
   {
     id: 'cleanup_system',
-    name: 'Limpieza del Sistema',
-    description: 'Limpia archivos temporales y logs antiguos',
+    nameKey: 'macros.cleanup_system',
+    descriptionKey: 'macros.cleanup_system_desc',
     category: 'maintenance',
     estimatedDuration: 15,
     riskLevel: 'moderate',
@@ -270,29 +270,38 @@ export const PREDEFINED_MACROS: CommandMacro[] = [
     steps: [
       {
         command: 'df -h',
-        description: 'Verificar espacio antes de limpiar',
+        descriptionKey: 'macros.step_check_space_before',
         delay: 1000,
       },
       {
         command: 'rm -f /tmp/*',
-        description: 'Limpiar archivos temporales',
+        descriptionKey: 'macros.step_clean_temp',
         delay: 2000,
         optional: true,
       },
       {
         command: 'find /var/log -name "*.log" -type f -mtime +7 -delete',
-        description: 'Eliminar logs antiguos (>7 días)',
+        descriptionKey: 'macros.step_delete_old_logs',
         delay: 2000,
         optional: true,
       },
       {
         command: 'df -h',
-        description: 'Verificar espacio después de limpiar',
+        descriptionKey: 'macros.step_check_space_after',
         delay: 1000,
       },
     ],
   },
 ];
+
+// Category keys for translation
+export const MACRO_CATEGORY_KEYS = {
+  backup: 'macros.category_backup',
+  adaptation: 'macros.category_adaptation',
+  diagnostic: 'macros.category_diagnostic',
+  maintenance: 'macros.category_maintenance',
+  custom: 'macros.category_custom',
+} as const;
 
 /**
  * Get macros by category
@@ -330,17 +339,10 @@ export function getMacroStepCount(macro: CommandMacro): number {
 }
 
 /**
- * Get category label
+ * Get category key for translation
  */
-export function getCategoryLabel(category: CommandMacro['category']): string {
-  const labels: Record<CommandMacro['category'], string> = {
-    backup: 'Backup',
-    adaptation: 'Adaptaciones',
-    diagnostic: 'Diagnóstico',
-    maintenance: 'Mantenimiento',
-    custom: 'Personalizado',
-  };
-  return labels[category];
+export function getCategoryKey(category: CommandMacro['category']): string {
+  return MACRO_CATEGORY_KEYS[category];
 }
 
 /**

@@ -59,7 +59,7 @@ class BackupService {
         data: encryptedData, // Datos cifrados
         size: dump.size,
         checksum,
-        notes: notes || `Backup automático antes de spoofing`,
+        notes: notes || 'auto_backup_before_spoofing',
         encrypted: true,
       };
       
@@ -70,7 +70,7 @@ class BackupService {
       return backup;
     } catch (error) {
       console.error('[BackupService] Error creating backup:', error);
-      throw new Error(`No se pudo crear el backup: ${error}`);
+      throw new Error(`backup_creation_failed: ${error}`);
     }
   }
 
@@ -177,7 +177,7 @@ class BackupService {
       // Cargar backup
       const backup = await this.getBackup(backupId);
       if (!backup) {
-        throw new Error('Backup no encontrado');
+        throw new Error('backup_not_found');
       }
       
       // Descifrar datos si están cifrados
@@ -189,18 +189,18 @@ class BackupService {
       
       // Validar tamaño de datos
       if (backup.size !== 256) {
-        throw new Error(`Tamaño de backup inválido: ${backup.size} bytes (esperado: 256)`);
+        throw new Error(`invalid_backup_size: ${backup.size}`);
       }
       
       // Validar formato hexadecimal
       if (!/^[0-9A-Fa-f]+$/.test(decryptedData)) {
-        throw new Error('Formato de datos inválido (no es hexadecimal)');
+        throw new Error('invalid_data_format');
       }
       
       // Validar integridad con checksum MD5 (de datos descifrados)
       const calculatedChecksum = CryptoJS.MD5(decryptedData).toString();
       if (backup.checksum && calculatedChecksum !== backup.checksum) {
-        throw new Error(`Checksum inválido: datos corruptos detectados\nEsperado: ${backup.checksum}\nCalculado: ${calculatedChecksum}`);
+        throw new Error(`checksum_invalid: expected=${backup.checksum}, calculated=${calculatedChecksum}`);
       }
       console.log(`[BackupService] Checksum validated: ${calculatedChecksum}`);
       
@@ -230,7 +230,7 @@ class BackupService {
       return { success: true, bytesWritten };
     } catch (error) {
       console.error('[BackupService] Error restoring backup:', error);
-      throw new Error(`No se pudo restaurar el backup: ${error}`);
+      throw new Error(`backup_restore_failed: ${error}`);
     }
   }
 
@@ -241,7 +241,7 @@ class BackupService {
     try {
       const backup = await this.getBackup(backupId);
       if (!backup) {
-        throw new Error('Backup no encontrado');
+        throw new Error('backup_not_found');
       }
       
       return JSON.stringify(backup, null, 2);
@@ -260,7 +260,7 @@ class BackupService {
       
       // Validar estructura
       if (!backup.id || !backup.data || !backup.size) {
-        throw new Error('Formato de backup inválido');
+        throw new Error('invalid_backup_format');
       }
       
       // Guardar backup importado
@@ -270,7 +270,7 @@ class BackupService {
       return backup;
     } catch (error) {
       console.error('[BackupService] Error importing backup:', error);
-      throw new Error(`No se pudo importar el backup: ${error}`);
+      throw new Error(`backup_import_failed: ${error}`);
     }
   }
 

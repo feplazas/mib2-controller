@@ -144,7 +144,7 @@ export class ConfigManager {
       if (await Sharing.isAvailableAsync()) {
         await Sharing.shareAsync(filePath, {
           mimeType: 'application/json',
-          dialogTitle: 'Exportar Configuración MIB2',
+          dialogTitle: 'common.config_export_title',
           UTI: 'public.json',
         });
       }
