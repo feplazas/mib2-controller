@@ -1588,4 +1588,11 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [x] Verificar que los archivos de traducción se incluyen en el bundle del APK
 - [x] Verificar que simple-i18n.ts carga correctamente los archivos
 - [x] Implementar solución correcta - Archivos en.json/de.json regenerados con DeepL
-- [ ] Generar nuevo APK y validar que funciona
+- [x] Generar nuevo APK y validar que funciona - Build ID: 370a1340-d7c2-4619-a1d6-a3dd842d267a
+
+## Strings faltantes en módulos USB y Diagnóstico (15 Ene 2026)
+
+- [x] "Sin Dispositivo USB" → "No USB Device"
+- [x] "Conecta un adaptador USB-Ethernet" → "Connect a USB-Ethernet adapter"
+- [x] "Escaneando dispositivos USB..." → "Scanning USB devices..."
+- [x] "Encontrados 0 dispositivos USB" → "Found 0 USB devices"

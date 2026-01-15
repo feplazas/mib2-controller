@@ -274,7 +274,7 @@ export default function UsbStatusScreen() {
       >
         <View className="gap-4">
           {/* Indicador de Escaneo */}
-          <ScanningIndicator isScanning={isScanning} />
+          <ScanningIndicator isScanning={isScanning} text={t('usb.scanning')} />
           {/* Header */}
           <View className="items-center mb-4">
             <Text className="text-3xl font-bold text-foreground mb-2">

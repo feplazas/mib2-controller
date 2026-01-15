@@ -1288,7 +1288,7 @@
     "refresh_devices": "Geräte aktualisieren",
     "request_permissions": "Berechtigungen anfordern",
     "scan_now": "Jetzt scannen",
-    "scanning": "Scanne...",
+    "scanning": "USB-Geräte werden gescannt...",
     "serial": "Seriennummer",
     "service_status": "Dienststatus",
     "statistics": "Statistiken",
@@ -1312,7 +1312,12 @@
     "detected_type": "Erkannter Typ",
     "modifiable": "Modifizierbar",
     "can_be_modified": "Dieser Adapter KANN durch Spoofing sicher modifiziert werden.",
-    "cannot_be_modified": "Dieser Adapter KANN NICHT modifiziert werden. Spoofing ist BLOCKIERT, um Bricking zu verhindern."
+    "cannot_be_modified": "Dieser Adapter KANN NICHT modifiziert werden. Spoofing ist BLOCKIERT, um Bricking zu verhindern.",
+    "no_device": "Kein USB-Gerät",
+    "connect_adapter_desc": "USB-Ethernet-Adapter anschließen",
+    "device_detected": "Gerät erkannt",
+    "tap_for_permissions": "Tippen Sie, um Berechtigungen anzufordern",
+    "found_devices": "{{count}} USB-Geräte gefunden"
   },
   "onboarding": {
     "step1_title": "USB-Adapter verbinden",

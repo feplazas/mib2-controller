@@ -1288,7 +1288,7 @@
     "refresh_devices": "Refresh Devices",
     "request_permissions": "Request Permissions",
     "scan_now": "Scan Now",
-    "scanning": "Scanning...",
+    "scanning": "Scanning USB devices...",
     "serial": "Serial",
     "service_status": "Service Status",
     "statistics": "Statistics",
@@ -1312,7 +1312,12 @@
     "detected_type": "Detected Type",
     "modifiable": "Modifiable",
     "can_be_modified": "This adapter CAN be safely modified via spoofing.",
-    "cannot_be_modified": "This adapter CANNOT be modified. Spoofing is BLOCKED to prevent bricking."
+    "cannot_be_modified": "This adapter CANNOT be modified. Spoofing is BLOCKED to prevent bricking.",
+    "no_device": "No USB Device",
+    "connect_adapter_desc": "Connect a USB-Ethernet adapter",
+    "device_detected": "Device Detected",
+    "tap_for_permissions": "Tap to request permissions",
+    "found_devices": "Found {{count}} USB devices"
   },
   "onboarding": {
     "step1_title": "Connect USB Adapter",
