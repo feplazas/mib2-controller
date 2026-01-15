@@ -299,12 +299,16 @@
     "scanner": "Escáner",
     "toolbox": "Toolbox",
     "fec": "FEC",
-    "recovery": "Recuperación",
+    "recovery": "Recovery",
     "commands": "Comandos",
     "auto_spoof": "Auto Spoof",
     "telnet": "Telnet",
     "logs": "Logs",
-    "settings": "Ajustes"
+    "settings": "Ajustes",
+    "usb": "USB",
+    "spoof": "Spoof",
+    "diag": "Diag",
+    "config": "Config"
   },
   "home": {
     "title": "MIB2 USB Controller",
@@ -380,7 +384,19 @@
     "instruction_4": "4. Ingresa la dirección IP de la unidad (por defecto: 192.168.1.4)",
     "instruction_5": "5. Presiona \"Conectar a MIB2\" para establecer la conexión",
     "warning_title": "⚠️ Advertencia",
-    "warning_message": "Esta aplicación permite ejecutar comandos directamente en la unidad MIB2. Usa con precaución y solo si sabes lo que estás haciendo. Los comandos incorrectos pueden dañar el sistema."
+    "warning_message": "Esta aplicación permite ejecutar comandos directamente en la unidad MIB2. Usa con precaución y solo si sabes lo que estás haciendo. Los comandos incorrectos pueden dañar el sistema.",
+    "tools": "Herramientas",
+    "tools_subtitle": "Utilidades avanzadas para MIB2",
+    "fec_title": "Generador FEC",
+    "fec_desc": "Generar códigos FEC personalizados",
+    "toolbox_title": "MIB2 Toolbox",
+    "toolbox_desc": "Asistente de instalación",
+    "spoof_title": "USB Spoofing",
+    "spoof_desc": "Modificar adaptadores ASIX",
+    "usb_title": "Estado USB",
+    "usb_desc": "Información del adaptador conectado",
+    "telnet_title": "Terminal Telnet",
+    "telnet_desc": "Consola interactiva MIB2"
   },
   "scanner": {
     "title": "Escáner de Red",
@@ -457,7 +473,11 @@
     "backup_error": "❌ Error en Backup",
     "backup_error_message": "No se pudo crear el backup: {error}\n\n¿Deseas continuar sin backup? (NO RECOMENDADO)",
     "continue_without_backup": "Continuar Sin Backup",
-    "execute_step_confirm": "¿Ejecutar: {title}?"
+    "execute_step_confirm": "¿Ejecutar: {title}?",
+    "backup_management": "Gestión de Backups",
+    "backups_auto_created": "Los backups se crean automáticamente antes de modificar archivos críticos del sistema MIB2.",
+    "loading_backups": "Cargando backups...",
+    "no_backups_available": "No hay backups disponibles"
   },
   "fec": {
     "title": "Generador de Códigos FEC",
@@ -560,7 +580,9 @@
     "restore_error_message": "No se pudo restaurar la EEPROM desde el backup",
     "force_restore_title": "🚨 Modo de Recuperación Forzada",
     "force_restore_message": "Este modo intenta restaurar la EEPROM sin validaciones de seguridad.\n\n⚠️ ADVERTENCIAS:\n• Puede dañar permanentemente el adaptador\n• No se verificará compatibilidad\n• No se creará backup previo\n\nUsa esta opción SOLO si el adaptador no responde a métodos normales.\n\n¿Deseas continuar?",
-    "force_restore": "Forzar Restauración"
+    "force_restore": "Forzar Restauración",
+    "instructions_title": "Instrucciones de Recuperación",
+    "instructions_text": "1. Conecta el adaptador brickeado con cable OTG\n2. Verifica que aparezca como \"Brickeado\" arriba\n3. Selecciona un backup compatible (mismo chipset)\n4. Toca \"Restaurar\" y confirma la operación\n5. Desconecta y reconecta el adaptador\n6. Verifica que el VID/PID se haya restaurado\n\nSi el método normal no funciona, usa \"Forzar\" como último recurso."
   },
   "commands": {
     "title": "Comandos Shell",
@@ -595,7 +617,10 @@
     "mostrar_interfaces_de_red": "Mostrar interfaces de red",
     "mostrar_tabla_de_rutas": "Mostrar tabla de rutas",
     "probar_conectividad_con_gateway": "Probar conectividad con gateway",
-    "obtiene_la_version_actual_del_firmware_instalado": "Obtiene la versión actual del firmware instalado"
+    "obtiene_la_version_actual_del_firmware_instalado": "Obtiene la versión actual del firmware instalado",
+    "terminal_title": "Terminal Telnet",
+    "connected": "Conectado",
+    "disconnected": "Desconectado"
   },
   "auto_spoof": {
     "title": "Spoofing Automático",
@@ -753,7 +778,16 @@
     "current_device": "Dispositivo Actual",
     "technical_info": "Información Técnica",
     "native_module": "Módulo Nativo",
-    "active": "ACTIVO"
+    "active": "ACTIVO",
+    "security_warning": "Advertencia de Seguridad",
+    "security_warning_text": "Esta aplicación permite ejecutar comandos con privilegios root en la unidad MIB2. El uso incorrecto puede resultar en daños permanentes al sistema. Usa esta herramienta bajo tu propia responsabilidad.",
+    "created_by": "Creada por Felipe Plazas",
+    "for_mib2_units": "Para unidades MIB2 STD2 Technisat/Preh",
+    "copy_debug_info": "Copiar Info de Debug",
+    "app_info": "Información de la App",
+    "created_by_label": "Creada por",
+    "platform": "Plataforma",
+    "compatible_with": "Compatible con"
   },
   "errors": {
     "no_adapter": "No se detectó ningún adaptador USB",
@@ -884,6 +918,8 @@
     "status_detected": "Detectado",
     "chipset": "Chipset",
     "manufacturer": "Fabricante",
-    "product": "Producto"
+    "product": "Producto",
+    "detected_devices": "Dispositivos Detectados",
+    "device": "Dispositivo"
   }
 }

@@ -650,24 +650,24 @@ export default function ToolboxScreen() {
 
               <View className="bg-surface rounded-xl p-4 border" style={{ borderColor: colors.border }}>
                 <Text className="text-lg font-bold mb-3" style={{ color: colors.foreground }}>
-                  💾 Gestión de Backups
+                  💾 {t('toolbox.backup_management')}
                 </Text>
                 <Text className="text-xs mb-4" style={{ color: colors.muted }}>
-                  Los backups se crean automáticamente antes de modificar archivos críticos del sistema MIB2.
+                  {t('toolbox.backups_auto_created')}
                 </Text>
 
                 {loadingBackups ? (
                   <View className="items-center py-8">
                     <ActivityIndicator size="large" color={colors.primary} />
                     <Text className="text-sm mt-2" style={{ color: colors.muted }}>
-                      Cargando backups...
+                      {t('toolbox.loading_backups')}
                     </Text>
                   </View>
                 ) : backups.length === 0 ? (
                   <View className="items-center py-8">
                     <Text className="text-4xl mb-2">📁</Text>
                     <Text className="text-sm" style={{ color: colors.muted }}>
-                      No hay backups disponibles
+                      {t('toolbox.no_backups_available')}
                     </Text>
                   </View>
                 ) : (
@@ -708,7 +708,7 @@ export default function ToolboxScreen() {
                             className="flex-1 bg-error/10 px-3 py-2 rounded-lg active:opacity-80"
                           >
                             <Text className="text-center text-xs font-semibold" style={{ color: "#EF4444" }}>
-                              🗑️ Eliminar
+                              🗑️ {t('common.delete')}
                             </Text>
                           </TouchableOpacity>
                         </View>

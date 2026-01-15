@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { Text, View, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useReducer } from 'react';
 import { ScreenContainer } from '@/components/screen-container';
 import { useUsbStatus } from '@/lib/usb-status-context';
@@ -10,8 +10,7 @@ import { SuccessResultModal } from '@/components/success-result-modal';
 import { EepromProgressIndicator } from '@/components/eeprom-progress-indicator';
 import * as Haptics from 'expo-haptics';
 import * as Sharing from 'expo-sharing';
-import { spoofReducer, initialSpoofState, getStepText, getStepIcon } from '@/lib/spoof-reducer';
-import type { SpoofStep } from '@/lib/spoof-reducer';
+import { spoofReducer, initialSpoofState, getStepIcon } from '@/lib/spoof-reducer';
 import { useTranslation } from "@/lib/language-context";
 
 import { showAlert } from '@/lib/translated-alert';
@@ -19,6 +18,23 @@ export default function AutoSpoofScreen() {
   const t = useTranslation();
   const { status, device } = useUsbStatus();
   const [state, dispatch] = useReducer(spoofReducer, initialSpoofState);
+
+  // Helper para obtener texto de paso traducido
+  const getStepText = (step: string): string => {
+    const stepTexts: Record<string, string> = {
+      'idle': t('auto_spoof.step_idle'),
+      'validating': t('auto_spoof.step_validating'),
+      'creating_backup': t('auto_spoof.step_creating_backup'),
+      'writing_vid_low': t('auto_spoof.step_writing_vid_low'),
+      'writing_vid_high': t('auto_spoof.step_writing_vid_high'),
+      'writing_pid_low': t('auto_spoof.step_writing_pid_low'),
+      'writing_pid_high': t('auto_spoof.step_writing_pid_high'),
+      'verifying': t('auto_spoof.step_verifying'),
+      'success': t('auto_spoof.step_success'),
+      'error': t('auto_spoof.step_error'),
+    };
+    return stepTexts[step] || step;
+  };
 
   const executeAutoSpoof = async () => {
     if (!device) {
@@ -30,19 +46,19 @@ export default function AutoSpoofScreen() {
     
     if (!canAttemptSpoofing(compatibility)) {
       Alert.alert(
-        'Dispositivo No Compatible',
-        getCompatibilityMessage(compatibility, device.chipset || 'desconocido')
+        t('auto_spoof.device_not_compatible'),
+        getCompatibilityMessage(compatibility, device.chipset || t('common.unknown'))
       );
       return;
     }
     
     // DETECCIÓN REAL de EEPROM vs eFuse
     Alert.alert(
-      '🔍 Detectando Tipo de EEPROM',
-      'Se realizará una prueba REAL de escritura en un offset seguro para determinar si el chipset tiene EEPROM externa modificable o eFuse bloqueado.\n\nEsto NO modificará el VID/PID actual.',
+      t('auto_spoof.detecting_eeprom_title'),
+      t('auto_spoof.detecting_eeprom_message'),
       [
-        { text: 'Cancelar', style: 'cancel' },
-        { text: 'Detectar Ahora', onPress: async () => {
+        { text: t('common.cancel'), style: 'cancel' },
+        { text: t('auto_spoof.detect_now'), onPress: async () => {
           try {
             await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             
@@ -53,11 +69,12 @@ export default function AutoSpoofScreen() {
               // eFuse detectado - BLOQUEAR spoofing
               await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
               Alert.alert(
-                '❌ Spoofing Bloqueado',
-                `Tipo detectado: ${eepromType.type.toUpperCase()}\n\n` +
-                `Razón: ${eepromType.reason}\n\n` +
-                `⚠️ Este chipset NO puede ser modificado de forma segura. El spoofing ha sido BLOQUEADO para prevenir bricking del adaptador.`,
-                [{ text: 'Entendido' }]
+                t('auto_spoof.spoofing_blocked'),
+                t('auto_spoof.spoofing_blocked_message', { 
+                  type: eepromType.type.toUpperCase(), 
+                  reason: eepromType.reason 
+                }),
+                [{ text: t('common.understood') }]
               );
               return;
             }
@@ -65,22 +82,18 @@ export default function AutoSpoofScreen() {
             // EEPROM externa detectada - PERMITIR spoofing
             await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
             Alert.alert(
-              '✅ EEPROM Externa Detectada',
-              `Tipo: ${eepromType.type.toUpperCase()}\n` +
-              `Estado: MODIFICABLE\n\n` +
-              `✅ El chipset tiene EEPROM externa y puede ser modificado de forma segura.\n\n` +
-              `¿Deseas continuar con el spoofing?`,
+              t('auto_spoof.eeprom_detected'),
+              t('auto_spoof.eeprom_detected_message', { type: eepromType.type.toUpperCase() }),
               [
-                { text: 'Cancelar', style: 'cancel' },
-                { text: 'Sí, Continuar', onPress: () => proceedWithSpoofing() }
+                { text: t('common.cancel'), style: 'cancel' },
+                { text: t('auto_spoof.yes_continue'), onPress: () => proceedWithSpoofing() }
               ]
             );
           } catch (error) {
             await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
             Alert.alert(
-              '❌ Error de Detección',
-              `No se pudo detectar el tipo de EEPROM:\n\n${error}\n\n` +
-              `Por seguridad, el spoofing ha sido BLOQUEADO.`
+              t('auto_spoof.detection_error'),
+              t('auto_spoof.detection_error_message', { error: String(error) })
             );
           }
         }}
@@ -106,7 +119,7 @@ export default function AutoSpoofScreen() {
       t('auto_spoof.requirements_title'),
       t('auto_spoof.requirements_message'),
       [
-        { text: t('auto_spoof.cancel'), style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
           text: t('auto_spoof.yes_continue'),
           onPress: () => showCriticalWarning(),
@@ -121,7 +134,7 @@ export default function AutoSpoofScreen() {
       t('auto_spoof.critical_warning_title'),
       t('auto_spoof.critical_warning_message'),
       [
-        { text: t('auto_spoof.cancel'), style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
           text: t('auto_spoof.continue'),
           style: 'destructive',
@@ -133,19 +146,14 @@ export default function AutoSpoofScreen() {
 
   const showFinalConfirmation = () => {
     Alert.alert(
-      '⚠️ Confirmación Final',
-      'ÚLTIMA OPORTUNIDAD PARA CANCELAR\n\n' +
-      '📋 Resumen de cambios:\n' +
-      `• VID actual: ${usbService.formatVIDPID(device!.vendorId, device!.productId)}\n` +
-      '• VID nuevo: 0x2001 (D-Link)\n' +
-      '• PID nuevo: 0x3C05 (DUB-E100)\n\n' +
-      '✅ Se creará un backup automático antes de escribir\n\n' +
-      '⚠️ NO TOQUES EL ADAPTADOR DURANTE EL PROCESO\n\n' +
-      '¿Ejecutar spoofing AHORA?',
+      t('auto_spoof.final_confirmation_title'),
+      t('auto_spoof.final_confirmation_message', {
+        currentVidPid: usbService.formatVIDPID(device!.vendorId, device!.productId)
+      }),
       [
-        { text: 'NO, Cancelar', style: 'cancel' },
+        { text: t('auto_spoof.no_cancel'), style: 'cancel' },
         {
-          text: 'SÍ, Ejecutar',
+          text: t('auto_spoof.yes_execute'),
           style: 'destructive',
           onPress: () => performSpoof(),
         },
@@ -158,7 +166,6 @@ export default function AutoSpoofScreen() {
 
     dispatch({ type: 'START_EXECUTION' });
     dispatch({ type: 'SET_ERROR', payload: '' });
-    // handled by SET_SUCCESS;
     dispatch({ type: 'SET_STEP', payload: 'validating' });
 
     try {
@@ -167,14 +174,13 @@ export default function AutoSpoofScreen() {
       // Paso 1: Validar compatibilidad
       const compatibility = getChipsetCompatibility(device.chipset || '');
       if (!canAttemptSpoofing(compatibility)) {
-        throw new Error('Dispositivo no compatible para spoofing');
+        throw new Error(t('auto_spoof.error_not_compatible'));
       }
       await new Promise(resolve => setTimeout(resolve, 500));
 
       // Paso 2: Crear backup automático
       dispatch({ type: 'SET_STEP', payload: 'creating_backup' });
       dispatch({ type: 'RESET_PROGRESS', payload: { operation: 'read', totalBytes: state.eepromProgress.totalBytes } });
-      // handled by RESET_PROGRESS; // EEPROM típica de 256 bytes
       
       // Simular progreso de lectura de backup
       for (let i = 0; i <= 100; i += 10) {
@@ -190,7 +196,6 @@ export default function AutoSpoofScreen() {
       dispatch({ type: 'RESET_PROGRESS', payload: { operation: 'write', totalBytes: state.eepromProgress.totalBytes } });
       dispatch({ type: 'UPDATE_PROGRESS', payload: { progress: 0 } });
       dispatch({ type: 'UPDATE_PROGRESS', payload: { bytesProcessed: 0 } });
-      // handled by RESET_PROGRESS; // 4 bytes a escribir (VID low, VID high, PID low, PID high)
       
       // Paso 3: Escribir VID byte bajo (0x88 = 0x01)
       dispatch({ type: 'SET_STEP', payload: 'writing_vid_low' });
@@ -228,27 +233,15 @@ export default function AutoSpoofScreen() {
       const pidHigh = await usbService.readEEPROM(0x8B, 1);
 
       if (vidLow.data !== '01' || vidHigh.data !== '20' || pidLow.data !== '05' || pidHigh.data !== '3C') {
-        throw new Error('Verificación falló: Los datos escritos no coinciden');
+        throw new Error(t('auto_spoof.error_verification_failed'));
       }
 
       // Éxito
       const verificationNote = state.skipVerification 
-        ? '\n⚠️ IMPORTANTE: Verificación omitida. Debes reconectar el adaptador para confirmar que el spoofing fue exitoso.\n'
+        ? '\n' + t('auto_spoof.verification_skipped_note')
         : '';
       
-      const successMsg = 
-        'Spoofing completado exitosamente.\n\n' +
-        '📋 Valores escritos:\n' +
-        '• VID: 0x2001 (D-Link)\n' +
-        '• PID: 0x3C05 (DUB-E100)\n' +
-        verificationNote +
-        '\n🔌 PASOS OBLIGATORIOS:\n' +
-        '1️⃣ Desconecta el adaptador USB del cable OTG\n' +
-        '2️⃣ Espera 5-10 segundos (importante)\n' +
-        '3️⃣ Vuelve a conectar el adaptador\n' +
-        '4️⃣ Ve a "Estado USB" para verificar VID/PID\n' +
-        '5️⃣ Si no cambió, usa "Test de Spoofing" para diagnóstico\n\n' +
-        '📡 Si el VID/PID no cambia después de reconectar, ve a la pestaña "Diag" para ver logs detallados de la operación.';
+      const successMsg = t('auto_spoof.success_message') + verificationNote + '\n\n' + t('auto_spoof.reconnect_instructions');
       
       dispatch({ 
         type: 'SET_SUCCESS', 
@@ -259,7 +252,7 @@ export default function AutoSpoofScreen() {
             originalPID: usbService.formatVIDPID(0, device.productId).split(':')[1],
             newVID: '0x2001',
             newPID: '0x3C05',
-            chipset: device.chipset || 'Desconocido',
+            chipset: device.chipset || t('common.unknown'),
             deviceName: device.deviceName,
             timestamp: new Date(),
           }
@@ -275,10 +268,8 @@ export default function AutoSpoofScreen() {
 
     } catch (error: any) {
       dispatch({ type: 'SET_STEP', payload: 'error' });
-      dispatch({ type: 'SET_ERROR', payload: error.message || 'Error desconocido durante el spoofing' });
+      dispatch({ type: 'SET_ERROR', payload: error.message || t('auto_spoof.error_unknown') });
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-    } finally {
-      // handled by reducer;
     }
   };
 
@@ -297,14 +288,8 @@ export default function AutoSpoofScreen() {
       
       if (devices.length === 0) {
         Alert.alert(
-          '⚠️ Dispositivo No Detectado',
-          'No se detectó ningún dispositivo USB.\n\n' +
-          '🔌 INSTRUCCIONES:\n' +
-          '1. Desconecta el adaptador USB\n' +
-          '2. Espera 5 segundos\n' +
-          '3. Vuelve a conectar el adaptador\n' +
-          '4. Espera a que el sistema lo reconozca\n' +
-          '5. Intenta el test nuevamente'
+          t('auto_spoof.device_not_detected_title'),
+          t('auto_spoof.device_not_detected_message')
         );
         dispatch({ type: 'SET_TEST_RESULT', payload: 'fail' });
         await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
@@ -322,39 +307,30 @@ export default function AutoSpoofScreen() {
         dispatch({ type: 'SET_TEST_RESULT', payload: 'success' });
         await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         Alert.alert(
-          '✅ Spoofing Exitoso',
-          `El adaptador tiene el VID/PID correcto:\n\n` +
-          `🔌 Dispositivo: ${detectedDevice.deviceName}\n` +
-          `✅ VID: 0x${detectedDevice.vendorId.toString(16).toUpperCase().padStart(4, '0')} (D-Link)\n` +
-          `✅ PID: 0x${detectedDevice.productId.toString(16).toUpperCase().padStart(4, '0')} (DUB-E100)\n` +
-          `👍 Chipset: ${detectedDevice.chipset}\n\n` +
-          `✅ El spoofing fue EXITOSO. El adaptador ahora es compatible con MIB2.`
+          t('auto_spoof.test_success_title'),
+          t('auto_spoof.test_success_message', {
+            deviceName: detectedDevice.deviceName,
+            vid: detectedDevice.vendorId.toString(16).toUpperCase().padStart(4, '0'),
+            pid: detectedDevice.productId.toString(16).toUpperCase().padStart(4, '0'),
+            chipset: detectedDevice.chipset
+          })
         );
       } else {
         dispatch({ type: 'SET_TEST_RESULT', payload: 'fail' });
         await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
         Alert.alert(
-          '⚠️ Spoofing No Detectado',
-          `El adaptador NO tiene el VID/PID objetivo:\n\n` +
-          `🔌 Dispositivo: ${detectedDevice.deviceName}\n` +
-          `❌ VID actual: 0x${detectedDevice.vendorId.toString(16).toUpperCase().padStart(4, '0')}\n` +
-          `❌ PID actual: 0x${detectedDevice.productId.toString(16).toUpperCase().padStart(4, '0')}\n` +
-          `🎯 VID esperado: 0x2001\n` +
-          `🎯 PID esperado: 0x3C05\n\n` +
-          `🔄 POSIBLES CAUSAS:\n` +
-          `1. No se ha ejecutado el spoofing aún\n` +
-          `2. El spoofing falló durante la escritura\n` +
-          `3. No se ha reconectado el adaptador después del spoofing\n\n` +
-          `💡 SOLUCIÓN:\n` +
-          `Desconecta y reconecta el adaptador para que el sistema lea los nuevos valores de EEPROM.`
+          t('auto_spoof.test_fail_title'),
+          t('auto_spoof.test_fail_message', {
+            deviceName: detectedDevice.deviceName,
+            currentVid: detectedDevice.vendorId.toString(16).toUpperCase().padStart(4, '0'),
+            currentPid: detectedDevice.productId.toString(16).toUpperCase().padStart(4, '0')
+          })
         );
       }
     } catch (error: any) {
       dispatch({ type: 'SET_TEST_RESULT', payload: 'fail' });
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       showAlert('alerts.error', t('alerts.no_se_pudo_realizar_test', { error: error.message }));
-    } finally {
-      // handled by SET_TEST_RESULT;
     }
   };
 
@@ -369,30 +345,24 @@ export default function AutoSpoofScreen() {
     
     if (!canAttemptSpoofing(compatibility)) {
       Alert.alert(
-        'Dispositivo No Compatible',
-        getCompatibilityMessage(compatibility, device.chipset || 'desconocido')
+        t('auto_spoof.device_not_compatible'),
+        getCompatibilityMessage(compatibility, device.chipset || t('common.unknown'))
       );
       return;
     }
 
     // Una sola confirmación crítica
     Alert.alert(
-      '⚠️ Spoof Rápido',
-      `🚀 MODO RÁPIDO - Una sola confirmación\n\n` +
-      `📊 Dispositivo: ${device.deviceName}\n` +
-      `🔧 Chipset: ${device.chipset}\n` +
-      `🔄 VID/PID: ${usbService.formatVIDPID(device.vendorId, device.productId)} → 0x2001:0x3C05\n\n` +
-      `⚠️ ADVERTENCIAS:\n` +
-      `• Modificación PERMANENTE de EEPROM\n` +
-      `• NO desconectar durante el proceso\n` +
-      `• Backup automático incluido\n` +
-      `• Requiere reconexión después\n\n` +
-      `🔋 Batería: Asegúrate de tener >20%\n\n` +
-      `¿Ejecutar spoofing AHORA?`,
+      t('auto_spoof.quick_spoof_title'),
+      t('auto_spoof.quick_spoof_message', {
+        deviceName: device.deviceName,
+        chipset: device.chipset,
+        currentVidPid: usbService.formatVIDPID(device.vendorId, device.productId)
+      }),
       [
-        { text: 'Cancelar', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'SÍ, Ejecutar',
+          text: t('auto_spoof.yes_execute'),
           style: 'destructive',
           onPress: () => performSpoof(),
         },
@@ -405,17 +375,15 @@ export default function AutoSpoofScreen() {
       if (!state.spoofingResult) return;
       
       // Crear texto formateado para compartir
-      const shareText = `🎉 Spoofing MIB2 Exitoso\n\n` +
-        `💻 Dispositivo: ${state.spoofingResult.deviceName}\n` +
-        `🔧 Chipset: ${state.spoofingResult.chipset}\n` +
-        `📅 Fecha: ${state.spoofingResult.timestamp.toLocaleString('es-ES')}\n\n` +
-        `❌ Antes:\n` +
-        `  VID: ${state.spoofingResult.originalVID}\n` +
-        `  PID: ${state.spoofingResult.originalPID}\n\n` +
-        `✅ Después:\n` +
-        `  VID: ${state.spoofingResult.newVID}\n` +
-        `  PID: ${state.spoofingResult.newPID}\n\n` +
-        `#MIB2Controller #USBSpoofing #ASIX`;
+      const shareText = t('auto_spoof.share_text', {
+        deviceName: state.spoofingResult.deviceName,
+        chipset: state.spoofingResult.chipset,
+        date: state.spoofingResult.timestamp.toLocaleString(),
+        originalVID: state.spoofingResult.originalVID,
+        originalPID: state.spoofingResult.originalPID,
+        newVID: state.spoofingResult.newVID,
+        newPID: state.spoofingResult.newPID
+      });
 
       // Verificar si sharing está disponible
       const isAvailable = await Sharing.isAvailableAsync();
@@ -429,7 +397,7 @@ export default function AutoSpoofScreen() {
         // Compartir archivo
         await Sharing.shareAsync(fileUri, {
           mimeType: 'text/plain',
-          dialogTitle: 'Compartir Resultado de Spoofing',
+          dialogTitle: t('auto_spoof.share_dialog_title'),
         });
       } else {
         showAlert('alerts.error', 'alerts.la_función_de_compartir_no_está_disponible_en_este');
@@ -447,48 +415,48 @@ export default function AutoSpoofScreen() {
           {/* Header */}
           <View className="items-center mb-4">
             <Text className="text-3xl font-bold text-foreground mb-2">
-              🔧 Spoofing Automático
+              🔧 {t('auto_spoof.title')}
             </Text>
             <Text className="text-sm text-muted text-center">
-              Reprogramación automática de EEPROM para adaptadores ASIX compatibles
+              {t('auto_spoof.subtitle')}
             </Text>
           </View>
 
           {/* Estado del Dispositivo */}
           <View className="bg-surface rounded-2xl p-6 border border-border">
             <Text className="text-lg font-bold text-foreground mb-4">
-              📱 Dispositivo Conectado
+              📱 {t('auto_spoof.connected_device')}
             </Text>
             {device ? (
               <View className="gap-2">
                 <View className="flex-row justify-between">
-                  <Text className="text-sm text-muted">Nombre:</Text>
+                  <Text className="text-sm text-muted">{t('auto_spoof.name')}:</Text>
                   <Text className="text-sm text-foreground font-medium">
                     {device.deviceName}
                   </Text>
                 </View>
                 <View className="flex-row justify-between">
-                  <Text className="text-sm text-muted">VID:PID Actual:</Text>
+                  <Text className="text-sm text-muted">{t('auto_spoof.current_vid_pid')}:</Text>
                   <Text className="text-sm text-foreground font-mono">
                     {usbService.formatVIDPID(device.vendorId, device.productId)}
                   </Text>
                 </View>
                 <View className="flex-row justify-between">
-                  <Text className="text-sm text-muted">Chipset:</Text>
+                  <Text className="text-sm text-muted">{t('auto_spoof.chipset')}:</Text>
                   <Text className="text-sm text-foreground font-medium">
-                    {device.chipset || 'Desconocido'}
+                    {device.chipset || t('common.unknown')}
                   </Text>
                 </View>
                 <View className="flex-row justify-between">
-                  <Text className="text-sm text-muted">Compatible:</Text>
+                  <Text className="text-sm text-muted">{t('auto_spoof.compatible')}:</Text>
                   <Text className={`text-sm font-bold ${canExecute ? 'text-green-500' : 'text-red-500'}`}>
-                    {canExecute ? '✅ Sí' : '❌ No'}
+                    {canExecute ? '✅ ' + t('common.yes') : '❌ ' + t('common.no')}
                   </Text>
                 </View>
               </View>
             ) : (
               <Text className="text-sm text-muted">
-                No hay dispositivo conectado
+                {t('auto_spoof.no_device_connected')}
               </Text>
             )}
           </View>
@@ -505,7 +473,7 @@ export default function AutoSpoofScreen() {
           {/* Valores Objetivo */}
           <View className="bg-surface rounded-2xl p-6 border border-border">
             <Text className="text-lg font-bold text-foreground mb-4">
-              🎯 Valores Objetivo
+              🎯 {t('auto_spoof.target_values')}
             </Text>
             <View className="gap-2">
               <View className="flex-row justify-between">
@@ -533,36 +501,36 @@ export default function AutoSpoofScreen() {
           {state.isExecuting && (
             <View className="bg-surface rounded-2xl p-6 border border-border">
               <Text className="text-lg font-bold text-foreground mb-4">
-                ⏳ Progreso
+                ⏳ {t('auto_spoof.progress')}
               </Text>
               <View className="gap-3">
                 <View className="flex-row items-center gap-2">
                   <Text className="text-xl">{getStepIcon(state.currentStep, 'validating', state.isExecuting)}</Text>
-                  <Text className="text-sm text-muted flex-1">Validando chipset</Text>
+                  <Text className="text-sm text-muted flex-1">{t('auto_spoof.step_validating')}</Text>
                 </View>
                 <View className="flex-row items-center gap-2">
                   <Text className="text-xl">{getStepIcon(state.currentStep, 'creating_backup', state.isExecuting)}</Text>
-                  <Text className="text-sm text-muted flex-1">Creando backup de seguridad</Text>
+                  <Text className="text-sm text-muted flex-1">{t('auto_spoof.step_creating_backup')}</Text>
                 </View>
                 <View className="flex-row items-center gap-2">
                   <Text className="text-xl">{getStepIcon(state.currentStep, 'writing_vid_low', state.isExecuting)}</Text>
-                  <Text className="text-sm text-muted flex-1">Escribiendo VID byte bajo (0x88)</Text>
+                  <Text className="text-sm text-muted flex-1">{t('auto_spoof.step_writing_vid_low')}</Text>
                 </View>
                 <View className="flex-row items-center gap-2">
                   <Text className="text-xl">{getStepIcon(state.currentStep, 'writing_vid_high', state.isExecuting)}</Text>
-                  <Text className="text-sm text-muted flex-1">Escribiendo VID byte alto (0x89)</Text>
+                  <Text className="text-sm text-muted flex-1">{t('auto_spoof.step_writing_vid_high')}</Text>
                 </View>
                 <View className="flex-row items-center gap-2">
                   <Text className="text-xl">{getStepIcon(state.currentStep, 'writing_pid_low', state.isExecuting)}</Text>
-                  <Text className="text-sm text-muted flex-1">Escribiendo PID byte bajo (0x8A)</Text>
+                  <Text className="text-sm text-muted flex-1">{t('auto_spoof.step_writing_pid_low')}</Text>
                 </View>
                 <View className="flex-row items-center gap-2">
                   <Text className="text-xl">{getStepIcon(state.currentStep, 'writing_pid_high', state.isExecuting)}</Text>
-                  <Text className="text-sm text-muted flex-1">Escribiendo PID byte alto (0x8B)</Text>
+                  <Text className="text-sm text-muted flex-1">{t('auto_spoof.step_writing_pid_high')}</Text>
                 </View>
                 <View className="flex-row items-center gap-2">
                   <Text className="text-xl">{getStepIcon(state.currentStep, 'verifying', state.isExecuting)}</Text>
-                  <Text className="text-sm text-muted flex-1">Verificando escritura</Text>
+                  <Text className="text-sm text-muted flex-1">{t('auto_spoof.step_verifying')}</Text>
                 </View>
               </View>
               <View className="mt-4 p-4 bg-background rounded-lg">
@@ -582,7 +550,7 @@ export default function AutoSpoofScreen() {
               operation={state.eepromProgress.operation}
               estimatedTimeRemaining={
                 state.eepromProgress.progress > 0 && state.eepromProgress.progress < 100
-                  ? Math.round(((100 - state.eepromProgress.progress) / state.eepromProgress.progress) * 2) // Estimación simple
+                  ? Math.round(((100 - state.eepromProgress.progress) / state.eepromProgress.progress) * 2)
                   : undefined
               }
             />
@@ -601,7 +569,7 @@ export default function AutoSpoofScreen() {
           {state.currentStep === 'error' && state.errorMessage && (
             <View className="bg-red-500/10 rounded-2xl p-6 border border-red-500">
               <Text className="text-lg font-bold text-red-500 mb-2">
-                Error
+                {t('common.error')}
               </Text>
               <Text className="text-sm text-foreground">
                 {state.errorMessage}
@@ -649,10 +617,10 @@ export default function AutoSpoofScreen() {
             </View>
             <View className="flex-1">
               <Text className="text-base font-semibold text-yellow-500 mb-1">
-                ⚠️ Forzar sin Verificación
+                ⚠️ {t('auto_spoof.force_no_verification')}
               </Text>
               <Text className="text-xs text-muted leading-relaxed">
-                Omite la verificación post-escritura. Úsalo solo si la verificación normal falla debido a protección de escritura del adaptador. Después del spoofing, desconecta y reconecta el adaptador para verificar manualmente.
+                {t('auto_spoof.force_no_verification_desc')}
               </Text>
             </View>
           </TouchableOpacity>
@@ -686,11 +654,11 @@ export default function AutoSpoofScreen() {
                     ? 'text-muted'
                     : 'text-blue-500'
                 }`}>
-                  {state.isTesting ? 'Testeando...' : 'Test de Spoofing'}
+                  {state.isTesting ? t('auto_spoof.testing') : t('auto_spoof.test_spoofing')}
                 </Text>
               </View>
               <Text className="text-xs text-muted mt-1">
-                Verifica si el adaptador tiene VID/PID 0x2001:0x3C05
+                {t('auto_spoof.test_spoofing_desc')}
               </Text>
             </TouchableOpacity>
 
@@ -709,11 +677,11 @@ export default function AutoSpoofScreen() {
                 <Text className={`text-base font-bold ${
                   canExecute && !state.isExecuting ? 'text-orange-500' : 'text-muted'
                 }`}>
-                  {state.isExecuting ? 'Ejecutando...' : 'Spoof Rápido'}
+                  {state.isExecuting ? t('auto_spoof.executing') : t('auto_spoof.quick_spoof')}
                 </Text>
               </View>
               <Text className="text-xs text-muted mt-1">
-                Ejecuta spoofing con una sola confirmación
+                {t('auto_spoof.quick_spoof_desc')}
               </Text>
             </TouchableOpacity>
           </View>
@@ -729,16 +697,16 @@ export default function AutoSpoofScreen() {
             }`}
           >
             <Text className="text-2xl font-bold text-background mb-2">
-              {state.isExecuting ? '⏳ Ejecutando...' : '🚀 Ejecutar Spoofing Automático'}
+              {state.isExecuting ? '⏳ ' + t('auto_spoof.executing') : '🚀 ' + t('auto_spoof.execute_auto_spoof')}
             </Text>
             {!canExecute && !state.isExecuting && (
               <Text className="text-xs text-background opacity-70">
-                Conecta un adaptador compatible para continuar
+                {t('auto_spoof.connect_compatible_adapter')}
               </Text>
             )}
             {canExecute && !state.isExecuting && (
               <Text className="text-xs text-background/80 mt-1">
-                Con triple confirmación y validaciones completas
+                {t('auto_spoof.with_triple_confirmation')}
               </Text>
             )}
           </TouchableOpacity>
@@ -748,11 +716,8 @@ export default function AutoSpoofScreen() {
       {/* Success Result Modal */}
       <SuccessResultModal
         visible={state.showSuccessModal}
+        onClose={() => dispatch({ type: 'SHOW_SUCCESS_MODAL', payload: false })}
         result={state.spoofingResult}
-        onClose={() => {
-          dispatch({ type: 'SHOW_SUCCESS_MODAL', payload: false });
-          // handled by SET_SUCCESS;
-        }}
         onShare={handleShareResult}
       />
     </ScreenContainer>

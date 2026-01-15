@@ -115,9 +115,9 @@ export default function CommandsScreen() {
         {/* Header */}
         <View className="flex-row items-center justify-between">
           <View>
-            <Text className="text-2xl font-bold text-foreground">Terminal Telnet</Text>
+            <Text className="text-2xl font-bold text-foreground">{t('commands.terminal_title')}</Text>
             <Text className="text-sm text-muted">
-              {isConnected ? '🟢 Conectado' : '🔴 Desconectado'}
+              {isConnected ? '🟢 ' + t('commands.connected') : '🔴 ' + t('commands.disconnected')}
             </Text>
           </View>
           <View className="flex-row gap-2">

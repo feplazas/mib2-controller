@@ -870,7 +870,7 @@ export default function SettingsScreen() {
                   className="bg-primary rounded-xl p-4 active:opacity-80"
                 >
                   <Text className="text-background font-semibold text-center">
-                    📋 Copiar Info de Debug
+                    📋 {t('settings.copy_debug_info')}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -880,24 +880,24 @@ export default function SettingsScreen() {
           {/* App Info */}
           <View className="bg-surface rounded-2xl p-6 border border-border">
             <Text className="text-lg font-semibold text-foreground mb-4">
-              Información de la App
+              {t('settings.app_info')}
             </Text>
 
             <View className="gap-3">
               <View className="flex-row justify-between">
-                <Text className="text-sm text-muted">Versión</Text>
+                <Text className="text-sm text-muted">{t('settings.version')}</Text>
                 <Text className="text-sm text-foreground font-medium">1.0.0</Text>
               </View>
               <View className="flex-row justify-between">
-                <Text className="text-sm text-muted">Creada por</Text>
+                <Text className="text-sm text-muted">{t('settings.created_by_label')}</Text>
                 <Text className="text-sm text-foreground font-medium">Felipe Plazas</Text>
               </View>
               <View className="flex-row justify-between">
-                <Text className="text-sm text-muted">Plataforma</Text>
+                <Text className="text-sm text-muted">{t('settings.platform')}</Text>
                 <Text className="text-sm text-foreground font-medium">Android</Text>
               </View>
               <View className="flex-row justify-between">
-                <Text className="text-sm text-muted">Compatible con</Text>
+                <Text className="text-sm text-muted">{t('settings.compatible_with')}</Text>
                 <Text className="text-sm text-foreground font-medium">MIB2 STD2</Text>
               </View>
             </View>
@@ -906,12 +906,10 @@ export default function SettingsScreen() {
           {/* Warning */}
           <View className="bg-error/10 border border-error rounded-2xl p-4">
             <Text className="text-sm text-error font-medium mb-2">
-              ⚠️ Advertencia de Seguridad
+              ⚠️ {t('settings.security_warning')}
             </Text>
             <Text className="text-xs text-muted leading-relaxed">
-              Esta aplicación permite ejecutar comandos con privilegios root en la unidad MIB2. 
-              El uso incorrecto puede resultar en daños permanentes al sistema. 
-              Usa esta herramienta bajo tu propia responsabilidad.
+              {t('settings.security_warning_text')}
             </Text>
           </View>
 
@@ -921,10 +919,10 @@ export default function SettingsScreen() {
               MIB2 Controller v1.0.0
             </Text>
             <Text className="text-xs text-muted text-center mt-1">
-              Creada por Felipe Plazas
+              {t('settings.created_by')}
             </Text>
             <Text className="text-xs text-muted text-center mt-1">
-              Para unidades MIB2 STD2 Technisat/Preh
+              {t('settings.for_mib2_units')}
             </Text>
           </View>
         </View>

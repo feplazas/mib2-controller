@@ -644,7 +644,7 @@ export default function UsbStatusScreen() {
           {status === 'detected' && devices.length > 0 && (
             <View className="bg-surface rounded-2xl p-6 border border-border">
               <Text className="text-lg font-bold text-foreground mb-4">
-                🔍 Dispositivos Detectados ({devices.length})
+                🔍 {t('usb.detected_devices')} ({devices.length})
               </Text>
               
               <View className="gap-3">
@@ -652,7 +652,7 @@ export default function UsbStatusScreen() {
                   <View key={dev.deviceId} className="bg-background rounded-lg p-4 border border-border">
                     <View className="flex-row justify-between items-center mb-2">
                       <Text className="text-sm font-bold text-foreground">
-                        Dispositivo #{index + 1}
+                        {t('usb.device')} #{index + 1}
                       </Text>
                       <Text className="text-xs text-muted font-mono">
                         {usbService.formatVIDPID(dev.vendorId, dev.productId)}
