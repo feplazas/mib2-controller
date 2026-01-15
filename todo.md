@@ -1504,3 +1504,19 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [x] Eliminar archivos no utilizados (ninguno encontrado)
 - [x] Remover dependencias no usadas (todas necesarias)
 - [x] Limpiar comentarios obsoletos (ninguno encontrado)
+
+## Publicación de Política de Privacidad (15 Ene 2026)
+
+- [ ] Hacer push de privacy-policy.html a GitHub
+- [ ] Habilitar GitHub Pages en el repositorio
+- [ ] Verificar URL pública: https://feplazas.github.io/mib2-controller/privacy-policy.html
+- [ ] Actualizar app.config.ts con URL de política
+
+## Generación de APK de Producción (15 Ene 2026)
+
+- [x] Generar AAB firmado con EAS Build (perfil production)
+- [x] Verificar que ProGuard/R8 está activo
+- [x] Verificar que console.log están eliminados
+- [x] Descargar AAB para subir a Play Store
+- Build ID: 5acd901d-a8a7-42e5-a15e-5f85cd8ecb87
+- AAB URL: https://expo.dev/artifacts/eas/cdkDXoL36tfk5gnDxqA7mX.aab
