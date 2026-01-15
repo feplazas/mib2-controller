@@ -1,5 +1,6 @@
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, TouchableOpacity, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
+import { memo } from 'react';
 import { cn } from '@/lib/utils';
 
 export type UsbStatus = 'disconnected' | 'detected' | 'connected';
@@ -18,7 +19,7 @@ interface UsbStatusIndicatorProps {
  * - 🟡 Amarillo: Detectado (dispositivo encontrado, sin permisos)
  * - 🟢 Verde: Conectado (dispositivo conectado y listo)
  */
-export function UsbStatusIndicator({ status, deviceName, onPress }: UsbStatusIndicatorProps) {
+export const UsbStatusIndicator = memo(function UsbStatusIndicator({ status, deviceName, onPress }: UsbStatusIndicatorProps) {
   const router = useRouter();
 
   const handlePress = () => {
@@ -83,4 +84,4 @@ export function UsbStatusIndicator({ status, deviceName, onPress }: UsbStatusInd
       </View>
     </Pressable>
   );
-}
+});

@@ -1483,3 +1483,24 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [x] Actualizar android-icon-foreground.png
 - [x] Actualizar android-icon-monochrome.png (versión monocromática)
 - [ ] Regenerar APK con nuevo logo
+
+## Optimización de Rendimiento (15 Ene 2026)
+
+### Auditoría de código
+- [x] Identificar re-renders innecesarios en componentes
+- [x] Revisar uso de useEffect y dependencias
+- [x] Buscar imports no utilizados
+- [x] Identificar código duplicado
+- [x] Revisar tamaño de archivos de traducción (48KB total - razonable)
+
+### Optimizaciones
+- [x] Agregar React.memo a componentes puros (UsbStatusIndicator)
+- [x] Eliminar console.log de producción (Babel plugin)
+- [ ] Optimizar contextos con useMemo/useCallback (no crítico)
+- [ ] Lazy loading de módulos pesados (no crítico)
+- [ ] Reducir tamaño de bundle (ProGuard/R8 ya configurado)
+
+### Limpieza
+- [x] Eliminar archivos no utilizados (ninguno encontrado)
+- [x] Remover dependencias no usadas (todas necesarias)
+- [x] Limpiar comentarios obsoletos (ninguno encontrado)
