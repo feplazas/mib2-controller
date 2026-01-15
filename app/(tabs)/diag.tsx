@@ -37,12 +37,12 @@ export default function DiagScreen() {
   const handleClearLogs = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     Alert.alert(
-      '🗑️ Limpiar Logs',
-      '¿Estás seguro de que quieres eliminar todos los logs?',
+      t('diag.clear_logs_title'),
+      t('diag.clear_logs_confirm'),
       [
-        { text: 'Cancelar', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Limpiar',
+          text: t('diag.clear'),
           style: 'destructive',
           onPress: () => {
             usbLogger.clear();
@@ -69,12 +69,12 @@ export default function DiagScreen() {
       if (canShare) {
         await Sharing.shareAsync(filepath, {
           mimeType: 'text/plain',
-          dialogTitle: 'Compartir Logs USB',
+          dialogTitle: t('diag.share_logs'),
         });
       } else {
         Alert.alert(
-          '✅ Logs Exportados',
-          `Archivo guardado en:\n${filename}\n\nPuedes encontrarlo en la carpeta de documentos de la app.`
+          t('diag.logs_exported'),
+          t('diag.logs_exported_message', { filename })
         );
       }
 
@@ -120,10 +120,10 @@ export default function DiagScreen() {
         {/* Header */}
         <View className="mb-6">
           <Text className="text-3xl font-bold text-foreground mb-2">
-            🔍 Diagnóstico USB
+            {t('diag.title')}
           </Text>
           <Text className="text-sm text-muted">
-            Logs en tiempo real de todas las operaciones USB
+            {t('diag.subtitle')}
           </Text>
         </View>
 
@@ -134,7 +134,7 @@ export default function DiagScreen() {
             className="flex-1 bg-red-500/10 border border-red-500/30 rounded-xl p-3 active:opacity-80"
           >
             <Text className="text-sm font-semibold text-red-400 text-center">
-              🗑️ Limpiar
+              🗑️ {t('diag.clear')}
             </Text>
           </TouchableOpacity>
 
@@ -143,7 +143,7 @@ export default function DiagScreen() {
             className="flex-1 bg-primary/10 border border-primary/30 rounded-xl p-3 active:opacity-80"
           >
             <Text className="text-sm font-semibold text-primary text-center">
-              📤 Exportar
+              📤 {t('diag.export')}
             </Text>
           </TouchableOpacity>
 
@@ -155,7 +155,7 @@ export default function DiagScreen() {
             className={`flex-1 ${autoScroll ? 'bg-green-500/10 border-green-500/30' : 'bg-surface border-border'} border rounded-xl p-3 active:opacity-80`}
           >
             <Text className={`text-sm font-semibold ${autoScroll ? 'text-green-400' : 'text-muted'} text-center`}>
-              {autoScroll ? '📜 Auto' : '⏸️ Manual'}
+              {autoScroll ? `📜 ${t('diag.auto')}` : `⏸️ ${t('diag.manual')}`}
             </Text>
           </TouchableOpacity>
         </View>
@@ -172,7 +172,7 @@ export default function DiagScreen() {
               className={`px-3 py-2 rounded-lg ${filter === level ? 'bg-primary' : 'bg-surface'} active:opacity-80`}
             >
               <Text className={`text-xs font-semibold ${filter === level ? 'text-background' : 'text-muted'}`}>
-                {level === 'all' ? 'Todos' : level.charAt(0).toUpperCase() + level.slice(1)}
+                {level === 'all' ? t('diag.all') : t(`diag.${level}`)}
               </Text>
             </TouchableOpacity>
           ))}
@@ -189,19 +189,19 @@ export default function DiagScreen() {
               <Text className="text-2xl font-bold text-red-400">
                 {logs.filter(l => l.level === 'error').length}
               </Text>
-              <Text className="text-xs text-muted">Errores</Text>
+              <Text className="text-xs text-muted">{t('diag.errors')}</Text>
             </View>
             <View className="items-center flex-1">
               <Text className="text-2xl font-bold text-yellow-400">
                 {logs.filter(l => l.level === 'warning').length}
               </Text>
-              <Text className="text-xs text-muted">Avisos</Text>
+              <Text className="text-xs text-muted">{t('diag.warnings')}</Text>
             </View>
             <View className="items-center flex-1">
               <Text className="text-2xl font-bold text-green-400">
                 {logs.filter(l => l.level === 'success').length}
               </Text>
-              <Text className="text-xs text-muted">Éxitos</Text>
+              <Text className="text-xs text-muted">{t('diag.successes')}</Text>
             </View>
           </View>
         </View>
@@ -217,8 +217,8 @@ export default function DiagScreen() {
               <Text className="text-4xl mb-3">📝</Text>
               <Text className="text-sm text-muted text-center">
                 {filter === 'all' 
-                  ? 'No hay logs aún.\nLas operaciones USB aparecerán aquí en tiempo real.'
-                  : `No hay logs de tipo "${filter}".`
+                  ? t('diag.no_logs_yet')
+                  : t('diag.no_logs_of_type', { type: filter })
                 }
               </Text>
             </View>

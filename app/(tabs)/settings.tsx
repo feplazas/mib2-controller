@@ -54,12 +54,12 @@ export default function SettingsScreen() {
 
   const handleResetDefaults = () => {
     Alert.alert(
-      'Restablecer Valores',
-      '¿Restaurar la configuración a los valores por defecto?',
+      t('settings.reset_values'),
+      t('settings.reset_values_confirm'),
       [
-        { text: 'Cancelar', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Restablecer',
+          text: t('settings.reset'),
           style: 'destructive',
           onPress: () => {
             setHost('192.168.1.4');
@@ -93,7 +93,7 @@ export default function SettingsScreen() {
       setPinConfirm('');
     } catch (error) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert('Error', error instanceof Error ? error.message : 'Error al configurar PIN');
+      Alert.alert(t('common.error'), error instanceof Error ? error.message : t('settings.pin_setup_error'));
     }
   };
 
@@ -107,11 +107,11 @@ export default function SettingsScreen() {
       // Enable expert mode - requires PIN
       if (!isPinSet) {
         Alert.alert(
-          'Configurar PIN',
-          'Primero debes configurar un PIN de seguridad para usar el Modo Experto',
+          t('settings.setup_pin'),
+          t('settings.setup_pin_required'),
           [
-            { text: 'Cancelar', style: 'cancel' },
-            { text: 'Configurar PIN', onPress: () => setShowPinSetup(true) },
+            { text: t('common.cancel'), style: 'cancel' },
+            { text: t('settings.setup_pin'), onPress: () => setShowPinSetup(true) },
           ]
         );
       } else {
@@ -169,12 +169,12 @@ export default function SettingsScreen() {
 
   const handleResetPin = () => {
     Alert.alert(
-      'Restablecer PIN',
-      '¿Estás seguro? Esto desactivará el Modo Experto y eliminará el PIN configurado.',
+      t('settings.reset_pin'),
+      t('settings.reset_pin_confirm'),
       [
-        { text: 'Cancelar', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Restablecer',
+          text: t('settings.reset'),
           style: 'destructive',
           onPress: async () => {
             await resetPin();
@@ -192,9 +192,9 @@ export default function SettingsScreen() {
         <View className="flex-1 gap-6">
           {/* Header */}
           <View>
-            <Text className="text-2xl font-bold text-foreground">Configuración</Text>
+            <Text className="text-2xl font-bold text-foreground">{t('settings.title')}</Text>
             <Text className="text-sm text-muted mt-1">
-              Ajusta los parámetros de la aplicación
+              {t('settings.subtitle')}
             </Text>
           </View>
 
@@ -369,10 +369,10 @@ export default function SettingsScreen() {
             <View className="flex-row items-center justify-between mb-4">
               <View className="flex-1 mr-4">
                 <Text className="text-lg font-semibold text-foreground">
-                  Modo Experto
+                  {t('settings.expert_mode')}
                 </Text>
                 <Text className="text-xs text-muted mt-1">
-                  Desbloquea comandos avanzados y peligrosos
+                  {t('settings.expert_mode_desc')}
                 </Text>
               </View>
               <Switch
@@ -386,10 +386,10 @@ export default function SettingsScreen() {
             {isExpertMode && (
               <View className="bg-error/10 border border-error rounded-lg p-3 mb-4">
                 <Text className="text-error text-xs font-semibold">
-                  ⚠️ MODO EXPERTO ACTIVO
+                  ⚠️ {t('settings.expert_mode_active')}
                 </Text>
                 <Text className="text-error text-xs mt-1">
-                  Tienes acceso a comandos que pueden dañar la unidad MIB2. Procede con extrema precaución.
+                  {t('settings.expert_mode_warning')}
                 </Text>
               </View>
             )}
@@ -401,7 +401,7 @@ export default function SettingsScreen() {
                   className="bg-primary/20 border border-primary px-4 py-3 rounded-xl active:opacity-80"
                 >
                   <Text className="text-primary font-semibold text-center">
-                    Cambiar PIN
+                    {t('settings.change_pin')}
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -409,7 +409,7 @@ export default function SettingsScreen() {
                   className="bg-error/20 border border-error px-4 py-3 rounded-xl active:opacity-80"
                 >
                   <Text className="text-error font-semibold text-center">
-                    Restablecer PIN
+                    {t('settings.reset_pin')}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -419,7 +419,7 @@ export default function SettingsScreen() {
                 className="bg-primary px-4 py-3 rounded-xl active:opacity-80"
               >
                 <Text className="text-white font-semibold text-center">
-                  Configurar PIN de Seguridad
+                  {t('settings.setup_security_pin')}
                 </Text>
               </TouchableOpacity>
             )}
@@ -429,12 +429,12 @@ export default function SettingsScreen() {
           {showPinSetup && (
             <View className="bg-primary/10 border border-primary rounded-2xl p-6">
               <Text className="text-lg font-semibold text-foreground mb-4">
-                Configurar PIN de Seguridad
+                {t('settings.setup_security_pin')}
               </Text>
               <View className="gap-4">
                 <View>
                   <Text className="text-sm font-medium text-foreground mb-2">
-                    Nuevo PIN (mínimo 4 dígitos)
+                    {t('settings.new_pin')}
                   </Text>
                   <TextInput
                     value={pinInput}
@@ -448,7 +448,7 @@ export default function SettingsScreen() {
                 </View>
                 <View>
                   <Text className="text-sm font-medium text-foreground mb-2">
-                    Confirmar PIN
+                    {t('settings.confirm_pin')}
                   </Text>
                   <TextInput
                     value={pinConfirm}
@@ -470,7 +470,7 @@ export default function SettingsScreen() {
                     className="flex-1 bg-muted/20 border border-border px-4 py-3 rounded-xl active:opacity-80"
                   >
                     <Text className="text-foreground font-semibold text-center">
-                      Cancelar
+                      {t('common.cancel')}
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
@@ -478,7 +478,7 @@ export default function SettingsScreen() {
                     className="flex-1 bg-primary px-4 py-3 rounded-xl active:opacity-80"
                   >
                     <Text className="text-white font-semibold text-center">
-                      Guardar PIN
+                      {t('settings.save_pin')}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -490,12 +490,12 @@ export default function SettingsScreen() {
           {showPinEntry && (
             <View className="bg-primary/10 border border-primary rounded-2xl p-6">
               <Text className="text-lg font-semibold text-foreground mb-4">
-                Ingresar PIN
+                {t('settings.enter_pin')}
               </Text>
               <View className="gap-4">
                 <View>
                   <Text className="text-sm font-medium text-foreground mb-2">
-                    PIN de Seguridad
+                    {t('settings.security_pin')}
                   </Text>
                   <TextInput
                     value={pinInput}
@@ -516,7 +516,7 @@ export default function SettingsScreen() {
                     className="flex-1 bg-muted/20 border border-border px-4 py-3 rounded-xl active:opacity-80"
                   >
                     <Text className="text-foreground font-semibold text-center">
-                      Cancelar
+                      {t('common.cancel')}
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
@@ -524,7 +524,7 @@ export default function SettingsScreen() {
                     className="flex-1 bg-primary px-4 py-3 rounded-xl active:opacity-80"
                   >
                     <Text className="text-white font-semibold text-center">
-                      Activar
+                      {t('settings.activate')}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -536,12 +536,12 @@ export default function SettingsScreen() {
           {showPinChange && (
             <View className="bg-primary/10 border border-primary rounded-2xl p-6">
               <Text className="text-lg font-semibold text-foreground mb-4">
-                Cambiar PIN
+                {t('settings.change_pin')}
               </Text>
               <View className="gap-4">
                 <View>
                   <Text className="text-sm font-medium text-foreground mb-2">
-                    PIN Actual
+                    {t('settings.current_pin')}
                   </Text>
                   <TextInput
                     value={oldPinInput}
@@ -555,7 +555,7 @@ export default function SettingsScreen() {
                 </View>
                 <View>
                   <Text className="text-sm font-medium text-foreground mb-2">
-                    Nuevo PIN
+                    {t('settings.new_pin')}
                   </Text>
                   <TextInput
                     value={pinInput}
@@ -569,7 +569,7 @@ export default function SettingsScreen() {
                 </View>
                 <View>
                   <Text className="text-sm font-medium text-foreground mb-2">
-                    Confirmar Nuevo PIN
+                    {t('settings.confirm_new_pin')}
                   </Text>
                   <TextInput
                     value={pinConfirm}
@@ -592,7 +592,7 @@ export default function SettingsScreen() {
                     className="flex-1 bg-muted/20 border border-border px-4 py-3 rounded-xl active:opacity-80"
                   >
                     <Text className="text-foreground font-semibold text-center">
-                      Cancelar
+                      {t('common.cancel')}
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
@@ -600,7 +600,7 @@ export default function SettingsScreen() {
                     className="flex-1 bg-primary px-4 py-3 rounded-xl active:opacity-80"
                   >
                     <Text className="text-white font-semibold text-center">
-                      Cambiar
+                      {t('settings.change')}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -611,13 +611,13 @@ export default function SettingsScreen() {
           {/* Connection Settings */}
           <View className="bg-surface rounded-2xl p-6 border border-border">
             <Text className="text-lg font-semibold text-foreground mb-4">
-              Configuración de Conexión
+              {t('settings.connection_settings')}
             </Text>
 
             <View className="gap-4">
               <View>
                 <Text className="text-sm font-medium text-foreground mb-2">
-                  Dirección IP
+                  {t('settings.ip_address')}
                 </Text>
                 <TextInput
                   value={host}
@@ -627,13 +627,13 @@ export default function SettingsScreen() {
                   className="bg-background border border-border rounded-xl px-4 py-3 text-foreground"
                 />
                 <Text className="text-xs text-muted mt-1">
-                  Dirección IP de la unidad MIB2 en la red local
+                  {t('settings.ip_address_desc')}
                 </Text>
               </View>
 
               <View>
                 <Text className="text-sm font-medium text-foreground mb-2">
-                  Puerto
+                  {t('settings.port')}
                 </Text>
                 <TextInput
                   value={port}
@@ -643,13 +643,13 @@ export default function SettingsScreen() {
                   className="bg-background border border-border rounded-xl px-4 py-3 text-foreground"
                 />
                 <Text className="text-xs text-muted mt-1">
-                  Puerto Telnet (por defecto: 23)
+                  {t('settings.port_desc')}
                 </Text>
               </View>
 
               <View>
                 <Text className="text-sm font-medium text-foreground mb-2">
-                  Usuario
+                  {t('settings.username')}
                 </Text>
                 <TextInput
                   value={username}
@@ -659,13 +659,13 @@ export default function SettingsScreen() {
                   className="bg-background border border-border rounded-xl px-4 py-3 text-foreground"
                 />
                 <Text className="text-xs text-muted mt-1">
-                  Usuario para autenticación Telnet
+                  {t('settings.username_desc')}
                 </Text>
               </View>
 
               <View>
                 <Text className="text-sm font-medium text-foreground mb-2">
-                  Contraseña
+                  {t('settings.password')}
                 </Text>
                 <TextInput
                   value={password}
@@ -676,7 +676,7 @@ export default function SettingsScreen() {
                   className="bg-background border border-border rounded-xl px-4 py-3 text-foreground"
                 />
                 <Text className="text-xs text-muted mt-1">
-                  Contraseña para autenticación Telnet
+                  {t('settings.password_desc')}
                 </Text>
               </View>
             </View>
@@ -687,7 +687,7 @@ export default function SettingsScreen() {
                 className="flex-1 bg-muted/20 border border-border px-4 py-3 rounded-xl active:opacity-80"
               >
                 <Text className="text-foreground font-semibold text-center">
-                  Restablecer
+                  {t('settings.reset')}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -695,7 +695,7 @@ export default function SettingsScreen() {
                 className="flex-1 bg-primary px-4 py-3 rounded-xl active:opacity-80"
               >
                 <Text className="text-white font-semibold text-center">
-                  Guardar
+                  {t('settings.save')}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -704,18 +704,18 @@ export default function SettingsScreen() {
           {/* Data Management */}
           <View className="bg-surface rounded-2xl p-6 border border-border">
             <Text className="text-lg font-semibold text-foreground mb-4">
-              Gestión de Datos
+              {t('settings.data_management')}
             </Text>
 
             <TouchableOpacity
               onPress={() => {
                 Alert.alert(
-                  'Limpiar Historial',
-                  '¿Eliminar todo el historial de comandos?',
+                  t('settings.clear_history'),
+                  t('settings.clear_history_confirm'),
                   [
-                    { text: 'Cancelar', style: 'cancel' },
+                    { text: t('common.cancel'), style: 'cancel' },
                     {
-                      text: 'Limpiar',
+                      text: t('settings.clear'),
                       style: 'destructive',
                       onPress: () => {
                         clearMessages();
@@ -729,7 +729,7 @@ export default function SettingsScreen() {
               className="bg-error/10 border border-error px-4 py-3 rounded-xl active:opacity-80"
             >
               <Text className="text-error font-semibold text-center">
-                Limpiar Historial de Comandos
+                {t('settings.clear_command_history')}
               </Text>
             </TouchableOpacity>
           </View>
@@ -744,7 +744,7 @@ export default function SettingsScreen() {
               className="flex-row justify-between items-center mb-4"
             >
               <Text className="text-lg font-semibold text-foreground">
-                🔧 Modo Debug USB
+                🔧 {t('settings.usb_debug_mode')}
               </Text>
               <Text className="text-2xl text-muted">
                 {showDebugInfo ? '▼' : '▶'}
@@ -756,23 +756,23 @@ export default function SettingsScreen() {
                 {/* Estado de Conexión */}
                 <View className="bg-background rounded-xl p-4">
                   <Text className="text-sm font-semibold text-foreground mb-3">
-                    🔌 Estado de Conexión
+                    🔌 {t('settings.connection_status')}
                   </Text>
                   <View className="gap-2">
                     <View className="flex-row justify-between">
-                      <Text className="text-xs text-muted">Estado:</Text>
+                      <Text className="text-xs text-muted">{t('settings.status')}:</Text>
                       <Text className={`text-xs font-medium ${
                         status === 'connected' ? 'text-success' :
                         status === 'detected' ? 'text-warning' :
                         'text-muted'
                       }`}>
-                        {status === 'connected' ? 'CONECTADO' :
-                         status === 'detected' ? 'DETECTADO' :
-                         'DESCONECTADO'}
+                        {status === 'connected' ? t('usb.status_connected').toUpperCase() :
+                         status === 'detected' ? t('usb.status_detected').toUpperCase() :
+                         t('usb.status_disconnected').toUpperCase()}
                       </Text>
                     </View>
                     <View className="flex-row justify-between">
-                      <Text className="text-xs text-muted">Dispositivos detectados:</Text>
+                      <Text className="text-xs text-muted">{t('settings.devices_detected')}:</Text>
                       <Text className="text-xs text-foreground font-medium">{devices.length}</Text>
                     </View>
                   </View>
@@ -782,7 +782,7 @@ export default function SettingsScreen() {
                 {device && (
                   <View className="bg-background rounded-xl p-4">
                     <Text className="text-sm font-semibold text-foreground mb-3">
-                      📱 Dispositivo Actual
+                      📱 {t('settings.current_device')}
                     </Text>
                     <View className="gap-2">
                       <View className="flex-row justify-between">
@@ -800,11 +800,11 @@ export default function SettingsScreen() {
                         <Text className="text-xs text-foreground font-medium">{device.chipset}</Text>
                       </View>
                       <View className="flex-row justify-between">
-                        <Text className="text-xs text-muted">Fabricante:</Text>
+                        <Text className="text-xs text-muted">{t('usb.manufacturer')}:</Text>
                         <Text className="text-xs text-foreground">{device.manufacturer}</Text>
                       </View>
                       <View className="flex-row justify-between">
-                        <Text className="text-xs text-muted">Producto:</Text>
+                        <Text className="text-xs text-muted">{t('usb.product')}:</Text>
                         <Text className="text-xs text-foreground">{device.product}</Text>
                       </View>
                       <View className="flex-row justify-between">
@@ -817,13 +817,13 @@ export default function SettingsScreen() {
 
                 {/* Información Técnica */}
                 <View className="bg-background rounded-xl p-4">
-                  <Text className="text-sm font-semibold text-foreground mb-3">
-                    ⚙️ Información Técnica
-                  </Text>
+                    <Text className="text-sm font-semibold text-foreground mb-3">
+                      ⚙️ {t('settings.technical_info')}
+                    </Text>
                   <View className="gap-2">
                     <View className="flex-row justify-between">
-                      <Text className="text-xs text-muted">Módulo Nativo:</Text>
-                      <Text className="text-xs text-success font-medium">ACTIVO</Text>
+                      <Text className="text-xs text-muted">{t('settings.native_module')}:</Text>
+                      <Text className="text-xs text-success font-medium">{t('settings.active')}</Text>
                     </View>
                     <View className="flex-row justify-between">
                       <Text className="text-xs text-muted">Magic Value:</Text>

@@ -1551,13 +1551,15 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 
 ### Fase 2: Migrar Textos Hardcodeados
 - [x] index.tsx: Adaptador USB Requerido, Encontrado, Conectar, Escaneo, etc.
-- [ ] tools.tsx: Estado USB, Información del adaptador, etc.
-- [ ] usb-status.tsx: textos hardcodeados
-- [ ] toolbox.tsx: textos hardcodeados
-- [ ] recovery.tsx: textos hardcodeados
+- [x] tools.tsx: Estado USB, Información del adaptador, etc.
+- [x] usb-status.tsx: textos hardcodeados
+- [x] toolbox.tsx: textos hardcodeados
+- [x] recovery.tsx: textos hardcodeados
 - [x] auto-spoof.tsx: textos hardcodeados
-- [ ] diag.tsx: textos hardcodeados
-- [ ] commands.tsx: textos hardcodeados
+- [x] diag.tsx: textos hardcodeados
+- [x] commands.tsx: textos hardcodeados
+- [x] settings.tsx: textos hardcodeados
+- [x] fec.tsx: textos hardcodeados
 
 ### Fase 3: Completar Traducciones EN/DE
 - [x] Agregar claves home.* en en.json (50+ claves)

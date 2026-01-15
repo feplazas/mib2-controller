@@ -128,7 +128,7 @@ export default function CommandsScreen() {
                 className="bg-success px-4 py-2 rounded-lg active:opacity-80"
               >
                 <Text className="text-background font-semibold">
-                  {isConnecting ? 'Conectando...' : 'Conectar'}
+                  {isConnecting ? t('commands.connecting') : t('commands.connect')}
                 </Text>
               </Pressable>
             ) : (
@@ -136,7 +136,7 @@ export default function CommandsScreen() {
                 onPress={handleDisconnect}
                 className="bg-error px-4 py-2 rounded-lg active:opacity-80"
               >
-                <Text className="text-background font-semibold">Desconectar</Text>
+                <Text className="text-background font-semibold">{t('commands.disconnect')}</Text>
               </Pressable>
             )}
           </View>
@@ -152,8 +152,8 @@ export default function CommandsScreen() {
             {messages.length === 0 ? (
               <View className="flex-1 items-center justify-center">
                 <Text className="text-muted text-center">
-                  Terminal vacía{'\n'}
-                  {isConnected ? 'Escribe un comando abajo' : 'Conecta primero para enviar comandos'}
+                  {t('commands.terminal_empty')}{'\n'}
+                  {isConnected ? t('commands.type_command_below') : t('commands.connect_first_to_send')}
                 </Text>
               </View>
             ) : (
@@ -187,7 +187,7 @@ export default function CommandsScreen() {
               onPress={handleClearTerminal}
               className="absolute top-2 right-2 bg-surface/90 px-3 py-1 rounded-lg active:opacity-80"
             >
-              <Text className="text-xs text-muted font-semibold">Limpiar</Text>
+              <Text className="text-xs text-muted font-semibold">{t('commands.clear')}</Text>
             </Pressable>
           )}
         </View>
@@ -223,7 +223,7 @@ export default function CommandsScreen() {
                 setShowSuggestions(text.length > 0);
               }}
               onSubmitEditing={handleSendCommand}
-              placeholder={isConnected ? "Escribe un comando..." : "Conecta primero..."}
+              placeholder={isConnected ? t('commands.type_command') : t('commands.connect_first')}
               placeholderTextColor={colors.muted}
               editable={isConnected}
               autoCapitalize="none"
@@ -244,7 +244,7 @@ export default function CommandsScreen() {
                 isConnected && commandInput.trim() ? 'text-background' : 'text-muted'
               }`}
             >
-              Enviar
+              {t('commands.send')}
             </Text>
           </Pressable>
         </View>

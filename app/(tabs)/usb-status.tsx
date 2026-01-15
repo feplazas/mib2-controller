@@ -10,7 +10,10 @@ import { getChipsetCompatibility, canAttemptSpoofing } from '@/lib/chipset-compa
 import { ScanningIndicator } from '@/components/scanning-indicator';
 
 import { showAlert } from '@/lib/translated-alert';
+import { useTranslation } from "@/lib/language-context";
+
 export default function UsbStatusScreen() {
+  const t = useTranslation();
   const { status, device, devices, isScanning, scanDevices, connectToDevice, disconnectDevice, detectedProfile, recommendedProfile } = useUsbStatus();
   const [refreshing, setRefreshing] = useState(false);
   const [connectionTime, setConnectionTime] = useState<Date | null>(null);
@@ -58,12 +61,12 @@ export default function UsbStatusScreen() {
     }
 
     Alert.alert(
-      '💾 Crear Backup Manual',
-      'Se creará una copia de seguridad completa de la EEPROM del adaptador USB.\n\nEsto es recomendable antes de realizar cualquier modificación.\n\n¿Deseas continuar?',
+      t('usb.create_backup_title'),
+      t('usb.create_backup_message'),
       [
-        { text: 'Cancelar', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Crear Backup',
+          text: t('usb.create_backup'),
           onPress: async () => {
             setIsCreatingBackup(true);
             try {
@@ -73,19 +76,14 @@ export default function UsbStatusScreen() {
               
               const filename = `backup_${device.vendorId.toString(16)}_${device.productId.toString(16)}_${backup.timestamp}.bin`;
               Alert.alert(
-                '✅ Backup Creado',
-                `Backup guardado exitosamente:\n\n` +
-                `💾 Archivo: ${filename}\n` +
-                `📅 Fecha: ${new Date(backup.timestamp).toLocaleString('es-ES')}\n` +
-                `📊 Tamaño: ${backup.size} bytes\n` +
-                `📂 Ruta: Android/data/[app]/files/Download/mib2_backups/\n\n` +
-                `Accede desde: Archivos → Android → data → [nombre_app] → files → Download → mib2_backups`
+                t('usb.backup_created'),
+                t('usb.backup_created_message', { filename, date: new Date(backup.timestamp).toLocaleString(), size: backup.size })
               );
             } catch (error: any) {
               await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
               Alert.alert(
-                '❌ Error al Crear Backup',
-                error.message || 'No se pudo crear el backup. Verifica que el dispositivo esté conectado correctamente.'
+                t('usb.backup_error'),
+                error.message || t('usb.backup_error_message')
               );
             } finally {
               setIsCreatingBackup(false);
@@ -112,13 +110,13 @@ export default function UsbStatusScreen() {
       // Solicitar permisos
       const granted = await usbService.requestPermission(targetDevice.deviceId);
       if (!granted) {
-        throw new Error('Permisos USB denegados');
+        throw new Error(t('usb.permissions_denied'));
       }
 
       // Abrir dispositivo
       const opened = await usbService.openDevice(targetDevice.deviceId);
       if (!opened) {
-        throw new Error('No se pudo abrir el dispositivo USB');
+        throw new Error(t('usb.could_not_open'));
       }
 
       // Actualizar estado global usando connectToDevice del contexto
@@ -127,17 +125,14 @@ export default function UsbStatusScreen() {
 
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       Alert.alert(
-        '✅ Conectado',
-        `Dispositivo USB conectado exitosamente:\n\n` +
-        `📱 ${targetDevice.deviceName}\n` +
-        `🔌 VID/PID: 0x${targetDevice.vendorId.toString(16).toUpperCase().padStart(4, '0')}:0x${targetDevice.productId.toString(16).toUpperCase().padStart(4, '0')}\n` +
-        `🔧 Chipset: ${targetDevice.chipset}`
+        t('usb.connected'),
+        t('usb.connected_message', { name: targetDevice.deviceName, vidpid: `0x${targetDevice.vendorId.toString(16).toUpperCase().padStart(4, '0')}:0x${targetDevice.productId.toString(16).toUpperCase().padStart(4, '0')}`, chipset: targetDevice.chipset })
       );
     } catch (error: any) {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       Alert.alert(
-        '❌ Error al Conectar',
-        error.message || 'No se pudo conectar con el dispositivo USB'
+        t('usb.connect_error'),
+        error.message || t('usb.connect_error_message')
       );
     } finally {
       setIsConnecting(false);
@@ -176,7 +171,7 @@ export default function UsbStatusScreen() {
       
       // Determinar icono según tipo
       const typeIcon = eepromType.type === 'external_eeprom' ? '✅' : eepromType.type === 'efuse' ? '❌' : '⚠️';
-      const typeLabel = eepromType.type === 'external_eeprom' ? 'EEPROM Externa' : eepromType.type === 'efuse' ? 'eFuse' : 'Desconocido';
+      const typeLabel = eepromType.type === 'external_eeprom' ? t('usb.eeprom_external') : eepromType.type === 'efuse' ? 'eFuse' : t('usb.unknown');
       
       Alert.alert(
         `${typeIcon} Test EEPROM Completado`,
@@ -191,8 +186,8 @@ export default function UsbStatusScreen() {
     } catch (error: any) {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       Alert.alert(
-        '❌ Error al Testear EEPROM',
-        error.message || 'No se pudo realizar el test. Verifica que el dispositivo esté conectado correctamente.'
+        t('usb.test_eeprom_error'),
+        error.message || t('usb.test_eeprom_error_message')
       );
     } finally {
       setIsTestingEEPROM(false);
@@ -201,12 +196,12 @@ export default function UsbStatusScreen() {
 
   const handleDisconnect = async () => {
     Alert.alert(
-      '🔌 Desconectar Dispositivo',
-      '¿Estás seguro de que deseas desconectar el dispositivo USB?',
+      t('usb.disconnect_title'),
+      t('usb.disconnect_confirm'),
       [
-        { text: 'Cancelar', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Desconectar',
+          text: t('usb.disconnect'),
           style: 'destructive',
           onPress: async () => {
             setIsDisconnecting(true);
@@ -224,8 +219,8 @@ export default function UsbStatusScreen() {
             } catch (error: any) {
               await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
               Alert.alert(
-                '❌ Error al Desconectar',
-                error.message || 'No se pudo desconectar el dispositivo USB'
+                t('usb.disconnect_error'),
+                error.message || t('usb.disconnect_error_message')
               );
             } finally {
               setIsDisconnecting(false);
@@ -250,11 +245,11 @@ export default function UsbStatusScreen() {
   const getStatusText = () => {
     switch (status) {
       case 'connected':
-        return 'Conectado';
+        return t('usb.status_connected');
       case 'detected':
-        return 'Detectado';
+        return t('usb.status_detected');
       default:
-        return 'Desconectado';
+        return t('usb.status_disconnected');
     }
   };
 
@@ -283,10 +278,10 @@ export default function UsbStatusScreen() {
           {/* Header */}
           <View className="items-center mb-4">
             <Text className="text-3xl font-bold text-foreground mb-2">
-              Estado de Conexión USB
+              {t('usb.connection_status')}
             </Text>
             <Text className="text-sm text-muted text-center">
-              Información en tiempo real de tu dispositivo USB
+              {t('usb.realtime_info')}
             </Text>
           </View>
 
@@ -313,12 +308,12 @@ export default function UsbStatusScreen() {
           {status === 'connected' && device && (
             <View className="bg-surface rounded-2xl p-6 border border-border">
               <Text className="text-lg font-bold text-foreground mb-4">
-                📱 Información del Dispositivo
+                {t('usb.device_info')}
               </Text>
               
               <View className="gap-3">
                 <View className="flex-row justify-between">
-                  <Text className="text-sm text-muted">Nombre:</Text>
+                  <Text className="text-sm text-muted">{t('usb.name')}:</Text>
                   <Text className="text-sm text-foreground font-medium">
                     {device.deviceName}
                   </Text>
@@ -333,7 +328,7 @@ export default function UsbStatusScreen() {
 
                 {device.manufacturer && (
                   <View className="flex-row justify-between">
-                    <Text className="text-sm text-muted">Fabricante:</Text>
+                    <Text className="text-sm text-muted">{t('usb.manufacturer')}:</Text>
                     <Text className="text-sm text-foreground">
                       {device.manufacturer}
                     </Text>
@@ -342,7 +337,7 @@ export default function UsbStatusScreen() {
 
                 {device.product && (
                   <View className="flex-row justify-between">
-                    <Text className="text-sm text-muted">Producto:</Text>
+                    <Text className="text-sm text-muted">{t('usb.product')}:</Text>
                     <Text className="text-sm text-foreground">
                       {device.product}
                     </Text>
@@ -351,7 +346,7 @@ export default function UsbStatusScreen() {
 
                 {device.serialNumber && device.serialNumber !== 'Unknown' && (
                   <View className="flex-row justify-between">
-                    <Text className="text-sm text-muted">Serial:</Text>
+                    <Text className="text-sm text-muted">{t('usb.serial')}:</Text>
                     <Text className="text-sm text-foreground font-mono">
                       {device.serialNumber}
                     </Text>
@@ -360,7 +355,7 @@ export default function UsbStatusScreen() {
 
                 {device.chipset && (
                   <View className="flex-row justify-between">
-                    <Text className="text-sm text-muted">Chipset:</Text>
+                    <Text className="text-sm text-muted">{t('usb.chipset')}:</Text>
                     <Text className="text-sm text-foreground font-medium">
                       {device.chipset}
                     </Text>
@@ -391,7 +386,7 @@ export default function UsbStatusScreen() {
                 <Text className={`text-sm font-semibold ${
                   isScanning ? 'text-muted' : 'text-primary'
                 }`}>
-                  {isScanning ? 'Escaneando...' : 'Refrescar Dispositivos'}
+                  {isScanning ? t('usb.scanning') : t('usb.refresh_devices')}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -412,11 +407,11 @@ export default function UsbStatusScreen() {
                 <View className="flex-row items-center gap-2">
                   <Text className="text-xl">🔌</Text>
                   <Text className="text-base font-bold text-background">
-                    {isConnecting ? 'Conectando...' : 'Conectar'}
+                    {isConnecting ? t('usb.connecting') : t('usb.connect')}
                   </Text>
                 </View>
                 <Text className="text-xs text-background/80 mt-1">
-                  Solicitar permisos y abrir conexión USB
+                  {t('usb.request_permissions')}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -437,11 +432,11 @@ export default function UsbStatusScreen() {
                 <View className="flex-row items-center gap-2">
                   <Text className="text-xl">🧪</Text>
                   <Text className="text-base font-bold text-background">
-                    {isTestingEEPROM ? 'Testeando...' : 'Test EEPROM'}
+                    {isTestingEEPROM ? t('usb.testing') : t('usb.test_eeprom')}
                   </Text>
                 </View>
                 <Text className="text-xs text-background/80 mt-1">
-                  Leer y verificar integridad de EEPROM (256 bytes)
+                  {t('usb.test_eeprom_desc')}
                 </Text>
               </TouchableOpacity>
 
@@ -453,11 +448,11 @@ export default function UsbStatusScreen() {
                 <View className="flex-row items-center gap-2">
                   <Text className="text-xl">❌</Text>
                   <Text className="text-base font-bold text-error">
-                    Desconectar
+                    {t('usb.disconnect')}
                   </Text>
                 </View>
                 <Text className="text-xs text-muted mt-1">
-                  Cerrar conexión USB de forma segura
+                  {t('usb.disconnect_desc')}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -488,14 +483,14 @@ export default function UsbStatusScreen() {
                       <View className="flex-row items-center gap-2">
                         <Text className="text-xl">⚡</Text>
                         <Text className="text-base font-bold text-background">
-                          Ir a Auto Spoof
+                          {t('usb.go_to_auto_spoof')}
                         </Text>
                         <Text className="text-xl">›</Text>
                       </View>
                       <Text className="text-xs text-background/80 mt-1">
                         {compat === 'confirmed' 
-                          ? 'Chipset confirmado compatible' 
-                          : 'Chipset experimental - usar con precaución'}
+                          ? t('usb.chipset_confirmed') 
+                          : t('usb.chipset_experimental')}
                       </Text>
                     </TouchableOpacity>
                   );
@@ -518,11 +513,11 @@ export default function UsbStatusScreen() {
                   <Text className={`text-base font-bold ${
                     isCreatingBackup ? 'text-muted' : 'text-primary'
                   }`}>
-                    {isCreatingBackup ? 'Creando Backup...' : 'Crear Backup Manual'}
+                    {isCreatingBackup ? t('usb.creating_backup') : t('usb.create_backup_manual')}
                   </Text>
                 </View>
                 <Text className="text-xs text-muted mt-1">
-                  Copia de seguridad preventiva de EEPROM
+                  {t('usb.backup_desc')}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -538,35 +533,35 @@ export default function UsbStatusScreen() {
               <View className="flex-row items-center gap-2 mb-3">
                 <Text className="text-2xl">{detectedProfile.icon}</Text>
                 <Text className="text-lg font-bold text-foreground">
-                  Perfil Detectado
+                  {t('usb.detected_profile')}
                 </Text>
               </View>
               
               <View className="gap-2 mb-4">
                 <View className="flex-row justify-between">
-                  <Text className="text-sm text-muted">Adaptador:</Text>
+                  <Text className="text-sm text-muted">{t('usb.adapter')}:</Text>
                   <Text className="text-sm text-foreground font-bold">
                     {detectedProfile.name}
                   </Text>
                 </View>
                 <View className="flex-row justify-between">
-                  <Text className="text-sm text-muted">Fabricante:</Text>
+                  <Text className="text-sm text-muted">{t('usb.manufacturer')}:</Text>
                   <Text className="text-sm text-foreground">
                     {detectedProfile.manufacturer}
                   </Text>
                 </View>
                 <View className="flex-row justify-between">
-                  <Text className="text-sm text-muted">Chipset:</Text>
+                  <Text className="text-sm text-muted">{t('usb.chipset')}:</Text>
                   <Text className="text-sm text-foreground">
                     {detectedProfile.chipset}
                   </Text>
                 </View>
                 <View className="flex-row justify-between">
-                  <Text className="text-sm text-muted">Compatible MIB2:</Text>
+                  <Text className="text-sm text-muted">{t('usb.mib2_compatible')}:</Text>
                   <Text className={`text-sm font-bold ${
                     detectedProfile.compatible ? 'text-green-500' : 'text-red-500'
                   }`}>
-                    {detectedProfile.compatible ? '✅ Sí' : '❌ No'}
+                    {detectedProfile.compatible ? `✅ ${t('common.yes')}` : `❌ ${t('common.no')}`}
                   </Text>
                 </View>
               </View>
@@ -583,28 +578,28 @@ export default function UsbStatusScreen() {
           {status === 'connected' && (
             <View className="bg-surface rounded-2xl p-6 border border-border">
               <Text className="text-lg font-bold text-foreground mb-4">
-                📊 Estadísticas
+                {t('usb.statistics')}
               </Text>
               
               <View className="gap-3">
                 <View className="flex-row justify-between">
-                  <Text className="text-sm text-muted">Tiempo Conectado:</Text>
+                  <Text className="text-sm text-muted">{t('usb.connection_time')}:</Text>
                   <Text className="text-sm text-foreground font-mono">
                     {uptime}
                   </Text>
                 </View>
 
                 <View className="flex-row justify-between">
-                  <Text className="text-sm text-muted">Dispositivos Detectados:</Text>
+                  <Text className="text-sm text-muted">{t('usb.devices_detected')}:</Text>
                   <Text className="text-sm text-foreground font-medium">
                     {devices.length}
                   </Text>
                 </View>
 
                 <View className="flex-row justify-between">
-                  <Text className="text-sm text-muted">Estado del Servicio:</Text>
+                  <Text className="text-sm text-muted">{t('usb.service_status')}:</Text>
                   <Text className="text-sm text-green-500 font-medium">
-                    ✅ Activo
+                    ✅ {t('usb.active')}
                   </Text>
                 </View>
               </View>
@@ -617,17 +612,17 @@ export default function UsbStatusScreen() {
               <View className="flex-row items-center gap-2 mb-3">
                 <Text className="text-2xl">⚡</Text>
                 <Text className="text-lg font-bold text-foreground">
-                  Spoofing Recomendado
+                  {t('usb.recommended_spoofing')}
                 </Text>
               </View>
               
               <View className="bg-background rounded-lg p-4 mb-4">
                 <Text className="text-sm text-muted mb-2">
-                  Este dispositivo no es compatible con MIB2. Se recomienda aplicar el siguiente perfil:
+                  {t('usb.not_compatible_recommend')}
                 </Text>
                 <View className="gap-2 mt-2">
                   <View className="flex-row justify-between">
-                    <Text className="text-sm text-muted">Perfil Objetivo:</Text>
+                    <Text className="text-sm text-muted">{t('usb.target_profile')}:</Text>
                     <Text className="text-sm text-foreground font-bold">
                       {recommendedProfile.name}
                     </Text>
@@ -682,10 +677,10 @@ export default function UsbStatusScreen() {
             <View className="bg-surface rounded-2xl p-6 border border-border items-center">
               <Text className="text-6xl mb-4">🔌</Text>
               <Text className="text-lg font-bold text-foreground mb-2">
-                No hay dispositivos conectados
+                {t('usb.no_devices')}
               </Text>
               <Text className="text-sm text-muted text-center mb-4">
-                Conecta un adaptador USB-Ethernet compatible para comenzar
+                {t('usb.connect_adapter')}
               </Text>
               <TouchableOpacity
                 onPress={onRefresh}
@@ -693,7 +688,7 @@ export default function UsbStatusScreen() {
                 disabled={isScanning}
               >
                 <Text className="text-background font-semibold">
-                  {isScanning ? 'Escaneando...' : 'Escanear Ahora'}
+                  {isScanning ? t('usb.scanning') : t('usb.scan_now')}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -701,21 +696,21 @@ export default function UsbStatusScreen() {
 
           {/* Información de Ayuda */}
           <View className="bg-surface rounded-2xl p-6 border border-border">
-            <Text className="text-lg font-bold text-foreground mb-4">
-              💡 Consejos
-            </Text>
+              <Text className="text-lg font-bold text-foreground mb-4">
+                {t('usb.tips')}
+              </Text>
             <View className="gap-2">
               <Text className="text-sm text-muted">
-                • Conecta el adaptador USB con un cable OTG
+                • {t('usb.tip_1')}
               </Text>
               <Text className="text-sm text-muted">
-                • Asegúrate de que el adaptador tenga alimentación
+                • {t('usb.tip_2')}
               </Text>
               <Text className="text-sm text-muted">
-                • Los adaptadores ASIX son los más compatibles
+                • {t('usb.tip_3')}
               </Text>
               <Text className="text-sm text-muted">
-                • Desliza hacia abajo para actualizar el estado
+                • {t('usb.tip_4')}
               </Text>
             </View>
           </View>
