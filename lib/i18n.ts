@@ -10,9 +10,8 @@ const i18n = new I18n({
   de,
 });
 
-// Configurar locale por defecto (será sobreescrito por LanguageProvider)
+// NO setear i18n.locale aquí - será seteado por LanguageProvider después de detectar idioma del sistema
 i18n.defaultLocale = 'en';
-i18n.locale = 'en';
 i18n.enableFallback = true;
 
 // Función helper para traducir (no reactiva - usar useTranslation en componentes)
