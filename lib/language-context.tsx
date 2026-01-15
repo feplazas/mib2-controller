@@ -1,10 +1,13 @@
 import React, { createContext, useContext, ReactNode, useEffect, useState, useCallback } from 'react';
+import { AppState, AppStateStatus } from 'react-native';
 import * as RNLocalize from 'react-native-localize';
 import i18n from './i18n';
 
 /**
- * Language Context - Uses react-native-localize for reliable locale detection
- * CRITICAL FIX: useTranslation now uses currentLanguage as dependency to force re-render
+ * Language Context - Detects system language and updates when app returns to foreground
+ * 
+ * SOLUTION: Uses AppState listener to re-detect language when user changes system settings
+ * and returns to the app. This ensures the app always shows the correct language.
  */
 
 interface LanguageContextType {
@@ -18,11 +21,12 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const [isReady, setIsReady] = useState(false);
   const [currentLanguage, setCurrentLanguage] = useState('en');
 
-  useEffect(() => {
-    // Get system locales using react-native-localize
+  // Function to detect and set language from system
+  const detectAndSetLanguage = useCallback(() => {
     const locales = RNLocalize.getLocales();
     
-    console.log('[LanguageProvider] All system locales:', JSON.stringify(locales));
+    console.log('[LanguageProvider] Detecting language...');
+    console.log('[LanguageProvider] System locales:', JSON.stringify(locales));
     
     // Get primary locale
     const primaryLocale = locales[0];
@@ -44,11 +48,42 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     console.log('[LanguageProvider] i18n.locale set to:', i18n.locale);
   }, []);
 
+  // Initial language detection on mount
+  useEffect(() => {
+    console.log('[LanguageProvider] Initial mount - detecting language');
+    detectAndSetLanguage();
+  }, [detectAndSetLanguage]);
+
+  // Listen for app state changes to detect language changes
+  useEffect(() => {
+    console.log('[LanguageProvider] Setting up AppState listener');
+    
+    const handleAppStateChange = (nextAppState: AppStateStatus) => {
+      console.log('[LanguageProvider] AppState changed to:', nextAppState);
+      
+      // When app comes back to foreground, re-detect language
+      // This handles the case where user changes system language while app is in background
+      if (nextAppState === 'active') {
+        console.log('[LanguageProvider] App became active - re-detecting language');
+        detectAndSetLanguage();
+      }
+    };
+
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+
+    return () => {
+      console.log('[LanguageProvider] Removing AppState listener');
+      subscription.remove();
+    };
+  }, [detectAndSetLanguage]);
+
   // Don't render children until language is ready
   if (!isReady) {
+    console.log('[LanguageProvider] Not ready yet, showing null');
     return null;
   }
 
+  console.log('[LanguageProvider] Rendering with language:', currentLanguage);
   return (
     <LanguageContext.Provider value={{ currentLanguage, isReady }}>
       {children}
@@ -66,8 +101,7 @@ export function useLanguage() {
 
 /**
  * Hook to get translation function
- * CRITICAL FIX: Now uses currentLanguage as dependency to force re-evaluation
- * when language changes, ensuring all components re-render with new translations
+ * Uses currentLanguage as dependency to force re-evaluation when language changes
  */
 export function useTranslation() {
   const { currentLanguage, isReady } = useLanguage();
