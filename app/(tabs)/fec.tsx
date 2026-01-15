@@ -202,17 +202,17 @@ export default function FECScreen() {
           {showInfo && (
             <View className="bg-surface rounded-xl p-4 border" style={{ borderColor: colors.border }}>
               <Text className="text-lg font-bold mb-3" style={{ color: colors.foreground }}>
-                {FEC_INJECTION_INFO.title}
+                {t(FEC_INJECTION_INFO.titleKey)}
               </Text>
 
               {/* Steps */}
               {FEC_INJECTION_INFO.steps.map((step) => (
                 <View key={step.step} className="mb-3">
                   <Text className="text-sm font-semibold" style={{ color: colors.foreground }}>
-                    {step.step}. {step.title}
+                    {step.step}. {t(step.titleKey)}
                   </Text>
                   <Text className="text-xs mt-1" style={{ color: colors.muted }}>
-                    {step.description}
+                    {t(step.descriptionKey)}
                   </Text>
                 </View>
               ))}
@@ -222,9 +222,9 @@ export default function FECScreen() {
                 <Text className="text-sm font-semibold mb-2" style={{ color: "#EF4444" }}>
                   ⚠️ {t('fec.warnings')}
                 </Text>
-                {FEC_INJECTION_INFO.warnings.map((warning, index) => (
+                {FEC_INJECTION_INFO.warningKeys.map((warningKey: string, index: number) => (
                   <Text key={index} className="text-xs mb-1" style={{ color: "#EF4444" }}>
-                    • {warning}
+                    • {t(warningKey)}
                   </Text>
                 ))}
               </View>
@@ -235,7 +235,7 @@ export default function FECScreen() {
                   📝 {t('fec.technical_note')}
                 </Text>
                 <Text className="text-xs" style={{ color: colors.foreground }}>
-                  {FEC_INJECTION_INFO.technicalNote}
+                  {t(FEC_INJECTION_INFO.technicalNoteKey)}
                 </Text>
               </View>
             </View>

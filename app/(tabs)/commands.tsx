@@ -251,7 +251,7 @@ export default function CommandsScreen() {
 
         {/* Quick Commands */}
         <View>
-          <Text className="text-sm font-semibold text-foreground mb-2">Comandos Rápidos</Text>
+          <Text className="text-sm font-semibold text-foreground mb-2">{t('commands.quick_commands')}</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="gap-2">
             {Object.entries(MIB2_COMMANDS).slice(0, 6).map(([key, cmd]) => (
               <Pressable

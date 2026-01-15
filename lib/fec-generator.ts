@@ -206,41 +206,41 @@ export function validateFECCode(code: string): boolean {
  * Información sobre el proceso de inyección de códigos FEC
  */
 export const FEC_INJECTION_INFO = {
-  title: 'Proceso de Inyección de Códigos FEC',
+  titleKey: 'fec.injection_title',
   steps: [
     {
       step: 1,
-      title: 'Generar Códigos',
-      description: 'Utilizar el generador de FEC basado en VIN y VCRN, o usar códigos predefinidos.',
+      titleKey: 'fec.step1_title',
+      descriptionKey: 'fec.step1_desc',
     },
     {
       step: 2,
-      title: 'Crear ExceptionList.txt',
-      description: 'Generar el archivo ExceptionList.txt con los códigos FEC deseados.',
+      titleKey: 'fec.step2_title',
+      descriptionKey: 'fec.step2_desc',
     },
     {
       step: 3,
-      title: 'Instalar MIB2 Toolbox',
-      description: 'Asegurarse de que el MIB2 STD2 Toolbox esté instalado en la unidad.',
+      titleKey: 'fec.step3_title',
+      descriptionKey: 'fec.step3_desc',
     },
     {
       step: 4,
-      title: 'Aplicar Parcheo',
-      description: 'Ejecutar la función "Patch tsd.mibstd2.system.swap" desde el menú verde (GEM) del Toolbox.',
+      titleKey: 'fec.step4_title',
+      descriptionKey: 'fec.step4_desc',
     },
     {
       step: 5,
-      title: 'Inyectar Códigos',
-      description: 'Una vez parcheado el sistema, consultar la ExceptionList.txt generada. Los códigos serán aceptados como "Legal" independientemente de la firma criptográfica.',
+      titleKey: 'fec.step5_title',
+      descriptionKey: 'fec.step5_desc',
     },
   ],
-  warnings: [
-    '⚠️ Este método sortea la validación de firmware digital de VW AG',
-    '⚠️ Solo funciona en unidades 1-SD que carecen de las rutinas de validación necesarias',
-    '⚠️ El parcheo modifica el binario del sistema (tsd.mibstd2.system.swap)',
-    '⚠️ Realizar backup antes de aplicar cualquier modificación',
+  warningKeys: [
+    'fec.warning1',
+    'fec.warning2',
+    'fec.warning3',
+    'fec.warning4',
   ],
-  technicalNote: 'El MIB STD2 Toolbox automatiza el proceso de "parcheo". En lugar de intentar crackear la clave privada de VW (computacionalmente inviable), el Toolbox modifica el binario del sistema para alterar la rutina de verificación de firmas. Una vez parcheado, el sistema se instruye para consultar una "Lista de Excepciones" (ExceptionList.txt) generada por el usuario.',
+  technicalNoteKey: 'fec.technical_note',
 };
 
 /**
@@ -264,6 +264,6 @@ EOF
 # 4. Verificar códigos inyectados
 # Los códigos FEC ahora serán aceptados como válidos
 
-echo "Códigos FEC inyectados exitosamente"
+echo "FEC codes injected successfully"
 `;
 }

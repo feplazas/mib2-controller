@@ -174,14 +174,14 @@ export default function UsbStatusScreen() {
       const typeLabel = eepromType.type === 'external_eeprom' ? t('usb.eeprom_external') : eepromType.type === 'efuse' ? 'eFuse' : t('usb.unknown');
       
       Alert.alert(
-        `${typeIcon} Test EEPROM Completado`,
-        `📊 Tamaño: 256 bytes\n` +
+        `${typeIcon} ${t('usb.test_eeprom_complete')}`,
+        `📊 ${t('usb.size')}: 256 bytes\n` +
         `🔢 Checksum: 0x${checksum.toString(16).toUpperCase().padStart(2, '0')}\n` +
-        `${isCorrupt ? '❌ Estado: CORRUPTA (todos los bytes son 0xFF)' : '✅ Estado: OK (datos válidos)'}\n\n` +
-        `🔍 Tipo Detectado: ${typeLabel}\n` +
-        `📝 Modificable: ${eepromType.writable ? 'SÍ ✅' : 'NO ❌'}\n\n` +
+        `${isCorrupt ? `❌ ${t('usb.status')}: ${t('usb.corrupt')}` : `✅ ${t('usb.status')}: ${t('usb.ok')}`}\n\n` +
+        `🔍 ${t('usb.detected_type')}: ${typeLabel}\n` +
+        `📝 ${t('usb.modifiable')}: ${eepromType.writable ? `${t('common.yes')} ✅` : `${t('common.no')} ❌`}\n\n` +
         `💡 ${eepromType.reason}\n\n` +
-        `${eepromType.writable ? '✅ Este adaptador PUEDE ser modificado de forma segura mediante spoofing.' : '⚠️ Este adaptador NO puede ser modificado. El spoofing está BLOQUEADO para prevenir bricking.'}`
+        `${eepromType.writable ? `✅ ${t('usb.can_be_modified')}` : `⚠️ ${t('usb.cannot_be_modified')}`}`
       );
     } catch (error: any) {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);

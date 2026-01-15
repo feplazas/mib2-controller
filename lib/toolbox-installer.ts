@@ -1,287 +1,286 @@
 /**
- * Asistente de Instalación del MIB2 STD2 Toolbox
- * Basado en el documento técnico MIB2Acceso.pdf
+ * MIB2 STD2 Toolbox Installation Assistant
+ * Based on MIB2Acceso.pdf technical document
  */
 
 export interface InstallationStep {
   step: number;
-  title: string;
-  description: string;
+  titleKey: string;
+  descriptionKey: string;
   command?: string;
   expectedOutput?: string;
-  warnings?: string[];
+  warningKeys?: string[];
   isOptional?: boolean;
 }
 
 /**
- * Pasos para instalación del Toolbox vía Telnet (D-Link)
+ * Steps for Toolbox installation via Telnet (D-Link)
  */
 export const TOOLBOX_INSTALLATION_STEPS: InstallationStep[] = [
   {
     step: 1,
-    title: "Conectar Adaptador USB-Ethernet",
-    description: "Conectar el adaptador D-Link DUB-E100 al puerto USB de la unidad MIB2. Conectar el cable Ethernet desde el adaptador al dispositivo Android (vía adaptador USB-C a Ethernet) o a un router WiFi.",
-    warnings: [
-      "Asegurarse de usar el adaptador D-Link DUB-E100 específicamente",
-      "El chipset ASIX AX88772 es reconocido nativamente por el firmware MIB2",
+    titleKey: "toolbox.step1_title",
+    descriptionKey: "toolbox.step1_desc",
+    warningKeys: [
+      "toolbox.step1_warning1",
+      "toolbox.step1_warning2",
     ],
   },
   {
     step: 2,
-    title: "Configurar Red",
-    description: "La unidad MIB2 generalmente tiene una dirección IP estática preasignada en la subred 192.168.1.x (frecuentemente 192.168.1.4 para el host). Configurar el dispositivo con una IP estática en el mismo rango (ej. 192.168.1.10).",
-    command: `# En el dispositivo Android/PC:
-# Configurar IP estática: 192.168.1.10
-# Máscara de subred: 255.255.255.0
+    titleKey: "toolbox.step2_title",
+    descriptionKey: "toolbox.step2_desc",
+    command: `# Configure static IP: 192.168.1.10
+# Subnet mask: 255.255.255.0
 # Gateway: 192.168.1.1`,
   },
   {
     step: 3,
-    title: "Verificar Conectividad",
-    description: "Verificar que se puede hacer ping a la unidad MIB2 antes de intentar conectar por Telnet.",
+    titleKey: "toolbox.step3_title",
+    descriptionKey: "toolbox.step3_desc",
     command: "ping 192.168.1.4",
     expectedOutput: "64 bytes from 192.168.1.4: icmp_seq=1 ttl=64 time=1.23 ms",
   },
   {
     step: 4,
-    title: "Conectar por Telnet",
-    description: "El servicio Telnet (puerto 23) puede estar activo pero protegido o inactivo por defecto. En versiones de firmware antiguas o específicas de Technisat ZR (Zentralrechner), este puerto puede estar abierto, permitiendo una conexión remota desde una laptop configurada con una IP estática en el mismo rango.",
+    titleKey: "toolbox.step4_title",
+    descriptionKey: "toolbox.step4_desc",
     command: "telnet 192.168.1.4 23",
     expectedOutput: `Connected to 192.168.1.4
 QNX Neutrino (localhost) (pts/0)
 
 login: `,
-    warnings: [
-      "Si el puerto Telnet está cerrado, no se puede activar mediante codificación VCDS",
-      "En ese caso, el último recurso es el acceso directo al almacenamiento no volátil (eMMC Direct Access) mediante soldadura",
+    warningKeys: [
+      "toolbox.step4_warning1",
+      "toolbox.step4_warning2",
     ],
   },
   {
     step: 5,
-    title: "Iniciar Sesión como Root",
-    description: "Una vez establecida la sesión Telnet, se obtiene acceso a la shell de comandos de QNX (ksh).",
+    titleKey: "toolbox.step5_title",
+    descriptionKey: "toolbox.step5_desc",
     command: `login: root
 password: root`,
     expectedOutput: "# ",
   },
   {
     step: 6,
-    title: "Verificar Sistema de Archivos",
-    description: "Desde aquí, las restricciones de la interfaz gráfica (HMI) son irrelevantes. Se puede montar manualmente la tarjeta SD (que el sistema reconoce como un dispositivo de almacenamiento masivo en /media/mp000 o similar) y ejecutar scripts de shell (install.sh) directamente.",
-    command: `# Verificar montaje de la tarjeta SD
+    titleKey: "toolbox.step6_title",
+    descriptionKey: "toolbox.step6_desc",
+    command: `# Verify SD card mount
 ls -la /media/mp000
 
-# Verificar sistema de archivos
+# Verify filesystem
 df -h`,
     expectedOutput: `/dev/hd0t177  /media/mp000  vfat`,
   },
   {
     step: 7,
-    title: "Descargar MIB2 Toolbox",
-    description: "Descargar el MIB2 STD2 Toolbox desde el repositorio oficial de GitHub y copiarlo a una tarjeta SD.",
-    command: `# En tu PC:
-# Descargar desde: https://github.com/olli991/mib-std2-pq-zr-toolbox
-# Copiar el archivo install.sh a la raíz de la tarjeta SD`,
-    warnings: [
-      "Asegurarse de descargar la versión correcta para MIB2 STD2 (no MIB2 High)",
-      "Verificar la integridad del archivo descargado",
+    titleKey: "toolbox.step7_title",
+    descriptionKey: "toolbox.step7_desc",
+    command: `# On your PC:
+# Download from: https://github.com/olli991/mib-std2-pq-zr-toolbox
+# Copy install.sh to SD card root`,
+    warningKeys: [
+      "toolbox.step7_warning1",
+      "toolbox.step7_warning2",
     ],
   },
   {
     step: 8,
-    title: "Ejecutar Script de Instalación",
-    description: 'Este método "inyecta" el instalador del MIB STD2 Toolbox sorteando la validación de firmas digitales del gestor de actualizaciones SWDL, ya que estamos ejecutando el script de instalación manualmente con privilegios de root, en lugar de pedirle al sistema que "actualice" el firmware.',
-    command: `# Navegar a la tarjeta SD
+    titleKey: "toolbox.step8_title",
+    descriptionKey: "toolbox.step8_desc",
+    command: `# Navigate to SD card
 cd /media/mp000
 
-# Dar permisos de ejecución
+# Set execute permissions
 chmod +x install.sh
 
-# Ejecutar instalación
+# Run installation
 ./install.sh`,
     expectedOutput: "MIB2 Toolbox installed successfully",
-    warnings: [
-      "Este método sortea la validación de firmware digital del gestor de actualizaciones SWDL",
-      "Estamos ejecutando el script manualmente con privilegios root",
+    warningKeys: [
+      "toolbox.step8_warning1",
+      "toolbox.step8_warning2",
     ],
   },
   {
     step: 9,
-    title: "Aplicar Parcheo del Sistema",
-    description: "Una vez instalado el Toolbox, ejecutar la función de parcheo desde el menú verde (GEM - Green Engineering Menu) accesible tras la instalación.",
-    command: `# Desde el menú verde (GEM) del Toolbox:
-# Seleccionar: "Patch tsd.mibstd2.system.swap"`,
-    warnings: [
-      "Este parcheo modifica el binario del sistema para alterar la rutina de verificación de firmas",
-      "Una vez parcheado, el sistema se instruye para consultar la ExceptionList.txt",
+    titleKey: "toolbox.step9_title",
+    descriptionKey: "toolbox.step9_desc",
+    command: `# From Toolbox GEM menu:
+# Select: "Patch tsd.mibstd2.system.swap"`,
+    warningKeys: [
+      "toolbox.step9_warning1",
+      "toolbox.step9_warning2",
     ],
   },
   {
     step: 10,
-    title: "Verificar Instalación",
-    description: "Verificar que el Toolbox se instaló correctamente y está accesible desde el sistema.",
-    command: `# Verificar archivos del Toolbox
+    titleKey: "toolbox.step10_title",
+    descriptionKey: "toolbox.step10_desc",
+    command: `# Verify Toolbox files
 ls -la /net/mmx/mnt/app/eso/hmi/lsd/jars/
 
-# Buscar archivos relacionados con el Toolbox
+# Search for Toolbox files
 find /net/mmx -name "*toolbox*" -o -name "*mib*"`,
-    expectedOutput: "Archivos del Toolbox visibles en el directorio",
+    expectedOutput: "Toolbox files visible in directory",
   },
   {
     step: 11,
-    title: "Reiniciar Sistema",
-    description: "Reiniciar la unidad MIB2 para que los cambios surtan efecto.",
+    titleKey: "toolbox.step11_title",
+    descriptionKey: "toolbox.step11_desc",
     command: "reboot",
-    warnings: [
-      "Después del reinicio, el Toolbox debería estar accesible desde el menú del sistema",
-      "El menú verde (GEM) estará disponible para funciones avanzadas",
+    warningKeys: [
+      "toolbox.step11_warning1",
+      "toolbox.step11_warning2",
     ],
   },
 ];
 
 /**
- * Método alternativo: Acceso directo eMMC (solo informativo)
+ * Alternative method: Direct eMMC access (informational only)
  */
 export const EMMC_ACCESS_INFO = {
-  title: "Método Alternativo: Acceso Directo eMMC (Avanzado)",
-  description: "Si el puerto Telnet está cerrado y no se puede activar mediante codificación VCDS, el último recurso es el acceso directo al almacenamiento no volátil.",
-  steps: [
-    "Extracción física de la unidad MIB2 del vehículo",
-    "Desmontaje del chasis y soldadura de un lector SD modificado",
-    "Acceso directo a los pines del chip eMMC (Embedded Multi-Media Controller)",
-    "Modificación del archivo shadow (contraseñas) o inyección directa de archivos parcheados",
-    "Re-escritura de la imagen en el chip",
+  titleKey: "toolbox.emmc_title",
+  descriptionKey: "toolbox.emmc_desc",
+  stepKeys: [
+    "toolbox.emmc_step1",
+    "toolbox.emmc_step2",
+    "toolbox.emmc_step3",
+    "toolbox.emmc_step4",
+    "toolbox.emmc_step5",
   ],
-  warnings: [
-    "⚠️ Este método es destructivo potencialmente y requiere habilidades avanzadas de microsoldadura",
-    "⚠️ Ofrece control total sobre la unidad, permitiendo incluso revivir unidades 'briqueadas'",
-    "⚠️ NO recomendado para usuarios sin experiencia en electrónica",
-    "⚠️ Puede anular la garantía y dañar permanentemente la unidad",
+  warningKeys: [
+    "toolbox.emmc_warning1",
+    "toolbox.emmc_warning2",
+    "toolbox.emmc_warning3",
+    "toolbox.emmc_warning4",
   ],
-  technicalNote: "Al volcar la imagen de la memoria eMMC en un PC (utilizando herramientas de bajo nivel en Linux), se puede modificar el archivo shadow (contraseñas) o inyectar directamente los archivos parcheados, para luego volver a escribir la imagen en el chip. Este método es destructivo potencialmente y requiere habilidades avanzadas de microsoldadura, pero ofrece control total sobre la unidad, permitiendo incluso revivir unidades 'briqueadas'.",
+  technicalNoteKey: "toolbox.emmc_technical_note",
 };
 
 /**
- * Comandos útiles para diagnóstico del sistema
+ * Useful diagnostic commands
  */
 export const DIAGNOSTIC_COMMANDS = [
   {
-    name: "Información del Sistema",
+    nameKey: "toolbox.diag_system_info",
     command: "uname -a",
-    description: "Muestra información del sistema operativo QNX",
+    descriptionKey: "toolbox.diag_system_info_desc",
   },
   {
-    name: "Versión del Firmware",
+    nameKey: "toolbox.diag_firmware_version",
     command: "cat /net/mmx/fs/sda0/VERSION",
-    description: "Muestra la versión del firmware instalado",
+    descriptionKey: "toolbox.diag_firmware_version_desc",
   },
   {
-    name: "Procesos en Ejecución",
+    nameKey: "toolbox.diag_processes",
     command: "ps aux",
-    description: "Lista todos los procesos en ejecución",
+    descriptionKey: "toolbox.diag_processes_desc",
   },
   {
-    name: "Espacio en Disco",
+    nameKey: "toolbox.diag_disk_space",
     command: "df -h",
-    description: "Muestra el espacio disponible en los sistemas de archivos",
+    descriptionKey: "toolbox.diag_disk_space_desc",
   },
   {
-    name: "Dispositivos de Red",
+    nameKey: "toolbox.diag_network",
     command: "ifconfig -a",
-    description: "Muestra la configuración de las interfaces de red",
+    descriptionKey: "toolbox.diag_network_desc",
   },
   {
-    name: "Servicios Activos",
+    nameKey: "toolbox.diag_services",
     command: "netstat -an | grep LISTEN",
-    description: "Muestra los puertos en escucha (Telnet, FTP, SSH, etc.)",
+    descriptionKey: "toolbox.diag_services_desc",
   },
   {
-    name: "Información de Hardware",
+    nameKey: "toolbox.diag_hardware",
     command: "pidin info",
-    description: "Muestra información detallada del hardware y procesos",
+    descriptionKey: "toolbox.diag_hardware_desc",
   },
 ];
 
 /**
- * Generar script completo de instalación
+ * Generate complete installation script
  */
 export function generateInstallationScript(): string {
   return `#!/bin/sh
-# Script de Instalación del MIB2 STD2 Toolbox
-# Generado por MIB2 Controller
-# Fecha: ${new Date().toISOString()}
+# MIB2 STD2 Toolbox Installation Script
+# Generated by MIB2 Controller
+# Date: ${new Date().toISOString()}
 
-echo "=== Instalación del MIB2 STD2 Toolbox ==="
+echo "=== MIB2 STD2 Toolbox Installation ==="
 echo ""
 
-# Verificar que estamos en root
+# Verify root access
 if [ "$(whoami)" != "root" ]; then
-    echo "ERROR: Este script debe ejecutarse como root"
+    echo "ERROR: This script must be run as root"
     exit 1
 fi
 
-# Verificar montaje de la tarjeta SD
-echo "Verificando tarjeta SD..."
+# Verify SD card mount
+echo "Verifying SD card..."
 if [ ! -d "/media/mp000" ]; then
-    echo "ERROR: Tarjeta SD no montada en /media/mp000"
+    echo "ERROR: SD card not mounted at /media/mp000"
     exit 1
 fi
 
-# Verificar que el archivo install.sh del Toolbox existe
+# Verify Toolbox install.sh exists
 if [ ! -f "/media/mp000/install.sh" ]; then
-    echo "ERROR: No se encontró install.sh en la tarjeta SD"
-    echo "Descargar el Toolbox desde: https://github.com/olli991/mib-std2-pq-zr-toolbox"
+    echo "ERROR: install.sh not found on SD card"
+    echo "Download Toolbox from: https://github.com/olli991/mib-std2-pq-zr-toolbox"
     exit 1
 fi
 
-# Ejecutar instalación del Toolbox
-echo "Ejecutando instalación del Toolbox..."
+# Run Toolbox installation
+echo "Running Toolbox installation..."
 cd /media/mp000
 chmod +x install.sh
 ./install.sh
 
-# Verificar instalación
+# Verify installation
 echo ""
-echo "Verificando instalación..."
+echo "Verifying installation..."
 if [ -d "/net/mmx/mnt/app/eso/hmi/lsd/jars/" ]; then
-    echo "✓ Toolbox instalado correctamente"
+    echo "OK Toolbox installed successfully"
     echo ""
-    echo "Próximos pasos:"
-    echo "1. Reiniciar la unidad MIB2"
-    echo "2. Acceder al menú verde (GEM) del Toolbox"
-    echo "3. Ejecutar 'Patch tsd.mibstd2.system.swap'"
-    echo "4. Crear ExceptionList.txt con los códigos FEC deseados"
+    echo "Next steps:"
+    echo "1. Reboot MIB2 unit"
+    echo "2. Access Toolbox GEM menu"
+    echo "3. Run 'Patch tsd.mibstd2.system.swap'"
+    echo "4. Create ExceptionList.txt with desired FEC codes"
 else
-    echo "✗ Error en la instalación"
+    echo "ERROR Installation failed"
     exit 1
 fi
 
 echo ""
-echo "=== Instalación completada ==="
+echo "=== Installation completed ==="
 `;
 }
 
 /**
- * Validar que el Toolbox está instalado
+ * Validate Toolbox installation
  */
 export function generateToolboxVerificationCommand(): string {
-  return `# Verificar instalación del MIB2 Toolbox
-echo "Verificando instalación del Toolbox..."
+  return `# Verify MIB2 Toolbox installation
+echo "Verifying Toolbox installation..."
 
-# Buscar archivos del Toolbox
+# Search for Toolbox files
 if [ -d "/net/mmx/mnt/app/eso/hmi/lsd/jars/" ]; then
-    echo "✓ Directorio del Toolbox encontrado"
+    echo "OK Toolbox directory found"
     ls -la /net/mmx/mnt/app/eso/hmi/lsd/jars/ | grep -i toolbox
 else
-    echo "✗ Toolbox no instalado"
+    echo "ERROR Toolbox not installed"
 fi
 
-# Verificar si el sistema está parcheado
+# Check if system is patched
 if [ -f "/media/mp000/ExceptionList.txt" ]; then
-    echo "✓ ExceptionList.txt encontrada"
+    echo "OK ExceptionList.txt found"
     cat /media/mp000/ExceptionList.txt
 else
-    echo "ℹ ExceptionList.txt no encontrada (sistema no parcheado)"
+    echo "INFO ExceptionList.txt not found (system not patched)"
 fi
 `;
 }

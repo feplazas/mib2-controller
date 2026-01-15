@@ -246,7 +246,7 @@ export default function RecoveryScreen() {
                         </Text>
                       </View>
                       <View className="flex-row justify-between">
-                        <Text className="text-xs text-muted">Tamaño:</Text>
+                        <Text className="text-xs text-muted">{t('recovery.size')}:</Text>
                         <Text className="text-xs text-foreground">{backup.size} bytes</Text>
                       </View>
                       <View className="flex-row justify-between">

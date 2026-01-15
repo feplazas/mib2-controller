@@ -241,7 +241,7 @@ export default function ToolboxScreen() {
       return;
     }
 
-    const isCriticalStep = step.step === 2 || step.title.toLowerCase().includes('patch');
+    const isCriticalStep = step.step === 2 || step.titleKey.toLowerCase().includes('patch');
 
     if (isCriticalStep) {
       Alert.alert(
@@ -327,7 +327,7 @@ export default function ToolboxScreen() {
 
     Alert.alert(
       t('toolbox.execute_step'),
-      t('toolbox.execute_step_confirm', { title: step.title }),
+      t('toolbox.execute_step_confirm', { title: t(step.titleKey) }),
       [
         { text: t('common.cancel'), style: 'cancel' },
         {
@@ -464,12 +464,12 @@ export default function ToolboxScreen() {
                       </Text>
                     </View>
                     <Text className="text-base font-semibold flex-1" style={{ color: colors.foreground }}>
-                      {step.title}
+                      {t(step.titleKey)}
                     </Text>
                     <Text className="text-2xl">{getStepIcon(step.step)}</Text>
                   </View>
                   <Text className="text-xs ml-11" style={{ color: colors.muted }}>
-                    {step.description}
+                    {t(step.descriptionKey)}
                   </Text>
                 </TouchableOpacity>
               ))}
@@ -501,12 +501,12 @@ export default function ToolboxScreen() {
                     </Text>
                   </View>
                   <Text className="text-xl font-bold flex-1" style={{ color: colors.foreground }}>
-                    {selectedStep.title}
+                    {t(selectedStep.titleKey)}
                   </Text>
                 </View>
 
                 <Text className="text-sm leading-relaxed mb-4" style={{ color: colors.foreground }}>
-                  {selectedStep.description}
+                  {t(selectedStep.descriptionKey)}
                 </Text>
 
                 {selectedStep.command && (
@@ -517,11 +517,11 @@ export default function ToolboxScreen() {
                   </View>
                 )}
 
-                {selectedStep.warnings && selectedStep.warnings.length > 0 && (
+                {selectedStep.warningKeys && selectedStep.warningKeys.length > 0 && (
                   <View className="bg-warning/10 rounded-lg p-3 mb-4">
-                    {selectedStep.warnings.map((warning, idx) => (
+                    {selectedStep.warningKeys.map((warningKey: string, idx: number) => (
                       <Text key={idx} className="text-xs leading-relaxed mb-1" style={{ color: colors.foreground }}>
-                        💡 {warning}
+                        💡 {t(warningKey)}
                       </Text>
                     ))}
                   </View>
@@ -571,25 +571,25 @@ export default function ToolboxScreen() {
 
               <View className="bg-surface rounded-xl p-4 border" style={{ borderColor: colors.border }}>
                 <Text className="text-lg font-bold mb-3" style={{ color: colors.foreground }}>
-                  {EMMC_ACCESS_INFO.title}
+                  {t(EMMC_ACCESS_INFO.titleKey)}
                 </Text>
                 <Text className="text-sm leading-relaxed mb-4" style={{ color: colors.foreground }}>
-                  {EMMC_ACCESS_INFO.description}
+                  {t(EMMC_ACCESS_INFO.descriptionKey)}
                 </Text>
 
                 <Text className="text-base font-semibold mb-2" style={{ color: colors.foreground }}>
                   {t('toolbox.steps')}:
                 </Text>
-                {EMMC_ACCESS_INFO.steps.map((step, index) => (
+                {EMMC_ACCESS_INFO.stepKeys.map((stepKey, index) => (
                   <Text key={index} className="text-sm leading-relaxed mb-2" style={{ color: colors.foreground }}>
-                    {index + 1}. {step}
+                    {index + 1}. {t(stepKey)}
                   </Text>
                 ))}
 
                 <View className="bg-error/10 rounded-lg p-3 mt-4">
-                  {EMMC_ACCESS_INFO.warnings.map((warning, idx) => (
+                  {EMMC_ACCESS_INFO.warningKeys.map((warningKey: string, idx: number) => (
                     <Text key={idx} className="text-xs leading-relaxed mb-1" style={{ color: '#EF4444' }}>
-                      ⚠️ {warning}
+                      ⚠️ {t(warningKey)}
                     </Text>
                   ))}
                 </View>
@@ -618,10 +618,10 @@ export default function ToolboxScreen() {
                 {DIAGNOSTIC_COMMANDS.map((cmd, index) => (
                   <View key={index} className="mb-4">
                     <Text className="text-sm font-semibold mb-1" style={{ color: colors.foreground }}>
-                      {cmd.name}
+                      {t(cmd.nameKey)}
                     </Text>
                     <Text className="text-xs mb-2" style={{ color: colors.muted }}>
-                      {cmd.description}
+                      {t(cmd.descriptionKey)}
                     </Text>
                     <View className="bg-background rounded-lg p-2">
                       <Text className="text-xs font-mono" style={{ color: colors.muted }}>
