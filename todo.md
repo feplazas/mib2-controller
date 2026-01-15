@@ -1602,3 +1602,28 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [x] Traducir "Escaneando dispositivos USB..." en logs en vivo
 - [x] Traducir "Encontrados X dispositivos USB" en logs en vivo
 - [x] Traducir todos los mensajes de logs USB y EEPROM (ES/EN/DE)
+
+## Preparación para Play Store (15 Ene 2026)
+
+### Limpieza de código
+- [x] Remover console.log y console.warn innecesarios (conservados solo los necesarios para logger)
+- [x] Remover comentarios de debug
+- [x] Verificar que no hay secretos/tokens hardcodeados
+- [x] Limpiar archivos temporales y de prueba
+
+### ProGuard/R8
+- [x] Configurar proguard-rules.pro
+- [x] Habilitar minificación en eas.json para production
+- [x] Configurar enableProguardInReleaseBuilds y enableShrinkResourcesInReleaseBuilds
+
+### Play Store preflight
+- [x] Configurar versionCode y versionName (1.0.0, versionCode: 1)
+- [x] Verificar permisos de Android (POST_NOTIFICATIONS, USB_PERMISSION)
+- [x] Configurar bundle ID para Play Store (com.feplazas.mib2controller)
+- [ ] Configurar política de privacidad URL (requiere URL del usuario)
+- [ ] Preparar metadatos de la app (requiere descripción del usuario)
+
+### GitHub
+- [x] Actualizar .gitignore con exclusiones de secretos
+- [ ] Commit de todos los cambios
+- [ ] Push al repositorio
