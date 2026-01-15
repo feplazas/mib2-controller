@@ -1,7 +1,6 @@
 {
   "cli": {
-    "version": ">= 16.0.0",
-    "appVersionSource": "local"
+    "version": ">= 16.0.0"
   },
   "build": {
     "development": {
@@ -24,7 +23,6 @@
     },
     "production": {
       "distribution": "store",
-      "autoIncrement": true,
       "android": {
         "buildType": "app-bundle",
         "withoutCredentials": false
@@ -35,11 +33,6 @@
     }
   },
   "submit": {
-    "production": {
-      "android": {
-        "serviceAccountKeyPath": "./google-services-key.json",
-        "track": "internal"
-      }
-    }
+    "production": {}
   }
 }

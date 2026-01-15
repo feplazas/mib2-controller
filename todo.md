@@ -1458,172 +1458,28 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [ ] Generar build de producción si validación exitosa
 - [x] BUG CRÍTICO: Idioma no cambia - useTranslation no re-renderiza componentes - RESUELTO con sistema simple sin i18n-js
 
-- [x] Auditar y extraer TODOS los strings hardcodeados en español
-- [x] Generar claves de traducción organizadas (common.*, home.*, settings.*, etc.)
-- [x] Migrar automáticamente strings a t() en todos los archivos
-- [x] Sincronizar i18n.locale con detectedLanguage en LanguageProvider
+## Política de Privacidad y Screenshots (15 Ene 2026)
 
+### Política de Privacidad
+- [ ] Crear documento HTML con política detallada
+- [ ] Incluir secciones: recopilación de datos, uso, permisos, terceros, contacto
+- [ ] Publicar en GitHub Pages o hosting estático
+- [ ] Agregar URL en app.config.ts
 
-## Traducciones EN/DE Completas (15 Ene 2026)
+### Capturas de Pantalla
+- [ ] Screenshot de pantalla principal (Home/USB)
+- [ ] Screenshot de módulo Spoofing
+- [ ] Screenshot de generador FEC
+- [ ] Screenshot de módulo Telnet
+- [ ] Screenshot de módulo Diagnóstico
+- [ ] Screenshot de Configuración
+- [ ] Redimensionar para Play Store (1080x1920 mínimo)
 
-### Archivos de Traducción Generados
-- [x] Crear locales/en.json con 621 strings traducidos al inglés
-- [x] Crear locales/de.json con 621 strings traducidos al alemán
-- [x] Mantener locales/es.json como idioma base (español)
-- [x] Validar estructura JSON (todas las secciones presentes)
-- [x] Verificar compilación TypeScript (0 errores)
+## Actualización de Logo (15 Ene 2026)
 
-### Cobertura de Traducciones
-- [x] Sección common: 291 claves (botones, labels, instrucciones)
-- [x] Sección tabs: 10 claves (nombres de pestañas)
-- [x] Sección home: 25 claves (pantalla principal)
-- [x] Sección scanner: 12 claves (escaneo de red)
-- [x] Sección toolbox: 18 claves (herramientas MIB2)
-- [x] Sección fec: 27 claves (generador FEC)
-- [x] Sección recovery: 18 claves (recuperación EEPROM)
-- [x] Sección commands: 33 claves (terminal Telnet)
-- [x] Sección auto_spoof: 31 claves (spoofing automático)
-- [x] Sección diag: 9 claves (diagnóstico)
-- [x] Sección telnet: 13 claves (conexión Telnet)
-- [x] Sección settings: 19 claves (configuración)
-- [x] Sección errors: 14 claves (mensajes de error)
-- [x] Sección warnings: 7 claves (advertencias)
-- [x] Sección success: 7 claves (mensajes de éxito)
-- [x] Sección alerts: 80 claves (alertas y notificaciones)
-- [x] Sección usb: 7 claves (estado USB)
-
-### Scripts de Traducción
-- [x] Crear scripts/generate_complete_translations.py
-- [x] Implementar diccionario de 200+ traducciones técnicas MIB2
-- [x] Traducir comandos del sistema QNX
-- [x] Traducir advertencias de seguridad
-- [x] Traducir instrucciones de conexión
-- [x] Traducir mensajes de hardware/firmware
-
-
-## Selector de Idioma Manual (15 Ene 2026)
-
-### LanguageProvider con Override Manual
-- [x] Agregar estado manualLanguage a LanguageProvider
-- [x] Implementar función setLanguage() para cambiar idioma manualmente
-- [x] Guardar preferencia de idioma en AsyncStorage
-- [x] Cargar preferencia guardada al iniciar app
-- [x] Priorizar idioma manual sobre idioma del sistema
-- [x] Implementar opción "Automático" para usar idioma del sistema
-
-### Selector de Idioma en Settings
-- [x] Crear sección "Idioma" en pantalla Settings
-- [x] Mostrar idioma actual seleccionado
-- [x] Implementar picker/modal con opciones: Automático, Español, English, Deutsch
-- [x] Actualizar UI inmediatamente al cambiar idioma
-- [x] Agregar feedback háptico al cambiar idioma
-- [x] Mostrar bandera o icono junto a cada opción
-
-
-## Sección de Ayuda/FAQ (15 Ene 2026)
-
-### Implementación en Settings
-- [x] Crear sección "Ayuda" debajo del selector de idioma
-- [x] Implementar lista de preguntas frecuentes expandibles
-- [x] Agregar animación de expansión/colapso para cada pregunta
-- [x] Incluir preguntas sobre: adaptadores compatibles, spoofing, conexión MIB2, Toolbox, FEC codes
-- [x] Agregar iconos junto a cada categoría de pregunta
-
-### Traducciones FAQ
-- [x] Agregar claves de traducción para FAQ en es.json
-- [x] Agregar claves de traducción para FAQ en en.json
-- [x] Agregar claves de traducción para FAQ en de.json
-
-
-## Corrección Sistema de Traducciones (15 Ene 2026)
-
-### Problema Identificado
-- Textos hardcodeados en español que no pasan por t()
-- Dos sistemas de i18n (simple-i18n + i18n-js) sin sincronizar
-- translated-alert.ts no usa el idioma del LanguageProvider
-- Traducciones EN/DE incompletas o con valores en español
-
-### Fase 1: Unificar Sistema i18n
-- [x] Crear lib/language-store.ts para almacenar idioma actual
-- [x] Actualizar LanguageProvider para sincronizar con language-store
-- [x] Reescribir translated-alert.ts para usar simple-i18n + language-store
-- [x] Eliminar dependencia de i18n-js en alerts
-
-### Fase 2: Migrar Textos Hardcodeados
-- [x] index.tsx: Adaptador USB Requerido, Encontrado, Conectar, Escaneo, etc.
-- [x] tools.tsx: Estado USB, Información del adaptador, etc.
-- [x] usb-status.tsx: textos hardcodeados
-- [x] toolbox.tsx: textos hardcodeados
-- [x] recovery.tsx: textos hardcodeados
-- [x] auto-spoof.tsx: textos hardcodeados
-- [x] diag.tsx: textos hardcodeados
-- [x] commands.tsx: textos hardcodeados
-- [x] settings.tsx: textos hardcodeados
-- [x] fec.tsx: textos hardcodeados
-
-### Fase 3: Completar Traducciones EN/DE
-- [x] Agregar claves home.* en en.json (50+ claves)
-- [x] Agregar claves home.* en de.json (50+ claves)
-- [x] Agregar claves auto_spoof.* en en.json (15 claves)
-- [x] Agregar claves auto_spoof.* en de.json (15 claves)
-
-
-## CRÍTICO: Regenerar traducciones EN/DE completamente
-
-### Problema Detectado
-- Los archivos en.json y de.json contienen literalmente "[TODO: texto en español]" en lugar de traducciones reales
-- Esto causa que la app muestre "[TODO: ...]" cuando el usuario selecciona inglés o alemán
-- El problema está en los archivos de traducción, NO en el código
-
-### Solución
-- [x] Regenerar completamente en.json con traducciones reales en inglés
-- [x] Regenerar completamente de.json con traducciones reales en alemán
-- [x] Verificar que TODAS las claves tienen traducciones reales (no "[TODO: ...]")
-- [x] Generar nuevo APK con traducciones corregidas
-
-## PROBLEMA CRÍTICO: Traducciones no funcionan en APK (15 Ene 2026)
-
-- [x] El selector de idioma muestra "English" pero la UI sigue en español
-- [x] Diagnosticar por qué los archivos en.json/de.json no se cargan
-- [x] Verificar que los archivos de traducción se incluyen en el bundle del APK
-- [x] Verificar que simple-i18n.ts carga correctamente los archivos
-- [x] Implementar solución correcta - Archivos en.json/de.json regenerados con DeepL
-- [x] Generar nuevo APK y validar que funciona - Build ID: 370a1340-d7c2-4619-a1d6-a3dd842d267a
-
-## Strings faltantes en módulos USB y Diagnóstico (15 Ene 2026)
-
-- [x] "Sin Dispositivo USB" → "No USB Device"
-- [x] "Conecta un adaptador USB-Ethernet" → "Connect a USB-Ethernet adapter"
-- [x] "Escaneando dispositivos USB..." → "Scanning USB devices..."
-- [x] "Encontrados 0 dispositivos USB" → "Found 0 USB devices"
-
-## Logs en vivo del módulo diagnóstico (15 Ene 2026)
-
-- [x] Traducir "Escaneando dispositivos USB..." en logs en vivo
-- [x] Traducir "Encontrados X dispositivos USB" en logs en vivo
-- [x] Traducir todos los mensajes de logs USB y EEPROM (ES/EN/DE)
-
-## Preparación para Play Store (15 Ene 2026)
-
-### Limpieza de código
-- [x] Remover console.log y console.warn innecesarios (conservados solo los necesarios para logger)
-- [x] Remover comentarios de debug
-- [x] Verificar que no hay secretos/tokens hardcodeados
-- [x] Limpiar archivos temporales y de prueba
-
-### ProGuard/R8
-- [x] Configurar proguard-rules.pro
-- [x] Habilitar minificación en eas.json para production
-- [x] Configurar enableProguardInReleaseBuilds y enableShrinkResourcesInReleaseBuilds
-
-### Play Store preflight
-- [x] Configurar versionCode y versionName (1.0.0, versionCode: 1)
-- [x] Verificar permisos de Android (POST_NOTIFICATIONS, USB_PERMISSION)
-- [x] Configurar bundle ID para Play Store (com.feplazas.mib2controller)
-- [ ] Configurar política de privacidad URL (requiere URL del usuario)
-- [ ] Preparar metadatos de la app (requiere descripción del usuario)
-
-### GitHub
-- [x] Actualizar .gitignore con exclusiones de secretos
-- [x] Commit de todos los cambios (3d9b6d6)
-- [x] Push al repositorio (github.com/feplazas/mib2-controller)
+- [x] Reemplazar icon.png con nuevo logo
+- [x] Actualizar splash-icon.png
+- [x] Actualizar favicon.png
+- [x] Actualizar android-icon-foreground.png
+- [x] Actualizar android-icon-monochrome.png (versión monocromática)
+- [ ] Regenerar APK con nuevo logo

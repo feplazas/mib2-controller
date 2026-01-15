@@ -15,7 +15,7 @@ interface ScanningIndicatorProps {
   text?: string;
 }
 
-export function ScanningIndicator({ isScanning, text }: ScanningIndicatorProps) {
+export function ScanningIndicator({ isScanning, text = 'Escaneando dispositivos USB...' }: ScanningIndicatorProps) {
   const colors = useColors();
   const rotation = useSharedValue(0);
   const opacity = useSharedValue(0);

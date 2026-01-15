@@ -15,7 +15,6 @@ export interface ConnectionProfile {
   username: string;
   password: string;
   description?: string;
-  descriptionKey?: string;
   color?: string;
   createdAt: number;
   lastUsed?: number;
@@ -43,7 +42,7 @@ const DEFAULT_PROFILE: Omit<ConnectionProfile, 'id' | 'createdAt'> = {
   port: 23,
   username: 'root',
   password: 'root',
-  descriptionKey: 'profiles.default_description',
+  description: 'Configuración por defecto',
   color: '#0066CC',
 };
 
@@ -139,7 +138,7 @@ export function ProfilesProvider({ children }: { children: React.ReactNode }) {
 
   const deleteProfile = async (id: string) => {
     if (profiles.length === 1) {
-      throw new Error('profiles.cannot_delete_only_profile');
+      throw new Error('No puedes eliminar el único perfil');
     }
 
     const updatedProfiles = profiles.filter(profile => profile.id !== id);

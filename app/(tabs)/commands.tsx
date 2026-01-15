@@ -115,9 +115,9 @@ export default function CommandsScreen() {
         {/* Header */}
         <View className="flex-row items-center justify-between">
           <View>
-            <Text className="text-2xl font-bold text-foreground">{t('commands.terminal_title')}</Text>
+            <Text className="text-2xl font-bold text-foreground">Terminal Telnet</Text>
             <Text className="text-sm text-muted">
-              {isConnected ? '🟢 ' + t('commands.connected') : '🔴 ' + t('commands.disconnected')}
+              {isConnected ? '🟢 Conectado' : '🔴 Desconectado'}
             </Text>
           </View>
           <View className="flex-row gap-2">
@@ -128,7 +128,7 @@ export default function CommandsScreen() {
                 className="bg-success px-4 py-2 rounded-lg active:opacity-80"
               >
                 <Text className="text-background font-semibold">
-                  {isConnecting ? t('commands.connecting') : t('commands.connect')}
+                  {isConnecting ? 'Conectando...' : 'Conectar'}
                 </Text>
               </Pressable>
             ) : (
@@ -136,7 +136,7 @@ export default function CommandsScreen() {
                 onPress={handleDisconnect}
                 className="bg-error px-4 py-2 rounded-lg active:opacity-80"
               >
-                <Text className="text-background font-semibold">{t('commands.disconnect')}</Text>
+                <Text className="text-background font-semibold">Desconectar</Text>
               </Pressable>
             )}
           </View>
@@ -152,8 +152,8 @@ export default function CommandsScreen() {
             {messages.length === 0 ? (
               <View className="flex-1 items-center justify-center">
                 <Text className="text-muted text-center">
-                  {t('commands.terminal_empty')}{'\n'}
-                  {isConnected ? t('commands.type_command_below') : t('commands.connect_first_to_send')}
+                  Terminal vacía{'\n'}
+                  {isConnected ? 'Escribe un comando abajo' : 'Conecta primero para enviar comandos'}
                 </Text>
               </View>
             ) : (
@@ -187,7 +187,7 @@ export default function CommandsScreen() {
               onPress={handleClearTerminal}
               className="absolute top-2 right-2 bg-surface/90 px-3 py-1 rounded-lg active:opacity-80"
             >
-              <Text className="text-xs text-muted font-semibold">{t('commands.clear')}</Text>
+              <Text className="text-xs text-muted font-semibold">Limpiar</Text>
             </Pressable>
           )}
         </View>
@@ -223,7 +223,7 @@ export default function CommandsScreen() {
                 setShowSuggestions(text.length > 0);
               }}
               onSubmitEditing={handleSendCommand}
-              placeholder={isConnected ? t('commands.type_command') : t('commands.connect_first')}
+              placeholder={isConnected ? "Escribe un comando..." : "Conecta primero..."}
               placeholderTextColor={colors.muted}
               editable={isConnected}
               autoCapitalize="none"
@@ -244,14 +244,14 @@ export default function CommandsScreen() {
                 isConnected && commandInput.trim() ? 'text-background' : 'text-muted'
               }`}
             >
-              {t('commands.send')}
+              Enviar
             </Text>
           </Pressable>
         </View>
 
         {/* Quick Commands */}
         <View>
-          <Text className="text-sm font-semibold text-foreground mb-2">{t('commands.quick_commands')}</Text>
+          <Text className="text-sm font-semibold text-foreground mb-2">Comandos Rápidos</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="gap-2">
             {Object.entries(MIB2_COMMANDS).slice(0, 6).map(([key, cmd]) => (
               <Pressable

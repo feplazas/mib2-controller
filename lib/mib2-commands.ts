@@ -19,65 +19,65 @@ export type RiskLevel = 'safe' | 'moderate' | 'high' | 'critical';
 
 export interface MIB2Command {
   id: string;
-  nameKey: string;
+  name: string;
   category: CommandCategory;
   riskLevel: RiskLevel;
-  descriptionKey: string;
+  description: string;
   command: string;
   requiresConfirmation: boolean;
   expertOnly: boolean;
   firmwareVersion?: string;
-  notesKey?: string;
+  notes?: string;
 }
 
 export const MIB2_COMMANDS: MIB2Command[] = [
   // ========== INFORMATION COMMANDS ==========
   {
     id: 'firmware_version',
-    nameKey: 'commands.firmware_version',
+    name: 'Versión de Firmware',
     category: 'information',
     riskLevel: 'safe',
-    descriptionKey: 'commands.firmware_version_desc',
+    description: 'Obtiene la versión actual del firmware instalado',
     command: 'cat /net/rcc/mnt/efs-persist/FW/version.txt',
     requiresConfirmation: false,
     expertOnly: false,
   },
   {
     id: 'system_info',
-    nameKey: 'commands.system_info',
+    name: 'Información del Sistema',
     category: 'information',
     riskLevel: 'safe',
-    descriptionKey: 'commands.system_info_desc',
+    description: 'Muestra información del sistema operativo QNX',
     command: 'uname -a',
     requiresConfirmation: false,
     expertOnly: false,
   },
   {
     id: 'cpu_info',
-    nameKey: 'commands.cpu_info',
+    name: 'Información de CPU',
     category: 'information',
     riskLevel: 'safe',
-    descriptionKey: 'commands.cpu_info_desc',
+    description: 'Muestra información del procesador',
     command: 'cat /proc/cpuinfo',
     requiresConfirmation: false,
     expertOnly: false,
   },
   {
     id: 'serial_number',
-    nameKey: 'commands.serial_number',
+    name: 'Número de Serie',
     category: 'information',
     riskLevel: 'safe',
-    descriptionKey: 'commands.serial_number_desc',
+    description: 'Obtiene el número de serie de la unidad',
     command: 'cat /net/rcc/mnt/efs-persist/serialnumber',
     requiresConfirmation: false,
     expertOnly: false,
   },
   {
     id: 'hardware_version',
-    nameKey: 'commands.hardware_version',
+    name: 'Versión de Hardware',
     category: 'information',
     riskLevel: 'safe',
-    descriptionKey: 'commands.hardware_version_desc',
+    description: 'Muestra la versión de hardware de la unidad',
     command: 'cat /net/rcc/mnt/efs-persist/HWVersion',
     requiresConfirmation: false,
     expertOnly: false,
@@ -86,60 +86,60 @@ export const MIB2_COMMANDS: MIB2Command[] = [
   // ========== DIAGNOSTIC COMMANDS ==========
   {
     id: 'memory_info',
-    nameKey: 'commands.memory_info',
+    name: 'Uso de Memoria',
     category: 'diagnostic',
     riskLevel: 'safe',
-    descriptionKey: 'commands.memory_info_desc',
+    description: 'Muestra el uso actual de memoria',
     command: 'free',
     requiresConfirmation: false,
     expertOnly: false,
   },
   {
     id: 'mounted_devices',
-    nameKey: 'commands.mounted_devices',
+    name: 'Dispositivos Montados',
     category: 'diagnostic',
     riskLevel: 'safe',
-    descriptionKey: 'commands.mounted_devices_desc',
+    description: 'Lista todos los dispositivos y puntos de montaje',
     command: 'mount',
     requiresConfirmation: false,
     expertOnly: false,
   },
   {
     id: 'network_interfaces',
-    nameKey: 'commands.network_interfaces',
+    name: 'Interfaces de Red',
     category: 'diagnostic',
     riskLevel: 'safe',
-    descriptionKey: 'commands.network_interfaces_desc',
+    description: 'Muestra configuración de interfaces de red',
     command: 'ifconfig',
     requiresConfirmation: false,
     expertOnly: false,
   },
   {
     id: 'running_processes',
-    nameKey: 'commands.running_processes',
+    name: 'Procesos en Ejecución',
     category: 'diagnostic',
     riskLevel: 'safe',
-    descriptionKey: 'commands.running_processes_desc',
+    description: 'Lista todos los procesos activos',
     command: 'ps aux',
     requiresConfirmation: false,
     expertOnly: false,
   },
   {
     id: 'disk_usage',
-    nameKey: 'commands.disk_usage',
+    name: 'Uso de Disco',
     category: 'diagnostic',
     riskLevel: 'safe',
-    descriptionKey: 'commands.disk_usage_desc',
+    description: 'Muestra el uso de espacio en disco',
     command: 'df -h',
     requiresConfirmation: false,
     expertOnly: false,
   },
   {
     id: 'temperature',
-    nameKey: 'commands.temperature',
+    name: 'Temperatura del Sistema',
     category: 'diagnostic',
     riskLevel: 'safe',
-    descriptionKey: 'commands.temperature_desc',
+    description: 'Muestra la temperatura actual del sistema',
     command: 'cat /sys/class/thermal/thermal_zone0/temp',
     requiresConfirmation: false,
     expertOnly: false,
@@ -148,63 +148,63 @@ export const MIB2_COMMANDS: MIB2Command[] = [
   // ========== ADAPTATION COMMANDS ==========
   {
     id: 'list_adaptations',
-    nameKey: 'commands.list_adaptations',
+    name: 'Listar Adaptaciones',
     category: 'adaptation',
     riskLevel: 'safe',
-    descriptionKey: 'commands.list_adaptations_desc',
+    description: 'Lista todas las adaptaciones disponibles',
     command: 'ls -la /net/rcc/mnt/efs-persist/Adaptation/',
     requiresConfirmation: false,
     expertOnly: false,
   },
   {
     id: 'backup_adaptations',
-    nameKey: 'commands.backup_adaptations',
+    name: 'Backup de Adaptaciones',
     category: 'adaptation',
     riskLevel: 'moderate',
-    descriptionKey: 'commands.backup_adaptations_desc',
+    description: 'Crea un backup de las adaptaciones actuales',
     command: 'cp -r /net/rcc/mnt/efs-persist/Adaptation /net/rcc/mnt/efs-persist/Adaptation_backup_$(date +%Y%m%d)',
     requiresConfirmation: true,
     expertOnly: false,
-    notesKey: 'commands.backup_adaptations_notes',
+    notes: 'Recomendado antes de modificar adaptaciones',
   },
   {
     id: 'enable_green_menu',
-    nameKey: 'commands.enable_green_menu',
+    name: 'Habilitar Menú Verde',
     category: 'adaptation',
     riskLevel: 'moderate',
-    descriptionKey: 'commands.enable_green_menu_desc',
+    description: 'Activa el menú de ingeniería (Green Menu)',
     command: 'echo "1" > /net/rcc/mnt/efs-persist/Adaptation/GreenMenu',
     requiresConfirmation: true,
     expertOnly: true,
-    notesKey: 'commands.enable_green_menu_notes',
+    notes: 'Permite acceso a funciones de diagnóstico avanzadas',
   },
   {
     id: 'disable_green_menu',
-    nameKey: 'commands.disable_green_menu',
+    name: 'Deshabilitar Menú Verde',
     category: 'adaptation',
     riskLevel: 'moderate',
-    descriptionKey: 'commands.disable_green_menu_desc',
+    description: 'Desactiva el menú de ingeniería (Green Menu)',
     command: 'echo "0" > /net/rcc/mnt/efs-persist/Adaptation/GreenMenu',
     requiresConfirmation: true,
     expertOnly: true,
   },
   {
     id: 'enable_video_in_motion',
-    nameKey: 'commands.enable_vim',
+    name: 'Video en Movimiento',
     category: 'adaptation',
     riskLevel: 'high',
-    descriptionKey: 'commands.enable_vim_desc',
+    description: 'Permite reproducir video mientras el vehículo está en movimiento',
     command: 'echo "1" > /net/rcc/mnt/efs-persist/Adaptation/VideoInMotion',
     requiresConfirmation: true,
     expertOnly: true,
-    notesKey: 'commands.enable_vim_notes',
+    notes: '⚠️ ADVERTENCIA: Puede ser ilegal en tu jurisdicción',
   },
   {
     id: 'enable_camera_guidelines',
-    nameKey: 'commands.enable_camera_guidelines',
+    name: 'Líneas Guía de Cámara',
     category: 'adaptation',
     riskLevel: 'moderate',
-    descriptionKey: 'commands.enable_camera_guidelines_desc',
+    description: 'Activa las líneas guía en la cámara de reversa',
     command: 'echo "1" > /net/rcc/mnt/efs-persist/Adaptation/CameraGuidelines',
     requiresConfirmation: true,
     expertOnly: false,
@@ -213,40 +213,40 @@ export const MIB2_COMMANDS: MIB2Command[] = [
   // ========== SKIN COMMANDS ==========
   {
     id: 'list_skins',
-    nameKey: 'commands.list_skins',
+    name: 'Listar Skins Disponibles',
     category: 'skin',
     riskLevel: 'safe',
-    descriptionKey: 'commands.list_skins_desc',
+    description: 'Lista todos los skins instalados',
     command: 'ls -la /net/rcc/mnt/efs-system/etc/skins/',
     requiresConfirmation: false,
     expertOnly: false,
   },
   {
     id: 'current_skin',
-    nameKey: 'commands.current_skin',
+    name: 'Skin Actual',
     category: 'skin',
     riskLevel: 'safe',
-    descriptionKey: 'commands.current_skin_desc',
+    description: 'Muestra el skin actualmente activo',
     command: 'cat /net/rcc/mnt/efs-persist/skin.cfg',
     requiresConfirmation: false,
     expertOnly: false,
   },
   {
     id: 'backup_skin',
-    nameKey: 'commands.backup_skin',
+    name: 'Backup de Skin',
     category: 'skin',
     riskLevel: 'moderate',
-    descriptionKey: 'commands.backup_skin_desc',
+    description: 'Crea un backup del skin actual',
     command: 'cp /net/rcc/mnt/efs-persist/skin.cfg /net/rcc/mnt/efs-persist/skin.cfg.backup',
     requiresConfirmation: true,
     expertOnly: false,
   },
   {
     id: 'set_skin_default',
-    nameKey: 'commands.restore_default_skin',
+    name: 'Restaurar Skin por Defecto',
     category: 'skin',
     riskLevel: 'moderate',
-    descriptionKey: 'commands.restore_default_skin_desc',
+    description: 'Restaura el skin de fábrica',
     command: 'echo "default" > /net/rcc/mnt/efs-persist/skin.cfg',
     requiresConfirmation: true,
     expertOnly: false,
@@ -255,40 +255,40 @@ export const MIB2_COMMANDS: MIB2Command[] = [
   // ========== NETWORK COMMANDS ==========
   {
     id: 'wifi_status',
-    nameKey: 'commands.wifi_status',
+    name: 'Estado de WiFi',
     category: 'network',
     riskLevel: 'safe',
-    descriptionKey: 'commands.wifi_status_desc',
+    description: 'Muestra el estado de la conexión WiFi',
     command: 'wpa_cli status',
     requiresConfirmation: false,
     expertOnly: false,
   },
   {
     id: 'network_routes',
-    nameKey: 'commands.network_routes',
+    name: 'Rutas de Red',
     category: 'network',
     riskLevel: 'safe',
-    descriptionKey: 'commands.network_routes_desc',
+    description: 'Muestra la tabla de rutas de red',
     command: 'route -n',
     requiresConfirmation: false,
     expertOnly: false,
   },
   {
     id: 'ping_gateway',
-    nameKey: 'commands.ping_gateway',
+    name: 'Ping a Gateway',
     category: 'network',
     riskLevel: 'safe',
-    descriptionKey: 'commands.ping_gateway_desc',
+    description: 'Prueba conectividad con el gateway',
     command: 'ping -c 4 192.168.1.1',
     requiresConfirmation: false,
     expertOnly: false,
   },
   {
     id: 'dns_servers',
-    nameKey: 'commands.dns_servers',
+    name: 'Servidores DNS',
     category: 'network',
     riskLevel: 'safe',
-    descriptionKey: 'commands.dns_servers_desc',
+    description: 'Muestra los servidores DNS configurados',
     command: 'cat /etc/resolv.conf',
     requiresConfirmation: false,
     expertOnly: false,
@@ -297,40 +297,40 @@ export const MIB2_COMMANDS: MIB2Command[] = [
   // ========== FILESYSTEM COMMANDS ==========
   {
     id: 'list_root',
-    nameKey: 'commands.list_root',
+    name: 'Listar Directorio Raíz',
     category: 'filesystem',
     riskLevel: 'safe',
-    descriptionKey: 'commands.list_root_desc',
+    description: 'Lista el contenido del directorio raíz',
     command: 'ls -la /',
     requiresConfirmation: false,
     expertOnly: false,
   },
   {
     id: 'list_persist',
-    nameKey: 'commands.list_persist',
+    name: 'Listar Partición Persist',
     category: 'filesystem',
     riskLevel: 'safe',
-    descriptionKey: 'commands.list_persist_desc',
+    description: 'Lista archivos en la partición de persistencia',
     command: 'ls -la /net/rcc/mnt/efs-persist/',
     requiresConfirmation: false,
     expertOnly: false,
   },
   {
     id: 'list_system',
-    nameKey: 'commands.list_system',
+    name: 'Listar Partición System',
     category: 'filesystem',
     riskLevel: 'safe',
-    descriptionKey: 'commands.list_system_desc',
+    description: 'Lista archivos en la partición del sistema',
     command: 'ls -la /net/rcc/mnt/efs-system/',
     requiresConfirmation: false,
     expertOnly: false,
   },
   {
     id: 'disk_partitions',
-    nameKey: 'commands.disk_partitions',
+    name: 'Particiones de Disco',
     category: 'filesystem',
     riskLevel: 'safe',
-    descriptionKey: 'commands.disk_partitions_desc',
+    description: 'Muestra información de particiones',
     command: 'fdisk -l',
     requiresConfirmation: false,
     expertOnly: true,
@@ -339,68 +339,48 @@ export const MIB2_COMMANDS: MIB2Command[] = [
   // ========== ADVANCED COMMANDS ==========
   {
     id: 'reboot_system',
-    nameKey: 'commands.reboot_system',
+    name: 'Reiniciar Sistema',
     category: 'advanced',
     riskLevel: 'high',
-    descriptionKey: 'commands.reboot_system_desc',
+    description: 'Reinicia la unidad MIB2',
     command: 'reboot',
     requiresConfirmation: true,
     expertOnly: true,
-    notesKey: 'commands.reboot_system_notes',
+    notes: 'El sistema se reiniciará inmediatamente',
   },
   {
     id: 'kill_process',
-    nameKey: 'commands.kill_process',
+    name: 'Terminar Proceso',
     category: 'advanced',
     riskLevel: 'high',
-    descriptionKey: 'commands.kill_process_desc',
+    description: 'Termina un proceso específico (requiere PID)',
     command: 'kill -9 <PID>',
     requiresConfirmation: true,
     expertOnly: true,
-    notesKey: 'commands.kill_process_notes',
+    notes: 'Reemplaza <PID> con el ID del proceso',
   },
   {
     id: 'clear_logs',
-    nameKey: 'commands.clear_logs',
+    name: 'Limpiar Logs del Sistema',
     category: 'advanced',
     riskLevel: 'moderate',
-    descriptionKey: 'commands.clear_logs_desc',
+    description: 'Elimina los archivos de log del sistema',
     command: 'rm -f /var/log/*.log',
     requiresConfirmation: true,
     expertOnly: true,
   },
   {
     id: 'factory_reset_adaptations',
-    nameKey: 'commands.factory_reset',
+    name: 'Reset de Fábrica (Adaptaciones)',
     category: 'advanced',
     riskLevel: 'critical',
-    descriptionKey: 'commands.factory_reset_desc',
+    description: 'Restaura todas las adaptaciones a valores de fábrica',
     command: 'rm -rf /net/rcc/mnt/efs-persist/Adaptation/* && reboot',
     requiresConfirmation: true,
     expertOnly: true,
-    notesKey: 'commands.factory_reset_notes',
+    notes: '⚠️ CRÍTICO: Esto eliminará todas las adaptaciones personalizadas',
   },
 ];
-
-// Category keys for translation
-export const COMMAND_CATEGORY_KEYS = {
-  information: 'commands.category_information',
-  diagnostic: 'commands.category_diagnostic',
-  configuration: 'commands.category_configuration',
-  adaptation: 'commands.category_adaptation',
-  skin: 'commands.category_skin',
-  network: 'commands.category_network',
-  filesystem: 'commands.category_filesystem',
-  advanced: 'commands.category_advanced',
-} as const;
-
-// Risk level keys for translation
-export const RISK_LEVEL_KEYS = {
-  safe: 'commands.risk_safe',
-  moderate: 'commands.risk_moderate',
-  high: 'commands.risk_high',
-  critical: 'commands.risk_critical',
-} as const;
 
 /**
  * Get commands by category
@@ -456,15 +436,19 @@ export function getRiskLevelColor(riskLevel: RiskLevel): string {
 }
 
 /**
- * Get risk level key for translation
+ * Get risk level label
  */
-export function getRiskLevelKey(riskLevel: RiskLevel): string {
-  return RISK_LEVEL_KEYS[riskLevel] || 'commands.risk_unknown';
-}
-
-/**
- * Get category key for translation
- */
-export function getCategoryKey(category: CommandCategory): string {
-  return COMMAND_CATEGORY_KEYS[category] || 'commands.category_unknown';
+export function getRiskLevelLabel(riskLevel: RiskLevel): string {
+  switch (riskLevel) {
+    case 'safe':
+      return 'Seguro';
+    case 'moderate':
+      return 'Moderado';
+    case 'high':
+      return 'Alto';
+    case 'critical':
+      return 'Crítico';
+    default:
+      return 'Desconocido';
+  }
 }

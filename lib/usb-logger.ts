@@ -1,10 +1,6 @@
 /**
  * USB Logger Service - Sistema de logging centralizado para operaciones USB
- * Con soporte para traducciones multiidioma
  */
-
-import { getTranslation } from './simple-i18n';
-import { getCurrentLanguage } from './language-store';
 
 export type LogLevel = 'info' | 'warning' | 'error' | 'success';
 
@@ -19,35 +15,22 @@ export interface UsbLogEntry {
 
 type LogListener = (logs: UsbLogEntry[]) => void;
 
-/**
- * Traducir mensaje de log usando clave de traducción
- */
-function translateLogMessage(key: string, params?: Record<string, any>): string {
-  const lang = getCurrentLanguage();
-  return getTranslation(key, lang, params);
-}
-
 class UsbLogger {
   private logs: UsbLogEntry[] = [];
   private maxLogs = 500; // Mantener últimos 500 logs en memoria
   private listeners: Set<LogListener> = new Set();
 
   /**
-   * Agregar log con clave de traducción
+   * Agregar log
    */
   log(level: LogLevel, operation: string, message: string, details?: any) {
-    // Si el mensaje empieza con 'logs.' es una clave de traducción
-    const translatedMessage = message.startsWith('logs.') 
-      ? translateLogMessage(message, typeof details === 'object' && !Array.isArray(details) ? details : undefined)
-      : message;
-
     const entry: UsbLogEntry = {
       id: `log_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       timestamp: Date.now(),
       level,
       operation,
-      message: translatedMessage,
-      details: message.startsWith('logs.') ? undefined : details,
+      message,
+      details,
     };
 
     this.logs.push(entry);
@@ -64,16 +47,16 @@ class UsbLogger {
     const prefix = `[UsbLogger][${operation}]`;
     switch (level) {
       case 'info':
-        console.log(prefix, translatedMessage, details || '');
+        console.log(prefix, message, details || '');
         break;
       case 'warning':
-        console.warn(prefix, translatedMessage, details || '');
+        console.warn(prefix, message, details || '');
         break;
       case 'error':
-        console.error(prefix, translatedMessage, details || '');
+        console.error(prefix, message, details || '');
         break;
       case 'success':
-        console.log(`✅ ${prefix}`, translatedMessage, details || '');
+        console.log(`✅ ${prefix}`, message, details || '');
         break;
     }
   }

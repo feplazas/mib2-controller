@@ -64,7 +64,7 @@ export function ExpertModeProvider({ children }: { children: React.ReactNode }) 
 
   const setPin = async (newPin: string): Promise<void> => {
     if (newPin.length < 4) {
-      throw new Error('common.error_pin_min_digits');
+      throw new Error('PIN debe tener al menos 4 dígitos');
     }
 
     const hashed = hashPin(newPin);

@@ -55,9 +55,9 @@ export default function HomeScreen() {
     // Verificar que hay adaptador USB conectado
     if (usbStatus !== 'connected') {
       Alert.alert(
-        t('home.adapter_required_title'),
-        t('home.adapter_required_message'),
-        [{ text: t('home.understood') }]
+        'Adaptador USB Requerido',
+        'Debes conectar un adaptador USB-Ethernet antes de conectarte a la MIB2.\n\n1. Conecta el adaptador USB-Ethernet al puerto USB de la unidad MIB2\n2. Conecta tu dispositivo Android a la misma red (WiFi o adaptador Ethernet)\n3. Ve a la pesta\u00f1a "USB" para verificar la conexi\u00f3n',
+        [{ text: 'Entendido' }]
       );
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       return;
@@ -107,9 +107,9 @@ export default function HomeScreen() {
     // Verificar que hay adaptador USB conectado
     if (usbStatus !== 'connected') {
       Alert.alert(
-        t('home.adapter_required_title'),
-        t('home.adapter_required_message'),
-        [{ text: t('home.understood') }]
+        'Adaptador USB Requerido',
+        'Debes conectar un adaptador USB-Ethernet antes de escanear la red.\n\n1. Conecta el adaptador USB-Ethernet al puerto USB de la unidad MIB2\n2. Conecta tu dispositivo Android a la misma red (WiFi o adaptador Ethernet)\n3. Ve a la pestaña "USB" para verificar la conexión',
+        [{ text: 'Entendido' }]
       );
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       return;
@@ -119,9 +119,9 @@ export default function HomeScreen() {
     const hasConnectivity = await validateAdapterConnectivity();
     if (!hasConnectivity) {
       Alert.alert(
-        t('home.no_connectivity_title'),
-        t('home.no_connectivity_message'),
-        [{ text: t('home.understood') }]
+        'Sin Conectividad',
+        'El adaptador USB-Ethernet no tiene una IP válida asignada.\n\nVerifica que:\n1. El adaptador esté conectado correctamente\n2. La red esté configurada (DHCP o IP estática)\n3. El adaptador tenga acceso a la red MIB2',
+        [{ text: 'Entendido' }]
       );
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       return;
@@ -150,12 +150,12 @@ export default function HomeScreen() {
           port: results[0].port,
         });
         Alert.alert(
-          t('home.found_title'),
-          t('home.found_message', { host: results[0].host }),
+          '¡Encontrado!',
+          `Unidad MIB2 detectada en ${results[0].host}\n\n¿Conectar automáticamente?`,
           [
-            { text: t('home.cancel'), style: 'cancel' },
+            { text: 'Cancelar', style: 'cancel' },
             {
-              text: t('home.connect'),
+              text: 'Conectar',
               onPress: async () => {
                 try {
                   await connect();
@@ -183,9 +183,9 @@ export default function HomeScreen() {
     // Verificar que hay adaptador USB conectado
     if (usbStatus !== 'connected') {
       Alert.alert(
-        t('home.adapter_required_title'),
-        t('home.adapter_required_message'),
-        [{ text: t('home.understood') }]
+        'Adaptador USB Requerido',
+        'Debes conectar un adaptador USB-Ethernet antes de escanear la red.\n\n1. Conecta el adaptador USB-Ethernet al puerto USB de la unidad MIB2\n2. Conecta tu dispositivo Android a la misma red (WiFi o adaptador Ethernet)\n3. Ve a la pestaña "USB" para verificar la conexión',
+        [{ text: 'Entendido' }]
       );
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       return;
@@ -195,21 +195,21 @@ export default function HomeScreen() {
     const hasConnectivity = await validateAdapterConnectivity();
     if (!hasConnectivity) {
       Alert.alert(
-        t('home.no_connectivity_title'),
-        t('home.no_connectivity_message'),
-        [{ text: t('home.understood') }]
+        'Sin Conectividad',
+        'El adaptador USB-Ethernet no tiene una IP válida asignada.\n\nVerifica que:\n1. El adaptador esté conectado correctamente\n2. La red esté configurada (DHCP o IP estática)\n3. El adaptador tenga acceso a la red MIB2',
+        [{ text: 'Entendido' }]
       );
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       return;
     }
 
     Alert.alert(
-      t('home.full_scan_title'),
-      t('home.full_scan_message'),
+      'Escaneo Completo',
+      'Esto escaneará toda la subred (puede tardar varios minutos). ¿Continuar?',
       [
-        { text: t('home.cancel'), style: 'cancel' },
+        { text: 'Cancelar', style: 'cancel' },
         {
-          text: t('home.scan'),
+          text: 'Escanear',
           onPress: async () =>{
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             setScanning(true);
@@ -253,9 +253,9 @@ export default function HomeScreen() {
   };
 
   const getStatusText = () => {
-    if (isConnected) return t('home.connected');
-    if (isConnecting) return t('home.connecting');
-    return t('home.disconnected');
+    if (isConnected) return 'Conectado';
+    if (isConnecting) return 'Conectando...';
+    return 'Desconectado';
   };
 
   return (
@@ -266,7 +266,7 @@ export default function HomeScreen() {
           <View className="items-center gap-2">
             <Text className="text-3xl font-bold text-foreground">MIB2 Controller</Text>
             <Text className="text-sm text-muted text-center">
-              {t('home.subtitle')}
+              Control remoto para unidades MIB2 STD2 Technisat Preh
             </Text>
           </View>
 
@@ -281,19 +281,19 @@ export default function HomeScreen() {
             <View className="bg-surface rounded-2xl p-4 border border-border">
               <View className="flex-row items-center gap-2 mb-2">
                 <View className="w-3 h-3 rounded-full bg-success" />
-                <Text className="text-sm font-semibold text-foreground">{t('home.network_adapter_detected')}</Text>
+                <Text className="text-sm font-semibold text-foreground">Adaptador de Red Detectado</Text>
               </View>
               <View className="gap-1">
                 <View className="flex-row justify-between">
-                  <Text className="text-xs text-muted">{t('home.interface')}</Text>
+                  <Text className="text-xs text-muted">Interfaz:</Text>
                   <Text className="text-xs text-foreground font-medium">{networkAdapter.name}</Text>
                 </View>
                 <View className="flex-row justify-between">
-                  <Text className="text-xs text-muted">{t('home.adapter_ip')}</Text>
+                  <Text className="text-xs text-muted">IP del Adaptador:</Text>
                   <Text className="text-xs text-foreground font-medium">{networkAdapter.ipAddress}</Text>
                 </View>
                 <View className="flex-row justify-between">
-                  <Text className="text-xs text-muted">{t('home.detected_subnet')}</Text>
+                  <Text className="text-xs text-muted">Subred Detectada:</Text>
                   <Text className="text-xs text-foreground font-medium">{detectedSubnet}.x</Text>
                 </View>
               </View>
@@ -311,16 +311,16 @@ export default function HomeScreen() {
               <View className="gap-3">
                 <View className="gap-2">
                   <View className="flex-row justify-between">
-                    <Text className="text-sm text-muted">{t('home.host')}</Text>
+                    <Text className="text-sm text-muted">Host:</Text>
                     <Text className="text-sm text-foreground font-medium">{config.host}</Text>
                   </View>
                   <View className="flex-row justify-between">
-                    <Text className="text-sm text-muted">{t('home.port')}</Text>
+                    <Text className="text-sm text-muted">Puerto:</Text>
                     <Text className="text-sm text-foreground font-medium">{config.port}</Text>
                   </View>
                   {Date.now() && (
                     <View className="flex-row justify-between">
-                      <Text className="text-sm text-muted">{t('home.last_activity')}</Text>
+                      <Text className="text-sm text-muted">Última actividad:</Text>
                       <Text className="text-sm text-foreground font-medium">
                         {new Date(Date.now()).toLocaleTimeString()}
                       </Text>
@@ -332,32 +332,32 @@ export default function HomeScreen() {
                 {toolboxInfo && (toolboxInfo.firmwareVersion || toolboxInfo.hardwareVersion) && (
                   <View className="bg-background rounded-lg p-3 mb-3">
                     <View className="flex-row items-center justify-between mb-2">
-                      <Text className="text-sm font-semibold text-foreground">{t('home.firmware_mib2')}</Text>
+                      <Text className="text-sm font-semibold text-foreground">Firmware MIB2</Text>
                       <View className={`px-2 py-1 rounded ${
                         toolboxInfo.firmwareCompatible ? 'bg-success/20' : 'bg-warning/20'
                       }`}>
                         <Text className={`text-xs font-semibold ${
                           toolboxInfo.firmwareCompatible ? 'text-success' : 'text-warning'
                         }`}>
-                          {toolboxInfo.firmwareCompatible ? t('home.compatible') : t('home.telnet_closed')}
+                          {toolboxInfo.firmwareCompatible ? '✓ Compatible' : '⚠️ Telnet Cerrado'}
                         </Text>
                       </View>
                     </View>
                     {toolboxInfo.firmwareVersion && (
                       <View className="flex-row justify-between mb-1">
-                        <Text className="text-xs text-muted">{t('home.version')}</Text>
+                        <Text className="text-xs text-muted">Versión:</Text>
                         <Text className="text-xs text-foreground font-mono">{toolboxInfo.firmwareVersion}</Text>
                       </View>
                     )}
                     {toolboxInfo.hardwareVersion && (
                       <View className="flex-row justify-between">
-                        <Text className="text-xs text-muted">{t('home.hardware')}</Text>
+                        <Text className="text-xs text-muted">Hardware:</Text>
                         <Text className="text-xs text-foreground font-mono">{toolboxInfo.hardwareVersion}</Text>
                       </View>
                     )}
                     {!toolboxInfo.firmwareCompatible && (
                       <Text className="text-xs text-warning mt-2">
-                        {t('home.telnet_closed_warning')}
+                        ⚠️ El puerto Telnet está cerrado. Se requiere acceso directo a eMMC.
                       </Text>
                     )}
                   </View>
@@ -367,19 +367,19 @@ export default function HomeScreen() {
                 {toolboxInfo && (
                   <View className="bg-background rounded-lg p-3">
                     <View className="flex-row items-center justify-between mb-2">
-                      <Text className="text-sm font-semibold text-foreground">{t('home.mib2_toolbox')}</Text>
+                      <Text className="text-sm font-semibold text-foreground">MIB2 Toolbox</Text>
                       <View className={`px-2 py-1 rounded ${
                         toolboxInfo.installed ? 'bg-success/20' : 'bg-error/20'
                       }`}>
                         <Text className={`text-xs font-semibold ${
                           toolboxInfo.installed ? 'text-success' : 'text-error'
                         }`}>
-                          {toolboxInfo.installed ? t('home.installed') : t('home.not_installed')}
+                          {toolboxInfo.installed ? '✓ Instalado' : '✗ No Instalado'}
                         </Text>
                       </View>
                     </View>
                     {toolboxInfo.installed && toolboxInfo.version && (
-                      <Text className="text-xs text-muted mb-2">{t('home.version')} {toolboxInfo.version}</Text>
+                      <Text className="text-xs text-muted mb-2">Versión: {toolboxInfo.version}</Text>
                     )}
                     {toolboxInfo.installed && toolboxInfo.services && (
                       <View className="flex-row gap-2 flex-wrap">
@@ -414,7 +414,7 @@ export default function HomeScreen() {
                     )}
                     {!toolboxInfo.installed && (
                       <Text className="text-xs text-error mt-1">
-                        {t('home.toolbox_recommended')}
+                        ⚠️ Se recomienda instalar MIB2 Toolbox
                       </Text>
                     )}
                   </View>
@@ -426,14 +426,14 @@ export default function HomeScreen() {
                     className="bg-primary/20 border border-primary px-4 py-2 rounded-lg active:opacity-80"
                   >
                     <Text className="text-primary font-semibold text-center text-sm">
-                      {t('home.detect_toolbox')}
+                      🔍 Detectar MIB2 Toolbox
                     </Text>
                   </TouchableOpacity>
                 )}
 
                 {detectingToolbox && (
                   <View className="bg-primary/10 rounded-lg p-2">
-                    <Text className="text-primary text-sm text-center">{t('home.detecting_toolbox')}</Text>
+                    <Text className="text-primary text-sm text-center">Detectando Toolbox...</Text>
                   </View>
                 )}
               </View>
@@ -448,7 +448,7 @@ export default function HomeScreen() {
                 className="flex-1 bg-primary/20 border border-primary px-4 py-3 rounded-xl active:opacity-80"
               >
                 <Text className="text-primary font-semibold text-center text-sm">
-                  {t('home.quick_search')}
+                  🔍 Búsqueda Rápida
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -456,7 +456,7 @@ export default function HomeScreen() {
                 className="flex-1 bg-muted/20 border border-border px-4 py-3 rounded-xl active:opacity-80"
               >
                 <Text className="text-foreground font-semibold text-center text-sm">
-                  {t('home.full_scan_btn')}
+                  🌐 Escaneo Completo
                 </Text>
               </TouchableOpacity>
             </View>
@@ -467,7 +467,7 @@ export default function HomeScreen() {
             <View className="bg-primary/10 border border-primary rounded-xl p-4">
               <View className="flex-row items-center justify-between mb-2">
                 <Text className="text-sm font-semibold text-primary">
-                  {t('home.scanning_network')}
+                  Escaneando red...
                 </Text>
                 <Text className="text-sm text-primary font-mono">
                   {scanProgress.percentage}%
@@ -489,7 +489,7 @@ export default function HomeScreen() {
           {foundDevices.length > 0 && !isConnected && (
             <View className="bg-success/10 border border-success rounded-xl p-4">
               <Text className="text-sm font-semibold text-success mb-3">
-                {t('home.devices_found')} ({foundDevices.length})
+                ✓ Dispositivos Encontrados ({foundDevices.length})
               </Text>
               <View className="gap-2">
                 {foundDevices.map((device) => (
@@ -525,7 +525,7 @@ export default function HomeScreen() {
           {!isConnected && !scanning && (
             <View className="gap-4">
               <View>
-                <Text className="text-sm font-medium text-foreground mb-2">{t('home.ip_address')}</Text>
+                <Text className="text-sm font-medium text-foreground mb-2">Dirección IP</Text>
                 <TextInput
                   value={host}
                   onChangeText={setHost}
@@ -537,7 +537,7 @@ export default function HomeScreen() {
               </View>
 
               <View>
-                <Text className="text-sm font-medium text-foreground mb-2">{t('home.port_label')}</Text>
+                <Text className="text-sm font-medium text-foreground mb-2">Puerto</Text>
                 <TextInput
                   value={port}
                   onChangeText={setPort}
@@ -558,7 +558,7 @@ export default function HomeScreen() {
                 className="bg-error px-8 py-4 rounded-full active:opacity-80 min-w-[200px]"
               >
                 <Text className="text-white font-semibold text-center text-base">
-                  {t('home.disconnect_btn')}
+                  Desconectar
                 </Text>
               </TouchableOpacity>
             ) : (
@@ -572,7 +572,7 @@ export default function HomeScreen() {
                   <ActivityIndicator color="white" />
                 ) : (
                   <Text className="text-white font-semibold text-center text-base">
-                    {t('home.connect_to_mib2')}
+                    Conectar a MIB2
                   </Text>
                 )}
               </TouchableOpacity>
@@ -582,32 +582,34 @@ export default function HomeScreen() {
           {/* Info Card */}
           <View className="bg-surface rounded-2xl p-6 border border-border">
             <Text className="text-base font-semibold text-foreground mb-3">
-              {t('home.connection_instructions')}
+              Instrucciones de Conexión
             </Text>
             <View className="gap-2">
               <Text className="text-sm text-muted leading-relaxed">
-                {t('home.instruction_1')}
+                1. Conecta el adaptador USB-Ethernet al puerto USB de la unidad MIB2
               </Text>
               <Text className="text-sm text-muted leading-relaxed">
-                {t('home.instruction_2')}
+                2. Conecta tu dispositivo Android a la misma red (WiFi o adaptador Ethernet)
               </Text>
               <Text className="text-sm text-muted leading-relaxed">
-                {t('home.instruction_3')}
+                3. Verifica que la unidad MIB2 tenga Telnet habilitado (root/root)
               </Text>
               <Text className="text-sm text-muted leading-relaxed">
-                {t('home.instruction_4')}
+                4. Ingresa la dirección IP de la unidad (por defecto: 192.168.1.4)
               </Text>
               <Text className="text-sm text-muted leading-relaxed">
-                {t('home.instruction_5')}
+                5. Presiona &quot;Conectar a MIB2&quot; para establecer la conexión
               </Text>
             </View>
           </View>
 
           {/* Warning Card */}
           <View className="bg-warning/10 border border-warning rounded-2xl p-4">
-            <Text className="text-sm text-warning font-medium mb-1">{t('home.warning_title')}</Text>
+            <Text className="text-sm text-warning font-medium mb-1">⚠️ Advertencia</Text>
             <Text className="text-xs text-muted leading-relaxed">
-              {t('home.warning_message')}
+              Esta aplicación permite ejecutar comandos directamente en la unidad MIB2. 
+              Usa con precaución y solo si sabes lo que estás haciendo. Los comandos 
+              incorrectos pueden dañar el sistema.
             </Text>
           </View>
         </View>

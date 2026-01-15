@@ -1,57 +1,57 @@
 import type { ChipsetCompatibility } from '@/components/chipset-status-badge';
 
 /**
- * Determine chipset compatibility for MIB2 spoofing
+ * Determinar compatibilidad de chipset para spoofing MIB2
  */
 export function getChipsetCompatibility(chipset: string): ChipsetCompatibility {
   const chipsetLower = chipset.toLowerCase();
   
-  // Confirmed ASIX chipsets (tested and working)
+  // Chipsets ASIX confirmados (probados y funcionando)
   const confirmedASIX = ['ax88772', 'ax88772a', 'ax88772b'];
   if (confirmedASIX.some(model => chipsetLower.includes(model))) {
     return 'confirmed';
   }
   
-  // Other ASIX chipsets (experimental but probably compatible)
-  // Share similar EEPROM architecture
+  // Otros chipsets ASIX (experimentales pero probablemente compatibles)
+  // Comparten arquitectura de EEPROM similar
   const experimentalASIX = ['ax88172', 'ax88178', 'ax88179', 'ax88772c'];
   if (experimentalASIX.some(model => chipsetLower.includes(model))) {
     return 'experimental';
   }
   
-  // Any other generic ASIX
+  // Cualquier otro ASIX genérico
   if (chipsetLower.includes('asix')) {
     return 'experimental';
   }
   
-  // Known incompatible chipsets
+  // Chipsets incompatibles conocidos
   const incompatible = ['realtek', 'microchip', 'broadcom', 'davicom', 'lan'];
   if (incompatible.some(vendor => chipsetLower.includes(vendor))) {
     return 'incompatible';
   }
   
-  // Unknown
+  // Desconocido
   return 'unknown';
 }
 
 /**
- * Get compatibility message key for translation
+ * Obtener mensaje descriptivo de compatibilidad
  */
-export function getCompatibilityMessageKey(compatibility: ChipsetCompatibility): string {
+export function getCompatibilityMessage(compatibility: ChipsetCompatibility, chipset: string): string {
   switch (compatibility) {
     case 'confirmed':
-      return 'chipset.confirmed_message';
+      return `${chipset} está confirmado como compatible para spoofing MIB2. Probado y funcionando correctamente.`;
     case 'experimental':
-      return 'chipset.experimental_message';
+      return `${chipset} es experimental. Comparte arquitectura ASIX similar y debería funcionar, pero no está 100% confirmado.`;
     case 'incompatible':
-      return 'chipset.incompatible_message';
+      return `${chipset} NO es compatible con spoofing en Android. Requiere herramientas específicas o no soporta modificación de VID/PID.`;
     default:
-      return 'chipset.unknown_message';
+      return `${chipset} es desconocido. No hay información sobre compatibilidad para spoofing MIB2.`;
   }
 }
 
 /**
- * Check if chipset can attempt spoofing
+ * Verificar si chipset puede intentar spoofing
  */
 export function canAttemptSpoofing(compatibility: ChipsetCompatibility): boolean {
   return compatibility === 'confirmed' || compatibility === 'experimental';

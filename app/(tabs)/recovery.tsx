@@ -58,12 +58,16 @@ export default function RecoveryScreen() {
     }
 
     Alert.alert(
-      t('recovery.restore_eeprom_title'),
-      t('recovery.restore_eeprom_message', { name: backup.deviceName, date: new Date(backup.timestamp).toLocaleString(), chipset: backup.chipset }),
+      '⚠️ Restaurar EEPROM',
+      `¿Estás seguro de que deseas restaurar este backup?\\n\\n` +
+      `💾 Backup: ${backup.deviceName}\\n` +
+      `📅 Fecha: ${new Date(backup.timestamp).toLocaleString('es-ES')}\\n` +
+      `🔧 Chipset: ${backup.chipset}\\n\\n` +
+      `Esta operación sobrescribirá la EEPROM actual del adaptador.`,
       [
-        { text: t('common.cancel'), style: 'cancel' },
+        { text: 'Cancelar', style: 'cancel' },
         {
-          text: t('recovery.restore'),
+          text: 'Restaurar',
           style: 'destructive',
           onPress: () => performRestore(backup),
         },
@@ -81,14 +85,17 @@ export default function RecoveryScreen() {
       
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       Alert.alert(
-        t('recovery.restore_success'),
-        t('recovery.restore_success_message', { size: backup.size, checksum: backup.checksum.substring(0, 8) })
+        '✅ Restauración Exitosa',
+        `La EEPROM se restauró correctamente desde el backup.\\n\\n` +
+        `📊 Bytes escritos: ${backup.size}\\n` +
+        `🔒 Checksum: ${backup.checksum.substring(0, 8)}...\\n\\n` +
+        `Desconecta y vuelve a conectar el adaptador para que los cambios surtan efecto.`
       );
     } catch (error: any) {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       Alert.alert(
-        t('recovery.restore_error'),
-        error.message || t('recovery.restore_error_message')
+        '❌ Error al Restaurar',
+        error.message || 'No se pudo restaurar la EEPROM desde el backup'
       );
     } finally {
       setIsRestoring(false);
@@ -97,12 +104,18 @@ export default function RecoveryScreen() {
 
   const handleForceRestore = async (backup: EEPROMBackup) => {
     Alert.alert(
-      t('recovery.force_restore_title'),
-      t('recovery.force_restore_message'),
+      '🚨 Modo de Recuperación Forzada',
+      `Este modo intenta restaurar la EEPROM sin validaciones de seguridad.\\n\\n` +
+      `⚠️ ADVERTENCIAS:\\n` +
+      `• Puede dañar permanentemente el adaptador\\n` +
+      `• No se verificará compatibilidad\\n` +
+      `• No se creará backup previo\\n\\n` +
+      `Usa esta opción SOLO si el adaptador no responde a métodos normales.\\n\\n` +
+      `¿Deseas continuar?`,
       [
-        { text: t('common.cancel'), style: 'cancel' },
+        { text: 'Cancelar', style: 'cancel' },
         {
-          text: t('recovery.force_restore'),
+          text: 'Forzar Restauración',
           style: 'destructive',
           onPress: () => performRestore(backup),
         },
@@ -123,9 +136,9 @@ export default function RecoveryScreen() {
         <View className="gap-6">
           {/* Header */}
           <View>
-            <Text className="text-3xl font-bold text-foreground">{t('recovery.title')}</Text>
+            <Text className="text-3xl font-bold text-foreground">🛠️ Recuperación</Text>
             <Text className="text-base text-muted mt-2">
-              {t('recovery.subtitle')}
+              Restaura adaptadores USB brickeados desde backups
             </Text>
           </View>
 
@@ -145,16 +158,16 @@ export default function RecoveryScreen() {
               </Text>
               <View className="flex-1">
                 <Text className="text-lg font-semibold text-foreground">
-                  {status === 'connected' && brickedStatus ? t('recovery.bricked_detected') :
-                   status === 'connected' ? t('recovery.adapter_connected') :
-                   status === 'detected' ? t('recovery.device_detected') :
-                   t('recovery.no_device')}
+                  {status === 'connected' && brickedStatus ? 'Adaptador Brickeado Detectado' :
+                   status === 'connected' ? 'Adaptador Conectado' :
+                   status === 'detected' ? 'Dispositivo Detectado' :
+                   'Sin Dispositivo'}
                 </Text>
                 <Text className="text-sm text-muted mt-1">
-                  {status === 'connected' && brickedStatus ? t('recovery.bricked_desc') :
-                   status === 'connected' ? t('recovery.adapter_ok') :
-                   status === 'detected' ? t('recovery.connect_to_verify') :
-                   t('recovery.connect_adapter')}
+                  {status === 'connected' && brickedStatus ? 'El adaptador tiene VID/PID corrupto o incorrecto' :
+                   status === 'connected' ? 'El adaptador está funcionando correctamente' :
+                   status === 'detected' ? 'Conecta el dispositivo para verificar estado' :
+                   'Conecta un adaptador USB con cable OTG'}
                 </Text>
               </View>
             </View>
@@ -162,7 +175,7 @@ export default function RecoveryScreen() {
             {device && (
               <View className="bg-background rounded-xl p-4 gap-2">
                 <View className="flex-row justify-between">
-                  <Text className="text-sm text-muted">{t('recovery.device')}:</Text>
+                  <Text className="text-sm text-muted">Dispositivo:</Text>
                   <Text className="text-sm text-foreground font-medium">{device.deviceName}</Text>
                 </View>
                 <View className="flex-row justify-between">
@@ -174,7 +187,7 @@ export default function RecoveryScreen() {
                   </Text>
                 </View>
                 <View className="flex-row justify-between">
-                  <Text className="text-sm text-muted">{t('usb.chipset')}:</Text>
+                  <Text className="text-sm text-muted">Chipset:</Text>
                   <Text className="text-sm text-foreground font-medium">{device.chipset}</Text>
                 </View>
               </View>
@@ -185,24 +198,30 @@ export default function RecoveryScreen() {
           <View className="bg-surface rounded-2xl p-6 border border-border">
             <View className="flex-row justify-between items-center mb-4">
               <Text className="text-lg font-semibold text-foreground">
-                {t('recovery.available_backups')} ({backups.length})
+                💾 Backups Disponibles ({backups.length})
               </Text>
               <TouchableOpacity
                 onPress={async () => {
                   await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                   const backupPath = `${FileSystem.documentDirectory}Download/mib2_backups/`;
                   Alert.alert(
-                    t('recovery.backup_location_title'),
-                    t('recovery.backup_location_message'),
+                    '📂 Ubicación de Backups',
+                    `Los backups se guardan en:\n\n` +
+                    `Android/data/[app]/files/Download/mib2_backups/\n\n` +
+                    `Para acceder:\n` +
+                    `1. Abre "Archivos" o "Mis Archivos"\n` +
+                    `2. Navega a: Android → data → [nombre_app]\n` +
+                    `3. Entra en: files → Download → mib2_backups\n\n` +
+                    `Nota: En Android 11+ necesitas habilitar "Mostrar archivos ocultos" para ver la carpeta Android/data.`,
                     [
-                      { text: t('common.understood'), style: 'default' },
+                      { text: 'Entendido', style: 'default' },
                     ]
                   );
                 }}
                 className="bg-primary/10 px-3 py-2 rounded-lg active:opacity-80"
               >
                 <Text className="text-xs text-primary font-semibold">
-                  📂 {t('recovery.view_location')}
+                  📂 Ver Ubicación
                 </Text>
               </TouchableOpacity>
             </View>
@@ -211,8 +230,8 @@ export default function RecoveryScreen() {
               <View className="items-center py-8">
                 <Text className="text-4xl mb-3">📦</Text>
                 <Text className="text-sm text-muted text-center">
-                  {t('recovery.no_backups')}{'\n'}
-                  {t('recovery.create_backup_first')}
+                  No hay backups disponibles.{'\n'}
+                  Crea un backup antes de modificar adaptadores.
                 </Text>
               </View>
             ) : (
@@ -246,7 +265,7 @@ export default function RecoveryScreen() {
                         </Text>
                       </View>
                       <View className="flex-row justify-between">
-                        <Text className="text-xs text-muted">{t('recovery.size')}:</Text>
+                        <Text className="text-xs text-muted">Tamaño:</Text>
                         <Text className="text-xs text-foreground">{backup.size} bytes</Text>
                       </View>
                       <View className="flex-row justify-between">
@@ -359,10 +378,16 @@ export default function RecoveryScreen() {
           {/* Instrucciones */}
           <View className="bg-warning/10 border border-warning rounded-2xl p-4">
             <Text className="text-sm text-warning font-semibold mb-2">
-              💡 {t('recovery.instructions_title')}
+              💡 Instrucciones de Recuperación
             </Text>
             <Text className="text-xs text-muted leading-relaxed">
-              {t('recovery.instructions_text')}
+              1. Conecta el adaptador brickeado con cable OTG{'\n'}
+              2. Verifica que aparezca como &quot;Brickeado&quot; arriba{'\n'}
+              3. Selecciona un backup compatible (mismo chipset){'\n'}
+              4. Toca &quot;Restaurar&quot; y confirma la operación{'\n'}
+              5. Desconecta y reconecta el adaptador{'\n'}
+              6. Verifica que el VID/PID se haya restaurado{'\n\n'}
+              Si el método normal no funciona, usa &quot;Forzar&quot; como último recurso.
             </Text>
           </View>
         </View>

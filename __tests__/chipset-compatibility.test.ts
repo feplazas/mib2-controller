@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getChipsetCompatibility, canAttemptSpoofing, getCompatibilityMessageKey } from '../lib/chipset-compatibility';
+import { getChipsetCompatibility, canAttemptSpoofing, getCompatibilityMessage } from '../lib/chipset-compatibility';
 
 describe('chipset-compatibility', () => {
   describe('getChipsetCompatibility', () => {
@@ -68,25 +68,29 @@ describe('chipset-compatibility', () => {
     });
   });
 
-  describe('getCompatibilityMessageKey', () => {
-    it('should return confirmed message key', () => {
-      const key = getCompatibilityMessageKey('confirmed');
-      expect(key).toBe('chipset.confirmed_message');
+  describe('getCompatibilityMessage', () => {
+    it('should return success message for confirmed chipsets', () => {
+      const message = getCompatibilityMessage('confirmed', 'AX88772A');
+      expect(message).toContain('AX88772A');
+      expect(message).toContain('confirmado');
     });
 
-    it('should return experimental message key', () => {
-      const key = getCompatibilityMessageKey('experimental');
-      expect(key).toBe('chipset.experimental_message');
+    it('should return experimental warning for AX88179', () => {
+      const message = getCompatibilityMessage('experimental', 'AX88179');
+      expect(message).toContain('AX88179');
+      expect(message).toContain('experimental');
     });
 
-    it('should return incompatible message key', () => {
-      const key = getCompatibilityMessageKey('incompatible');
-      expect(key).toBe('chipset.incompatible_message');
+    it('should return incompatibility message for RTL8152', () => {
+      const message = getCompatibilityMessage('incompatible', 'RTL8152');
+      expect(message).toContain('RTL8152');
+      expect(message).toContain('NO es compatible');
     });
 
-    it('should return unknown message key', () => {
-      const key = getCompatibilityMessageKey('unknown');
-      expect(key).toBe('chipset.unknown_message');
+    it('should return unknown chipset warning', () => {
+      const message = getCompatibilityMessage('unknown', 'XYZ123');
+      expect(message).toContain('XYZ123');
+      expect(message).toContain('desconocido');
     });
   });
 
@@ -100,7 +104,7 @@ describe('chipset-compatibility', () => {
     });
 
     it('should handle partial chipset names', () => {
-      // "AX88772" should match AX88772, AX88772A, AX88772B
+      // "AX88772" debería coincidir con AX88772, AX88772A, AX88772B
       expect(getChipsetCompatibility('AX88772')).toBe('confirmed');
     });
   });
