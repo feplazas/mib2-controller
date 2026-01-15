@@ -1566,3 +1566,17 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [x] Agregar claves home.* en de.json (50+ claves)
 - [x] Agregar claves auto_spoof.* en en.json (15 claves)
 - [x] Agregar claves auto_spoof.* en de.json (15 claves)
+
+
+## CRÍTICO: Regenerar traducciones EN/DE completamente
+
+### Problema Detectado
+- Los archivos en.json y de.json contienen literalmente "[TODO: texto en español]" en lugar de traducciones reales
+- Esto causa que la app muestre "[TODO: ...]" cuando el usuario selecciona inglés o alemán
+- El problema está en los archivos de traducción, NO en el código
+
+### Solución
+- [x] Regenerar completamente en.json con traducciones reales en inglés
+- [x] Regenerar completamente de.json con traducciones reales en alemán
+- [x] Verificar que TODAS las claves tienen traducciones reales (no "[TODO: ...]")
+- [ ] Generar nuevo APK con traducciones corregidas
