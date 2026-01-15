@@ -121,7 +121,8 @@
       "exclude": [
         "react-native-tcp-socket",
         "@react-navigation/bottom-tabs",
-        "@react-navigation/native"
+        "@react-navigation/native",
+        "eslint-config-expo"
       ]
     }
   }
