@@ -1700,6 +1700,10 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 
 - [x] Corregir generación automática de clave de cifrado en Android
   - Error: "No se pudo obtener la clave de cifrado" al crear backup
-  - Causa: SecureStore.getItemAsync() o setItemAsync() fallaba sin mensaje de error específico
-  - Solución: Agregado manejo de errores detallado con try-catch anidados para diagnosticar exactamente dónde falla (lectura vs escritura)
-  - Ahora el error mostrará: "Error al leer SecureStore" o "Error al guardar en SecureStore" con detalles
+  - Causa: Bug conocido de expo-secure-store en ciertos dispositivos Android (Issue #23426)
+  - Solución DEFINITIVA: Implementado fallback automático a AsyncStorage cuando SecureStore falla
+    1. Intenta usar SecureStore (cifrado por hardware)
+    2. Si falla, usa AsyncStorage con cifrado por software (CryptoJS AES-256)
+    3. Guarda qué storage funciona para no reintentar en cada uso
+    4. Último recurso: clave temporal en memoria
+  - Referencia: https://github.com/expo/expo/issues/23426
