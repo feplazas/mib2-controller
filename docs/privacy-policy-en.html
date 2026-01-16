@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - MIB2 Controller</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #0a7ea4;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+        h2 {
+            color: #0a7ea4;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #0a7ea4;
+            padding-bottom: 5px;
+        }
+        h3 {
+            color: #333;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        ul {
+            margin-left: 30px;
+            margin-bottom: 15px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        .meta {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 30px;
+        }
+        .highlight {
+            background: #e6f4fe;
+            padding: 15px;
+            border-left: 4px solid #0a7ea4;
+            margin: 20px 0;
+        }
+        .lang-selector {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .lang-selector a {
+            color: #0a7ea4;
+            text-decoration: none;
+            margin: 0 10px;
+            padding: 8px 16px;
+            border: 1px solid #0a7ea4;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        .lang-selector a:hover {
+            background: #0a7ea4;
+            color: white;
+        }
+        .lang-selector a.active {
+            background: #0a7ea4;
+            color: white;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 1.5em;
+            }
+            h2 {
+                font-size: 1.3em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="lang-selector">
+            <a href="privacy-policy-es.html">Español</a>
+            <a href="privacy-policy-en.html" class="active">English</a>
+            <a href="privacy-policy-de.html">Deutsch</a>
+        </div>
+
+        <h1>Privacy Policy</h1>
+        <p class="meta">
+            <strong>Application:</strong> MIB2 Controller<br>
+            <strong>Developer:</strong> Felipe Plazas<br>
+            <strong>Last Updated:</strong> January 16, 2026<br>
+            <strong>Effective Date:</strong> January 16, 2026
+        </p>
+
+        <div class="highlight">
+            <p><strong>Executive Summary:</strong> MIB2 Controller does NOT collect, store, transmit, or share any personal user data. The application operates entirely locally on your Android device and communicates only with MIB2 STD2 infotainment units on your local network. There are no external servers, user accounts, or tracking of any kind.</p>
+        </div>
+
+        <h2>1. General Information</h2>
+        <p>This Privacy Policy describes how MIB2 Controller ("the Application", "we", "our") handles user information. The Application is designed with a privacy-by-design approach and complies with applicable data protection regulations, including the European Union's General Data Protection Regulation (GDPR) and the California Consumer Privacy Act (CCPA).</p>
+
+        <h2>2. Data We DO NOT Collect</h2>
+        <p>MIB2 Controller does NOT collect, store, process, transmit, or share any of the following types of data:</p>
+        <ul>
+            <li><strong>Personally identifiable information:</strong> Name, email address, phone number, physical address, date of birth, government ID number.</li>
+            <li><strong>Financial information:</strong> Credit card data, banking information, transaction history.</li>
+            <li><strong>Location information:</strong> Precise or approximate device location, location history.</li>
+            <li><strong>Photos and videos:</strong> Images, videos, or multimedia content from the device.</li>
+            <li><strong>Files and documents:</strong> Personal files stored on the device.</li>
+            <li><strong>Calendar information:</strong> Events, reminders, or appointments.</li>
+            <li><strong>Contacts:</strong> Contact list, phone numbers, or email addresses.</li>
+            <li><strong>App activity:</strong> Interactions with the app, pages visited, features used.</li>
+            <li><strong>Web browsing:</strong> Browsing history, searches performed.</li>
+            <li><strong>Device identifiers:</strong> IMEI, MAC address, advertising ID, device serial number.</li>
+            <li><strong>Diagnostics:</strong> Error logs, crash reports, performance data.</li>
+        </ul>
+
+        <h2>3. Local Operation of the Application</h2>
+        <p>MIB2 Controller operates entirely locally on your Android device. All application functionalities run locally without requiring connection to external servers:</p>
+        <ul>
+            <li><strong>Network scanning:</strong> The Application scans your local network (WiFi or Ethernet) to detect MIB2 STD2 units. This scanning is performed only within your local network and no information is sent to external servers.</li>
+            <li><strong>MIB2 communication:</strong> The Application communicates with MIB2 STD2 units via local Telnet connections (port 23) on your local network. No data from these communications is transmitted outside your local network.</li>
+            <li><strong>USB EEPROM reading:</strong> The Application reads data from USB-Ethernet adapters physically connected to your Android device. This data is processed locally and not transmitted to external servers.</li>
+            <li><strong>FEC code generation:</strong> The Application generates Feature Enabling Codes (FEC) locally on your device. No data is sent to external servers for this functionality.</li>
+            <li><strong>Settings and preferences:</strong> Application settings (language, expert mode, IP address, port) are stored locally on your device using React Native's AsyncStorage. This data never leaves your device.</li>
+        </ul>
+
+        <h2>4. Android Permissions</h2>
+        <p>The Application requests the following Android permissions for its operation. These permissions are used exclusively for the described functionalities and not to collect personal data:</p>
+        <ul>
+            <li><strong>INTERNET:</strong> Required to communicate with MIB2 STD2 units via Telnet on your local network. Not used to transmit data to external servers.</li>
+            <li><strong>ACCESS_NETWORK_STATE:</strong> Required to verify network connection status before attempting to communicate with MIB2 units.</li>
+            <li><strong>USB_PERMISSION:</strong> Required to access USB-Ethernet adapters physically connected to the Android device.</li>
+        </ul>
+
+        <h2>5. Local Data Storage</h2>
+        <p>The Application stores the following data locally on your Android device using AsyncStorage. This data is never transmitted outside your device:</p>
+        <ul>
+            <li><strong>Language setting:</strong> The language selected by the user (Spanish, English, or German).</li>
+            <li><strong>Expert mode:</strong> Enabled/disabled status of expert mode.</li>
+            <li><strong>IP address and port:</strong> IP address and port of the MIB2 unit for quick connection.</li>
+            <li><strong>Telnet command history:</strong> Previously executed Telnet commands (stored locally to facilitate reuse).</li>
+        </ul>
+        <p>You can delete all this data at any time by uninstalling the Application or clearing the app data from Android settings (Settings → Apps → MIB2 Controller → Storage → Clear data).</p>
+
+        <h2>6. Network Communications</h2>
+        <p>The Application performs the following network communications, all of them within your local network:</p>
+        <ul>
+            <li><strong>Local network scanning:</strong> The Application sends ping requests and port scans to devices on your local network to detect MIB2 STD2 units.</li>
+            <li><strong>Telnet connections:</strong> The Application establishes Telnet connections (port 23) with MIB2 STD2 units on your local network to send commands and receive responses.</li>
+        </ul>
+        <p><strong>Important:</strong> The Application does NOT communicate with external servers, third-party services, analytics services, advertising networks, or any other online service. All communications are exclusively local within your network.</p>
+
+        <h2>7. Third-Party Services</h2>
+        <p>MIB2 Controller does NOT use any third-party services, including but not limited to:</p>
+        <ul>
+            <li>Analytics services (Google Analytics, Firebase Analytics, etc.)</li>
+            <li>Advertising networks (AdMob, Facebook Audience Network, etc.)</li>
+            <li>Error tracking services (Crashlytics, Sentry, etc.)</li>
+            <li>Authentication services (Google Sign-In, Facebook Login, etc.)</li>
+            <li>Cloud storage services (Google Drive, Dropbox, etc.)</li>
+            <li>Messaging services (Firebase Cloud Messaging, OneSignal, etc.)</li>
+        </ul>
+
+        <h2>8. Data Security</h2>
+        <p>Since the Application does not collect, store, or transmit personal data to external servers, the risk of data breach is minimal. However, we implement the following security measures:</p>
+        <ul>
+            <li><strong>Secure local storage:</strong> Configuration data is stored using React Native's AsyncStorage, which is protected by Android's sandbox.</li>
+            <li><strong>No data transmission:</strong> No data is transmitted to external servers, eliminating the risk of interception during transmission.</li>
+            <li><strong>Security warnings:</strong> The Application displays prominent warnings about the risks of executing commands on MIB2 units without authorization or proper knowledge.</li>
+        </ul>
+
+        <h2>9. Children's Privacy</h2>
+        <p>MIB2 Controller is not directed at children under 18 years of age. The Application does not knowingly collect personal information from children. If you are a parent or guardian and believe your child has provided us with personal information, please contact us so we can delete it (although, as stated above, the Application does not collect personal data).</p>
+
+        <h2>10. Changes to this Privacy Policy</h2>
+        <p>We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last Updated" date at the top of this policy. You are advised to review this Privacy Policy periodically for any changes. Changes to this Privacy Policy are effective when posted on this page.</p>
+
+        <h2>11. Your Privacy Rights</h2>
+        <p>Depending on your location, you may have the following privacy rights:</p>
+        <ul>
+            <li><strong>Right of access:</strong> You can request access to the personal data we hold about you. (In the case of MIB2 Controller, we do not hold personal data about you).</li>
+            <li><strong>Right of rectification:</strong> You can request that we correct any inaccurate personal data. (Not applicable, as we do not collect personal data).</li>
+            <li><strong>Right of erasure:</strong> You can request that we delete your personal data. (Not applicable, as we do not collect personal data).</li>
+            <li><strong>Right of portability:</strong> You can request a copy of your data in a structured, commonly used format. (Not applicable, as we do not collect personal data).</li>
+            <li><strong>Right to object:</strong> You can object to the processing of your personal data. (Not applicable, as we do not collect personal data).</li>
+        </ul>
+
+        <h2>12. GDPR and CCPA Compliance</h2>
+        <p>MIB2 Controller complies with the European Union's General Data Protection Regulation (GDPR) and the California Consumer Privacy Act (CCPA):</p>
+        <ul>
+            <li><strong>GDPR:</strong> The Application does not process personal data of EU residents, so it is not subject to GDPR data processing obligations.</li>
+            <li><strong>CCPA:</strong> The Application does not sell, share, or process personal information of California residents, so it is not subject to CCPA disclosure obligations.</li>
+        </ul>
+
+        <h2>13. Contact</h2>
+        <p>If you have questions or concerns about this Privacy Policy, you can contact us through:</p>
+        <ul>
+            <li><strong>GitHub Repository:</strong> <a href="https://github.com/feplazas/mib2-controller/issues" target="_blank">https://github.com/feplazas/mib2-controller/issues</a></li>
+            <li><strong>Developer:</strong> Felipe Plazas</li>
+        </ul>
+
+        <div class="highlight">
+            <p><strong>Last Reviewed:</strong> January 16, 2026</p>
+            <p><strong>Version:</strong> 1.0</p>
+        </div>
+    </div>
+</body>
+</html>
