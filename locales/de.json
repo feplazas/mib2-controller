@@ -1096,7 +1096,9 @@
     "app_info": "App-Informationen",
     "created_by_label": "Erstellt von",
     "platform": "Plattform",
-    "compatible_with": "Kompatibel mit"
+    "compatible_with": "Kompatibel mit",
+    "terms_of_use": "Nutzungsbedingungen",
+    "view_terms": "Nutzungsbedingungen anzeigen"
   },
   "errors": {
     "no_adapter": "Kein USB-Adapter erkannt",

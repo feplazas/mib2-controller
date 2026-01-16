@@ -1096,7 +1096,9 @@
     "app_info": "Información de la App",
     "created_by_label": "Creada por",
     "platform": "Plataforma",
-    "compatible_with": "Compatible con"
+    "compatible_with": "Compatible con",
+    "terms_of_use": "Términos de Uso",
+    "view_terms": "Ver Términos de Uso"
   },
   "errors": {
     "no_adapter": "No se detectó ningún adaptador USB",

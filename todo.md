@@ -1609,3 +1609,11 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [x] Instalar eslint-config-expo
 - [x] Verificar expo doctor 17/17 checks (passed)
 - [x] Generar APK final con logo corregido (listo para build)
+
+
+## Términos de Uso y Cumplimiento Legal
+- [x] Crear documento de Términos de Uso en español, inglés y alemán
+- [x] Integrar Términos de Uso en el módulo Settings de la app
+- [x] Agregar botón visible "Terms of Use" / "Términos de Uso" / "Nutzungsbedingungen" en Settings
+- [x] Crear pantalla dedicada para visualización de Términos de Uso
+- [x] Implementar detección automática de idioma para mostrar versión correcta

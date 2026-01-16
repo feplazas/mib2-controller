@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity, ScrollView, TextInput, Alert, Switch } from "react-native";
 import { useState } from "react";
 import * as Haptics from "expo-haptics";
+import { router } from "expo-router";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { useTelnet } from "@/lib/telnet-provider";
@@ -901,6 +902,19 @@ export default function SettingsScreen() {
                 <Text className="text-sm text-foreground font-medium">MIB2 STD2</Text>
               </View>
             </View>
+
+            {/* Terms of Use Button */}
+            <TouchableOpacity
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                router.push('/terms-of-use');
+              }}
+              className="bg-primary/20 border border-primary rounded-xl p-4 mt-4 active:opacity-80"
+            >
+              <Text className="text-primary font-semibold text-center">
+                📄 {t('settings.view_terms')}
+              </Text>
+            </TouchableOpacity>
           </View>
 
           {/* Warning */}
