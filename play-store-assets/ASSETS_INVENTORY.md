@@ -24,6 +24,10 @@ play-store-assets/
 ├── banner-1200x500.jpg                  # Banner grande
 ├── thumbnail-480x360.jpg                # Thumbnail
 ├── screenshots/                         # Capturas de pantalla
+├── legal/                               # Documentos legales y cumplimiento
+│   ├── MIB2_Controller_Play_Compliance_Dossier.md (EN)
+│   ├── MIB2_Controller_Dossier_Cumplimiento_Play_ES.md (ES)
+│   └── README.md
 └── README.md                            # Guía de uso
 ```
 
@@ -221,7 +225,8 @@ https://play.google.com/console
 | **App Icons** | 8 tamaños | ✅ Completo |
 | **Feature Graphics** | 5 versiones | ✅ Completo |
 | **Screenshots** | 0/8 | ❌ Pendiente |
-| **Total** | 13 archivos | ⚠️ 94% Completo |
+| **Documentos Legales** | 2 dossiers + README | ✅ Completo |
+| **Total** | 13 archivos + 3 docs | ⚠️ 95% Completo |
 
 ---
 
@@ -245,6 +250,41 @@ Para cambios masivos, contacta con soporte de Google Play.
 - ✅ Resoluciones en alta calidad
 - ⚠️ Screenshots aún necesitan ser capturadas
 - 📱 Todos los assets son responsive y se adaptan a diferentes dispositivos
+
+---
+
+## 📄 Documentos Legales y de Cumplimiento
+
+### Ubicación: `legal/`
+
+| Archivo | Idioma | Descripción | Tamaño |
+|---------|--------|-------------|--------|
+| `MIB2_Controller_Play_Compliance_Dossier.md` | Inglés | Dossier legal completo preparado por Felipe Plazas (Abogado) | ~15 KB |
+| `MIB2_Controller_Dossier_Cumplimiento_Play_ES.md` | Español | Traducción completa del dossier al español | ~17 KB |
+| `README.md` | Bilingüe | Guía de uso de los documentos legales | ~5 KB |
+
+**Contenido de los dossiers:**
+- Resumen ejecutivo del alcance del producto
+- Modelo de autorización del propietario y acceso físico
+- Justificación de interoperabilidad para emulación de identificadores
+- Marco legal (DMCA Sección 1201, interoperabilidad)
+- Alineación con políticas de Google Play
+- Instrucciones de prueba para revisores
+- Declaraciones cortas listas para copiar en Play Console (EN/ES)
+
+**Cuándo usar:**
+- Adjuntar al formulario de apelación si la app es rechazada por "Device and Network Abuse"
+- Proporcionar como evidencia si Google solicita aclaración sobre funcionalidad
+- Publicar en el repositorio de GitHub para transparencia con usuarios y autoridades
+- Incluir enlace en la descripción de la app en Play Store
+
+**Declaración corta para Play Console (copiar del Apéndice A):**
+
+Inglés:
+> **Compliance clarification:** MIB2 Controller is a local, owner-authorized diagnostic and configuration tool for Volkswagen Group MIB2 STD2 infotainment units (Technisat/Preh). It requires physical access to the vehicle environment and a direct local connection path (e.g., USB-to-Ethernet adapter). The app is not intended for remote intrusion, mass scanning, or targeting third-party devices or networks. Actions are user-initiated and transparent in the UI. Adapter identifier emulation is implemented as a compatibility/interoperability measure for connecting the user's phone to the user's own infotainment hardware in a controlled local setting. Feature-enable workflows (FEC-style tokens) are presented as owner-managed configuration of infotainment capabilities on owner-owned hardware; the app is not a subscription circumvention or piracy utility, and the Terms of Use prohibit unauthorized access, theft, fraud, and infringement.
+
+Español:
+> **Aclaración de cumplimiento:** MIB2 Controller es una herramienta local de diagnóstico y configuración autorizada por el propietario para unidades de infotainment MIB2 STD2 del Grupo Volkswagen (Technisat/Preh). Requiere acceso físico al entorno del vehículo y una ruta de conexión local directa (por ejemplo, adaptador USB a Ethernet). La aplicación no está destinada a intrusión remota, escaneo masivo o dirigirse a dispositivos o redes de terceros. Las acciones son iniciadas por el usuario y transparentes en la interfaz de usuario. La emulación de identificador de adaptador se implementa como una medida de compatibilidad/interoperabilidad para conectar el teléfono del usuario al propio hardware de infotainment del usuario en un entorno local controlado. Los flujos de trabajo de habilitación de características (tokens estilo FEC) se presentan como configuración gestionada por el propietario de capacidades de infotainment en hardware propiedad del propietario; la aplicación no es una utilidad de elusión de suscripción o piratería, y los Términos de Uso prohíben el acceso no autorizado, robo, fraude e infracción.
 
 ---
 
