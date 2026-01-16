@@ -1633,3 +1633,11 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [x] Corregir index.html para eliminar auto-redirección que impide acceso a selector de idioma
 - [x] Verificar que las 3 versiones (ES/EN/DE) sean accesibles desde la página principal
 - [x] Pushear corrección al repositorio
+
+
+## Bug: Detección de Compatibilidad ASIX AX88772
+- [x] Revisar código del módulo USB que muestra "MIB2 Compatible: ❌ NO" para AX88772
+- [x] Identificar por qué no detecta correctamente el chipset como compatible
+- [x] Corregir lógica de detección de compatibilidad
+- [x] Verificar que chipsets confirmados (AX88772/A/B) muestren "✅ Compatible"
+- [ ] Probar con el adaptador real del usuario
