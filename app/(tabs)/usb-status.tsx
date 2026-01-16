@@ -8,6 +8,7 @@ import { backupService } from '@/lib/backup-service';
 import { ChipsetStatusBadge } from '@/components/chipset-status-badge';
 import { getChipsetCompatibility, canAttemptSpoofing } from '@/lib/chipset-compatibility';
 import { ScanningIndicator } from '@/components/scanning-indicator';
+import { CompatibilityCheckLoader } from '@/components/compatibility-check-loader';
 
 import { showAlert } from '@/lib/translated-alert';
 import { useTranslation } from "@/lib/language-context";
@@ -22,6 +23,21 @@ export default function UsbStatusScreen() {
   const [isConnecting, setIsConnecting] = useState(false);
   const [isTestingEEPROM, setIsTestingEEPROM] = useState(false);
   const [isDisconnecting, setIsDisconnecting] = useState(false);
+  const [isCheckingCompatibility, setIsCheckingCompatibility] = useState(false);
+
+  // Simular verificación de compatibilidad cuando se conecta
+  useEffect(() => {
+    if (status === 'connected' && device && !detectedProfile) {
+      setIsCheckingCompatibility(true);
+      // Simular delay de verificación (1.5 segundos)
+      const timer = setTimeout(() => {
+        setIsCheckingCompatibility(false);
+      }, 1500);
+      return () => clearTimeout(timer);
+    } else {
+      setIsCheckingCompatibility(false);
+    }
+  }, [status, device, detectedProfile]);
 
   // Actualizar tiempo de conexión cada segundo
   useEffect(() => {
@@ -523,8 +539,16 @@ export default function UsbStatusScreen() {
             </View>
           )}
 
+          {/* Animación de Verificación de Compatibilidad */}
+          {isCheckingCompatibility && (
+            <CompatibilityCheckLoader 
+              visible={isCheckingCompatibility} 
+              chipset={device?.product || 'Unknown'}
+            />
+          )}
+
           {/* Perfil Detectado */}
-          {status === 'connected' && detectedProfile && (
+          {status === 'connected' && detectedProfile && !isCheckingCompatibility && (
             <View className={`rounded-2xl p-6 border ${
               detectedProfile.compatible 
                 ? 'bg-green-500/10 border-green-500' 

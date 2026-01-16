@@ -1319,7 +1319,9 @@
     "connect_adapter_desc": "Conecta un adaptador USB-Ethernet",
     "device_detected": "Dispositivo Detectado",
     "tap_for_permissions": "Toca para solicitar permisos",
-    "found_devices": "Encontrados {{count}} dispositivos USB"
+    "found_devices": "Encontrados {{count}} dispositivos USB",
+    "checking_compatibility": "Verificando Compatibilidad",
+    "analyzing_chipset": "Analizando chipset"
   },
   "onboarding": {
     "step1_title": "Conectar Adaptador USB",

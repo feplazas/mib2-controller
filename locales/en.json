@@ -1319,7 +1319,9 @@
     "connect_adapter_desc": "Connect a USB-Ethernet adapter",
     "device_detected": "Device Detected",
     "tap_for_permissions": "Tap to request permissions",
-    "found_devices": "Found {{count}} USB devices"
+    "found_devices": "Found {{count}} USB devices",
+    "checking_compatibility": "Checking Compatibility",
+    "analyzing_chipset": "Analyzing chipset"
   },
   "onboarding": {
     "step1_title": "Connect USB Adapter",

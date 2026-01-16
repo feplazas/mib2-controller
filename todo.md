@@ -1641,3 +1641,11 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [x] Corregir lógica de detección de compatibilidad
 - [x] Verificar que chipsets confirmados (AX88772/A/B) muestren "✅ Compatible"
 - [ ] Probar con el adaptador real del usuario
+
+
+## Animación de Carga para Verificación de Compatibilidad
+- [x] Crear componente CompatibilityCheckLoader con animación
+- [x] Integrar animación en usb-status.tsx durante detección de perfil
+- [x] Agregar estado isCheckingCompatibility al contexto USB
+- [x] Mostrar animación mientras se verifica chipset y perfil VID/PID
+- [ ] Probar con adaptador real del usuario
