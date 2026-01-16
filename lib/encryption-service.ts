@@ -29,15 +29,27 @@ class EncryptionService {
       
       // En Android/iOS usar SecureStore (cifrado por hardware)
       if (Platform.OS !== 'web') {
-        key = await SecureStore.getItemAsync(ENCRYPTION_KEY_NAME);
+        try {
+          key = await SecureStore.getItemAsync(ENCRYPTION_KEY_NAME);
+          console.log('[EncryptionService] SecureStore.getItemAsync result:', key ? 'key exists' : 'no key found');
+        } catch (getError) {
+          console.error('[EncryptionService] SecureStore.getItemAsync failed:', getError);
+          throw new Error(`Error al leer SecureStore: ${getError}`);
+        }
         
         if (!key) {
           // Generar nueva clave aleatoria de 256 bits (32 bytes)
           key = CryptoJS.lib.WordArray.random(32).toString();
+          console.log('[EncryptionService] Generated new key, attempting to save...');
           
-          // Guardar en SecureStore (encriptado por hardware)
-          await SecureStore.setItemAsync(ENCRYPTION_KEY_NAME, key);
-          console.log('[EncryptionService] Generated new encryption key (SecureStore)');
+          try {
+            // Guardar en SecureStore (encriptado por hardware)
+            await SecureStore.setItemAsync(ENCRYPTION_KEY_NAME, key);
+            console.log('[EncryptionService] New encryption key saved successfully (SecureStore)');
+          } catch (setError) {
+            console.error('[EncryptionService] SecureStore.setItemAsync failed:', setError);
+            throw new Error(`Error al guardar en SecureStore: ${setError}`);
+          }
         } else {
           console.log('[EncryptionService] Loaded existing encryption key (SecureStore)');
         }
@@ -57,11 +69,16 @@ class EncryptionService {
         }
       }
 
+      if (!key) {
+        throw new Error('La clave de cifrado es null después de generarla');
+      }
+
       this.encryptionKey = key;
       return key;
     } catch (error) {
       console.error('[EncryptionService] Error getting encryption key:', error);
-      throw new Error('No se pudo obtener la clave de cifrado');
+      // Propagar el error original con más contexto
+      throw error instanceof Error ? error : new Error(`No se pudo obtener la clave de cifrado: ${error}`);
     }
   }
 

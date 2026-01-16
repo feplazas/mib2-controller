@@ -1695,3 +1695,11 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [x] Agregar logs de error detallados en todas las operaciones EEPROM
   - Solución: usbLogger.error() ahora se llama en todos los catch blocks
 - [x] Agregar traducciones para "Adaptador Ya Compatible" en ES/EN/DE
+
+## Problema de Backup en Android (Enero 2026)
+
+- [x] Corregir generación automática de clave de cifrado en Android
+  - Error: "No se pudo obtener la clave de cifrado" al crear backup
+  - Causa: SecureStore.getItemAsync() o setItemAsync() fallaba sin mensaje de error específico
+  - Solución: Agregado manejo de errores detallado con try-catch anidados para diagnosticar exactamente dónde falla (lectura vs escritura)
+  - Ahora el error mostrará: "Error al leer SecureStore" o "Error al guardar en SecureStore" con detalles
