@@ -100,24 +100,7 @@
             }
         }
     </style>
-    <script>
-        // Auto-redirect based on browser language
-        window.addEventListener('DOMContentLoaded', () => {
-            const lang = navigator.language || navigator.userLanguage;
-            const langCode = lang.split('-')[0].toLowerCase();
-            
-            // Only auto-redirect if coming from external source (not from language selector)
-            if (!document.referrer.includes('privacy-policy')) {
-                if (langCode === 'es') {
-                    window.location.href = 'privacy-policy-es.html';
-                } else if (langCode === 'de') {
-                    window.location.href = 'privacy-policy-de.html';
-                } else {
-                    window.location.href = 'privacy-policy-en.html';
-                }
-            }
-        });
-    </script>
+
 </head>
 <body>
     <div class="container">
