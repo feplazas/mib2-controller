@@ -1627,3 +1627,9 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [x] Pushear archivos al repositorio GitHub
 - [ ] Configurar GitHub Pages desde repositorio (manual)
 - [ ] Verificar URLs públicas accesibles
+
+
+## Bug: GitHub Pages - Selector de Idioma
+- [x] Corregir index.html para eliminar auto-redirección que impide acceso a selector de idioma
+- [x] Verificar que las 3 versiones (ES/EN/DE) sean accesibles desde la página principal
+- [x] Pushear corrección al repositorio
