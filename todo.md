@@ -1666,3 +1666,20 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [x] Agregar perfil faltante para ASIX AX88772C (VID: 0x0B95, PID: 0x172A, compatible: true, experimental)
 - [x] Actualizar notas de AX88772/AX88772A/AX88772B: "Compatible nativamente sin necesidad de spoofing"
 - [x] Actualizar notas de AX88172/AX88178/AX88179/AX88772C: "Requiere spoofing para hacerse compatible"
+
+## Problemas Críticos de Acceso EEPROM (Enero 2026)
+
+- [x] Investigar especificaciones reales de acceso a EEPROM de chipsets ASIX (AX88772/AX88772A/AX88772B)
+- [x] Implementar comandos USB vendor-specific reales para lectura de EEPROM (no simulados)
+- [x] Implementar comandos USB vendor-specific reales para escritura de EEPROM (no simulados)
+- [x] Corregir comandos ASIX: 0x04/0x05 → 0x0b/0x0c/0x0d/0x0e (valores reales de asix_eepromtool)
+- [x] Implementar secuencia completa: Enable (0x0d) → Write (0x0c) → Disable (0x0e)
+- [x] Corregir lectura/escritura para trabajar con words (16-bit) en lugar de bytes
+- [x] Corregir endianness: big-endian según especificación ASIX
+- [x] Corregir delays: 1000ms después de enable, 50ms entre writes, 500ms después de disable
+- [x] Actualizar detectEEPROMType para usar secuencia real de comandos ASIX
+- [x] Documentar comandos USB vendor-specific utilizados (ASIX_USB_COMMANDS.md)
+- [ ] Agregar solicitud de permisos USB raw antes de operaciones de EEPROM (ya funciona con permisos estándar)
+- [ ] Detectar si la EEPROM es accesible y mostrar mensaje claro si está protegida (detectEEPROMType ya implementado)
+- [ ] Deshabilitar botones Test/Backup/Spoof si EEPROM no es accesible (pendiente en UI)
+- [ ] Agregar modo de diagnóstico para probar diferentes comandos USB (opcional)
