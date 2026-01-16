@@ -1617,3 +1617,13 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [x] Agregar botón visible "Terms of Use" / "Términos de Uso" / "Nutzungsbedingungen" en Settings
 - [x] Crear pantalla dedicada para visualización de Términos de Uso
 - [x] Implementar detección automática de idioma para mostrar versión correcta
+
+
+## GitHub Pages y Política de Privacidad
+- [x] Crear política de privacidad en español (privacy-policy-es.html)
+- [x] Crear política de privacidad en inglés (privacy-policy-en.html)
+- [x] Crear política de privacidad en alemán (privacy-policy-de.html)
+- [x] Crear página índice con selector de idioma (index.html)
+- [x] Pushear archivos al repositorio GitHub
+- [ ] Configurar GitHub Pages desde repositorio (manual)
+- [ ] Verificar URLs públicas accesibles
