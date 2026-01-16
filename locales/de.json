@@ -958,7 +958,9 @@
     "testing": "Teste...",
     "verification_skipped_note": "Hinweis: Verifizierung wurde übersprungen. Trennen und neu verbinden zur Bestätigung.",
     "with_triple_confirmation": "Mit dreifacher Bestätigung",
-    "yes_execute": "Ja, Ausführen"
+    "yes_execute": "Ja, Ausführen",
+    "already_compatible_title": "✅ Adapter Bereits Kompatibel",
+    "already_compatible_message": "Der {{chipset}}-Chipsatz ist nativ mit MIB2 kompatibel. Kein Spoofing erforderlich.",
   },
   "diag": {
     "title": "Diagnose",

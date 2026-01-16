@@ -958,7 +958,9 @@
     "testing": "Testing...",
     "verification_skipped_note": "Note: Verification was skipped. Disconnect and reconnect adapter to confirm.",
     "with_triple_confirmation": "With Triple Confirmation",
-    "yes_execute": "Yes, Execute"
+    "yes_execute": "Yes, Execute",
+    "already_compatible_title": "✅ Adapter Already Compatible",
+    "already_compatible_message": "The {{chipset}} chipset is confirmed compatible with MIB2 natively. No spoofing needed.",
   },
   "diag": {
     "title": "Diagnostic",

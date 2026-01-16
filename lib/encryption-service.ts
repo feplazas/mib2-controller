@@ -1,7 +1,10 @@
 import * as SecureStore from 'expo-secure-store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import CryptoJS from 'crypto-js';
+import { Platform } from 'react-native';
 
 const ENCRYPTION_KEY_NAME = 'mib2_backup_encryption_key';
+const ASYNC_STORAGE_KEY_NAME = '@mib2_backup_encryption_key'; // Fallback para web
 
 /**
  * Servicio de cifrado para backups de EEPROM
@@ -13,6 +16,8 @@ class EncryptionService {
 
   /**
    * Inicializar o recuperar la clave de cifrado
+   * En Android/iOS usa SecureStore (cifrado por hardware)
+   * En web usa AsyncStorage (sin cifrado de hardware, solo para desarrollo)
    */
   private async getEncryptionKey(): Promise<string> {
     if (this.encryptionKey) {
@@ -20,18 +25,36 @@ class EncryptionService {
     }
 
     try {
-      // Intentar recuperar clave existente
-      let key = await SecureStore.getItemAsync(ENCRYPTION_KEY_NAME);
+      let key: string | null = null;
       
-      if (!key) {
-        // Generar nueva clave aleatoria de 256 bits (32 bytes)
-        key = CryptoJS.lib.WordArray.random(32).toString();
+      // En Android/iOS usar SecureStore (cifrado por hardware)
+      if (Platform.OS !== 'web') {
+        key = await SecureStore.getItemAsync(ENCRYPTION_KEY_NAME);
         
-        // Guardar en SecureStore (encriptado por hardware en Android/iOS)
-        await SecureStore.setItemAsync(ENCRYPTION_KEY_NAME, key);
-        console.log('[EncryptionService] Generated new encryption key');
+        if (!key) {
+          // Generar nueva clave aleatoria de 256 bits (32 bytes)
+          key = CryptoJS.lib.WordArray.random(32).toString();
+          
+          // Guardar en SecureStore (encriptado por hardware)
+          await SecureStore.setItemAsync(ENCRYPTION_KEY_NAME, key);
+          console.log('[EncryptionService] Generated new encryption key (SecureStore)');
+        } else {
+          console.log('[EncryptionService] Loaded existing encryption key (SecureStore)');
+        }
       } else {
-        console.log('[EncryptionService] Loaded existing encryption key');
+        // En web usar AsyncStorage como fallback (solo para desarrollo/testing)
+        key = await AsyncStorage.getItem(ASYNC_STORAGE_KEY_NAME);
+        
+        if (!key) {
+          // Generar nueva clave aleatoria
+          key = CryptoJS.lib.WordArray.random(32).toString();
+          
+          // Guardar en AsyncStorage (NO cifrado por hardware)
+          await AsyncStorage.setItem(ASYNC_STORAGE_KEY_NAME, key);
+          console.warn('[EncryptionService] Generated new encryption key (AsyncStorage - web fallback, not secure)');
+        } else {
+          console.log('[EncryptionService] Loaded existing encryption key (AsyncStorage - web fallback)');
+        }
       }
 
       this.encryptionKey = key;
@@ -88,7 +111,14 @@ class EncryptionService {
    */
   async hasEncryptionKey(): Promise<boolean> {
     try {
-      const key = await SecureStore.getItemAsync(ENCRYPTION_KEY_NAME);
+      let key: string | null = null;
+      
+      if (Platform.OS !== 'web') {
+        key = await SecureStore.getItemAsync(ENCRYPTION_KEY_NAME);
+      } else {
+        key = await AsyncStorage.getItem(ASYNC_STORAGE_KEY_NAME);
+      }
+      
       return key !== null;
     } catch (error) {
       console.error('[EncryptionService] Error checking encryption key:', error);
@@ -102,7 +132,12 @@ class EncryptionService {
    */
   async deleteEncryptionKey(): Promise<void> {
     try {
-      await SecureStore.deleteItemAsync(ENCRYPTION_KEY_NAME);
+      if (Platform.OS !== 'web') {
+        await SecureStore.deleteItemAsync(ENCRYPTION_KEY_NAME);
+      } else {
+        await AsyncStorage.removeItem(ASYNC_STORAGE_KEY_NAME);
+      }
+      
       this.encryptionKey = null;
       console.log('[EncryptionService] Encryption key deleted');
     } catch (error) {
@@ -121,7 +156,12 @@ class EncryptionService {
       const newKey = CryptoJS.lib.WordArray.random(32).toString();
       
       // Guardar nueva clave
-      await SecureStore.setItemAsync(ENCRYPTION_KEY_NAME, newKey);
+      if (Platform.OS !== 'web') {
+        await SecureStore.setItemAsync(ENCRYPTION_KEY_NAME, newKey);
+      } else {
+        await AsyncStorage.setItem(ASYNC_STORAGE_KEY_NAME, newKey);
+      }
+      
       this.encryptionKey = newKey;
       
       console.log('[EncryptionService] Encryption key rotated');

@@ -5,6 +5,7 @@ import { usbService } from './usb-service';
 import type { UsbDevice } from './usb-service';
 import CryptoJS from 'crypto-js';
 import { encryptionService } from './encryption-service';
+import { usbLogger } from './usb-logger';
 
 const BACKUP_STORAGE_KEY = '@mib2_eeprom_backups';
 // Use SAF (Storage Access Framework) directory for Android - accessible from file manager
@@ -70,6 +71,7 @@ class BackupService {
       return backup;
     } catch (error) {
       console.error('[BackupService] Error creating backup:', error);
+      usbLogger.error('BACKUP', `Error al crear backup: ${error}`, error);
       throw new Error(`backup_creation_failed: ${error}`);
     }
   }

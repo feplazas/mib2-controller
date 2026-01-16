@@ -12,7 +12,7 @@ import * as Haptics from 'expo-haptics';
 import * as Sharing from 'expo-sharing';
 import { spoofReducer, initialSpoofState, getStepIcon } from '@/lib/spoof-reducer';
 import { useTranslation } from "@/lib/language-context";
-
+import { usbLogger } from '@/lib/usb-logger';
 import { showAlert } from '@/lib/translated-alert';
 export default function AutoSpoofScreen() {
   const t = useTranslation();
@@ -269,6 +269,7 @@ export default function AutoSpoofScreen() {
     } catch (error: any) {
       dispatch({ type: 'SET_STEP', payload: 'error' });
       dispatch({ type: 'SET_ERROR', payload: error.message || t('auto_spoof.error_unknown') });
+      usbLogger.error('SPOOF', `Error en spoofing: ${error.message}`, error);
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     }
   };
@@ -277,6 +278,24 @@ export default function AutoSpoofScreen() {
 
   // Función REAL de Test de Spoofing
   const handleTestSpoofing = async () => {
+    if (!device) {
+      showAlert('alerts.error', 'alerts.no_hay_dispositivo_usb_conectado');
+      return;
+    }
+
+    const compatibility = getChipsetCompatibility(device.chipset || '');
+    
+    // Si es un adaptador confirmado compatible, no tiene sentido hacer el test
+    if (compatibility === 'confirmed') {
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      Alert.alert(
+        t('auto_spoof.already_compatible_title'),
+        t('auto_spoof.already_compatible_message', { chipset: device.chipset }),
+        [{ text: t('common.understood') }]
+      );
+      return;
+    }
+
     dispatch({ type: 'START_TEST' });
     dispatch({ type: 'SET_TEST_RESULT', payload: null });
     
@@ -329,6 +348,7 @@ export default function AutoSpoofScreen() {
       }
     } catch (error: any) {
       dispatch({ type: 'SET_TEST_RESULT', payload: 'fail' });
+      usbLogger.error('TEST', `Error en test de spoofing: ${error.message}`, error);
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       showAlert('alerts.error', t('alerts.no_se_pudo_realizar_test', { error: error.message }));
     }
