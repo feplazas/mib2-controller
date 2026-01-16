@@ -1649,3 +1649,20 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 - [x] Agregar estado isCheckingCompatibility al contexto USB
 - [x] Mostrar animación mientras se verifica chipset y perfil VID/PID
 - [ ] Probar con adaptador real del usuario
+
+
+## Auditoría de Compatibilidad de Chipsets ASIX
+- [ ] Revisar chipset-compatibility.ts para listar todos los chipsets ASIX compatibles
+- [ ] Auditar profiles-service.ts para verificar perfiles ASIX con compatible: false
+- [ ] Corregir perfiles AX88172, AX88178, AX88179 si están marcados incorrectamente
+- [ ] Verificar que todos los chipsets experimentales tengan notas apropiadas
+- [ ] Documentar cambios realizados
+
+## Correcciones de Perfiles ASIX (Enero 2026)
+
+- [x] Corregir compatibilidad de ASIX AX88178 (compatible: false → true, category: common_adapters → mib2_compatible)
+- [x] Corregir compatibilidad de ASIX AX88179 (compatible: false → true, category: common_adapters → mib2_compatible)
+- [x] Agregar perfil faltante para ASIX AX88172 (VID: 0x0B95, PID: 0x1720, compatible: true, experimental)
+- [x] Agregar perfil faltante para ASIX AX88772C (VID: 0x0B95, PID: 0x172A, compatible: true, experimental)
+- [x] Actualizar notas de AX88772/AX88772A/AX88772B: "Compatible nativamente sin necesidad de spoofing"
+- [x] Actualizar notas de AX88172/AX88178/AX88179/AX88772C: "Requiere spoofing para hacerse compatible"
