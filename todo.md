@@ -1818,3 +1818,14 @@ módulo nativo: val wordOffset = (offset + i) / 2  // Divide de nuevo!
 - [x] Solo se permite restaurar VID/PID usando spoofVIDPID (probada)
 - [x] Agregar advertencia MÁS VISIBLE sobre riesgo de bricking
 - [x] Deshabilitar restauración completa - solo permitir VID/PID
+
+
+## Sistema de Verificación de Integridad de Backups (16 Enero 2026)
+
+### Tareas
+- [x] Implementar verificación MD5 + SHA256 dual para mayor seguridad
+- [x] Agregar función verifyBackupIntegrity() en backup-service
+- [x] Mostrar estado de integridad en UI de cada backup (válido/inválido/corrupto)
+- [x] Agregar botón "Verificar Integridad" en pantalla de backups
+- [x] Bloquear restauración si checksum no coincide
+- [x] Agregar traducciones ES/EN/DE para mensajes de integridad

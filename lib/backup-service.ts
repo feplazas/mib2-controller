@@ -11,6 +11,27 @@ const BACKUP_STORAGE_KEY = '@mib2_eeprom_backups';
 // On Android, this maps to /storage/emulated/0/Android/data/[package]/files/Download/mib2_backups/
 const BACKUP_DIR = `${FileSystem.documentDirectory}Download/mib2_backups/`;
 
+/**
+ * Estado de integridad de un backup
+ */
+export type IntegrityStatus = 'valid' | 'invalid' | 'corrupted' | 'unknown';
+
+/**
+ * Resultado de verificación de integridad
+ */
+export interface IntegrityCheckResult {
+  status: IntegrityStatus;
+  md5Valid: boolean;
+  sha256Valid: boolean;
+  sizeValid: boolean;
+  formatValid: boolean;
+  calculatedMd5: string;
+  calculatedSha256: string;
+  expectedMd5: string;
+  expectedSha256: string;
+  details: string;
+}
+
 export interface EEPROMBackup {
   id: string;
   timestamp: number;
@@ -22,9 +43,11 @@ export interface EEPROMBackup {
   data: string; // Hex string of complete EEPROM dump (256 bytes) - SIN CIFRAR
   size: number;
   checksum: string; // MD5 hash of data for integrity verification
+  checksumSha256?: string; // SHA256 hash for additional verification (nuevo)
   notes?: string;
   filepath?: string; // Ruta del archivo de backup en FileSystem
   encrypted: boolean; // Siempre false - sin cifrado
+  integrityStatus?: IntegrityStatus; // Estado de integridad cacheado
 }
 
 /**
@@ -34,13 +57,130 @@ export interface EEPROMBackup {
  * La restauración completa de EEPROM está DESHABILITADA debido a bugs de offset.
  * Solo se permite restaurar VID/PID usando la función spoofVIDPID que está probada.
  * 
- * NOTA: Los backups se guardan SIN cifrado porque:
- * 1. Los datos de EEPROM (VID/PID/MAC) no son sensibles
- * 2. CryptoJS.lib.WordArray.random() no funciona en React Native
- * 3. expo-secure-store tiene bugs en ciertos dispositivos Android
- * 4. La simplicidad garantiza funcionamiento en TODOS los dispositivos
+ * SISTEMA DE INTEGRIDAD:
+ * - Checksum MD5 + SHA256 dual para máxima seguridad
+ * - Verificación automática antes de cualquier restauración
+ * - Estado de integridad visible en UI
  */
 class BackupService {
+  /**
+   * Calcular checksums MD5 y SHA256 de los datos
+   */
+  private calculateChecksums(data: string): { md5: string; sha256: string } {
+    const md5 = CryptoJS.MD5(data).toString();
+    const sha256 = CryptoJS.SHA256(data).toString();
+    return { md5, sha256 };
+  }
+
+  /**
+   * Verificar integridad de un backup
+   * Realiza múltiples validaciones:
+   * 1. Tamaño de datos (debe ser 256 bytes = 512 caracteres hex)
+   * 2. Formato hexadecimal válido
+   * 3. Checksum MD5
+   * 4. Checksum SHA256 (si está disponible)
+   */
+  verifyBackupIntegrity(backup: EEPROMBackup): IntegrityCheckResult {
+    const result: IntegrityCheckResult = {
+      status: 'unknown',
+      md5Valid: false,
+      sha256Valid: false,
+      sizeValid: false,
+      formatValid: false,
+      calculatedMd5: '',
+      calculatedSha256: '',
+      expectedMd5: backup.checksum || '',
+      expectedSha256: backup.checksumSha256 || '',
+      details: '',
+    };
+
+    try {
+      // 1. Verificar tamaño
+      const expectedHexLength = 256 * 2; // 256 bytes = 512 caracteres hex
+      result.sizeValid = backup.data.length === expectedHexLength && backup.size === 256;
+      
+      if (!result.sizeValid) {
+        result.status = 'corrupted';
+        result.details = `Tamaño inválido: ${backup.data.length} caracteres (esperado: ${expectedHexLength})`;
+        return result;
+      }
+
+      // 2. Verificar formato hexadecimal
+      result.formatValid = /^[0-9A-Fa-f]+$/.test(backup.data);
+      
+      if (!result.formatValid) {
+        result.status = 'corrupted';
+        result.details = 'Formato de datos inválido: contiene caracteres no hexadecimales';
+        return result;
+      }
+
+      // 3. Calcular checksums
+      const { md5, sha256 } = this.calculateChecksums(backup.data);
+      result.calculatedMd5 = md5;
+      result.calculatedSha256 = sha256;
+
+      // 4. Verificar MD5
+      if (backup.checksum) {
+        result.md5Valid = md5.toLowerCase() === backup.checksum.toLowerCase();
+      } else {
+        // Si no hay checksum guardado, asumimos válido pero lo marcamos
+        result.md5Valid = true;
+        result.details = 'Sin checksum MD5 original para comparar';
+      }
+
+      // 5. Verificar SHA256 (si está disponible)
+      if (backup.checksumSha256) {
+        result.sha256Valid = sha256.toLowerCase() === backup.checksumSha256.toLowerCase();
+      } else {
+        // Si no hay SHA256, solo usamos MD5
+        result.sha256Valid = true;
+      }
+
+      // 6. Determinar estado final
+      if (result.md5Valid && result.sha256Valid && result.sizeValid && result.formatValid) {
+        result.status = 'valid';
+        result.details = 'Integridad verificada: todos los checksums coinciden';
+      } else if (!result.md5Valid || !result.sha256Valid) {
+        result.status = 'invalid';
+        const failedChecks: string[] = [];
+        if (!result.md5Valid) failedChecks.push('MD5');
+        if (!result.sha256Valid) failedChecks.push('SHA256');
+        result.details = `Checksum inválido: ${failedChecks.join(', ')} no coincide`;
+      } else {
+        result.status = 'corrupted';
+        result.details = 'Datos corruptos: verificación de formato fallida';
+      }
+
+      return result;
+    } catch (error) {
+      result.status = 'corrupted';
+      result.details = `Error durante verificación: ${error}`;
+      return result;
+    }
+  }
+
+  /**
+   * Verificar integridad de un backup por ID
+   */
+  async verifyBackupIntegrityById(backupId: string): Promise<IntegrityCheckResult> {
+    const backup = await this.getBackup(backupId);
+    if (!backup) {
+      return {
+        status: 'corrupted',
+        md5Valid: false,
+        sha256Valid: false,
+        sizeValid: false,
+        formatValid: false,
+        calculatedMd5: '',
+        calculatedSha256: '',
+        expectedMd5: '',
+        expectedSha256: '',
+        details: 'Backup no encontrado',
+      };
+    }
+    return this.verifyBackupIntegrity(backup);
+  }
+
   /**
    * Crear backup de EEPROM del dispositivo actual
    */
@@ -52,8 +192,8 @@ class BackupService {
       // Volcar EEPROM completa (256 bytes)
       const dump = await usbService.dumpEEPROM();
       
-      // Calcular checksum MD5 de los datos
-      const checksum = CryptoJS.MD5(dump.data).toString();
+      // Calcular checksums MD5 y SHA256 para verificación dual
+      const { md5, sha256 } = this.calculateChecksums(dump.data);
       
       // Crear objeto de backup - SIN CIFRAR
       const backup: EEPROMBackup = {
@@ -66,16 +206,20 @@ class BackupService {
         serialNumber: device.serialNumber || 'N/A',
         data: dump.data, // Datos SIN cifrar (hex string)
         size: dump.size,
-        checksum,
+        checksum: md5,
+        checksumSha256: sha256, // Nuevo: SHA256 para verificación dual
         notes: notes || 'auto_backup_before_spoofing',
         encrypted: false, // Sin cifrado
+        integrityStatus: 'valid', // Recién creado, es válido
       };
       
       // Guardar backup
       await this.saveBackup(backup);
       
       console.log(`[BackupService] Backup created successfully: ${backup.id}`);
-      usbLogger.success('BACKUP', `Backup creado: ${backup.id} (${dump.size} bytes)`);
+      console.log(`[BackupService] MD5: ${md5}`);
+      console.log(`[BackupService] SHA256: ${sha256}`);
+      usbLogger.success('BACKUP', `Backup creado: ${backup.id} (${dump.size} bytes, MD5: ${md5.substring(0, 8)}...)`);
       return backup;
     } catch (error) {
       console.error('[BackupService] Error creating backup:', error);
@@ -144,6 +288,21 @@ class BackupService {
       console.error('[BackupService] Error loading backups:', error);
       return [];
     }
+  }
+
+  /**
+   * Cargar backups con verificación de integridad
+   */
+  async loadBackupsWithIntegrity(): Promise<EEPROMBackup[]> {
+    const backups = await this.loadBackups();
+    
+    // Verificar integridad de cada backup
+    for (const backup of backups) {
+      const result = this.verifyBackupIntegrity(backup);
+      backup.integrityStatus = result.status;
+    }
+    
+    return backups;
   }
 
   /**
@@ -218,6 +377,8 @@ class BackupService {
    * debido a bugs críticos de offset que causaron bricking de adaptadores.
    * 
    * Esta función SOLO restaura VID/PID usando spoofVIDPID que está probada.
+   * 
+   * VERIFICACIÓN DE INTEGRIDAD OBLIGATORIA antes de restaurar.
    */
   async restoreVidPidFromBackup(backupId: string): Promise<{ success: boolean; vid: number; pid: number }> {
     try {
@@ -230,23 +391,17 @@ class BackupService {
         throw new Error('backup_not_found');
       }
       
-      // Validar tamaño de datos
-      if (backup.size !== 256) {
-        throw new Error(`invalid_backup_size: ${backup.size}`);
+      // VERIFICACIÓN DE INTEGRIDAD OBLIGATORIA
+      usbLogger.info('RESTORE', 'Verificando integridad del backup...');
+      const integrityResult = this.verifyBackupIntegrity(backup);
+      
+      if (integrityResult.status !== 'valid') {
+        const errorMsg = `integrity_check_failed: ${integrityResult.details}`;
+        usbLogger.error('RESTORE', `Verificación de integridad fallida: ${integrityResult.details}`);
+        throw new Error(errorMsg);
       }
       
-      // Validar formato hexadecimal
-      if (!/^[0-9A-Fa-f]+$/.test(backup.data)) {
-        throw new Error('invalid_data_format');
-      }
-      
-      // Validar integridad con checksum MD5
-      const calculatedChecksum = CryptoJS.MD5(backup.data).toString();
-      if (backup.checksum && calculatedChecksum !== backup.checksum) {
-        throw new Error(`checksum_invalid: expected=${backup.checksum}, calculated=${calculatedChecksum}`);
-      }
-      console.log(`[BackupService] Checksum validated: ${calculatedChecksum}`);
-      usbLogger.info('RESTORE', `Checksum validado: ${calculatedChecksum.substring(0, 8)}...`);
+      usbLogger.success('RESTORE', `Integridad verificada: MD5=${integrityResult.calculatedMd5.substring(0, 8)}...`);
       
       // Extraer VID/PID del backup
       const { vid, pid } = this.extractVidPidFromBackup(backup);
@@ -367,6 +522,20 @@ class BackupService {
         throw new Error('invalid_backup_format');
       }
       
+      // Verificar integridad del backup importado
+      const integrityResult = this.verifyBackupIntegrity(backup);
+      if (integrityResult.status === 'corrupted') {
+        throw new Error(`corrupted_backup: ${integrityResult.details}`);
+      }
+      
+      // Si no tiene SHA256, calcularlo
+      if (!backup.checksumSha256) {
+        const { sha256 } = this.calculateChecksums(backup.data);
+        backup.checksumSha256 = sha256;
+      }
+      
+      backup.integrityStatus = integrityResult.status;
+      
       // Guardar backup importado
       await this.saveBackup(backup);
       
@@ -375,6 +544,34 @@ class BackupService {
     } catch (error) {
       console.error('[BackupService] Error importing backup:', error);
       throw new Error(`backup_import_failed: ${error}`);
+    }
+  }
+
+  /**
+   * Actualizar checksums de backups antiguos que no tienen SHA256
+   */
+  async migrateBackupsToSha256(): Promise<number> {
+    try {
+      const backups = await this.loadBackups();
+      let migratedCount = 0;
+      
+      for (const backup of backups) {
+        if (!backup.checksumSha256) {
+          const { sha256 } = this.calculateChecksums(backup.data);
+          backup.checksumSha256 = sha256;
+          migratedCount++;
+        }
+      }
+      
+      if (migratedCount > 0) {
+        await AsyncStorage.setItem(BACKUP_STORAGE_KEY, JSON.stringify(backups));
+        console.log(`[BackupService] Migrated ${migratedCount} backups to SHA256`);
+      }
+      
+      return migratedCount;
+    } catch (error) {
+      console.error('[BackupService] Error migrating backups:', error);
+      return 0;
     }
   }
 
@@ -395,26 +592,57 @@ class BackupService {
   /**
    * Obtener estadísticas de backups
    */
-  async getStats(): Promise<{ total: number; totalSize: number; oldestDate: number | null; newestDate: number | null }> {
+  async getStats(): Promise<{ 
+    total: number; 
+    totalSize: number; 
+    oldestDate: number | null; 
+    newestDate: number | null;
+    validCount: number;
+    invalidCount: number;
+    corruptedCount: number;
+  }> {
     try {
-      const backups = await this.loadBackups();
+      const backups = await this.loadBackupsWithIntegrity();
       
       if (backups.length === 0) {
-        return { total: 0, totalSize: 0, oldestDate: null, newestDate: null };
+        return { 
+          total: 0, 
+          totalSize: 0, 
+          oldestDate: null, 
+          newestDate: null,
+          validCount: 0,
+          invalidCount: 0,
+          corruptedCount: 0,
+        };
       }
       
       const totalSize = backups.reduce((sum, b) => sum + b.size, 0);
       const timestamps = backups.map(b => b.timestamp);
+      
+      const validCount = backups.filter(b => b.integrityStatus === 'valid').length;
+      const invalidCount = backups.filter(b => b.integrityStatus === 'invalid').length;
+      const corruptedCount = backups.filter(b => b.integrityStatus === 'corrupted').length;
       
       return {
         total: backups.length,
         totalSize,
         oldestDate: Math.min(...timestamps),
         newestDate: Math.max(...timestamps),
+        validCount,
+        invalidCount,
+        corruptedCount,
       };
     } catch (error) {
       console.error('[BackupService] Error getting stats:', error);
-      return { total: 0, totalSize: 0, oldestDate: null, newestDate: null };
+      return { 
+        total: 0, 
+        totalSize: 0, 
+        oldestDate: null, 
+        newestDate: null,
+        validCount: 0,
+        invalidCount: 0,
+        corruptedCount: 0,
+      };
     }
   }
 }

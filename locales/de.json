@@ -1604,6 +1604,21 @@
     "total_size": "Gesamtgröße",
     "connect_to_restore": "Schließen Sie einen USB-Adapter an, um Backups wiederherzustellen.",
     "security_notice": "⚠️ Sicherheitshinweis",
-    "security_notice_text": "Die vollständige EEPROM-Wiederherstellung ist aus Sicherheitsgründen DEAKTIVIERT. Nur die VID/PID-Wiederherstellung ist mit einer getesteten und sicheren Funktion erlaubt."
+    "security_notice_text": "Die vollständige EEPROM-Wiederherstellung ist aus Sicherheitsgründen DEAKTIVIERT. Nur die VID/PID-Wiederherstellung ist mit einer getesteten und sicheren Funktion erlaubt.",
+    "integrity_system": "🔒 Integritätsprüfsystem",
+    "integrity_system_desc": "Jedes Backup wird vor der Wiederherstellung mit MD5- und SHA256-Prüfsummen verifiziert. Ungültige oder beschädigte Backups können nicht wiederhergestellt werden.",
+    "integrity_valid": "Gültig",
+    "integrity_invalid": "Ungültig",
+    "integrity_corrupted": "Beschädigt",
+    "integrity_unknown": "Unbekannt",
+    "verify_integrity": "Integrität prüfen",
+    "integrity_check_title": "Integritätsprüfung",
+    "integrity_status": "Status",
+    "integrity_error_title": "⚠️ Integritätsfehler",
+    "integrity_error_message": "Backup hat die Integritätsprüfung nicht bestanden: {details}",
+    "restore_blocked_integrity": "Die Wiederherstellung ist blockiert, da das Backup die Integritätsprüfung nicht bestanden hat. Überprüfen Sie das Backup oder verwenden Sie ein anderes.",
+    "restore_requires_valid_integrity": "Nur Backups mit gültiger Integrität können wiederhergestellt werden. Drücken Sie 'Integrität prüfen' zur Überprüfung.",
+    "valid_backups": "Gültige Backups",
+    "invalid_backups": "Ungültige Backups"
   }
 }

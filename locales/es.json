@@ -1604,6 +1604,21 @@
     "total_size": "Tamaño total",
     "connect_to_restore": "Conecta un adaptador USB para poder restaurar backups.",
     "security_notice": "⚠️ Aviso de Seguridad",
-    "security_notice_text": "La restauración completa de EEPROM está DESHABILITADA por seguridad. Solo se permite restaurar VID/PID usando una función probada y segura."
+    "security_notice_text": "La restauración completa de EEPROM está DESHABILITADA por seguridad. Solo se permite restaurar VID/PID usando una función probada y segura.",
+    "integrity_system": "🔒 Sistema de Verificación de Integridad",
+    "integrity_system_desc": "Cada backup se verifica con checksums MD5 y SHA256 antes de permitir la restauración. Los backups inválidos o corruptos no pueden ser restaurados.",
+    "integrity_valid": "Válido",
+    "integrity_invalid": "Inválido",
+    "integrity_corrupted": "Corrupto",
+    "integrity_unknown": "Desconocido",
+    "verify_integrity": "Verificar Integridad",
+    "integrity_check_title": "Verificación de Integridad",
+    "integrity_status": "Estado",
+    "integrity_error_title": "⚠️ Error de Integridad",
+    "integrity_error_message": "El backup no pasó la verificación de integridad: {details}",
+    "restore_blocked_integrity": "La restauración está bloqueada porque el backup no pasó la verificación de integridad. Verifica el backup o usa uno diferente.",
+    "restore_requires_valid_integrity": "Solo se pueden restaurar backups con integridad válida. Presiona 'Verificar Integridad' para comprobar.",
+    "valid_backups": "Backups válidos",
+    "invalid_backups": "Backups inválidos"
   }
 }
