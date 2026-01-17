@@ -30,6 +30,10 @@ export interface EEPROMBackup {
 /**
  * Backup Service - Gestión de backups de EEPROM
  * 
+ * ADVERTENCIA CRÍTICA:
+ * La restauración completa de EEPROM está DESHABILITADA debido a bugs de offset.
+ * Solo se permite restaurar VID/PID usando la función spoofVIDPID que está probada.
+ * 
  * NOTA: Los backups se guardan SIN cifrado porque:
  * 1. Los datos de EEPROM (VID/PID/MAC) no son sensibles
  * 2. CryptoJS.lib.WordArray.random() no funciona en React Native
@@ -178,13 +182,47 @@ class BackupService {
   }
 
   /**
-   * Restaurar EEPROM desde backup
-   * Escribe los 256 bytes completos de la EEPROM usando el módulo nativo
+   * Extraer VID/PID del backup
+   * Los offsets en ASIX son:
+   * - VID: bytes 0x88-0x89 (word offset 0x44)
+   * - PID: bytes 0x8A-0x8B (word offset 0x45)
+   * 
+   * El dump se guarda en formato big-endian desde el módulo nativo
    */
-  async restoreBackup(backupId: string): Promise<{ success: boolean; bytesWritten: number }> {
+  extractVidPidFromBackup(backup: EEPROMBackup): { vid: number; pid: number } {
+    const hexData = backup.data;
+    
+    // Offset 0x88 = byte 136, en hex string es posición 136*2 = 272
+    const vidOffset = 0x88 * 2; // 272
+    const pidOffset = 0x8A * 2; // 276
+    
+    // Leer 2 bytes para VID (little-endian en EEPROM)
+    const vidLowHex = hexData.substring(vidOffset, vidOffset + 2);
+    const vidHighHex = hexData.substring(vidOffset + 2, vidOffset + 4);
+    const vid = parseInt(vidHighHex + vidLowHex, 16);
+    
+    // Leer 2 bytes para PID (little-endian en EEPROM)
+    const pidLowHex = hexData.substring(pidOffset, pidOffset + 2);
+    const pidHighHex = hexData.substring(pidOffset + 2, pidOffset + 4);
+    const pid = parseInt(pidHighHex + pidLowHex, 16);
+    
+    console.log(`[BackupService] Extracted VID:PID from backup: ${vid.toString(16).toUpperCase()}:${pid.toString(16).toUpperCase()}`);
+    
+    return { vid, pid };
+  }
+
+  /**
+   * Restaurar SOLO VID/PID desde backup
+   * 
+   * ADVERTENCIA: La restauración completa de EEPROM está DESHABILITADA
+   * debido a bugs críticos de offset que causaron bricking de adaptadores.
+   * 
+   * Esta función SOLO restaura VID/PID usando spoofVIDPID que está probada.
+   */
+  async restoreVidPidFromBackup(backupId: string): Promise<{ success: boolean; vid: number; pid: number }> {
     try {
-      console.log(`[BackupService] Restoring backup: ${backupId}`);
-      usbLogger.info('RESTORE', `Restaurando backup: ${backupId}`);
+      console.log(`[BackupService] Restoring VID/PID from backup: ${backupId}`);
+      usbLogger.info('RESTORE', `Restaurando VID/PID desde backup: ${backupId}`);
       
       // Cargar backup
       const backup = await this.getBackup(backupId);
@@ -192,81 +230,66 @@ class BackupService {
         throw new Error('backup_not_found');
       }
       
-      // Los datos ya están en formato hex string (sin cifrar)
-      const hexData = backup.data;
-      
       // Validar tamaño de datos
       if (backup.size !== 256) {
         throw new Error(`invalid_backup_size: ${backup.size}`);
       }
       
       // Validar formato hexadecimal
-      if (!/^[0-9A-Fa-f]+$/.test(hexData)) {
+      if (!/^[0-9A-Fa-f]+$/.test(backup.data)) {
         throw new Error('invalid_data_format');
       }
       
       // Validar integridad con checksum MD5
-      const calculatedChecksum = CryptoJS.MD5(hexData).toString();
+      const calculatedChecksum = CryptoJS.MD5(backup.data).toString();
       if (backup.checksum && calculatedChecksum !== backup.checksum) {
         throw new Error(`checksum_invalid: expected=${backup.checksum}, calculated=${calculatedChecksum}`);
       }
       console.log(`[BackupService] Checksum validated: ${calculatedChecksum}`);
       usbLogger.info('RESTORE', `Checksum validado: ${calculatedChecksum.substring(0, 8)}...`);
       
-      // Escribir EEPROM completa (256 bytes = 128 words de 16 bits)
-      // La EEPROM ASIX usa words de 16 bits, por lo que escribimos 2 bytes a la vez
-      let bytesWritten = 0;
-      const totalWords = 128; // 256 bytes / 2 bytes per word
+      // Extraer VID/PID del backup
+      const { vid, pid } = this.extractVidPidFromBackup(backup);
       
-      usbLogger.info('RESTORE', `Escribiendo ${backup.size} bytes (${totalWords} words)...`);
+      usbLogger.info('RESTORE', `VID/PID a restaurar: ${vid.toString(16).toUpperCase()}:${pid.toString(16).toUpperCase()}`);
       
-      for (let wordOffset = 0; wordOffset < totalWords; wordOffset++) {
-        const byteOffset = wordOffset * 2;
-        // Extraer word (2 bytes) del hex string
-        const wordHex = hexData.substring(byteOffset * 2, byteOffset * 2 + 4);
-        
-        try {
-          // Escribir word a EEPROM (el módulo nativo maneja enable/disable)
-          await usbService.writeEEPROM(wordOffset, wordHex, true); // skipVerification para velocidad
-          bytesWritten += 2;
-          
-          // Delay entre escrituras para estabilidad
-          if (wordOffset % 16 === 15) {
-            // Log progreso cada 32 bytes
-            const progress = Math.round((bytesWritten / backup.size) * 100);
-            console.log(`[BackupService] Progress: ${progress}% (${bytesWritten}/${backup.size} bytes)`);
-          }
-          
-          // Pequeño delay entre escrituras
-          await new Promise(resolve => setTimeout(resolve, 20));
-        } catch (writeError) {
-          console.error(`[BackupService] Error writing word at offset ${wordOffset}:`, writeError);
-          usbLogger.error('RESTORE', `Error en offset ${wordOffset}: ${writeError}`);
-          throw writeError;
-        }
-      }
+      // Usar spoofVIDPID que está PROBADA y funciona correctamente
+      const result = await usbService.spoofVIDPID(vid, pid);
       
-      // Verificar escritura leyendo VID/PID
-      usbLogger.info('RESTORE', 'Verificando escritura...');
-      const verifyDump = await usbService.dumpEEPROM();
-      const originalVID = hexData.substring(0x88 * 2, 0x88 * 2 + 4);
-      const restoredVID = verifyDump.data.substring(0x88 * 2, 0x88 * 2 + 4);
-      
-      if (originalVID.toLowerCase() !== restoredVID.toLowerCase()) {
-        console.warn(`[BackupService] VID verification mismatch: expected ${originalVID}, got ${restoredVID}`);
-        usbLogger.warning('RESTORE', `VID no coincide: esperado ${originalVID}, obtenido ${restoredVID}`);
+      if (result.success) {
+        usbLogger.success('RESTORE', `VID/PID restaurado: ${result.newVID.toString(16).toUpperCase()}:${result.newPID.toString(16).toUpperCase()}`);
+        return { success: true, vid: result.newVID, pid: result.newPID };
       } else {
-        usbLogger.success('RESTORE', 'Verificación de VID exitosa');
+        throw new Error('spoof_failed');
       }
-      
-      console.log(`[BackupService] Backup restored successfully: ${bytesWritten} bytes written`);
-      usbLogger.success('RESTORE', `Backup restaurado: ${bytesWritten} bytes escritos`);
-      return { success: true, bytesWritten };
     } catch (error) {
-      console.error('[BackupService] Error restoring backup:', error);
-      usbLogger.error('RESTORE', `Error al restaurar backup: ${error}`, error);
-      throw new Error(`backup_restore_failed: ${error}`);
+      console.error('[BackupService] Error restoring VID/PID:', error);
+      usbLogger.error('RESTORE', `Error al restaurar VID/PID: ${error}`, error);
+      throw new Error(`vidpid_restore_failed: ${error}`);
     }
+  }
+
+  /**
+   * DESHABILITADO - Restaurar EEPROM completa desde backup
+   * 
+   * ADVERTENCIA CRÍTICA: Esta función está DESHABILITADA permanentemente
+   * debido a bugs de offset que causaron bricking de adaptadores.
+   * 
+   * El bug: El código pasaba wordOffset al módulo nativo, pero el módulo
+   * ya dividía internamente por 2, causando escrituras en posiciones incorrectas.
+   * 
+   * Use restoreVidPidFromBackup() en su lugar.
+   */
+  async restoreBackup(_backupId: string): Promise<{ success: boolean; bytesWritten: number }> {
+    const errorMsg = 'FUNCIÓN DESHABILITADA: La restauración completa de EEPROM está deshabilitada ' +
+      'debido a bugs críticos que causaron bricking de adaptadores. ' +
+      'Use "Restaurar VID/PID" en su lugar, que solo restaura los valores de identificación ' +
+      'usando una función probada y segura.';
+    
+    console.error(`[BackupService] ${errorMsg}`);
+    usbLogger.error('RESTORE', errorMsg);
+    
+    throw new Error(errorMsg);
   }
 
   /**
@@ -282,6 +305,52 @@ class BackupService {
       return JSON.stringify(backup, null, 2);
     } catch (error) {
       console.error('[BackupService] Error exporting backup:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Compartir backup como archivo
+   */
+  async shareBackup(backupId: string): Promise<boolean> {
+    try {
+      const backup = await this.getBackup(backupId);
+      if (!backup) {
+        throw new Error('backup_not_found');
+      }
+      
+      // Verificar si el archivo existe
+      if (backup.filepath) {
+        const fileInfo = await FileSystem.getInfoAsync(backup.filepath);
+        if (fileInfo.exists) {
+          // Compartir archivo binario existente
+          if (await Sharing.isAvailableAsync()) {
+            await Sharing.shareAsync(backup.filepath, {
+              mimeType: 'application/octet-stream',
+              dialogTitle: `Backup EEPROM - ${backup.chipset}`,
+            });
+            usbLogger.success('EXPORT', `Backup compartido: ${backup.id}`);
+            return true;
+          }
+        }
+      }
+      
+      // Si no hay archivo, crear uno temporal con el JSON
+      const tempPath = `${FileSystem.cacheDirectory}backup_${backup.id}.json`;
+      await FileSystem.writeAsStringAsync(tempPath, JSON.stringify(backup, null, 2));
+      
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(tempPath, {
+          mimeType: 'application/json',
+          dialogTitle: `Backup EEPROM - ${backup.chipset}`,
+        });
+        usbLogger.success('EXPORT', `Backup compartido como JSON: ${backup.id}`);
+        return true;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('[BackupService] Error sharing backup:', error);
       throw error;
     }
   }

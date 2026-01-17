@@ -15,6 +15,7 @@ export default function BackupsScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [isRestoring, setIsRestoring] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const [isSharing, setIsSharing] = useState<string | null>(null);
 
   const loadBackups = useCallback(async () => {
     try {
@@ -46,7 +47,11 @@ export default function BackupsScreen() {
     return `${vid.toString(16).toUpperCase().padStart(4, '0')}:${pid.toString(16).toUpperCase().padStart(4, '0')}`;
   };
 
-  const handleRestore = async (backup: EEPROMBackup) => {
+  /**
+   * Restaurar SOLO VID/PID desde backup
+   * La restauración completa de EEPROM está DESHABILITADA por seguridad
+   */
+  const handleRestoreVidPid = async (backup: EEPROMBackup) => {
     // Verificar que hay un dispositivo conectado
     if (status !== 'connected' || !device) {
       Alert.alert(
@@ -56,30 +61,35 @@ export default function BackupsScreen() {
       return;
     }
 
-    // Confirmación de seguridad - Triple confirmación
+    // Extraer VID/PID del backup para mostrar en confirmación
+    const { vid, pid } = backupService.extractVidPidFromBackup(backup);
+    const vidHex = vid.toString(16).toUpperCase().padStart(4, '0');
+    const pidHex = pid.toString(16).toUpperCase().padStart(4, '0');
+
+    // Confirmación de seguridad
     Alert.alert(
-      t('backups.restore_confirm_title'),
-      t('backups.restore_confirm_message', { 
-        date: formatDate(backup.timestamp),
-        vid: backup.vendorId.toString(16).toUpperCase(),
-        pid: backup.productId.toString(16).toUpperCase()
+      t('backups.restore_vidpid_title'),
+      t('backups.restore_vidpid_message', { 
+        vid: vidHex,
+        pid: pidHex,
+        date: formatDate(backup.timestamp)
       }),
       [
         { text: t('common.cancel'), style: 'cancel' },
         {
-          text: t('backups.restore'),
+          text: t('backups.restore_vidpid'),
           style: 'destructive',
           onPress: () => {
             // Segunda confirmación
             Alert.alert(
               t('backups.restore_warning_title'),
-              t('backups.restore_warning_message'),
+              t('backups.restore_vidpid_warning'),
               [
                 { text: t('common.cancel'), style: 'cancel' },
                 {
                   text: t('backups.confirm_restore'),
                   style: 'destructive',
-                  onPress: () => executeRestore(backup)
+                  onPress: () => executeRestoreVidPid(backup)
                 }
               ]
             );
@@ -89,21 +99,24 @@ export default function BackupsScreen() {
     );
   };
 
-  const executeRestore = async (backup: EEPROMBackup) => {
+  const executeRestoreVidPid = async (backup: EEPROMBackup) => {
     setIsRestoring(backup.id);
     try {
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-      usbLogger.info('RESTORE', `Iniciando restauración desde backup ${backup.id}`);
+      usbLogger.info('RESTORE', `Restaurando VID/PID desde backup ${backup.id}`);
       
-      const result = await backupService.restoreBackup(backup.id);
+      const result = await backupService.restoreVidPidFromBackup(backup.id);
       
       if (result.success) {
         await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        usbLogger.success('RESTORE', `Restauración exitosa: ${result.bytesWritten} bytes escritos`);
+        usbLogger.success('RESTORE', `VID/PID restaurado: ${result.vid.toString(16)}:${result.pid.toString(16)}`);
         
         Alert.alert(
           t('backups.restore_success_title'),
-          t('backups.restore_success_message', { bytes: result.bytesWritten })
+          t('backups.restore_vidpid_success', { 
+            vid: result.vid.toString(16).toUpperCase(),
+            pid: result.pid.toString(16).toUpperCase()
+          })
         );
       }
     } catch (error: any) {
@@ -151,31 +164,38 @@ export default function BackupsScreen() {
     );
   };
 
-  const handleExport = async (backup: EEPROMBackup) => {
+  const handleShare = async (backup: EEPROMBackup) => {
+    setIsSharing(backup.id);
     try {
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      const jsonData = await backupService.exportBackup(backup.id);
+      const success = await backupService.shareBackup(backup.id);
       
-      // Mostrar información del backup exportado
-      Alert.alert(
-        t('backups.export_title'),
-        t('backups.export_message', { 
-          id: backup.id,
-          size: backup.size,
-          checksum: backup.checksum
-        })
-      );
-      
-      usbLogger.success('EXPORT', `Backup exportado: ${backup.id}`);
+      if (success) {
+        usbLogger.success('EXPORT', `Backup compartido: ${backup.id}`);
+      } else {
+        Alert.alert(t('backups.error'), t('backups.share_not_available'));
+      }
     } catch (error: any) {
       Alert.alert(t('backups.error'), error.message);
+    } finally {
+      setIsSharing(null);
     }
   };
 
   const renderBackupItem = (backup: EEPROMBackup) => {
     const isCurrentlyRestoring = isRestoring === backup.id;
     const isCurrentlyDeleting = isDeleting === backup.id;
+    const isCurrentlySharing = isSharing === backup.id;
     const isDisabled = isCurrentlyRestoring || isCurrentlyDeleting || status !== 'connected';
+
+    // Extraer VID/PID del backup para mostrar
+    let backupVidPid = formatVidPid(backup.vendorId, backup.productId);
+    try {
+      const { vid, pid } = backupService.extractVidPidFromBackup(backup);
+      backupVidPid = formatVidPid(vid, pid);
+    } catch (e) {
+      // Usar valores del metadata si falla la extracción
+    }
 
     return (
       <View key={backup.id} style={styles.backupCard}>
@@ -191,7 +211,7 @@ export default function BackupsScreen() {
         <View style={styles.backupInfo}>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>{t('backups.vid_pid')}:</Text>
-            <Text style={styles.infoValue}>{formatVidPid(backup.vendorId, backup.productId)}</Text>
+            <Text style={styles.infoValue}>{backupVidPid}</Text>
           </View>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>{t('backups.size')}:</Text>
@@ -211,26 +231,29 @@ export default function BackupsScreen() {
 
         {/* Botones de acción */}
         <View style={styles.actionButtons}>
-          {/* Botón Restaurar */}
+          {/* Botón Restaurar VID/PID */}
           <TouchableOpacity
             style={[
               styles.restoreButton,
               isDisabled && styles.buttonDisabled
             ]}
-            onPress={() => handleRestore(backup)}
+            onPress={() => handleRestoreVidPid(backup)}
             disabled={isDisabled}
           >
             <Text style={styles.restoreButtonText}>
-              {isCurrentlyRestoring ? t('backups.restoring') : t('backups.restore')}
+              {isCurrentlyRestoring ? t('backups.restoring') : t('backups.restore_vidpid')}
             </Text>
           </TouchableOpacity>
 
-          {/* Botón Exportar */}
+          {/* Botón Compartir */}
           <TouchableOpacity
-            style={styles.exportButton}
-            onPress={() => handleExport(backup)}
+            style={[styles.shareButton, isCurrentlySharing && styles.buttonDisabled]}
+            onPress={() => handleShare(backup)}
+            disabled={isCurrentlySharing}
           >
-            <Text style={styles.exportButtonText}>{t('backups.export')}</Text>
+            <Text style={styles.shareButtonText}>
+              {isCurrentlySharing ? '...' : t('backups.share')}
+            </Text>
           </TouchableOpacity>
 
           {/* Botón Eliminar */}
@@ -263,6 +286,12 @@ export default function BackupsScreen() {
         <View style={styles.header}>
           <Text style={styles.title}>{t('backups.title')}</Text>
           <Text style={styles.subtitle}>{t('backups.subtitle')}</Text>
+        </View>
+
+        {/* Advertencia de seguridad */}
+        <View style={styles.securityWarning}>
+          <Text style={styles.securityWarningTitle}>{t('backups.security_notice')}</Text>
+          <Text style={styles.securityWarningText}>{t('backups.security_notice_text')}</Text>
         </View>
 
         {/* Estado de conexión */}
@@ -311,7 +340,7 @@ export default function BackupsScreen() {
 
 const styles = StyleSheet.create({
   header: {
-    marginBottom: 20,
+    marginBottom: 16,
   },
   title: {
     fontSize: 28,
@@ -322,6 +351,25 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 14,
     color: '#9BA1A6',
+  },
+  securityWarning: {
+    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+    borderWidth: 1,
+    borderColor: '#EF4444',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+  },
+  securityWarningTitle: {
+    color: '#F87171',
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  securityWarningText: {
+    color: '#FCA5A5',
+    fontSize: 12,
+    lineHeight: 18,
   },
   warningBox: {
     backgroundColor: 'rgba(245, 158, 11, 0.15)',
@@ -410,9 +458,9 @@ const styles = StyleSheet.create({
   restoreButtonText: {
     color: '#FFFFFF',
     fontWeight: '600',
-    fontSize: 14,
+    fontSize: 13,
   },
-  exportButton: {
+  shareButton: {
     flex: 1,
     backgroundColor: 'rgba(10, 126, 164, 0.2)',
     paddingVertical: 12,
@@ -421,10 +469,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#0a7ea4',
   },
-  exportButtonText: {
+  shareButtonText: {
     color: '#0a7ea4',
     fontWeight: '600',
-    fontSize: 14,
+    fontSize: 13,
   },
   deleteButton: {
     flex: 1,
@@ -438,7 +486,7 @@ const styles = StyleSheet.create({
   deleteButtonText: {
     color: '#EF4444',
     fontWeight: '600',
-    fontSize: 14,
+    fontSize: 13,
   },
   buttonDisabled: {
     opacity: 0.5,

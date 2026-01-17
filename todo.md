@@ -1766,3 +1766,55 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
 ### Navegación
 - [x] Agregar ruta backups a tab layout
 - [x] Configurar como pantalla oculta (no visible en tab bar)
+
+
+## Sistema de Búsqueda y Filtrado de Backups (Enero 2026)
+
+### Barra de Búsqueda
+- [ ] Agregar TextInput de búsqueda en la parte superior de la pantalla
+- [ ] Implementar búsqueda por nombre de chipset (ej: "AX88772B")
+- [ ] Implementar búsqueda por VID/PID (ej: "0B95" o "3C05")
+- [ ] Filtrar lista en tiempo real mientras el usuario escribe
+
+### Filtros por Fecha
+- [ ] Agregar selector de rango de fechas
+- [ ] Implementar filtro "Hoy"
+- [ ] Implementar filtro "Última semana"
+- [ ] Implementar filtro "Último mes"
+- [ ] Implementar filtro "Todos"
+
+### UI de Filtros
+- [ ] Crear chips/botones de filtro horizontal debajo de la búsqueda
+- [ ] Mostrar contador de resultados filtrados
+- [ ] Agregar botón para limpiar filtros
+- [ ] Mantener estado de filtros al navegar
+
+### Traducciones
+- [ ] Agregar traducciones ES para búsqueda y filtros
+- [ ] Agregar traducciones EN para búsqueda y filtros
+- [ ] Agregar traducciones DE para búsqueda y filtros
+
+
+## BUG CRÍTICO - Bricking de Adaptador ASIX (16 Enero 2026)
+
+### Descripción del Bug
+- [x] IDENTIFICADO: Error de endianness y offset en función restoreBackup
+- El código pasaba `wordOffset` al módulo nativo, pero el módulo ya divide internamente por 2
+- Resultado: datos escritos en posiciones INCORRECTAS de la EEPROM
+- Consecuencia: BRICKING del adaptador ASIX AX88772
+
+### Causa Raíz
+```
+restoreBackup: writeEEPROM(wordOffset, wordHex)  // wordOffset = 0, 1, 2, 3...
+módulo nativo: val wordOffset = (offset + i) / 2  // Divide de nuevo!
+```
+- Cuando se pasa wordOffset=2, el módulo calcula (2+0)/2=1
+- Los datos terminan en posiciones incorrectas
+
+### Correcciones Necesarias
+- [x] Corregir función restoreBackup para pasar byte offset, no word offset
+- [x] Agregar validación de integridad ANTES de escribir
+- [x] DESHABILITADA restauración completa de EEPROM por seguridad
+- [x] Solo se permite restaurar VID/PID usando spoofVIDPID (probada)
+- [x] Agregar advertencia MÁS VISIBLE sobre riesgo de bricking
+- [x] Deshabilitar restauración completa - solo permitir VID/PID
