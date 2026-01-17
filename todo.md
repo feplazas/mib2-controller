@@ -1829,3 +1829,15 @@ módulo nativo: val wordOffset = (offset + i) / 2  // Divide de nuevo!
 - [x] Agregar botón "Verificar Integridad" en pantalla de backups
 - [x] Bloquear restauración si checksum no coincide
 - [x] Agregar traducciones ES/EN/DE para mensajes de integridad
+
+
+## Scripts Predefinidos de Telnet para Toolbox (17 Enero 2026)
+
+### Tareas
+- [x] Crear servicio telnet-scripts-service.ts con comandos predefinidos
+- [x] Definir scripts: verificar root, montar SD, instalar toolbox, verificar instalación, reiniciar
+- [x] Agregar advertencias de seguridad antes de cada script crítico
+- [x] Agregar UI de scripts en pantalla de Telnet con botones de acceso rápido
+- [x] Mostrar descripción y riesgo de cada script antes de ejecutar
+- [x] Agregar confirmación obligatoria para scripts destructivos
+- [x] Agregar traducciones ES/EN/DE para scripts y advertencias
