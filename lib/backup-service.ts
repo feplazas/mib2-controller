@@ -4,7 +4,6 @@ import * as Sharing from 'expo-sharing';
 import { usbService } from './usb-service';
 import type { UsbDevice } from './usb-service';
 import CryptoJS from 'crypto-js';
-import { encryptionService } from './encryption-service';
 import { usbLogger } from './usb-logger';
 
 const BACKUP_STORAGE_KEY = '@mib2_eeprom_backups';
@@ -20,16 +19,22 @@ export interface EEPROMBackup {
   productId: number;
   chipset: string;
   serialNumber: string;
-  data: string; // Hex string of complete EEPROM dump (256 bytes) - CIFRADO con AES-256
+  data: string; // Hex string of complete EEPROM dump (256 bytes) - SIN CIFRAR
   size: number;
   checksum: string; // MD5 hash of data for integrity verification
   notes?: string;
   filepath?: string; // Ruta del archivo de backup en FileSystem
-  encrypted: boolean; // Indica si el backup está cifrado
+  encrypted: boolean; // Siempre false - sin cifrado
 }
 
 /**
  * Backup Service - Gestión de backups de EEPROM
+ * 
+ * NOTA: Los backups se guardan SIN cifrado porque:
+ * 1. Los datos de EEPROM (VID/PID/MAC) no son sensibles
+ * 2. CryptoJS.lib.WordArray.random() no funciona en React Native
+ * 3. expo-secure-store tiene bugs en ciertos dispositivos Android
+ * 4. La simplicidad garantiza funcionamiento en TODOS los dispositivos
  */
 class BackupService {
   /**
@@ -38,6 +43,7 @@ class BackupService {
   async createBackup(device: UsbDevice, notes?: string): Promise<EEPROMBackup> {
     try {
       console.log('[BackupService] Creating EEPROM backup...');
+      usbLogger.info('BACKUP', 'Creando backup de EEPROM...');
       
       // Volcar EEPROM completa (256 bytes)
       const dump = await usbService.dumpEEPROM();
@@ -45,10 +51,7 @@ class BackupService {
       // Calcular checksum MD5 de los datos
       const checksum = CryptoJS.MD5(dump.data).toString();
       
-      // Cifrar datos de EEPROM con AES-256
-      const encryptedData = await encryptionService.encrypt(dump.data);
-      
-      // Crear objeto de backup
+      // Crear objeto de backup - SIN CIFRAR
       const backup: EEPROMBackup = {
         id: `backup_${Date.now()}_${device.vendorId}_${device.productId}`,
         timestamp: Date.now(),
@@ -57,17 +60,18 @@ class BackupService {
         productId: device.productId,
         chipset: device.chipset || 'Unknown',
         serialNumber: device.serialNumber || 'N/A',
-        data: encryptedData, // Datos cifrados
+        data: dump.data, // Datos SIN cifrar (hex string)
         size: dump.size,
         checksum,
         notes: notes || 'auto_backup_before_spoofing',
-        encrypted: true,
+        encrypted: false, // Sin cifrado
       };
       
       // Guardar backup
       await this.saveBackup(backup);
       
       console.log(`[BackupService] Backup created successfully: ${backup.id}`);
+      usbLogger.success('BACKUP', `Backup creado: ${backup.id} (${dump.size} bytes)`);
       return backup;
     } catch (error) {
       console.error('[BackupService] Error creating backup:', error);
@@ -93,7 +97,11 @@ class BackupService {
       const filepath = `${BACKUP_DIR}${filename}`;
       
       // Convertir hex string a base64 para FileSystem
-      const bytes = backup.data.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16));
+      const hexData = backup.data;
+      const bytes: number[] = [];
+      for (let i = 0; i < hexData.length; i += 2) {
+        bytes.push(parseInt(hexData.substring(i, i + 2), 16));
+      }
       const base64 = btoa(String.fromCharCode(...bytes));
       await FileSystem.writeAsStringAsync(filepath, base64, { encoding: FileSystem.EncodingType.Base64 });
       
@@ -175,6 +183,7 @@ class BackupService {
   async restoreBackup(backupId: string): Promise<{ success: boolean; bytesWritten: number }> {
     try {
       console.log(`[BackupService] Restoring backup: ${backupId}`);
+      usbLogger.info('RESTORE', `Restaurando backup: ${backupId}`);
       
       // Cargar backup
       const backup = await this.getBackup(backupId);
@@ -182,12 +191,8 @@ class BackupService {
         throw new Error('backup_not_found');
       }
       
-      // Descifrar datos si están cifrados
-      let decryptedData = backup.data;
-      if (backup.encrypted) {
-        console.log('[BackupService] Decrypting backup data...');
-        decryptedData = await encryptionService.decrypt(backup.data);
-      }
+      // Los datos ya están en formato hex string (sin cifrar)
+      const hexData = backup.data;
       
       // Validar tamaño de datos
       if (backup.size !== 256) {
@@ -195,12 +200,12 @@ class BackupService {
       }
       
       // Validar formato hexadecimal
-      if (!/^[0-9A-Fa-f]+$/.test(decryptedData)) {
+      if (!/^[0-9A-Fa-f]+$/.test(hexData)) {
         throw new Error('invalid_data_format');
       }
       
-      // Validar integridad con checksum MD5 (de datos descifrados)
-      const calculatedChecksum = CryptoJS.MD5(decryptedData).toString();
+      // Validar integridad con checksum MD5
+      const calculatedChecksum = CryptoJS.MD5(hexData).toString();
       if (backup.checksum && calculatedChecksum !== backup.checksum) {
         throw new Error(`checksum_invalid: expected=${backup.checksum}, calculated=${calculatedChecksum}`);
       }
@@ -210,8 +215,8 @@ class BackupService {
       let bytesWritten = 0;
       
       // Escribir VID (offsets 0x88-0x89)
-      const vidLow = decryptedData.substring(0x88 * 2, 0x88 * 2 + 2);
-      const vidHigh = decryptedData.substring(0x89 * 2, 0x89 * 2 + 2);
+      const vidLow = hexData.substring(0x88 * 2, 0x88 * 2 + 2);
+      const vidHigh = hexData.substring(0x89 * 2, 0x89 * 2 + 2);
       await usbService.writeEEPROM(0x88, vidLow);
       await new Promise(resolve => setTimeout(resolve, 100));
       await usbService.writeEEPROM(0x89, vidHigh);
@@ -219,8 +224,8 @@ class BackupService {
       bytesWritten += 2;
       
       // Escribir PID (offsets 0x8A-0x8B)
-      const pidLow = decryptedData.substring(0x8A * 2, 0x8A * 2 + 2);
-      const pidHigh = decryptedData.substring(0x8B * 2, 0x8B * 2 + 2);
+      const pidLow = hexData.substring(0x8A * 2, 0x8A * 2 + 2);
+      const pidHigh = hexData.substring(0x8B * 2, 0x8B * 2 + 2);
       await usbService.writeEEPROM(0x8A, pidLow);
       await new Promise(resolve => setTimeout(resolve, 100));
       await usbService.writeEEPROM(0x8B, pidHigh);
@@ -228,10 +233,11 @@ class BackupService {
       bytesWritten += 2;
       
       console.log(`[BackupService] Backup restored successfully: ${bytesWritten} bytes written`);
-      console.log(`[BackupService] Checksum verified: ${backup.checksum}`);
+      usbLogger.success('RESTORE', `Backup restaurado: ${bytesWritten} bytes escritos`);
       return { success: true, bytesWritten };
     } catch (error) {
       console.error('[BackupService] Error restoring backup:', error);
+      usbLogger.error('RESTORE', `Error al restaurar backup: ${error}`, error);
       throw new Error(`backup_restore_failed: ${error}`);
     }
   }
