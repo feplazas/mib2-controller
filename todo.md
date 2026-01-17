@@ -1707,3 +1707,12 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
     3. Guarda qué storage funciona para no reintentar en cada uso
     4. Último recurso: clave temporal en memoria
   - Referencia: https://github.com/expo/expo/issues/23426
+
+## Error de Generación de Números Aleatorios (Enero 2026)
+
+- [x] Corregir error "Native crypto module could not be used to get secure random number"
+  - Causa: CryptoJS.lib.WordArray.random(32) no funciona en React Native
+  - Solución: Reemplazado con expo-crypto.getRandomBytesAsync(32)
+  - Instalado expo-crypto como dependencia
+  - Archivos modificados: lib/encryption-service.ts
+  - Fallback adicional: timestamp + Math.random si expo-crypto también falla

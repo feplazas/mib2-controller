@@ -1,11 +1,12 @@
 import * as SecureStore from 'expo-secure-store';
+import * as Crypto from 'expo-crypto';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CryptoJS from 'crypto-js';
 import { Platform } from 'react-native';
 
 const ENCRYPTION_KEY_NAME = 'mib2_backup_encryption_key';
 const ASYNC_STORAGE_KEY_NAME = '@mib2_backup_encryption_key';
-const STORAGE_TYPE_KEY = '@mib2_encryption_storage_type'; // Guarda qué storage se usa
+const STORAGE_TYPE_KEY = '@mib2_encryption_storage_type';
 
 /**
  * Servicio de cifrado para backups de EEPROM
@@ -16,6 +17,10 @@ const STORAGE_TYPE_KEY = '@mib2_encryption_storage_type'; // Guarda qué storage
  *    usa AsyncStorage con cifrado por software como fallback
  * 3. En web siempre usa AsyncStorage
  * 
+ * GENERACIÓN DE CLAVES:
+ * - Usa expo-crypto.getRandomBytesAsync() para generar bytes aleatorios seguros
+ * - Esto funciona correctamente en React Native (a diferencia de CryptoJS.lib.WordArray.random)
+ * 
  * Referencia: https://github.com/expo/expo/issues/23426
  */
 class EncryptionService {
@@ -23,13 +28,34 @@ class EncryptionService {
   private storageType: 'securestore' | 'asyncstorage' | null = null;
 
   /**
+   * Generar clave aleatoria segura de 256 bits (32 bytes)
+   * Usa expo-crypto que funciona correctamente en React Native
+   */
+  private async generateSecureKey(): Promise<string> {
+    try {
+      // Usar expo-crypto para generar bytes aleatorios seguros
+      const randomBytes = await Crypto.getRandomBytesAsync(32);
+      // Convertir a string hexadecimal
+      const hexKey = Array.from(randomBytes)
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+      console.log('[EncryptionService] Generated secure random key using expo-crypto');
+      return hexKey;
+    } catch (error) {
+      console.error('[EncryptionService] expo-crypto failed:', error);
+      // Fallback: usar timestamp + Math.random (menos seguro pero funcional)
+      const fallbackKey = `${Date.now()}-${Math.random().toString(36).substring(2)}-${Math.random().toString(36).substring(2)}`;
+      console.warn('[EncryptionService] Using fallback key generation (less secure)');
+      return fallbackKey;
+    }
+  }
+
+  /**
    * Intentar guardar clave en SecureStore
-   * @returns true si tuvo éxito, false si falló
    */
   private async trySecureStore(key: string): Promise<boolean> {
     try {
       await SecureStore.setItemAsync(ENCRYPTION_KEY_NAME, key);
-      // Verificar que se guardó correctamente
       const verification = await SecureStore.getItemAsync(ENCRYPTION_KEY_NAME);
       if (verification === key) {
         console.log('[EncryptionService] SecureStore working correctly');
@@ -68,7 +94,7 @@ class EncryptionService {
         key = await AsyncStorage.getItem(ASYNC_STORAGE_KEY_NAME);
         
         if (!key) {
-          key = CryptoJS.lib.WordArray.random(32).toString();
+          key = await this.generateSecureKey();
           await AsyncStorage.setItem(ASYNC_STORAGE_KEY_NAME, key);
           console.log('[EncryptionService] New key generated (web/AsyncStorage)');
         }
@@ -82,7 +108,6 @@ class EncryptionService {
       const savedStorageType = await AsyncStorage.getItem(STORAGE_TYPE_KEY);
       
       if (savedStorageType === 'asyncstorage') {
-        // Ya sabemos que SecureStore no funciona en este dispositivo
         key = await AsyncStorage.getItem(ASYNC_STORAGE_KEY_NAME);
         if (key) {
           console.log('[EncryptionService] Using AsyncStorage (previously determined)');
@@ -104,11 +129,10 @@ class EncryptionService {
         }
       } catch (secureStoreError) {
         console.warn('[EncryptionService] SecureStore.getItemAsync failed:', secureStoreError);
-        // Continuar con fallback
       }
 
-      // No hay clave existente, generar una nueva
-      key = CryptoJS.lib.WordArray.random(32).toString();
+      // No hay clave existente, generar una nueva usando expo-crypto
+      key = await this.generateSecureKey();
       console.log('[EncryptionService] Generated new encryption key');
 
       // Intentar guardar en SecureStore
@@ -119,10 +143,9 @@ class EncryptionService {
         this.storageType = 'securestore';
         console.log('[EncryptionService] Key saved to SecureStore successfully');
       } else {
-        // Fallback a AsyncStorage
         await this.saveToAsyncStorage(key);
         this.storageType = 'asyncstorage';
-        console.warn('[EncryptionService] Using AsyncStorage fallback (SecureStore unavailable on this device)');
+        console.warn('[EncryptionService] Using AsyncStorage fallback (SecureStore unavailable)');
       }
 
       this.encryptionKey = key;
@@ -131,8 +154,7 @@ class EncryptionService {
       console.error('[EncryptionService] Critical error getting encryption key:', error);
       
       // Último recurso: generar clave temporal en memoria
-      // ADVERTENCIA: Esta clave se perderá al cerrar la app
-      const emergencyKey = CryptoJS.lib.WordArray.random(32).toString();
+      const emergencyKey = await this.generateSecureKey();
       console.error('[EncryptionService] Using emergency in-memory key (will be lost on app restart)');
       this.encryptionKey = emergencyKey;
       return emergencyKey;
@@ -180,7 +202,6 @@ class EncryptionService {
    */
   async hasEncryptionKey(): Promise<boolean> {
     try {
-      // Verificar en ambos storages
       if (Platform.OS !== 'web') {
         try {
           const secureKey = await SecureStore.getItemAsync(ENCRYPTION_KEY_NAME);
@@ -199,11 +220,10 @@ class EncryptionService {
   }
 
   /**
-   * Eliminar la clave de cifrado (usar con precaución)
+   * Eliminar la clave de cifrado
    */
   async deleteEncryptionKey(): Promise<void> {
     try {
-      // Eliminar de ambos storages
       if (Platform.OS !== 'web') {
         try {
           await SecureStore.deleteItemAsync(ENCRYPTION_KEY_NAME);
@@ -239,7 +259,7 @@ class EncryptionService {
    */
   async rotateEncryptionKey(): Promise<string> {
     try {
-      const newKey = CryptoJS.lib.WordArray.random(32).toString();
+      const newKey = await this.generateSecureKey();
       
       if (Platform.OS !== 'web' && this.storageType === 'securestore') {
         const success = await this.trySecureStore(newKey);
