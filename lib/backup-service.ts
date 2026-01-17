@@ -179,6 +179,7 @@ class BackupService {
 
   /**
    * Restaurar EEPROM desde backup
+   * Escribe los 256 bytes completos de la EEPROM usando el módulo nativo
    */
   async restoreBackup(backupId: string): Promise<{ success: boolean; bytesWritten: number }> {
     try {
@@ -210,27 +211,53 @@ class BackupService {
         throw new Error(`checksum_invalid: expected=${backup.checksum}, calculated=${calculatedChecksum}`);
       }
       console.log(`[BackupService] Checksum validated: ${calculatedChecksum}`);
+      usbLogger.info('RESTORE', `Checksum validado: ${calculatedChecksum.substring(0, 8)}...`);
       
-      // Restaurar byte por byte en offsets críticos (0x88-0x8B para VID/PID)
+      // Escribir EEPROM completa (256 bytes = 128 words de 16 bits)
+      // La EEPROM ASIX usa words de 16 bits, por lo que escribimos 2 bytes a la vez
       let bytesWritten = 0;
+      const totalWords = 128; // 256 bytes / 2 bytes per word
       
-      // Escribir VID (offsets 0x88-0x89)
-      const vidLow = hexData.substring(0x88 * 2, 0x88 * 2 + 2);
-      const vidHigh = hexData.substring(0x89 * 2, 0x89 * 2 + 2);
-      await usbService.writeEEPROM(0x88, vidLow);
-      await new Promise(resolve => setTimeout(resolve, 100));
-      await usbService.writeEEPROM(0x89, vidHigh);
-      await new Promise(resolve => setTimeout(resolve, 100));
-      bytesWritten += 2;
+      usbLogger.info('RESTORE', `Escribiendo ${backup.size} bytes (${totalWords} words)...`);
       
-      // Escribir PID (offsets 0x8A-0x8B)
-      const pidLow = hexData.substring(0x8A * 2, 0x8A * 2 + 2);
-      const pidHigh = hexData.substring(0x8B * 2, 0x8B * 2 + 2);
-      await usbService.writeEEPROM(0x8A, pidLow);
-      await new Promise(resolve => setTimeout(resolve, 100));
-      await usbService.writeEEPROM(0x8B, pidHigh);
-      await new Promise(resolve => setTimeout(resolve, 100));
-      bytesWritten += 2;
+      for (let wordOffset = 0; wordOffset < totalWords; wordOffset++) {
+        const byteOffset = wordOffset * 2;
+        // Extraer word (2 bytes) del hex string
+        const wordHex = hexData.substring(byteOffset * 2, byteOffset * 2 + 4);
+        
+        try {
+          // Escribir word a EEPROM (el módulo nativo maneja enable/disable)
+          await usbService.writeEEPROM(wordOffset, wordHex, true); // skipVerification para velocidad
+          bytesWritten += 2;
+          
+          // Delay entre escrituras para estabilidad
+          if (wordOffset % 16 === 15) {
+            // Log progreso cada 32 bytes
+            const progress = Math.round((bytesWritten / backup.size) * 100);
+            console.log(`[BackupService] Progress: ${progress}% (${bytesWritten}/${backup.size} bytes)`);
+          }
+          
+          // Pequeño delay entre escrituras
+          await new Promise(resolve => setTimeout(resolve, 20));
+        } catch (writeError) {
+          console.error(`[BackupService] Error writing word at offset ${wordOffset}:`, writeError);
+          usbLogger.error('RESTORE', `Error en offset ${wordOffset}: ${writeError}`);
+          throw writeError;
+        }
+      }
+      
+      // Verificar escritura leyendo VID/PID
+      usbLogger.info('RESTORE', 'Verificando escritura...');
+      const verifyDump = await usbService.dumpEEPROM();
+      const originalVID = hexData.substring(0x88 * 2, 0x88 * 2 + 4);
+      const restoredVID = verifyDump.data.substring(0x88 * 2, 0x88 * 2 + 4);
+      
+      if (originalVID.toLowerCase() !== restoredVID.toLowerCase()) {
+        console.warn(`[BackupService] VID verification mismatch: expected ${originalVID}, got ${restoredVID}`);
+        usbLogger.warning('RESTORE', `VID no coincide: esperado ${originalVID}, obtenido ${restoredVID}`);
+      } else {
+        usbLogger.success('RESTORE', 'Verificación de VID exitosa');
+      }
       
       console.log(`[BackupService] Backup restored successfully: ${bytesWritten} bytes written`);
       usbLogger.success('RESTORE', `Backup restaurado: ${bytesWritten} bytes escritos`);

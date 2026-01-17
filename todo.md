@@ -1716,3 +1716,53 @@ Funciona incluso sin dispositivo USB conectado = MOCKUP TOTAL
   - Instalado expo-crypto como dependencia
   - Archivos modificados: lib/encryption-service.ts
   - Fallback adicional: timestamp + Math.random si expo-crypto también falla
+
+## Restauración de EEPROM desde Backup (Enero 2026)
+
+- [ ] Crear pantalla de gestión de backups con lista de backups disponibles
+- [ ] Mostrar información de cada backup (fecha, dispositivo, VID/PID, tamaño)
+- [ ] Botón de restaurar para cada backup con confirmación de seguridad
+- [ ] Implementar escritura real en EEPROM usando datos del backup
+- [ ] Verificación post-restauración para confirmar éxito
+- [ ] Agregar traducciones ES/EN/DE para restauración
+- [ ] Botón de eliminar backup individual
+- [ ] Opción de exportar backup como archivo
+
+
+## Funcionalidad de Restauración de EEPROM (Enero 2026)
+
+### Pantalla de Gestión de Backups
+- [x] Crear pantalla dedicada app/(tabs)/backups.tsx
+- [x] Implementar lista de backups disponibles con FlatList
+- [x] Mostrar información de cada backup (chipset, VID/PID, fecha, tamaño)
+- [x] Agregar botón "Ver Backups" en pantalla USB Status
+- [x] Agregar navegación desde usb-status.tsx a backups.tsx
+
+### Funcionalidad de Restauración
+- [x] Implementar función restoreBackup en backup-service.ts
+- [x] Escribir 256 bytes completos de EEPROM (128 words)
+- [x] Validar checksum MD5 antes de restaurar
+- [x] Verificar escritura leyendo VID/PID después de restaurar
+- [x] Agregar logging detallado de progreso de restauración
+
+### UI de Restauración
+- [x] Crear modal de confirmación con advertencia de seguridad
+- [x] Mostrar información del backup seleccionado
+- [x] Mostrar dispositivo USB actualmente conectado
+- [x] Implementar botón de restauración con estado de carga
+- [x] Mostrar resultado de restauración (éxito/error)
+
+### Eliminación de Backups
+- [x] Implementar función deleteBackup en backup-service.ts
+- [x] Crear modal de confirmación para eliminar
+- [x] Actualizar lista después de eliminar
+
+### Traducciones
+- [x] Agregar traducciones ES para pantalla de backups
+- [x] Agregar traducciones EN para pantalla de backups
+- [x] Agregar traducciones DE para pantalla de backups
+- [x] Agregar claves usb.view_backups y usb.view_backups_desc
+
+### Navegación
+- [x] Agregar ruta backups a tab layout
+- [x] Configurar como pantalla oculta (no visible en tab bar)

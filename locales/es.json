@@ -1323,7 +1323,9 @@
     "tap_for_permissions": "Toca para solicitar permisos",
     "found_devices": "Encontrados {{count}} dispositivos USB",
     "checking_compatibility": "Verificando Compatibilidad",
-    "analyzing_chipset": "Analizando chipset"
+    "analyzing_chipset": "Analizando chipset",
+    "view_backups": "Ver Backups",
+    "view_backups_desc": "Gestionar y restaurar copias de seguridad"
   },
   "onboarding": {
     "step1_title": "Conectar Adaptador USB",
@@ -1567,5 +1569,38 @@
       "dump_success": "Volcado exitoso: {{size}} bytes",
       "dump_error": "Error al volcar EEPROM"
     }
+  },
+  "backups": {
+    "title": "Backups de EEPROM",
+    "subtitle": "Gestionar copias de seguridad",
+    "no_backups": "No hay backups disponibles",
+    "no_backups_desc": "Crea un backup desde la pantalla USB cuando tengas un adaptador conectado.",
+    "backup_count": "{count} backup(s) guardado(s)",
+    "created": "Creado",
+    "chipset": "Chipset",
+    "vid_pid": "VID/PID",
+    "size": "Tamaño",
+    "bytes": "bytes",
+    "restore": "Restaurar",
+    "delete": "Eliminar",
+    "restore_title": "Restaurar EEPROM",
+    "restore_confirm": "¿Estás seguro de que quieres restaurar la EEPROM con este backup?",
+    "restore_warning": "⚠️ ADVERTENCIA: Esta operación sobrescribirá los datos actuales de la EEPROM del adaptador conectado. Asegúrate de que el adaptador correcto está conectado.",
+    "restore_success": "EEPROM restaurada exitosamente",
+    "restore_error": "Error al restaurar EEPROM",
+    "delete_title": "Eliminar Backup",
+    "delete_confirm": "¿Estás seguro de que quieres eliminar este backup?",
+    "delete_success": "Backup eliminado",
+    "delete_error": "Error al eliminar backup",
+    "no_device": "No hay dispositivo USB conectado",
+    "no_device_desc": "Conecta un adaptador USB para restaurar un backup.",
+    "restoring": "Restaurando...",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "original_vid": "VID Original",
+    "original_pid": "PID Original",
+    "backup_info": "Información del Backup",
+    "current_device": "Dispositivo Actual",
+    "mismatch_warning": "⚠️ El chipset del backup no coincide con el dispositivo conectado"
   }
 }

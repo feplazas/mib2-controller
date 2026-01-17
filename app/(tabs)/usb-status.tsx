@@ -536,6 +536,27 @@ export default function UsbStatusScreen() {
                   {t('usb.backup_desc')}
                 </Text>
               </TouchableOpacity>
+
+              {/* Botón Ver Backups / Restaurar */}
+              <TouchableOpacity
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  const router = require('expo-router').router;
+                  router.push('/(tabs)/backups');
+                }}
+                className="rounded-xl p-4 items-center border-2 bg-background border-success active:opacity-80"
+              >
+                <View className="flex-row items-center gap-2">
+                  <Text className="text-xl">📦</Text>
+                  <Text className="text-base font-bold text-success">
+                    {t('usb.view_backups')}
+                  </Text>
+                  <Text className="text-xl">›</Text>
+                </View>
+                <Text className="text-xs text-muted mt-1">
+                  {t('usb.view_backups_desc')}
+                </Text>
+              </TouchableOpacity>
             </View>
           )}
 

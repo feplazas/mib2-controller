@@ -33,6 +33,7 @@ const MAPPING = {
   "stethoscope": "bug-report",
   "antenna.radiowaves.left.and.right": "wifi-tethering",
   "bandage.fill": "healing",
+  "archivebox.fill": "inventory",
 } as IconMapping;
 
 /**

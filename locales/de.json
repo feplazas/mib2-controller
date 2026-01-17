@@ -960,7 +960,7 @@
     "with_triple_confirmation": "Mit dreifacher Bestätigung",
     "yes_execute": "Ja, Ausführen",
     "already_compatible_title": "✅ Adapter Bereits Kompatibel",
-    "already_compatible_message": "Der {{chipset}}-Chipsatz ist nativ mit MIB2 kompatibel. Kein Spoofing erforderlich.",
+    "already_compatible_message": "Der {{chipset}}-Chipsatz ist nativ mit MIB2 kompatibel. Kein Spoofing erforderlich."
   },
   "diag": {
     "title": "Diagnose",
@@ -1323,7 +1323,9 @@
     "tap_for_permissions": "Tippen Sie, um Berechtigungen anzufordern",
     "found_devices": "{{count}} USB-Geräte gefunden",
     "checking_compatibility": "Kompatibilität Prüfen",
-    "analyzing_chipset": "Chipsatz analysieren"
+    "analyzing_chipset": "Chipsatz analysieren",
+    "view_backups": "Backups anzeigen",
+    "view_backups_desc": "Sicherungskopien verwalten und wiederherstellen"
   },
   "onboarding": {
     "step1_title": "USB-Adapter verbinden",
@@ -1567,5 +1569,38 @@
       "dump_success": "Auslesen erfolgreich: {{size}} Bytes",
       "dump_error": "Fehler beim Auslesen des EEPROM"
     }
+  },
+  "backups": {
+    "title": "EEPROM-Backups",
+    "subtitle": "Sicherungskopien verwalten",
+    "no_backups": "Keine Backups verfügbar",
+    "no_backups_desc": "Erstellen Sie ein Backup vom USB-Bildschirm, wenn ein Adapter angeschlossen ist.",
+    "backup_count": "{count} Backup(s) gespeichert",
+    "created": "Erstellt",
+    "chipset": "Chipset",
+    "vid_pid": "VID/PID",
+    "size": "Größe",
+    "bytes": "Bytes",
+    "restore": "Wiederherstellen",
+    "delete": "Löschen",
+    "restore_title": "EEPROM wiederherstellen",
+    "restore_confirm": "Sind Sie sicher, dass Sie das EEPROM mit diesem Backup wiederherstellen möchten?",
+    "restore_warning": "⚠️ WARNUNG: Dieser Vorgang überschreibt die aktuellen EEPROM-Daten des angeschlossenen Adapters. Stellen Sie sicher, dass der richtige Adapter angeschlossen ist.",
+    "restore_success": "EEPROM erfolgreich wiederhergestellt",
+    "restore_error": "Fehler beim Wiederherstellen des EEPROM",
+    "delete_title": "Backup löschen",
+    "delete_confirm": "Sind Sie sicher, dass Sie dieses Backup löschen möchten?",
+    "delete_success": "Backup gelöscht",
+    "delete_error": "Fehler beim Löschen des Backups",
+    "no_device": "Kein USB-Gerät angeschlossen",
+    "no_device_desc": "Schließen Sie einen USB-Adapter an, um ein Backup wiederherzustellen.",
+    "restoring": "Wiederherstellen...",
+    "cancel": "Abbrechen",
+    "confirm": "Bestätigen",
+    "original_vid": "Original-VID",
+    "original_pid": "Original-PID",
+    "backup_info": "Backup-Informationen",
+    "current_device": "Aktuelles Gerät",
+    "mismatch_warning": "⚠️ Backup-Chipset stimmt nicht mit dem angeschlossenen Gerät überein"
   }
 }
