@@ -1,5 +1,5 @@
-import { Alert, Pressable, ScrollView, Text, TextInput, View, Modal, StyleSheet, ActivityIndicator } from "react-native";
-import { useState, useRef, useEffect } from "react";
+import { View, Text, TextInput, ScrollView, Pressable, Modal, Alert, StyleSheet, ActivityIndicator } from "react-native";
+import { useState, useRef, useEffect, useCallback } from "react";
 import * as Haptics from "expo-haptics";
 import * as Clipboard from "expo-clipboard";
 
@@ -17,6 +17,17 @@ import {
   type ScriptCategory,
   type ScriptRiskLevel
 } from "@/lib/telnet-scripts-service";
+import {
+  getMIB2State,
+  subscribeMIB2State,
+  setConnected,
+  verifyFullSystemState,
+  verifySingleState,
+  isScriptEnabled,
+  getRecommendedNextStep,
+  getAvailableScriptCategories,
+  type MIB2SystemState
+} from "@/lib/mib2-state-service";
 
 import { showAlert } from '@/lib/translated-alert';
 
@@ -32,8 +43,30 @@ export default function CommandsScreen() {
   const [showGuideModal, setShowGuideModal] = useState(false);
   const [currentGuideStep, setCurrentGuideStep] = useState(0);
   
+  // Estado del sistema MIB2
+  const [mib2State, setMib2State] = useState<MIB2SystemState>(getMIB2State());
+  const [isVerifyingState, setIsVerifyingState] = useState(false);
+  
   const scrollViewRef = useRef<ScrollView>(null);
   const inputRef = useRef<TextInput>(null);
+
+  // Suscribirse a cambios de estado MIB2
+  useEffect(() => {
+    const unsubscribe = subscribeMIB2State((state) => {
+      setMib2State(state);
+    });
+    return unsubscribe;
+  }, []);
+
+  // Actualizar estado de conexión en el servicio
+  useEffect(() => {
+    setConnected(isConnected);
+    
+    // Si se conecta, verificar estado del sistema automáticamente
+    if (isConnected && !mib2State.lastVerification) {
+      handleVerifySystemState();
+    }
+  }, [isConnected]);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -41,6 +74,112 @@ export default function CommandsScreen() {
       scrollViewRef.current?.scrollToEnd({ animated: true });
     }, 100);
   }, [messages]);
+
+  /**
+   * Ejecutar comando y capturar respuesta para verificación de estado
+   */
+  const executeCommandForState = useCallback(async (cmd: string): Promise<string> => {
+    return new Promise((resolve) => {
+      sendCommand(cmd);
+      // Esperar un poco para que llegue la respuesta
+      setTimeout(() => {
+        // Obtener los últimos mensajes de respuesta
+        const recentResponses = messages
+          .filter(m => m.type === 'response')
+          .slice(-5)
+          .map(m => m.text)
+          .join('\n');
+        resolve(recentResponses);
+      }, 1000);
+    });
+  }, [sendCommand, messages]);
+
+  /**
+   * Verificar estado completo del sistema
+   */
+  const handleVerifySystemState = async () => {
+    if (!isConnected) {
+      showAlert('alerts.no_conectado', 'alerts.debes_conectarte_a_la_unidad_mib2_primero');
+      return;
+    }
+
+    setIsVerifyingState(true);
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
+    try {
+      // Ejecutar comandos de verificación secuencialmente
+      // Verificar root
+      sendCommand('whoami');
+      await new Promise(r => setTimeout(r, 800));
+      
+      // Verificar SD montada
+      sendCommand('mount | grep -E "/mnt/sd|/fs/sd"');
+      await new Promise(r => setTimeout(r, 800));
+      
+      // Verificar Toolbox instalado
+      sendCommand('ls -la /eso/bin/apps 2>/dev/null || ls -la /eso 2>/dev/null || echo "NOT_FOUND"');
+      await new Promise(r => setTimeout(r, 800));
+      
+      // Verificar sistema parcheado
+      sendCommand('ls -la /eso/hmi/lsd/tsd.mibstd2.system.swap 2>/dev/null || echo "NOT_PATCHED"');
+      await new Promise(r => setTimeout(r, 800));
+      
+      // Obtener versión QNX
+      sendCommand('uname -a');
+      await new Promise(r => setTimeout(r, 800));
+
+      // Analizar respuestas de los mensajes
+      await analyzeMessagesForState();
+      
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } catch (error) {
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+    } finally {
+      setIsVerifyingState(false);
+    }
+  };
+
+  /**
+   * Analizar mensajes del terminal para actualizar estado
+   */
+  const analyzeMessagesForState = async () => {
+    const recentMessages = messages.slice(-20);
+    const responseText = recentMessages
+      .filter(m => m.type === 'response')
+      .map(m => m.text)
+      .join('\n');
+
+    // Detectar root
+    const hasRoot = responseText.toLowerCase().includes('root');
+    
+    // Detectar SD montada
+    const sdMounted = responseText.includes('/mnt/sd') || responseText.includes('/fs/sd');
+    
+    // Detectar Toolbox
+    const toolboxInstalled = !responseText.includes('NOT_FOUND') && 
+      (responseText.includes('toolbox') || responseText.includes('apps') || responseText.includes('gem'));
+    
+    // Detectar parche
+    const systemPatched = !responseText.includes('NOT_PATCHED') && 
+      responseText.includes('tsd.mibstd2.system.swap');
+    
+    // Detectar versión QNX
+    const qnxMatch = responseText.match(/QNX\s+\S+\s+(\d+\.\d+\.\d+)/);
+    const qnxVersion = qnxMatch ? qnxMatch[1] : null;
+
+    // Actualizar estado manualmente (el servicio notificará a los suscriptores)
+    setMib2State(prev => ({
+      ...prev,
+      hasRootAccess: hasRoot,
+      isSDMounted: sdMounted,
+      sdMountPath: sdMounted ? '/mnt/sd' : null,
+      isToolboxInstalled: toolboxInstalled,
+      toolboxPath: toolboxInstalled ? '/eso' : null,
+      isSystemPatched: systemPatched,
+      qnxVersion: qnxVersion,
+      lastVerification: new Date()
+    }));
+  };
 
   // Filter suggestions based on input
   const suggestions = Object.entries(MIB2_COMMANDS)
@@ -99,11 +238,30 @@ export default function CommandsScreen() {
   };
 
   /**
+   * Verificar si un script está habilitado
+   */
+  const checkScriptEnabled = (scriptId: string): { enabled: boolean; reason?: string } => {
+    return isScriptEnabled(scriptId, mib2State);
+  };
+
+  /**
    * Ejecutar un script predefinido
    */
   const executeScript = async (script: TelnetScript) => {
     if (!isConnected) {
       showAlert('alerts.no_conectado', 'alerts.debes_conectarte_a_la_unidad_mib2_primero');
+      return;
+    }
+
+    // Verificar si el script está habilitado
+    const { enabled, reason } = checkScriptEnabled(script.id);
+    if (!enabled && reason) {
+      const reasonMessage = t(`mib2_state.${reason}`);
+      Alert.alert(
+        t('common.warning'),
+        reasonMessage,
+        [{ text: t('common.confirm'), style: 'default' }]
+      );
       return;
     }
 
@@ -146,6 +304,11 @@ export default function CommandsScreen() {
       }
       
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      
+      // Actualizar estado después de ejecutar script
+      setTimeout(() => {
+        analyzeMessagesForState();
+      }, 1500);
       
       // Mostrar mensaje de éxito si existe
       if (script.successKey) {
@@ -210,35 +373,52 @@ export default function CommandsScreen() {
   // Guía de instalación paso a paso
   const guideSteps = getRecommendedFlow();
 
-  const renderScriptItem = (script: TelnetScript) => (
-    <Pressable
-      key={script.id}
-      onPress={() => executeScript(script)}
-      disabled={!isConnected || isExecutingScript}
-      style={[
-        styles.scriptItem,
-        (!isConnected || isExecutingScript) && styles.scriptItemDisabled
-      ]}
-    >
-      <View style={styles.scriptHeader}>
-        <Text style={styles.scriptRiskIcon}>{getRiskIcon(script.riskLevel)}</Text>
-        <Text style={styles.scriptName}>{t(script.nameKey)}</Text>
-        {script.requiresConfirmation && (
-          <View style={[styles.confirmBadge, { backgroundColor: getRiskColor(script.riskLevel) + '30' }]}>
-            <Text style={[styles.confirmBadgeText, { color: getRiskColor(script.riskLevel) }]}>
-              {t('telnet_scripts.requires_confirm')}
-            </Text>
-          </View>
-        )}
-      </View>
-      <Text style={styles.scriptDescription}>{t(script.descriptionKey)}</Text>
-      <View style={styles.scriptCommands}>
-        {script.commands.map((cmd, idx) => (
-          <Text key={idx} style={styles.scriptCommand}>$ {cmd}</Text>
-        ))}
-      </View>
-    </Pressable>
-  );
+  // Obtener siguiente paso recomendado
+  const recommendedStep = getRecommendedNextStep(mib2State);
+
+  // Obtener categorías disponibles
+  const availableCategories = getAvailableScriptCategories(mib2State);
+
+  const renderScriptItem = (script: TelnetScript) => {
+    const { enabled, reason } = checkScriptEnabled(script.id);
+    
+    return (
+      <Pressable
+        key={script.id}
+        onPress={() => executeScript(script)}
+        disabled={!enabled || isExecutingScript}
+        style={[
+          styles.scriptItem,
+          (!enabled || isExecutingScript) && styles.scriptItemDisabled
+        ]}
+      >
+        <View style={styles.scriptHeader}>
+          <Text style={styles.scriptRiskIcon}>{getRiskIcon(script.riskLevel)}</Text>
+          <Text style={[styles.scriptName, !enabled && { color: '#666' }]}>{t(script.nameKey)}</Text>
+          {script.requiresConfirmation && enabled && (
+            <View style={[styles.confirmBadge, { backgroundColor: getRiskColor(script.riskLevel) + '30' }]}>
+              <Text style={[styles.confirmBadgeText, { color: getRiskColor(script.riskLevel) }]}>
+                {t('telnet_scripts.requires_confirm')}
+              </Text>
+            </View>
+          )}
+          {!enabled && reason && (
+            <View style={[styles.confirmBadge, { backgroundColor: 'rgba(239, 68, 68, 0.2)' }]}>
+              <Text style={[styles.confirmBadgeText, { color: '#EF4444' }]}>
+                {t(`mib2_state.${reason}_short`)}
+              </Text>
+            </View>
+          )}
+        </View>
+        <Text style={[styles.scriptDescription, !enabled && { color: '#555' }]}>{t(script.descriptionKey)}</Text>
+        <View style={styles.scriptCommands}>
+          {script.commands.map((cmd, idx) => (
+            <Text key={idx} style={[styles.scriptCommand, !enabled && { color: '#555' }]}>$ {cmd}</Text>
+          ))}
+        </View>
+      </Pressable>
+    );
+  };
 
   return (
     <ScreenContainer className="flex-1">
@@ -272,6 +452,58 @@ export default function CommandsScreen() {
             )}
           </View>
         </View>
+
+        {/* System State Panel */}
+        {isConnected && (
+          <View style={styles.statePanel}>
+            <View style={styles.statePanelHeader}>
+              <Text style={styles.statePanelTitle}>{t('mib2_state.system_status')}</Text>
+              <Pressable
+                onPress={handleVerifySystemState}
+                disabled={isVerifyingState}
+                style={styles.refreshButton}
+              >
+                {isVerifyingState ? (
+                  <ActivityIndicator size="small" color="#0a7ea4" />
+                ) : (
+                  <Text style={styles.refreshButtonText}>🔄 {t('mib2_state.refresh')}</Text>
+                )}
+              </Pressable>
+            </View>
+            
+            <View style={styles.stateIndicators}>
+              <View style={styles.stateIndicator}>
+                <Text style={styles.stateIcon}>{mib2State.hasRootAccess ? '✅' : '❌'}</Text>
+                <Text style={styles.stateLabel}>{t('mib2_state.root_access')}</Text>
+              </View>
+              <View style={styles.stateIndicator}>
+                <Text style={styles.stateIcon}>{mib2State.isSDMounted ? '✅' : '❌'}</Text>
+                <Text style={styles.stateLabel}>{t('mib2_state.sd_mounted')}</Text>
+              </View>
+              <View style={styles.stateIndicator}>
+                <Text style={styles.stateIcon}>{mib2State.isToolboxInstalled ? '✅' : '❌'}</Text>
+                <Text style={styles.stateLabel}>{t('mib2_state.toolbox_installed')}</Text>
+              </View>
+              <View style={styles.stateIndicator}>
+                <Text style={styles.stateIcon}>{mib2State.isSystemPatched ? '✅' : '❌'}</Text>
+                <Text style={styles.stateLabel}>{t('mib2_state.system_patched')}</Text>
+              </View>
+            </View>
+
+            {/* Recommended Next Step */}
+            {recommendedStep.scriptId && (
+              <View style={styles.recommendedStep}>
+                <Text style={styles.recommendedLabel}>💡 {t('mib2_state.recommended_next')}:</Text>
+                <Text style={styles.recommendedText}>{t(`mib2_state.${recommendedStep.message}`)}</Text>
+              </View>
+            )}
+            {!recommendedStep.scriptId && recommendedStep.message === 'system_ready' && (
+              <View style={[styles.recommendedStep, { backgroundColor: 'rgba(34, 197, 94, 0.15)' }]}>
+                <Text style={[styles.recommendedLabel, { color: '#22C55E' }]}>✅ {t('mib2_state.system_ready')}</Text>
+              </View>
+            )}
+          </View>
+        )}
 
         {/* Scripts Buttons */}
         <View style={styles.scriptsButtonsRow}>
@@ -445,24 +677,29 @@ export default function CommandsScreen() {
 
             {/* Category Tabs */}
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryTabs}>
-              {SCRIPT_CATEGORIES.map(cat => (
-                <Pressable
-                  key={cat.id}
-                  onPress={() => setSelectedCategory(cat.id)}
-                  style={[
-                    styles.categoryTab,
-                    selectedCategory === cat.id && styles.categoryTabActive
-                  ]}
-                >
-                  <Text style={styles.categoryIcon}>{cat.icon}</Text>
-                  <Text style={[
-                    styles.categoryText,
-                    selectedCategory === cat.id && styles.categoryTextActive
-                  ]}>
-                    {t(cat.nameKey)}
-                  </Text>
-                </Pressable>
-              ))}
+              {SCRIPT_CATEGORIES.map(cat => {
+                const categoryAvailable = availableCategories[cat.id as keyof typeof availableCategories];
+                return (
+                  <Pressable
+                    key={cat.id}
+                    onPress={() => setSelectedCategory(cat.id)}
+                    style={[
+                      styles.categoryTab,
+                      selectedCategory === cat.id && styles.categoryTabActive,
+                      !categoryAvailable && styles.categoryTabDisabled
+                    ]}
+                  >
+                    <Text style={styles.categoryIcon}>{cat.icon}</Text>
+                    <Text style={[
+                      styles.categoryText,
+                      selectedCategory === cat.id && styles.categoryTextActive,
+                      !categoryAvailable && styles.categoryTextDisabled
+                    ]}>
+                      {t(cat.nameKey)}
+                    </Text>
+                  </Pressable>
+                );
+              })}
             </ScrollView>
 
             {/* Scripts List */}
@@ -516,21 +753,28 @@ export default function CommandsScreen() {
                 </View>
 
                 {/* Execute Button */}
-                <Pressable
-                  onPress={() => executeScript(guideSteps[currentGuideStep])}
-                  disabled={isExecutingScript}
-                  style={[
-                    styles.executeButton,
-                    { backgroundColor: getRiskColor(guideSteps[currentGuideStep].riskLevel) },
-                    isExecutingScript && styles.executeButtonDisabled
-                  ]}
-                >
-                  {isExecutingScript ? (
-                    <ActivityIndicator color="#FFFFFF" />
-                  ) : (
-                    <Text style={styles.executeButtonText}>{t('telnet_scripts.execute_step')}</Text>
-                  )}
-                </Pressable>
+                {(() => {
+                  const { enabled, reason } = checkScriptEnabled(guideSteps[currentGuideStep].id);
+                  return (
+                    <Pressable
+                      onPress={() => executeScript(guideSteps[currentGuideStep])}
+                      disabled={isExecutingScript || !enabled}
+                      style={[
+                        styles.executeButton,
+                        { backgroundColor: enabled ? getRiskColor(guideSteps[currentGuideStep].riskLevel) : '#666' },
+                        (isExecutingScript || !enabled) && styles.executeButtonDisabled
+                      ]}
+                    >
+                      {isExecutingScript ? (
+                        <ActivityIndicator color="#FFFFFF" />
+                      ) : (
+                        <Text style={styles.executeButtonText}>
+                          {enabled ? t('telnet_scripts.execute_step') : t(`mib2_state.${reason}_short`)}
+                        </Text>
+                      )}
+                    </Pressable>
+                  );
+                })()}
               </View>
             )}
 
@@ -559,6 +803,70 @@ export default function CommandsScreen() {
 }
 
 const styles = StyleSheet.create({
+  statePanel: {
+    backgroundColor: 'rgba(30, 32, 34, 0.8)',
+    borderWidth: 1,
+    borderColor: '#334155',
+    borderRadius: 12,
+    padding: 12,
+  },
+  statePanelHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  statePanelTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#ECEDEE',
+  },
+  refreshButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    backgroundColor: 'rgba(10, 126, 164, 0.15)',
+    borderRadius: 8,
+  },
+  refreshButtonText: {
+    fontSize: 12,
+    color: '#0a7ea4',
+    fontWeight: '500',
+  },
+  stateIndicators: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 8,
+  },
+  stateIndicator: {
+    alignItems: 'center',
+    gap: 4,
+  },
+  stateIcon: {
+    fontSize: 16,
+  },
+  stateLabel: {
+    fontSize: 10,
+    color: '#9BA1A6',
+    textAlign: 'center',
+  },
+  recommendedStep: {
+    backgroundColor: 'rgba(10, 126, 164, 0.15)',
+    borderRadius: 8,
+    padding: 10,
+    marginTop: 8,
+  },
+  recommendedLabel: {
+    fontSize: 12,
+    color: '#0a7ea4',
+    fontWeight: '600',
+  },
+  recommendedText: {
+    fontSize: 11,
+    color: '#9BA1A6',
+    marginTop: 4,
+  },
   scriptsButtonsRow: {
     flexDirection: 'row',
     gap: 8,
@@ -669,6 +977,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(10, 126, 164, 0.2)',
     borderColor: '#0a7ea4',
   },
+  categoryTabDisabled: {
+    opacity: 0.5,
+  },
   categoryIcon: {
     fontSize: 14,
     marginRight: 6,
@@ -680,6 +991,9 @@ const styles = StyleSheet.create({
   },
   categoryTextActive: {
     color: '#0a7ea4',
+  },
+  categoryTextDisabled: {
+    color: '#555',
   },
   scriptsList: {
     paddingHorizontal: 16,

@@ -1841,3 +1841,15 @@ módulo nativo: val wordOffset = (offset + i) / 2  // Divide de nuevo!
 - [x] Mostrar descripción y riesgo de cada script antes de ejecutar
 - [x] Agregar confirmación obligatoria para scripts destructivos
 - [x] Agregar traducciones ES/EN/DE para scripts y advertencias
+
+
+## Sistema de Verificación de Estado MIB2 (17 Enero 2026)
+
+### Tareas
+- [x] Crear servicio mib2-state-service.ts para verificar estado del sistema
+- [x] Detectar: conexión Telnet activa, acceso root, SD montada, Toolbox instalado
+- [x] Ejecutar comandos de verificación automáticamente al conectar
+- [x] Mostrar indicadores visuales de estado en la UI
+- [x] Habilitar/deshabilitar comandos según el estado detectado
+- [x] Agregar botón "Actualizar Estado" para re-verificar manualmente
+- [x] Agregar traducciones ES/EN/DE para estados del sistema
