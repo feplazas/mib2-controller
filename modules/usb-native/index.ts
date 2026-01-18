@@ -1,4 +1,5 @@
 import { requireNativeModule } from 'expo-modules-core';
+import { Platform } from 'react-native';
 
 export interface UsbDevice {
   deviceId: number;
@@ -51,6 +52,21 @@ interface UsbNativeModuleInterface {
   spoofVIDPID(targetVID: number, targetPID: number, magicValue: number): Promise<SpoofResult>;
 }
 
-const UsbNativeModule = requireNativeModule<UsbNativeModuleInterface>('UsbNative');
+// Mock module for web platform
+const mockModule: UsbNativeModuleInterface = {
+  getDeviceList: () => [],
+  requestPermission: async () => false,
+  openDevice: async () => false,
+  closeDevice: () => false,
+  readEEPROM: async () => ({ data: '', bytes: [] }),
+  writeEEPROM: async () => ({ bytesWritten: 0, verified: false }),
+  dumpEEPROM: async () => ({ data: '', bytes: [], size: 0 }),
+  detectEEPROMType: async () => ({ type: 'unknown', writable: false, reason: 'Not available on web' }),
+  spoofVIDPID: async () => ({ success: false, previousVID: 0, previousPID: 0, newVID: 0, newPID: 0 }),
+};
+
+const UsbNativeModule = Platform.OS === 'android' 
+  ? requireNativeModule<UsbNativeModuleInterface>('UsbNative')
+  : mockModule;
 
 export default UsbNativeModule;

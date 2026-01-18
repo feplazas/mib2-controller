@@ -1,4 +1,5 @@
 import { EventEmitter, requireNativeModule } from 'expo-modules-core';
+import { Platform } from 'react-native';
 
 export interface UsbDeviceInfo {
   deviceName: string;
@@ -23,8 +24,20 @@ export interface UsbEventResult {
   message: string;
 }
 
-const UsbEventModule = requireNativeModule('UsbEventModule');
-const emitter = new EventEmitter(UsbEventModule);
+// Mock module for web platform
+const mockModule = {
+  startListening: () => ({ success: false, message: 'Not available on web' }),
+  stopListening: () => ({ success: false, message: 'Not available on web' }),
+  isListening: () => false,
+};
+
+const UsbEventModule = Platform.OS === 'android' 
+  ? requireNativeModule('UsbEventModule')
+  : mockModule;
+
+const emitter = Platform.OS === 'android' 
+  ? new EventEmitter(UsbEventModule)
+  : null;
 
 /**
  * Iniciar escucha de eventos USB
@@ -52,6 +65,7 @@ export function isListening(): boolean {
  * Suscribirse a eventos de conexión de dispositivos USB
  */
 export function addUsbAttachedListener(listener: (device: UsbDeviceInfo) => void) {
+  if (!emitter) return { remove: () => {} };
   return (emitter as any).addListener('onUsbDeviceAttached', listener);
 }
 
@@ -59,6 +73,7 @@ export function addUsbAttachedListener(listener: (device: UsbDeviceInfo) => void
  * Suscribirse a eventos de desconexión de dispositivos USB
  */
 export function addUsbDetachedListener(listener: (device: UsbDeviceDetachedInfo) => void) {
+  if (!emitter) return { remove: () => {} };
   return (emitter as any).addListener('onUsbDeviceDetached', listener);
 }
 
@@ -66,6 +81,7 @@ export function addUsbDetachedListener(listener: (device: UsbDeviceDetachedInfo)
  * Remover todos los listeners
  */
 export function removeAllListeners() {
+  if (!emitter) return;
   (emitter as any).removeAllListeners('onUsbDeviceAttached');
   (emitter as any).removeAllListeners('onUsbDeviceDetached');
 }
