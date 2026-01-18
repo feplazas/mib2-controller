@@ -363,6 +363,217 @@ class UsbService {
       throw error;
     }
   }
+
+  /**
+   * DRY-RUN: Simular spoofing sin escribir en EEPROM
+   * 
+   * Muestra qué cambios se realizarían sin modificar el hardware.
+   * Útil para verificar antes de ejecutar el spoofing real.
+   */
+  async dryRunSpoof(targetVID: number = TARGET_VID, targetPID: number = TARGET_PID): Promise<{
+    wouldSucceed: boolean;
+    currentVID: number;
+    currentPID: number;
+    targetVID: number;
+    targetPID: number;
+    changes: Array<{
+      offset: number;
+      offsetHex: string;
+      currentValue: string;
+      newValue: string;
+      description: string;
+    }>;
+    warnings: string[];
+    eepromType: 'external_eeprom' | 'efuse' | 'unknown';
+  }> {
+    if (Platform.OS !== 'android') {
+      throw new Error('Dry-run only available on Android');
+    }
+
+    if (this.currentDeviceId === null) {
+      throw new Error('No device connected');
+    }
+
+    const warnings: string[] = [];
+    const changes: Array<{
+      offset: number;
+      offsetHex: string;
+      currentValue: string;
+      newValue: string;
+      description: string;
+    }> = [];
+
+    try {
+      usbLogger.info('dryRun', 'logs.spoof.dry_run_start');
+
+      // 1. Detectar tipo de EEPROM
+      const eepromTypeResult = await this.detectEEPROMType();
+      
+      if (eepromTypeResult.type === 'efuse') {
+        warnings.push('EEPROM tipo eFuse detectado - spoofing NO es posible');
+      } else if (eepromTypeResult.type === 'unknown') {
+        warnings.push('No se pudo determinar el tipo de EEPROM');
+      }
+
+      // 2. Leer VID/PID actuales
+      const vidResult = await this.readEEPROM(EEPROM_VID_OFFSET, 2);
+      const pidResult = await this.readEEPROM(EEPROM_PID_OFFSET, 2);
+
+      // Parsear VID/PID (little-endian en EEPROM)
+      const currentVID = (vidResult.bytes[1] << 8) | vidResult.bytes[0];
+      const currentPID = (pidResult.bytes[1] << 8) | pidResult.bytes[0];
+
+      // 3. Calcular cambios necesarios
+      const targetVIDLow = targetVID & 0xFF;
+      const targetVIDHigh = (targetVID >> 8) & 0xFF;
+      const targetPIDLow = targetPID & 0xFF;
+      const targetPIDHigh = (targetPID >> 8) & 0xFF;
+
+      // VID byte bajo
+      if (vidResult.bytes[0] !== targetVIDLow) {
+        changes.push({
+          offset: EEPROM_VID_OFFSET,
+          offsetHex: `0x${EEPROM_VID_OFFSET.toString(16).toUpperCase()}`,
+          currentValue: `0x${vidResult.bytes[0].toString(16).toUpperCase().padStart(2, '0')}`,
+          newValue: `0x${targetVIDLow.toString(16).toUpperCase().padStart(2, '0')}`,
+          description: 'VID byte bajo'
+        });
+      }
+
+      // VID byte alto
+      if (vidResult.bytes[1] !== targetVIDHigh) {
+        changes.push({
+          offset: EEPROM_VID_OFFSET + 1,
+          offsetHex: `0x${(EEPROM_VID_OFFSET + 1).toString(16).toUpperCase()}`,
+          currentValue: `0x${vidResult.bytes[1].toString(16).toUpperCase().padStart(2, '0')}`,
+          newValue: `0x${targetVIDHigh.toString(16).toUpperCase().padStart(2, '0')}`,
+          description: 'VID byte alto'
+        });
+      }
+
+      // PID byte bajo
+      if (pidResult.bytes[0] !== targetPIDLow) {
+        changes.push({
+          offset: EEPROM_PID_OFFSET,
+          offsetHex: `0x${EEPROM_PID_OFFSET.toString(16).toUpperCase()}`,
+          currentValue: `0x${pidResult.bytes[0].toString(16).toUpperCase().padStart(2, '0')}`,
+          newValue: `0x${targetPIDLow.toString(16).toUpperCase().padStart(2, '0')}`,
+          description: 'PID byte bajo'
+        });
+      }
+
+      // PID byte alto
+      if (pidResult.bytes[1] !== targetPIDHigh) {
+        changes.push({
+          offset: EEPROM_PID_OFFSET + 1,
+          offsetHex: `0x${(EEPROM_PID_OFFSET + 1).toString(16).toUpperCase()}`,
+          currentValue: `0x${pidResult.bytes[1].toString(16).toUpperCase().padStart(2, '0')}`,
+          newValue: `0x${targetPIDHigh.toString(16).toUpperCase().padStart(2, '0')}`,
+          description: 'PID byte alto'
+        });
+      }
+
+      // 4. Verificar si ya está spoofed
+      if (currentVID === targetVID && currentPID === targetPID) {
+        warnings.push('El adaptador ya tiene el VID/PID objetivo');
+      }
+
+      const wouldSucceed = eepromTypeResult.writable && changes.length > 0;
+
+      usbLogger.success('dryRun', 'logs.spoof.dry_run_complete', { 
+        changes: changes.length,
+        wouldSucceed 
+      });
+
+      return {
+        wouldSucceed,
+        currentVID,
+        currentPID,
+        targetVID,
+        targetPID,
+        changes,
+        warnings,
+        eepromType: eepromTypeResult.type
+      };
+    } catch (error: any) {
+      usbLogger.error('dryRun', 'logs.spoof.dry_run_error', error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Verificar checksum de EEPROM ASIX
+   * 
+   * Según el datasheet de AX88772B:
+   * - El checksum está en offset 0x18 (byte bajo)
+   * - Fórmula: EEPROM[0x18] = 0xFF - SUM[EEPROM offset 0x07 ~ 0x0E]
+   * 
+   * NOTA: El checksum NO incluye VID/PID (offsets 0x88-0x8B),
+   * por lo que modificar VID/PID no afecta la integridad del checksum.
+   */
+  async verifyEEPROMChecksum(): Promise<{
+    valid: boolean;
+    storedChecksum: number;
+    calculatedChecksum: number;
+    checksumOffset: number;
+    dataRange: string;
+    affectsVIDPID: boolean;
+    details: string;
+  }> {
+    if (Platform.OS !== 'android') {
+      throw new Error('Checksum verification only available on Android');
+    }
+
+    if (this.currentDeviceId === null) {
+      throw new Error('No device connected');
+    }
+
+    try {
+      usbLogger.info('checksum', 'logs.eeprom.verifying_checksum');
+
+      // Leer bytes 0x07-0x0E (8 bytes) que se usan para calcular checksum
+      const dataResult = await this.readEEPROM(0x07, 8);
+      
+      // Leer checksum almacenado en offset 0x18
+      const checksumResult = await this.readEEPROM(0x18, 1);
+      const storedChecksum = checksumResult.bytes[0];
+
+      // Calcular checksum: 0xFF - SUM[bytes 0x07-0x0E]
+      let sum = 0;
+      for (const byte of dataResult.bytes) {
+        sum += byte;
+      }
+      const calculatedChecksum = (0xFF - (sum & 0xFF)) & 0xFF;
+
+      const valid = storedChecksum === calculatedChecksum;
+
+      const result = {
+        valid,
+        storedChecksum,
+        calculatedChecksum,
+        checksumOffset: 0x18,
+        dataRange: '0x07-0x0E',
+        affectsVIDPID: false,
+        details: valid 
+          ? 'Checksum válido - EEPROM íntegra'
+          : `Checksum inválido: almacenado=0x${storedChecksum.toString(16).toUpperCase()}, calculado=0x${calculatedChecksum.toString(16).toUpperCase()}`
+      };
+
+      if (valid) {
+        usbLogger.success('checksum', 'logs.eeprom.checksum_valid');
+      } else {
+        usbLogger.warning('checksum', 'logs.eeprom.checksum_invalid', {
+          stored: `0x${storedChecksum.toString(16)}`,
+          calculated: `0x${calculatedChecksum.toString(16)}`
+        });
+      }
+
+      return result;
+    } catch (error: any) {
+      usbLogger.error('checksum', 'logs.eeprom.checksum_error', error.message);
+      throw error;
+    }
+  }
 }
 
 // Exportar instancia singleton

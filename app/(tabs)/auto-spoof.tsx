@@ -279,6 +279,64 @@ export default function AutoSpoofScreen() {
 
   const canExecute = status === 'connected' && device && canAttemptSpoofing(getChipsetCompatibility(device.chipset || ''));
 
+  // Función Dry-Run (Simulación sin escribir)
+  const handleDryRun = async () => {
+    if (!device) {
+      showAlert('alerts.error', 'alerts.no_hay_dispositivo_usb_conectado');
+      return;
+    }
+
+    dispatch({ type: 'START_DRY_RUN' });
+
+    try {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      
+      const result = await usbService.dryRunSpoof();
+      
+      dispatch({ type: 'SET_DRY_RUN_RESULT', payload: result });
+      
+      if (result.wouldSucceed) {
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      } else {
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      }
+    } catch (error: any) {
+      dispatch({ type: 'SET_DRY_RUN_RESULT', payload: null });
+      usbLogger.error('DRY_RUN', `Error en dry-run: ${error.message}`, error);
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      showAlert('alerts.error', error.message);
+    }
+  };
+
+  // Función Verificar Checksum
+  const handleVerifyChecksum = async () => {
+    if (!device) {
+      showAlert('alerts.error', 'alerts.no_hay_dispositivo_usb_conectado');
+      return;
+    }
+
+    dispatch({ type: 'START_CHECKSUM_VERIFY' });
+
+    try {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      
+      const result = await usbService.verifyEEPROMChecksum();
+      
+      dispatch({ type: 'SET_CHECKSUM_RESULT', payload: result });
+      
+      if (result.valid) {
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      } else {
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      }
+    } catch (error: any) {
+      dispatch({ type: 'SET_CHECKSUM_RESULT', payload: null });
+      usbLogger.error('CHECKSUM', `Error verificando checksum: ${error.message}`, error);
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      showAlert('alerts.error', error.message);
+    }
+  };
+
   // Función REAL de Test de Spoofing
   const handleTestSpoofing = async () => {
     if (!device) {
@@ -647,6 +705,147 @@ export default function AutoSpoofScreen() {
               </Text>
             </View>
           </TouchableOpacity>
+
+          {/* Botones de Seguridad: Dry-Run y Checksum */}
+          <View className="gap-3">
+            {/* Botón Dry-Run (Simulación) */}
+            <TouchableOpacity
+              onPress={handleDryRun}
+              disabled={state.isDryRunning || !device}
+              className={`rounded-xl p-4 items-center border-2 ${
+                state.dryRunResult?.wouldSucceed
+                  ? 'bg-green-500/10 border-green-500'
+                  : state.dryRunResult && !state.dryRunResult.wouldSucceed
+                  ? 'bg-yellow-500/10 border-yellow-500'
+                  : state.isDryRunning
+                  ? 'bg-muted/20 border-muted opacity-50'
+                  : 'bg-cyan-500/10 border-cyan-500 active:opacity-80'
+              }`}
+            >
+              <View className="flex-row items-center gap-2">
+                <Text className="text-xl">
+                  {state.isDryRunning ? '⏳' : state.dryRunResult?.wouldSucceed ? '✅' : state.dryRunResult ? '⚠️' : '🔍'}
+                </Text>
+                <Text className={`text-base font-bold ${
+                  state.dryRunResult?.wouldSucceed
+                    ? 'text-green-500'
+                    : state.dryRunResult && !state.dryRunResult.wouldSucceed
+                    ? 'text-yellow-500'
+                    : state.isDryRunning
+                    ? 'text-muted'
+                    : 'text-cyan-500'
+                }`}>
+                  {state.isDryRunning ? t('auto_spoof.simulating') : t('auto_spoof.dry_run')}
+                </Text>
+              </View>
+              <Text className="text-xs text-muted mt-1">
+                {t('auto_spoof.dry_run_desc')}
+              </Text>
+            </TouchableOpacity>
+
+            {/* Resultado Dry-Run */}
+            {state.dryRunResult && (
+              <View className={`rounded-xl p-4 border ${
+                state.dryRunResult.wouldSucceed ? 'bg-green-500/5 border-green-500/30' : 'bg-yellow-500/5 border-yellow-500/30'
+              }`}>
+                <Text className={`text-sm font-semibold mb-2 ${
+                  state.dryRunResult.wouldSucceed ? 'text-green-500' : 'text-yellow-500'
+                }`}>
+                  {t('auto_spoof.dry_run_result')}
+                </Text>
+                <View className="gap-1">
+                  <Text className="text-xs text-muted">
+                    VID/PID Actual: 0x{state.dryRunResult.currentVID.toString(16).toUpperCase()}:0x{state.dryRunResult.currentPID.toString(16).toUpperCase()}
+                  </Text>
+                  <Text className="text-xs text-muted">
+                    {t('auto_spoof.target_vid_pid')}: 0x{state.dryRunResult.targetVID.toString(16).toUpperCase()}:0x{state.dryRunResult.targetPID.toString(16).toUpperCase()}
+                  </Text>
+                  <Text className="text-xs text-muted">
+                    {t('auto_spoof.changes_needed')}: {state.dryRunResult.changes.length}
+                  </Text>
+                  {state.dryRunResult.warnings.length > 0 && (
+                    <View className="mt-2">
+                      {state.dryRunResult.warnings.map((w, i) => (
+                        <Text key={i} className="text-xs text-yellow-500">⚠️ {w}</Text>
+                      ))}
+                    </View>
+                  )}
+                  <Text className={`text-xs mt-2 font-medium ${
+                    state.dryRunResult.wouldSucceed ? 'text-green-500' : 'text-yellow-500'
+                  }`}>
+                    {state.dryRunResult.wouldSucceed ? t('auto_spoof.dry_run_would_succeed') : t('auto_spoof.dry_run_would_fail')}
+                  </Text>
+                </View>
+              </View>
+            )}
+
+            {/* Botón Verificar Checksum */}
+            <TouchableOpacity
+              onPress={handleVerifyChecksum}
+              disabled={state.isVerifyingChecksum || !device}
+              className={`rounded-xl p-4 items-center border-2 ${
+                state.checksumResult?.valid
+                  ? 'bg-green-500/10 border-green-500'
+                  : state.checksumResult && !state.checksumResult.valid
+                  ? 'bg-red-500/10 border-red-500'
+                  : state.isVerifyingChecksum
+                  ? 'bg-muted/20 border-muted opacity-50'
+                  : 'bg-purple-500/10 border-purple-500 active:opacity-80'
+              }`}
+            >
+              <View className="flex-row items-center gap-2">
+                <Text className="text-xl">
+                  {state.isVerifyingChecksum ? '⏳' : state.checksumResult?.valid ? '✅' : state.checksumResult ? '❌' : '📏'}
+                </Text>
+                <Text className={`text-base font-bold ${
+                  state.checksumResult?.valid
+                    ? 'text-green-500'
+                    : state.checksumResult && !state.checksumResult.valid
+                    ? 'text-red-500'
+                    : state.isVerifyingChecksum
+                    ? 'text-muted'
+                    : 'text-purple-500'
+                }`}>
+                  {state.isVerifyingChecksum ? t('auto_spoof.verifying_checksum') : t('auto_spoof.verify_checksum')}
+                </Text>
+              </View>
+              <Text className="text-xs text-muted mt-1">
+                {t('auto_spoof.verify_checksum_desc')}
+              </Text>
+            </TouchableOpacity>
+
+            {/* Resultado Checksum */}
+            {state.checksumResult && (
+              <View className={`rounded-xl p-4 border ${
+                state.checksumResult.valid ? 'bg-green-500/5 border-green-500/30' : 'bg-red-500/5 border-red-500/30'
+              }`}>
+                <Text className={`text-sm font-semibold mb-2 ${
+                  state.checksumResult.valid ? 'text-green-500' : 'text-red-500'
+                }`}>
+                  {t('auto_spoof.checksum_result')}
+                </Text>
+                <View className="gap-1">
+                  <Text className="text-xs text-muted">
+                    {t('auto_spoof.stored_checksum')}: 0x{state.checksumResult.storedChecksum.toString(16).toUpperCase().padStart(2, '0')}
+                  </Text>
+                  <Text className="text-xs text-muted">
+                    {t('auto_spoof.calculated_checksum')}: 0x{state.checksumResult.calculatedChecksum.toString(16).toUpperCase().padStart(2, '0')}
+                  </Text>
+                  <Text className="text-xs text-muted">
+                    {t('auto_spoof.data_range')}: {state.checksumResult.dataRange}
+                  </Text>
+                  <Text className={`text-xs mt-2 font-medium ${
+                    state.checksumResult.valid ? 'text-green-500' : 'text-red-500'
+                  }`}>
+                    {state.checksumResult.valid ? t('auto_spoof.checksum_valid') : t('auto_spoof.checksum_invalid')}
+                  </Text>
+                  <Text className="text-xs text-muted mt-1 italic">
+                    {t('auto_spoof.checksum_not_affects_vidpid')}
+                  </Text>
+                </View>
+              </View>
+            )}
+          </View>
 
           {/* Botones de Test y Spoof Rápido */}
           <View className="gap-3">

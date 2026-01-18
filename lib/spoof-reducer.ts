@@ -32,6 +32,35 @@ export interface EepromProgress {
   operation: 'read' | 'write';
 }
 
+export interface DryRunChange {
+  offset: number;
+  offsetHex: string;
+  currentValue: string;
+  newValue: string;
+  description: string;
+}
+
+export interface DryRunResult {
+  wouldSucceed: boolean;
+  currentVID: number;
+  currentPID: number;
+  targetVID: number;
+  targetPID: number;
+  changes: DryRunChange[];
+  warnings: string[];
+  eepromType: 'external_eeprom' | 'efuse' | 'unknown';
+}
+
+export interface ChecksumResult {
+  valid: boolean;
+  storedChecksum: number;
+  calculatedChecksum: number;
+  checksumOffset: number;
+  dataRange: string;
+  affectsVIDPID: boolean;
+  details: string;
+}
+
 export interface SpoofState {
   // Estado del proceso
   isExecuting: boolean;
@@ -54,6 +83,14 @@ export interface SpoofState {
   
   // Configuración
   skipVerification: boolean;
+  
+  // Dry-Run
+  isDryRunning: boolean;
+  dryRunResult: DryRunResult | null;
+  
+  // Checksum
+  isVerifyingChecksum: boolean;
+  checksumResult: ChecksumResult | null;
 }
 
 export type SpoofAction =
@@ -67,6 +104,10 @@ export type SpoofAction =
   | { type: 'START_TEST' }
   | { type: 'SET_TEST_RESULT'; payload: 'success' | 'fail' | null }
   | { type: 'TOGGLE_SKIP_VERIFICATION' }
+  | { type: 'START_DRY_RUN' }
+  | { type: 'SET_DRY_RUN_RESULT'; payload: DryRunResult | null }
+  | { type: 'START_CHECKSUM_VERIFY' }
+  | { type: 'SET_CHECKSUM_RESULT'; payload: ChecksumResult | null }
   | { type: 'RESET' };
 
 export const initialSpoofState: SpoofState = {
@@ -85,6 +126,10 @@ export const initialSpoofState: SpoofState = {
   isTesting: false,
   testResult: null,
   skipVerification: false,
+  isDryRunning: false,
+  dryRunResult: null,
+  isVerifyingChecksum: false,
+  checksumResult: null,
 };
 
 export function spoofReducer(state: SpoofState, action: SpoofAction): SpoofState {
@@ -168,6 +213,34 @@ export function spoofReducer(state: SpoofState, action: SpoofAction): SpoofState
       return {
         ...state,
         skipVerification: !state.skipVerification,
+      };
+
+    case 'START_DRY_RUN':
+      return {
+        ...state,
+        isDryRunning: true,
+        dryRunResult: null,
+      };
+
+    case 'SET_DRY_RUN_RESULT':
+      return {
+        ...state,
+        isDryRunning: false,
+        dryRunResult: action.payload,
+      };
+
+    case 'START_CHECKSUM_VERIFY':
+      return {
+        ...state,
+        isVerifyingChecksum: true,
+        checksumResult: null,
+      };
+
+    case 'SET_CHECKSUM_RESULT':
+      return {
+        ...state,
+        isVerifyingChecksum: false,
+        checksumResult: action.payload,
       };
 
     case 'RESET':
