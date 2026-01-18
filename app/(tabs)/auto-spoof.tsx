@@ -197,32 +197,35 @@ export default function AutoSpoofScreen() {
       dispatch({ type: 'UPDATE_PROGRESS', payload: { progress: 0 } });
       dispatch({ type: 'UPDATE_PROGRESS', payload: { bytesProcessed: 0 } });
       
-      // Paso 3: Escribir VID byte bajo (0x88 = 0x01)
+      // Paso 3: Escribir VID completo (word en offset 0x88 = 0x0120 para VID 0x2001 en little-endian)
+      // IMPORTANTE: Escribimos 2 bytes a la vez porque ASIX usa word offsets internamente
+      // Byte offset 0x88 -> Word offset 0x44
+      // Datos: 0x01 (byte bajo) + 0x20 (byte alto) = VID 0x2001
       dispatch({ type: 'SET_STEP', payload: 'writing_vid_low' });
       dispatch({ type: 'UPDATE_PROGRESS', payload: { progress: 25 } });
       dispatch({ type: 'UPDATE_PROGRESS', payload: { bytesProcessed: 1 } });
-      await usbService.writeEEPROM(0x88, '01', state.skipVerification);
+      await usbService.writeEEPROM(0x88, '0120', state.skipVerification);
       await new Promise(resolve => setTimeout(resolve, 100));
 
-      // Paso 4: Escribir VID byte alto (0x89 = 0x20)
+      // Actualizar progreso para VID completo
       dispatch({ type: 'SET_STEP', payload: 'writing_vid_high' });
       dispatch({ type: 'UPDATE_PROGRESS', payload: { progress: 50 } });
       dispatch({ type: 'UPDATE_PROGRESS', payload: { bytesProcessed: 2 } });
-      await usbService.writeEEPROM(0x89, '20', state.skipVerification);
       await new Promise(resolve => setTimeout(resolve, 100));
 
-      // Paso 5: Escribir PID byte bajo (0x8A = 0x05)
+      // Paso 4: Escribir PID completo (word en offset 0x8A = 0x053C para PID 0x3C05 en little-endian)
+      // Byte offset 0x8A -> Word offset 0x45
+      // Datos: 0x05 (byte bajo) + 0x3C (byte alto) = PID 0x3C05
       dispatch({ type: 'SET_STEP', payload: 'writing_pid_low' });
       dispatch({ type: 'UPDATE_PROGRESS', payload: { progress: 75 } });
       dispatch({ type: 'UPDATE_PROGRESS', payload: { bytesProcessed: 3 } });
-      await usbService.writeEEPROM(0x8A, '05', state.skipVerification);
+      await usbService.writeEEPROM(0x8A, '053C', state.skipVerification);
       await new Promise(resolve => setTimeout(resolve, 100));
 
-      // Paso 6: Escribir PID byte alto (0x8B = 0x3C)
+      // Actualizar progreso para PID completo
       dispatch({ type: 'SET_STEP', payload: 'writing_pid_high' });
       dispatch({ type: 'UPDATE_PROGRESS', payload: { progress: 100 } });
       dispatch({ type: 'UPDATE_PROGRESS', payload: { bytesProcessed: 4 } });
-      await usbService.writeEEPROM(0x8B, '3C', state.skipVerification);
       await new Promise(resolve => setTimeout(resolve, 100));
 
       // Paso 7: Verificar escritura
