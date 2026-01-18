@@ -1681,6 +1681,7 @@
     "dd_restore_system_name": "🔄 System aus dd-Abbild WIEDERHERSTELLEN",
     "dd_restore_system_desc": "⚠️ EXTREME GEFAHR: Stellt das komplette System aus einem dd-Abbild wieder her. NUR VERWENDEN WENN SYSTEM KOMPLETT BESCHÄDIGT.",
     "dd_restore_system_warning": "☠️ EXTREME GEFAHR: Diese Operation überschreibt das System VOLLSTÄNDIG. Nur als letzten Ausweg verwenden, wenn MIB2 nicht startet. Befehl wird angezeigt aber NICHT automatisch ausgeführt aus Sicherheitsgründen.",
+    "dd_progress_warning": "App NICHT schließen oder Gerät während des Backups trennen",
     "verify_root_name": "Root-Zugriff prüfen",
     "verify_root_desc": "Prüft, ob Sie Root-Zugriff auf das MIB2-System haben",
     "verify_root_success": "✅ Root-Zugriff bestätigt",

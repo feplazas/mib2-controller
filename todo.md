@@ -1878,3 +1878,14 @@ módulo nativo: val wordOffset = (offset + i) / 2  // Divide de nuevo!
 - [x] Agregar comando: Restaurar partición desde imagen dd (emergencia)
 - [x] Agregar advertencias sobre tiempo y espacio requerido
 - [x] Agregar traducciones ES/EN/DE para comandos de dd
+
+
+## Barra de Progreso para dd (18 Enero 2026)
+
+### Tareas
+- [x] Modificar comandos dd para usar status=progress (si QNX lo soporta)
+- [x] Agregar script mejorado con información detallada de progreso
+- [x] Implementar parsing de salida de dd para extraer bytes transferidos
+- [x] Agregar componente visual de barra de progreso en UI
+- [x] Mostrar velocidad de transferencia y tiempo transcurrido
+- [x] Agregar traducciones ES/EN/DE para mensajes de progreso

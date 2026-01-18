@@ -43,6 +43,16 @@ export default function CommandsScreen() {
   const [showGuideModal, setShowGuideModal] = useState(false);
   const [currentGuideStep, setCurrentGuideStep] = useState(0);
   
+  // Estado para progreso de backup dd
+  const [ddProgress, setDdProgress] = useState<{
+    isRunning: boolean;
+    bytesTransferred: number;
+    totalBytes: number;
+    speed: string;
+    elapsed: string;
+    scriptName: string;
+  } | null>(null);
+  
   // Estado del sistema MIB2
   const [mib2State, setMib2State] = useState<MIB2SystemState>(getMIB2State());
   const [isVerifyingState, setIsVerifyingState] = useState(false);
@@ -74,6 +84,36 @@ export default function CommandsScreen() {
       scrollViewRef.current?.scrollToEnd({ animated: true });
     }, 100);
   }, [messages]);
+
+  // Parsear progreso de dd desde mensajes del terminal
+  useEffect(() => {
+    if (!ddProgress?.isRunning) return;
+    
+    const lastMessages = messages.slice(-5);
+    for (const msg of lastMessages) {
+      if (msg.type === 'response') {
+        // Formato de dd status=progress: "123456789 bytes (123 MB, 117 MiB) copied, 5.12345 s, 24.1 MB/s"
+        const ddMatch = msg.text.match(/(\d+)\s+bytes.*copied,\s+([\d.]+)\s*s?,\s+([\d.]+\s*\w+\/s)/);
+        if (ddMatch) {
+          const bytesTransferred = parseInt(ddMatch[1]);
+          const elapsed = parseFloat(ddMatch[2]);
+          const speed = ddMatch[3];
+          
+          setDdProgress(prev => prev ? {
+            ...prev,
+            bytesTransferred,
+            speed,
+            elapsed: `${Math.floor(elapsed / 60)}:${String(Math.floor(elapsed % 60)).padStart(2, '0')}`
+          } : null);
+        }
+        
+        // Detectar fin del backup
+        if (msg.text.includes('BACKUP COMPLETADO') || msg.text.includes('ERROR: Backup')) {
+          setDdProgress(null);
+        }
+      }
+    }
+  }, [messages, ddProgress?.isRunning]);
 
   /**
    * Ejecutar comando y capturar respuesta para verificación de estado
@@ -293,32 +333,55 @@ export default function CommandsScreen() {
     setIsExecutingScript(true);
     setShowScriptsModal(false);
     
+    // Detectar si es un script de backup dd para mostrar progreso
+    const isDdBackup = script.id.startsWith('dd_backup');
+    if (isDdBackup) {
+      // Estimar tamaño total según el tipo de backup
+      let estimatedSize = 8000000000; // 8GB por defecto para backup completo
+      if (script.id === 'dd_backup_partition1') estimatedSize = 2000000000; // 2GB
+      if (script.id === 'dd_backup_partition2') estimatedSize = 1000000000; // 1GB
+      
+      setDdProgress({
+        isRunning: true,
+        bytesTransferred: 0,
+        totalBytes: estimatedSize,
+        speed: '0 MB/s',
+        elapsed: '0:00',
+        scriptName: t(script.nameKey)
+      });
+    }
+    
     try {
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       
       // Ejecutar cada comando en secuencia
       for (const cmd of script.commands) {
         sendCommand(cmd);
-        // Pequeña pausa entre comandos para que el sistema procese
-        await new Promise(resolve => setTimeout(resolve, 500));
+        // Pausa más larga para comandos dd
+        const delay = isDdBackup ? 1000 : 500;
+        await new Promise(resolve => setTimeout(resolve, delay));
       }
       
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      // No mostrar éxito inmediato para dd, esperar a que termine
+      if (!isDdBackup) {
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        
+        // Mostrar mensaje de éxito si existe
+        if (script.successKey) {
+          setTimeout(() => {
+            Alert.alert(t('common.success'), t(script.successKey!));
+          }, 1000);
+        }
+      }
       
       // Actualizar estado después de ejecutar script
       setTimeout(() => {
         analyzeMessagesForState();
       }, 1500);
-      
-      // Mostrar mensaje de éxito si existe
-      if (script.successKey) {
-        setTimeout(() => {
-          Alert.alert(t('common.success'), t(script.successKey!));
-        }, 1000);
-      }
     } catch (error) {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       Alert.alert(t('common.error'), String(error));
+      if (isDdBackup) setDdProgress(null);
     } finally {
       setIsExecutingScript(false);
     }
@@ -524,6 +587,41 @@ export default function CommandsScreen() {
             <Text style={styles.guideButtonText}>{t('telnet_scripts.installation_guide')}</Text>
           </Pressable>
         </View>
+
+        {/* Barra de Progreso dd */}
+        {ddProgress && (
+          <View style={styles.ddProgressContainer}>
+            <View style={styles.ddProgressHeader}>
+              <Text style={styles.ddProgressTitle}>💾 {ddProgress.scriptName}</Text>
+              <Text style={styles.ddProgressTime}>⏱️ {ddProgress.elapsed}</Text>
+            </View>
+            
+            <View style={styles.ddProgressBarContainer}>
+              <View 
+                style={[
+                  styles.ddProgressBar, 
+                  { width: `${Math.min((ddProgress.bytesTransferred / ddProgress.totalBytes) * 100, 100)}%` }
+                ]} 
+              />
+            </View>
+            
+            <View style={styles.ddProgressStats}>
+              <Text style={styles.ddProgressStat}>
+                {(ddProgress.bytesTransferred / 1024 / 1024).toFixed(1)} MB / {(ddProgress.totalBytes / 1024 / 1024 / 1024).toFixed(1)} GB
+              </Text>
+              <Text style={styles.ddProgressStat}>
+                {Math.round((ddProgress.bytesTransferred / ddProgress.totalBytes) * 100)}%
+              </Text>
+              <Text style={styles.ddProgressStat}>
+                🚀 {ddProgress.speed}
+              </Text>
+            </View>
+            
+            <Text style={styles.ddProgressWarning}>
+              ⚠️ {t('telnet_scripts.dd_progress_warning')}
+            </Text>
+          </View>
+        )}
 
         {/* Terminal Output */}
         <View className="flex-1 bg-background border border-border rounded-xl overflow-hidden">
@@ -910,6 +1008,58 @@ const styles = StyleSheet.create({
     color: '#22C55E',
     fontWeight: '600',
     fontSize: 14,
+  },
+  // Estilos para barra de progreso dd
+  ddProgressContainer: {
+    backgroundColor: 'rgba(10, 126, 164, 0.15)',
+    borderWidth: 1,
+    borderColor: '#0a7ea4',
+    borderRadius: 12,
+    padding: 16,
+  },
+  ddProgressHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  ddProgressTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#ECEDEE',
+  },
+  ddProgressTime: {
+    fontSize: 14,
+    color: '#9BA1A6',
+    fontFamily: 'monospace',
+  },
+  ddProgressBarContainer: {
+    height: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderRadius: 10,
+    overflow: 'hidden',
+    marginBottom: 12,
+  },
+  ddProgressBar: {
+    height: '100%',
+    backgroundColor: '#0a7ea4',
+    borderRadius: 10,
+  },
+  ddProgressStats: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  ddProgressStat: {
+    fontSize: 12,
+    color: '#9BA1A6',
+    fontFamily: 'monospace',
+  },
+  ddProgressWarning: {
+    fontSize: 11,
+    color: '#F59E0B',
+    textAlign: 'center',
+    marginTop: 4,
   },
   modalOverlay: {
     flex: 1,

@@ -1681,6 +1681,7 @@
     "dd_restore_system_name": "🔄 RESTAURAR sistema desde imagen dd",
     "dd_restore_system_desc": "⚠️ PELIGRO EXTREMO: Restaura el sistema completo desde una imagen dd. SOLO USAR SI EL SISTEMA ESTÁ COMPLETAMENTE DAÑADO.",
     "dd_restore_system_warning": "☠️ PELIGRO EXTREMO: Esta operación sobrescribirá COMPLETAMENTE el sistema. Solo usar como último recurso si la MIB2 no arranca. El comando se muestra pero NO se ejecuta automáticamente por seguridad.",
+    "dd_progress_warning": "NO cierres la app ni desconectes el dispositivo durante el backup",
     "verify_root_name": "Verificar acceso root",
     "verify_root_desc": "Verifica que tienes acceso root al sistema MIB2",
     "verify_root_success": "✅ Acceso root confirmado",
