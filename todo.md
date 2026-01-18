@@ -1853,3 +1853,16 @@ módulo nativo: val wordOffset = (offset + i) / 2  // Divide de nuevo!
 - [x] Habilitar/deshabilitar comandos según el estado detectado
 - [x] Agregar botón "Actualizar Estado" para re-verificar manualmente
 - [x] Agregar traducciones ES/EN/DE para estados del sistema
+
+
+## Scripts de Backup MIB2 (18 Enero 2026)
+
+### Tareas
+- [x] Agregar categoría "backup" a los scripts predefinidos de Telnet
+- [x] Agregar comando: Backup del binario tsd.mibstd2.system.swap
+- [x] Agregar comando: Backup de configuración /etc/
+- [x] Agregar comando: Backup de /eso/ (si existe)
+- [x] Agregar comando: Verificar espacio disponible en SD
+- [x] Agregar comando: Listar backups existentes
+- [x] Agregar comando: Restaurar binario crítico desde backup
+- [x] Agregar traducciones ES/EN/DE para comandos de backup

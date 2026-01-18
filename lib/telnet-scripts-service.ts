@@ -17,6 +17,7 @@ export type ScriptRiskLevel = 'info' | 'warning' | 'danger';
 
 export type ScriptCategory = 
   | 'verification'    // Comandos de verificación (solo lectura)
+  | 'backup'          // Backup del sistema antes de modificaciones
   | 'preparation'     // Preparación del sistema
   | 'installation'    // Instalación del Toolbox
   | 'activation'      // Activación de funciones
@@ -106,6 +107,100 @@ export const TELNET_SCRIPTS: TelnetScript[] = [
     riskLevel: 'info',
     requiresConfirmation: false,
     order: 5,
+  },
+
+  // ============================================
+  // CATEGORÍA: BACKUP (Crítico antes de modificaciones)
+  // ============================================
+  {
+    id: 'check_sd_space',
+    name: 'Verificar espacio en SD',
+    nameKey: 'telnet_scripts.check_sd_space_name',
+    description: 'Verifica el espacio disponible en la tarjeta SD para backups',
+    descriptionKey: 'telnet_scripts.check_sd_space_desc',
+    category: 'backup',
+    commands: ['df -h /mnt/sd 2>/dev/null || echo "SD no montada"'],
+    riskLevel: 'info',
+    requiresConfirmation: false,
+    order: 6,
+  },
+  {
+    id: 'create_backup_dir',
+    name: 'Crear directorio de backups',
+    nameKey: 'telnet_scripts.create_backup_dir_name',
+    description: 'Crea el directorio /mnt/sd/backups para almacenar los respaldos',
+    descriptionKey: 'telnet_scripts.create_backup_dir_desc',
+    category: 'backup',
+    commands: ['mkdir -p /mnt/sd/backups'],
+    riskLevel: 'info',
+    requiresConfirmation: false,
+    order: 7,
+  },
+  {
+    id: 'backup_tsd_swap',
+    name: '⚠️ Backup binario crítico (tsd.swap)',
+    nameKey: 'telnet_scripts.backup_tsd_swap_name',
+    description: 'OBLIGATORIO: Respalda el binario tsd.mibstd2.system.swap antes de parchear. Sin este backup, no podrás restaurar si algo sale mal.',
+    descriptionKey: 'telnet_scripts.backup_tsd_swap_desc',
+    category: 'backup',
+    commands: ['cp /net/rcc/dev/shmem/tsd.mibstd2.system.swap /mnt/sd/backups/tsd.mibstd2.system.swap.backup.$(date +%Y%m%d_%H%M%S)'],
+    riskLevel: 'warning',
+    requiresConfirmation: true,
+    warningKey: 'telnet_scripts.backup_tsd_swap_warning',
+    successKey: 'telnet_scripts.backup_tsd_swap_success',
+    order: 8,
+  },
+  {
+    id: 'backup_etc',
+    name: 'Backup configuración /etc/',
+    nameKey: 'telnet_scripts.backup_etc_name',
+    description: 'Respalda la configuración del sistema en /etc/',
+    descriptionKey: 'telnet_scripts.backup_etc_desc',
+    category: 'backup',
+    commands: ['tar -czf /mnt/sd/backups/etc_backup_$(date +%Y%m%d_%H%M%S).tar.gz /etc/ 2>/dev/null'],
+    riskLevel: 'warning',
+    requiresConfirmation: true,
+    warningKey: 'telnet_scripts.backup_etc_warning',
+    successKey: 'telnet_scripts.backup_etc_success',
+    order: 9,
+  },
+  {
+    id: 'backup_eso',
+    name: 'Backup instalación /eso/',
+    nameKey: 'telnet_scripts.backup_eso_name',
+    description: 'Respalda la instalación existente del Toolbox (si existe)',
+    descriptionKey: 'telnet_scripts.backup_eso_desc',
+    category: 'backup',
+    commands: ['tar -czf /mnt/sd/backups/eso_backup_$(date +%Y%m%d_%H%M%S).tar.gz /eso/ 2>/dev/null || echo "No existe /eso/ - omitiendo"'],
+    riskLevel: 'info',
+    requiresConfirmation: false,
+    order: 9,
+  },
+  {
+    id: 'list_backups',
+    name: 'Listar backups existentes',
+    nameKey: 'telnet_scripts.list_backups_name',
+    description: 'Muestra todos los backups guardados en la SD',
+    descriptionKey: 'telnet_scripts.list_backups_desc',
+    category: 'backup',
+    commands: ['ls -lah /mnt/sd/backups/ 2>/dev/null || echo "No hay backups o directorio no existe"'],
+    riskLevel: 'info',
+    requiresConfirmation: false,
+    order: 9,
+  },
+  {
+    id: 'restore_tsd_swap',
+    name: '🔄 Restaurar binario crítico',
+    nameKey: 'telnet_scripts.restore_tsd_swap_name',
+    description: 'Restaura el binario tsd.mibstd2.system.swap desde el último backup. USAR SOLO SI EL SISTEMA FALLA.',
+    descriptionKey: 'telnet_scripts.restore_tsd_swap_desc',
+    category: 'backup',
+    commands: ['LATEST=$(ls -t /mnt/sd/backups/tsd.mibstd2.system.swap.backup.* 2>/dev/null | head -1) && cp "$LATEST" /net/rcc/dev/shmem/tsd.mibstd2.system.swap && echo "Restaurado desde: $LATEST"'],
+    riskLevel: 'danger',
+    requiresConfirmation: true,
+    warningKey: 'telnet_scripts.restore_tsd_swap_warning',
+    successKey: 'telnet_scripts.restore_tsd_swap_success',
+    order: 9,
   },
 
   // ============================================
