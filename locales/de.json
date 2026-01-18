@@ -983,7 +983,20 @@
     "data_range": "Datenbereich",
     "checksum_valid": "Checksum gültig - EEPROM-Integrität OK",
     "checksum_invalid": "Checksum ungültig - Mögliche Beschädigung",
-    "checksum_not_affects_vidpid": "Checksum enthält KEINE VID/PID, daher beeinträchtigt deren Änderung nicht die Integrität"
+    "checksum_not_affects_vidpid": "Checksum enthält KEINE VID/PID, daher beeinträchtigt deren Änderung nicht die Integrität",
+    "safe_test_mode": "Sicherer Testmodus",
+    "safe_test_running": "Sicherer Test läuft...",
+    "safe_test_desc": "Simuliert den GESAMTEN Spoofing-Prozess ohne in EEPROM zu schreiben",
+    "safe_test_progress": "Simulationsfortschritt",
+    "safe_test_result": "Sicherer Test Ergebnis",
+    "safe_test_would_succeed": "✅ Echtes Spoofing WÜRDE FUNKTIONIEREN",
+    "safe_test_would_fail": "⚠️ Echtes Spoofing könnte FEHLSCHLAGEN - Warnungen prüfen",
+    "eeprom_type": "EEPROM-Typ",
+    "writable": "Beschreibbar",
+    "estimated_time": "Geschätzte Zeit",
+    "steps_executed": "Ausgeführte Schritte",
+    "warnings": "Warnungen",
+    "errors": "Fehler"
   },
   "diag": {
     "title": "Diagnose",

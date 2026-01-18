@@ -562,6 +562,300 @@ class UsbService {
       throw error;
     }
   }
+
+  /**
+   * SAFE TEST MODE: Simular todo el proceso de spoofing sin escribir en EEPROM
+   * 
+   * Este modo ejecuta todos los pasos del spoofing real pero sin realizar
+   * escrituras en la EEPROM. Permite verificar que todo funcionará correctamente
+   * antes de ejecutar el spoofing real.
+   * 
+   * Pasos simulados:
+   * 1. Validación de compatibilidad del dispositivo
+   * 2. Detección de tipo de EEPROM (externa vs eFuse)
+   * 3. Lectura de VID/PID actuales
+   * 4. Simulación de backup (sin crear archivo real)
+   * 5. Simulación de escritura de cada byte (con delays realistas)
+   * 6. Simulación de verificación post-escritura
+   * 7. Generación de reporte detallado
+   * 
+   * @param targetVID VID objetivo (default: D-Link 0x2001)
+   * @param targetPID PID objetivo (default: D-Link 0x3C05)
+   * @param onProgress Callback para reportar progreso de cada paso
+   * @returns Reporte detallado de la simulación
+   */
+  async simulateFullSpoofProcess(
+    targetVID: number = TARGET_VID,
+    targetPID: number = TARGET_PID,
+    onProgress?: (step: string, progress: number, details: string) => void
+  ): Promise<{
+    success: boolean;
+    wouldSucceedInRealMode: boolean;
+    steps: Array<{
+      name: string;
+      status: 'passed' | 'failed' | 'warning' | 'skipped';
+      duration: number;
+      details: string;
+    }>;
+    summary: {
+      currentVID: string;
+      currentPID: string;
+      targetVID: string;
+      targetPID: string;
+      eepromType: string;
+      isWritable: boolean;
+      totalChanges: number;
+      estimatedRealTime: number;
+    };
+    warnings: string[];
+    errors: string[];
+  }> {
+    if (Platform.OS !== 'android') {
+      throw new Error('Safe Test Mode only available on Android');
+    }
+
+    if (this.currentDeviceId === null) {
+      throw new Error('No device connected');
+    }
+
+    const steps: Array<{
+      name: string;
+      status: 'passed' | 'failed' | 'warning' | 'skipped';
+      duration: number;
+      details: string;
+    }> = [];
+    const warnings: string[] = [];
+    const errors: string[] = [];
+    let wouldSucceedInRealMode = true;
+
+    const reportProgress = (step: string, progress: number, details: string) => {
+      if (onProgress) {
+        onProgress(step, progress, details);
+      }
+    };
+
+    const addStep = (name: string, status: 'passed' | 'failed' | 'warning' | 'skipped', duration: number, details: string) => {
+      steps.push({ name, status, duration, details });
+      if (status === 'failed') {
+        wouldSucceedInRealMode = false;
+        errors.push(`${name}: ${details}`);
+      } else if (status === 'warning') {
+        warnings.push(`${name}: ${details}`);
+      }
+    };
+
+    try {
+      usbLogger.info('safeTest', 'logs.spoof.safe_test_start');
+      reportProgress('init', 0, 'Iniciando modo de prueba seguro...');
+
+      // ========== PASO 1: Validación de compatibilidad ==========
+      const step1Start = Date.now();
+      reportProgress('validating', 10, 'Validando compatibilidad del dispositivo...');
+      await this.delay(500); // Simular tiempo de validación
+
+      const devices = await this.scanDevices();
+      const currentDevice = devices.find(d => d.deviceId === this.currentDeviceId);
+      
+      if (!currentDevice) {
+        addStep('Validación de dispositivo', 'failed', Date.now() - step1Start, 'Dispositivo no encontrado');
+        throw new Error('Device not found');
+      }
+
+      const isCompatible = this.isCompatibleForSpoofing(currentDevice);
+      if (isCompatible) {
+        addStep('Validación de dispositivo', 'passed', Date.now() - step1Start, 
+          `Dispositivo compatible: ${currentDevice.deviceName || 'USB Device'} (${this.formatVIDPID(currentDevice.vendorId, currentDevice.productId)})`);
+      } else {
+        addStep('Validación de dispositivo', 'warning', Date.now() - step1Start, 
+          `Dispositivo no es ASIX ni D-Link: ${this.formatVIDPID(currentDevice.vendorId, currentDevice.productId)}`);
+        warnings.push('El dispositivo puede no ser compatible con MIB2');
+      }
+
+      // ========== PASO 2: Detección de tipo de EEPROM ==========
+      const step2Start = Date.now();
+      reportProgress('detecting_eeprom', 20, 'Detectando tipo de EEPROM...');
+      
+      let eepromType: 'external_eeprom' | 'efuse' | 'unknown' = 'unknown';
+      let isWritable = false;
+      
+      try {
+        const eepromResult = await this.detectEEPROMType();
+        eepromType = eepromResult.type;
+        isWritable = eepromResult.writable;
+        
+        if (eepromType === 'efuse') {
+          addStep('Detección de EEPROM', 'failed', Date.now() - step2Start, 
+            'EEPROM tipo eFuse detectado - NO es posible modificar VID/PID');
+          wouldSucceedInRealMode = false;
+        } else if (eepromType === 'external_eeprom' && isWritable) {
+          addStep('Detección de EEPROM', 'passed', Date.now() - step2Start, 
+            'EEPROM externa detectada - Escritura posible');
+        } else {
+          addStep('Detección de EEPROM', 'warning', Date.now() - step2Start, 
+            `Tipo: ${eepromType}, Escribible: ${isWritable}`);
+        }
+      } catch (error: any) {
+        addStep('Detección de EEPROM', 'warning', Date.now() - step2Start, 
+          `No se pudo detectar tipo de EEPROM: ${error.message}`);
+      }
+
+      // ========== PASO 3: Lectura de VID/PID actuales ==========
+      const step3Start = Date.now();
+      reportProgress('reading_vidpid', 35, 'Leyendo VID/PID actuales...');
+      
+      let currentVID = 0;
+      let currentPID = 0;
+      
+      try {
+        const vidResult = await this.readEEPROM(EEPROM_VID_OFFSET, 2);
+        const pidResult = await this.readEEPROM(EEPROM_PID_OFFSET, 2);
+        
+        currentVID = (vidResult.bytes[1] << 8) | vidResult.bytes[0];
+        currentPID = (pidResult.bytes[1] << 8) | pidResult.bytes[0];
+        
+        addStep('Lectura de VID/PID', 'passed', Date.now() - step3Start, 
+          `VID actual: 0x${currentVID.toString(16).toUpperCase()}, PID actual: 0x${currentPID.toString(16).toUpperCase()}`);
+        
+        // Verificar si ya está spoofed
+        if (currentVID === targetVID && currentPID === targetPID) {
+          addStep('Verificación de estado', 'warning', 0, 
+            'El adaptador ya tiene el VID/PID objetivo - No se requieren cambios');
+          warnings.push('El adaptador ya está configurado con el VID/PID de D-Link');
+        }
+      } catch (error: any) {
+        addStep('Lectura de VID/PID', 'failed', Date.now() - step3Start, 
+          `Error leyendo EEPROM: ${error.message}`);
+        wouldSucceedInRealMode = false;
+      }
+
+      // ========== PASO 4: Verificación de checksum ==========
+      const step4Start = Date.now();
+      reportProgress('verifying_checksum', 45, 'Verificando checksum de EEPROM...');
+      
+      try {
+        const checksumResult = await this.verifyEEPROMChecksum();
+        if (checksumResult.valid) {
+          addStep('Verificación de checksum', 'passed', Date.now() - step4Start, 
+            `Checksum válido: 0x${checksumResult.storedChecksum.toString(16).toUpperCase()}`);
+        } else {
+          addStep('Verificación de checksum', 'warning', Date.now() - step4Start, 
+            `Checksum inválido pero no afecta VID/PID`);
+        }
+      } catch (error: any) {
+        addStep('Verificación de checksum', 'warning', Date.now() - step4Start, 
+          `No se pudo verificar checksum: ${error.message}`);
+      }
+
+      // ========== PASO 5: Simulación de backup ==========
+      const step5Start = Date.now();
+      reportProgress('simulating_backup', 55, 'Simulando creación de backup...');
+      await this.delay(300); // Simular tiempo de backup
+      
+      addStep('Simulación de backup', 'passed', Date.now() - step5Start, 
+        `Backup simulado: VID=0x${currentVID.toString(16).toUpperCase()}, PID=0x${currentPID.toString(16).toUpperCase()}`);
+
+      // ========== PASO 6: Simulación de escritura de VID ==========
+      const step6Start = Date.now();
+      reportProgress('simulating_write_vid', 65, 'Simulando escritura de VID...');
+      await this.delay(400); // Simular tiempo de escritura
+      
+      const vidLow = targetVID & 0xFF;
+      const vidHigh = (targetVID >> 8) & 0xFF;
+      
+      if (isWritable || eepromType === 'unknown') {
+        addStep('Simulación escritura VID', 'passed', Date.now() - step6Start, 
+          `Escribiría: offset 0x${EEPROM_VID_OFFSET.toString(16)} = 0x${vidLow.toString(16).padStart(2, '0')}${vidHigh.toString(16).padStart(2, '0')} (${targetVID.toString(16).toUpperCase()})`);
+      } else {
+        addStep('Simulación escritura VID', 'skipped', Date.now() - step6Start, 
+          'Escritura omitida - EEPROM no es escribible');
+      }
+
+      // ========== PASO 7: Simulación de escritura de PID ==========
+      const step7Start = Date.now();
+      reportProgress('simulating_write_pid', 80, 'Simulando escritura de PID...');
+      await this.delay(400); // Simular tiempo de escritura
+      
+      const pidLow = targetPID & 0xFF;
+      const pidHigh = (targetPID >> 8) & 0xFF;
+      
+      if (isWritable || eepromType === 'unknown') {
+        addStep('Simulación escritura PID', 'passed', Date.now() - step7Start, 
+          `Escribiría: offset 0x${EEPROM_PID_OFFSET.toString(16)} = 0x${pidLow.toString(16).padStart(2, '0')}${pidHigh.toString(16).padStart(2, '0')} (${targetPID.toString(16).toUpperCase()})`);
+      } else {
+        addStep('Simulación escritura PID', 'skipped', Date.now() - step7Start, 
+          'Escritura omitida - EEPROM no es escribible');
+      }
+
+      // ========== PASO 8: Simulación de verificación ==========
+      const step8Start = Date.now();
+      reportProgress('simulating_verify', 90, 'Simulando verificación post-escritura...');
+      await this.delay(300); // Simular tiempo de verificación
+      
+      if (isWritable || eepromType === 'unknown') {
+        addStep('Simulación verificación', 'passed', Date.now() - step8Start, 
+          `Verificaría que VID/PID = ${this.formatVIDPID(targetVID, targetPID)}`);
+      } else {
+        addStep('Simulación verificación', 'skipped', Date.now() - step8Start, 
+          'Verificación omitida - No se realizó escritura');
+      }
+
+      // ========== PASO 9: Generación de reporte ==========
+      reportProgress('generating_report', 100, 'Generando reporte de simulación...');
+
+      const totalChanges = (currentVID !== targetVID ? 2 : 0) + (currentPID !== targetPID ? 2 : 0);
+      const estimatedRealTime = 2000 + (totalChanges * 500); // Base + tiempo por cambio
+
+      usbLogger.success('safeTest', 'logs.spoof.safe_test_complete', {
+        wouldSucceed: wouldSucceedInRealMode,
+        steps: steps.length
+      });
+
+      return {
+        success: true,
+        wouldSucceedInRealMode,
+        steps,
+        summary: {
+          currentVID: `0x${currentVID.toString(16).toUpperCase().padStart(4, '0')}`,
+          currentPID: `0x${currentPID.toString(16).toUpperCase().padStart(4, '0')}`,
+          targetVID: `0x${targetVID.toString(16).toUpperCase().padStart(4, '0')}`,
+          targetPID: `0x${targetPID.toString(16).toUpperCase().padStart(4, '0')}`,
+          eepromType,
+          isWritable,
+          totalChanges,
+          estimatedRealTime
+        },
+        warnings,
+        errors
+      };
+    } catch (error: any) {
+      usbLogger.error('safeTest', 'logs.spoof.safe_test_error', error.message);
+      
+      return {
+        success: false,
+        wouldSucceedInRealMode: false,
+        steps,
+        summary: {
+          currentVID: 'N/A',
+          currentPID: 'N/A',
+          targetVID: `0x${targetVID.toString(16).toUpperCase().padStart(4, '0')}`,
+          targetPID: `0x${targetPID.toString(16).toUpperCase().padStart(4, '0')}`,
+          eepromType: 'unknown',
+          isWritable: false,
+          totalChanges: 0,
+          estimatedRealTime: 0
+        },
+        warnings,
+        errors: [...errors, error.message]
+      };
+    }
+  }
+
+  /**
+   * Helper: Delay para simulaciones
+   */
+  private delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
 }
 
 // Exportar instancia singleton

@@ -1956,3 +1956,21 @@ módulo nativo: val wordOffset = (offset + i) / 2  // Divide de nuevo!
 - [x] Eliminar referencias a spoofVIDPID en TypeScript (usb-service.ts, modules/usb-native/index.ts)
 - [x] Implementar rollback automático si verificación post-escritura falla
 - [x] Agregar traducciones para mensajes de rollback ES/EN/DE
+
+
+## Modo de Prueba Seguro (Safe Test Mode) - 18 Ene 2026
+
+### Descripción
+Simula todo el proceso de spoofing sin realizar escrituras reales en la EEPROM.
+Permite verificar que todo funciona correctamente antes de ejecutar el spoofing real.
+
+### Tareas
+- [ ] Implementar función simulateSpoof() en usb-service.ts
+- [ ] Simular: validación de compatibilidad, detección EEPROM, lectura de valores actuales
+- [ ] Simular: proceso de escritura con delays realistas (sin escribir realmente)
+- [ ] Simular: verificación post-escritura (comparar valores esperados)
+- [ ] Mostrar reporte detallado de lo que se haría en modo real
+- [ ] Agregar botón "Safe Test Mode" en auto-spoof.tsx
+- [ ] Agregar estado isSafeTestRunning al spoof-reducer.ts
+- [ ] Mostrar indicador visual claro de que es modo simulación
+- [ ] Agregar traducciones ES/EN/DE para Safe Test Mode

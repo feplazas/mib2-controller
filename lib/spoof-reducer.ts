@@ -62,6 +62,31 @@ export interface ChecksumResult {
   details: string;
 }
 
+export interface SafeTestStep {
+  name: string;
+  status: 'passed' | 'failed' | 'warning' | 'skipped';
+  duration: number;
+  details: string;
+}
+
+export interface SafeTestResult {
+  success: boolean;
+  wouldSucceedInRealMode: boolean;
+  steps: SafeTestStep[];
+  summary: {
+    currentVID: string;
+    currentPID: string;
+    targetVID: string;
+    targetPID: string;
+    eepromType: string;
+    isWritable: boolean;
+    totalChanges: number;
+    estimatedRealTime: number;
+  };
+  warnings: string[];
+  errors: string[];
+}
+
 export interface SpoofState {
   // Estado del proceso
   isExecuting: boolean;
@@ -92,6 +117,12 @@ export interface SpoofState {
   // Checksum
   isVerifyingChecksum: boolean;
   checksumResult: ChecksumResult | null;
+  
+  // Safe Test Mode
+  isSafeTestRunning: boolean;
+  safeTestProgress: number;
+  safeTestProgressDetails: string;
+  safeTestResult: SafeTestResult | null;
 }
 
 export type SpoofAction =
@@ -109,6 +140,9 @@ export type SpoofAction =
   | { type: 'SET_DRY_RUN_RESULT'; payload: DryRunResult | null }
   | { type: 'START_CHECKSUM_VERIFY' }
   | { type: 'SET_CHECKSUM_RESULT'; payload: ChecksumResult | null }
+  | { type: 'START_SAFE_TEST' }
+  | { type: 'UPDATE_SAFE_TEST_PROGRESS'; payload: { progress: number; details: string } }
+  | { type: 'SET_SAFE_TEST_RESULT'; payload: SafeTestResult | null }
   | { type: 'RESET' };
 
 export const initialSpoofState: SpoofState = {
@@ -131,6 +165,10 @@ export const initialSpoofState: SpoofState = {
   dryRunResult: null,
   isVerifyingChecksum: false,
   checksumResult: null,
+  isSafeTestRunning: false,
+  safeTestProgress: 0,
+  safeTestProgressDetails: '',
+  safeTestResult: null,
 };
 
 export function spoofReducer(state: SpoofState, action: SpoofAction): SpoofState {
@@ -242,6 +280,29 @@ export function spoofReducer(state: SpoofState, action: SpoofAction): SpoofState
         ...state,
         isVerifyingChecksum: false,
         checksumResult: action.payload,
+      };
+
+    case 'START_SAFE_TEST':
+      return {
+        ...state,
+        isSafeTestRunning: true,
+        safeTestProgress: 0,
+        safeTestProgressDetails: '',
+        safeTestResult: null,
+      };
+
+    case 'UPDATE_SAFE_TEST_PROGRESS':
+      return {
+        ...state,
+        safeTestProgress: action.payload.progress,
+        safeTestProgressDetails: action.payload.details,
+      };
+
+    case 'SET_SAFE_TEST_RESULT':
+      return {
+        ...state,
+        isSafeTestRunning: false,
+        safeTestResult: action.payload,
       };
 
     case 'RESET':

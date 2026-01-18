@@ -379,6 +379,41 @@ export default function AutoSpoofScreen() {
     }
   };
 
+  // Función Safe Test Mode - Simulación completa sin escribir
+  const handleSafeTest = async () => {
+    if (!device) {
+      showAlert('alerts.error', 'alerts.no_hay_dispositivo_usb_conectado');
+      return;
+    }
+
+    dispatch({ type: 'START_SAFE_TEST' });
+
+    try {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      
+      const result = await usbService.simulateFullSpoofProcess(
+        0x2001, // Target VID (D-Link)
+        0x3C05, // Target PID (D-Link)
+        (step, progress, details) => {
+          dispatch({ type: 'UPDATE_SAFE_TEST_PROGRESS', payload: { progress, details } });
+        }
+      );
+      
+      dispatch({ type: 'SET_SAFE_TEST_RESULT', payload: result });
+      
+      if (result.wouldSucceedInRealMode) {
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      } else {
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      }
+    } catch (error: any) {
+      dispatch({ type: 'SET_SAFE_TEST_RESULT', payload: null });
+      usbLogger.error('SAFE_TEST', `Error en Safe Test Mode: ${error.message}`, error);
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      showAlert('alerts.error', error.message);
+    }
+  };
+
   // Función REAL de Test de Spoofing
   const handleTestSpoofing = async () => {
     if (!device) {
@@ -885,6 +920,147 @@ export default function AutoSpoofScreen() {
                     {t('auto_spoof.checksum_not_affects_vidpid')}
                   </Text>
                 </View>
+              </View>
+            )}
+
+            {/* Botón Safe Test Mode - Simulación Completa */}
+            <TouchableOpacity
+              onPress={handleSafeTest}
+              disabled={state.isSafeTestRunning || !device}
+              className={`rounded-xl p-4 items-center border-2 ${
+                state.safeTestResult?.wouldSucceedInRealMode
+                  ? 'bg-green-500/10 border-green-500'
+                  : state.safeTestResult && !state.safeTestResult.wouldSucceedInRealMode
+                  ? 'bg-yellow-500/10 border-yellow-500'
+                  : state.isSafeTestRunning
+                  ? 'bg-muted/20 border-muted opacity-50'
+                  : 'bg-indigo-500/10 border-indigo-500 active:opacity-80'
+              }`}
+            >
+              <View className="flex-row items-center gap-2">
+                <Text className="text-xl">
+                  {state.isSafeTestRunning ? '⏳' : state.safeTestResult?.wouldSucceedInRealMode ? '✅' : state.safeTestResult ? '⚠️' : '🛡️'}
+                </Text>
+                <Text className={`text-base font-bold ${
+                  state.safeTestResult?.wouldSucceedInRealMode
+                    ? 'text-green-500'
+                    : state.safeTestResult && !state.safeTestResult.wouldSucceedInRealMode
+                    ? 'text-yellow-500'
+                    : state.isSafeTestRunning
+                    ? 'text-muted'
+                    : 'text-indigo-500'
+                }`}>
+                  {state.isSafeTestRunning ? t('auto_spoof.safe_test_running') : t('auto_spoof.safe_test_mode')}
+                </Text>
+              </View>
+              <Text className="text-xs text-muted mt-1">
+                {t('auto_spoof.safe_test_desc')}
+              </Text>
+            </TouchableOpacity>
+
+            {/* Progreso Safe Test */}
+            {state.isSafeTestRunning && (
+              <View className="rounded-xl p-4 bg-indigo-500/5 border border-indigo-500/30">
+                <View className="flex-row justify-between items-center mb-2">
+                  <Text className="text-sm font-semibold text-indigo-500">
+                    {t('auto_spoof.safe_test_progress')}
+                  </Text>
+                  <Text className="text-sm font-bold text-indigo-500">
+                    {state.safeTestProgress}%
+                  </Text>
+                </View>
+                <View className="h-2 bg-muted/20 rounded-full overflow-hidden">
+                  <View 
+                    className="h-full bg-indigo-500 rounded-full"
+                    style={{ width: `${state.safeTestProgress}%` }}
+                  />
+                </View>
+                <Text className="text-xs text-muted mt-2">
+                  {state.safeTestProgressDetails}
+                </Text>
+              </View>
+            )}
+
+            {/* Resultado Safe Test */}
+            {state.safeTestResult && (
+              <View className={`rounded-xl p-4 border ${
+                state.safeTestResult.wouldSucceedInRealMode ? 'bg-green-500/5 border-green-500/30' : 'bg-yellow-500/5 border-yellow-500/30'
+              }`}>
+                <Text className={`text-sm font-semibold mb-3 ${
+                  state.safeTestResult.wouldSucceedInRealMode ? 'text-green-500' : 'text-yellow-500'
+                }`}>
+                  {t('auto_spoof.safe_test_result')}
+                </Text>
+                
+                {/* Resumen */}
+                <View className="gap-1 mb-3">
+                  <Text className="text-xs text-muted">
+                    VID/PID Actual: {state.safeTestResult.summary.currentVID}:{state.safeTestResult.summary.currentPID}
+                  </Text>
+                  <Text className="text-xs text-muted">
+                    VID/PID Objetivo: {state.safeTestResult.summary.targetVID}:{state.safeTestResult.summary.targetPID}
+                  </Text>
+                  <Text className="text-xs text-muted">
+                    {t('auto_spoof.eeprom_type')}: {state.safeTestResult.summary.eepromType}
+                  </Text>
+                  <Text className="text-xs text-muted">
+                    {t('auto_spoof.writable')}: {state.safeTestResult.summary.isWritable ? t('common.yes') : t('common.no')}
+                  </Text>
+                  <Text className="text-xs text-muted">
+                    {t('auto_spoof.estimated_time')}: {(state.safeTestResult.summary.estimatedRealTime / 1000).toFixed(1)}s
+                  </Text>
+                </View>
+
+                {/* Pasos ejecutados */}
+                <Text className="text-xs font-semibold text-foreground mb-2">
+                  {t('auto_spoof.steps_executed')}:
+                </Text>
+                <View className="gap-1 mb-3">
+                  {state.safeTestResult.steps.map((step, i) => (
+                    <View key={i} className="flex-row items-start gap-2">
+                      <Text className="text-xs">
+                        {step.status === 'passed' ? '✅' : step.status === 'failed' ? '❌' : step.status === 'warning' ? '⚠️' : '⏭️'}
+                      </Text>
+                      <View className="flex-1">
+                        <Text className="text-xs text-foreground font-medium">{step.name}</Text>
+                        <Text className="text-xs text-muted">{step.details}</Text>
+                      </View>
+                    </View>
+                  ))}
+                </View>
+
+                {/* Advertencias */}
+                {state.safeTestResult.warnings.length > 0 && (
+                  <View className="mt-2">
+                    <Text className="text-xs font-semibold text-yellow-500 mb-1">
+                      {t('auto_spoof.warnings')}:
+                    </Text>
+                    {state.safeTestResult.warnings.map((w, i) => (
+                      <Text key={i} className="text-xs text-yellow-500">⚠️ {w}</Text>
+                    ))}
+                  </View>
+                )}
+
+                {/* Errores */}
+                {state.safeTestResult.errors.length > 0 && (
+                  <View className="mt-2">
+                    <Text className="text-xs font-semibold text-red-500 mb-1">
+                      {t('auto_spoof.errors')}:
+                    </Text>
+                    {state.safeTestResult.errors.map((e, i) => (
+                      <Text key={i} className="text-xs text-red-500">❌ {e}</Text>
+                    ))}
+                  </View>
+                )}
+
+                {/* Conclusión */}
+                <Text className={`text-xs mt-3 font-bold ${
+                  state.safeTestResult.wouldSucceedInRealMode ? 'text-green-500' : 'text-yellow-500'
+                }`}>
+                  {state.safeTestResult.wouldSucceedInRealMode 
+                    ? t('auto_spoof.safe_test_would_succeed') 
+                    : t('auto_spoof.safe_test_would_fail')}
+                </Text>
               </View>
             )}
           </View>
