@@ -388,6 +388,53 @@ export default function CommandsScreen() {
   };
 
   /**
+   * Cancelar backup dd en progreso
+   */
+  const handleCancelBackup = () => {
+    Alert.alert(
+      t('telnet_scripts.cancel_backup_title'),
+      t('telnet_scripts.cancel_backup_confirm'),
+      [
+        { text: t('common.no'), style: 'cancel' },
+        {
+          text: t('common.yes'),
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+              
+              // Enviar señal para terminar el proceso dd
+              // En QNX/Linux, Ctrl+C envía SIGINT
+              sendCommand('\x03'); // Ctrl+C
+              
+              // También intentar matar el proceso dd directamente
+              setTimeout(() => {
+                sendCommand('pkill -9 dd 2>/dev/null || killall dd 2>/dev/null');
+              }, 500);
+              
+              // Limpiar archivo parcial (opcional, mostrar comando)
+              setTimeout(() => {
+                sendCommand('echo "Backup cancelado. Archivo parcial puede existir en /mnt/sd/"');
+              }, 1000);
+              
+              // Limpiar estado de progreso
+              setDdProgress(null);
+              
+              Alert.alert(
+                t('telnet_scripts.backup_cancelled'),
+                t('telnet_scripts.backup_cancelled_msg')
+              );
+            } catch (error) {
+              await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+              Alert.alert(t('common.error'), String(error));
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  /**
    * Obtener color según nivel de riesgo
    */
   const getRiskColor = (level: ScriptRiskLevel): string => {
@@ -620,6 +667,14 @@ export default function CommandsScreen() {
             <Text style={styles.ddProgressWarning}>
               ⚠️ {t('telnet_scripts.dd_progress_warning')}
             </Text>
+            
+            {/* Botón de Cancelación */}
+            <Pressable
+              onPress={handleCancelBackup}
+              style={styles.ddCancelButton}
+            >
+              <Text style={styles.ddCancelButtonText}>❌ {t('telnet_scripts.cancel_backup')}</Text>
+            </Pressable>
           </View>
         )}
 
@@ -1060,6 +1115,21 @@ const styles = StyleSheet.create({
     color: '#F59E0B',
     textAlign: 'center',
     marginTop: 4,
+  },
+  ddCancelButton: {
+    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+    borderWidth: 1,
+    borderColor: '#EF4444',
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    marginTop: 12,
+    alignItems: 'center',
+  },
+  ddCancelButtonText: {
+    color: '#EF4444',
+    fontWeight: '600',
+    fontSize: 14,
   },
   modalOverlay: {
     flex: 1,

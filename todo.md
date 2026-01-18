@@ -1889,3 +1889,14 @@ módulo nativo: val wordOffset = (offset + i) / 2  // Divide de nuevo!
 - [x] Agregar componente visual de barra de progreso en UI
 - [x] Mostrar velocidad de transferencia y tiempo transcurrido
 - [x] Agregar traducciones ES/EN/DE para mensajes de progreso
+
+
+## Cancelación Segura de Backup dd (18 Enero 2026)
+
+### Tareas
+- [x] Agregar botón "Cancelar" en la barra de progreso dd
+- [x] Implementar diálogo de confirmación antes de cancelar
+- [x] Enviar comando kill al proceso dd vía Telnet
+- [x] Mostrar mensaje sobre archivo parcial después de cancelación
+- [x] Actualizar estado de progreso al cancelar
+- [x] Agregar traducciones ES/EN/DE para cancelación
