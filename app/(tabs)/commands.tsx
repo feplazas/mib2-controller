@@ -49,8 +49,12 @@ export default function CommandsScreen() {
     bytesTransferred: number;
     totalBytes: number;
     speed: string;
+    speedBytesPerSec: number; // Para cálculos de ETA
     elapsed: string;
+    elapsedSeconds: number; // Para cálculos de ETA
     scriptName: string;
+    outputFile: string; // Nombre del archivo de backup para limpieza
+    eta: string; // Tiempo estimado restante
   } | null>(null);
   
   // Estado del sistema MIB2
@@ -93,17 +97,46 @@ export default function CommandsScreen() {
     for (const msg of lastMessages) {
       if (msg.type === 'response') {
         // Formato de dd status=progress: "123456789 bytes (123 MB, 117 MiB) copied, 5.12345 s, 24.1 MB/s"
-        const ddMatch = msg.text.match(/(\d+)\s+bytes.*copied,\s+([\d.]+)\s*s?,\s+([\d.]+\s*\w+\/s)/);
+        const ddMatch = msg.text.match(/(\d+)\s+bytes.*copied,\s+([\d.]+)\s*s?,\s+([\d.]+)\s*(\w+)\/s/);
         if (ddMatch) {
           const bytesTransferred = parseInt(ddMatch[1]);
-          const elapsed = parseFloat(ddMatch[2]);
-          const speed = ddMatch[3];
+          const elapsedSeconds = parseFloat(ddMatch[2]);
+          const speedValue = parseFloat(ddMatch[3]);
+          const speedUnit = ddMatch[4];
+          const speed = `${speedValue} ${speedUnit}/s`;
+          
+          // Convertir velocidad a bytes/segundo para cálculo de ETA
+          let speedBytesPerSec = speedValue;
+          if (speedUnit === 'kB' || speedUnit === 'KB') speedBytesPerSec = speedValue * 1024;
+          else if (speedUnit === 'MB') speedBytesPerSec = speedValue * 1024 * 1024;
+          else if (speedUnit === 'GB') speedBytesPerSec = speedValue * 1024 * 1024 * 1024;
+          
+          // Calcular ETA
+          let eta = '--:--';
+          if (speedBytesPerSec > 0 && ddProgress.totalBytes > bytesTransferred) {
+            const bytesRemaining = ddProgress.totalBytes - bytesTransferred;
+            const secondsRemaining = bytesRemaining / speedBytesPerSec;
+            
+            if (secondsRemaining < 3600) {
+              // Menos de 1 hora: mm:ss
+              eta = `${Math.floor(secondsRemaining / 60)}:${String(Math.floor(secondsRemaining % 60)).padStart(2, '0')}`;
+            } else {
+              // Más de 1 hora: hh:mm:ss
+              const hours = Math.floor(secondsRemaining / 3600);
+              const mins = Math.floor((secondsRemaining % 3600) / 60);
+              const secs = Math.floor(secondsRemaining % 60);
+              eta = `${hours}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            }
+          }
           
           setDdProgress(prev => prev ? {
             ...prev,
             bytesTransferred,
             speed,
-            elapsed: `${Math.floor(elapsed / 60)}:${String(Math.floor(elapsed % 60)).padStart(2, '0')}`
+            speedBytesPerSec,
+            elapsed: `${Math.floor(elapsedSeconds / 60)}:${String(Math.floor(elapsedSeconds % 60)).padStart(2, '0')}`,
+            elapsedSeconds,
+            eta
           } : null);
         }
         
@@ -113,7 +146,7 @@ export default function CommandsScreen() {
         }
       }
     }
-  }, [messages, ddProgress?.isRunning]);
+  }, [messages, ddProgress?.isRunning, ddProgress?.totalBytes]);
 
   /**
    * Ejecutar comando y capturar respuesta para verificación de estado
@@ -336,18 +369,30 @@ export default function CommandsScreen() {
     // Detectar si es un script de backup dd para mostrar progreso
     const isDdBackup = script.id.startsWith('dd_backup');
     if (isDdBackup) {
-      // Estimar tamaño total según el tipo de backup
+      // Estimar tamaño total y nombre de archivo según el tipo de backup
       let estimatedSize = 8000000000; // 8GB por defecto para backup completo
-      if (script.id === 'dd_backup_partition1') estimatedSize = 2000000000; // 2GB
-      if (script.id === 'dd_backup_partition2') estimatedSize = 1000000000; // 1GB
+      let outputFile = '/mnt/sd/mib2_full_backup.img';
+      
+      if (script.id === 'dd_backup_partition1') {
+        estimatedSize = 2000000000; // 2GB
+        outputFile = '/mnt/sd/mib2_system_backup.img';
+      }
+      if (script.id === 'dd_backup_partition2') {
+        estimatedSize = 1000000000; // 1GB
+        outputFile = '/mnt/sd/mib2_data_backup.img';
+      }
       
       setDdProgress({
         isRunning: true,
         bytesTransferred: 0,
         totalBytes: estimatedSize,
         speed: '0 MB/s',
+        speedBytesPerSec: 0,
         elapsed: '0:00',
-        scriptName: t(script.nameKey)
+        elapsedSeconds: 0,
+        scriptName: t(script.nameKey),
+        outputFile: outputFile,
+        eta: '--:--'
       });
     }
     
@@ -391,6 +436,8 @@ export default function CommandsScreen() {
    * Cancelar backup dd en progreso
    */
   const handleCancelBackup = () => {
+    const outputFile = ddProgress?.outputFile || '/mnt/sd/mib2_backup.img';
+    
     Alert.alert(
       t('telnet_scripts.cancel_backup_title'),
       t('telnet_scripts.cancel_backup_confirm'),
@@ -412,18 +459,37 @@ export default function CommandsScreen() {
                 sendCommand('pkill -9 dd 2>/dev/null || killall dd 2>/dev/null');
               }, 500);
               
-              // Limpiar archivo parcial (opcional, mostrar comando)
-              setTimeout(() => {
-                sendCommand('echo "Backup cancelado. Archivo parcial puede existir en /mnt/sd/"');
-              }, 1000);
+              // Guardar referencia al archivo antes de limpiar estado
+              const fileToClean = outputFile;
               
               // Limpiar estado de progreso
               setDdProgress(null);
               
-              Alert.alert(
-                t('telnet_scripts.backup_cancelled'),
-                t('telnet_scripts.backup_cancelled_msg')
-              );
+              // Preguntar si desea eliminar el archivo parcial
+              setTimeout(() => {
+                Alert.alert(
+                  t('telnet_scripts.cleanup_partial_title'),
+                  t('telnet_scripts.cleanup_partial_confirm', { file: fileToClean }),
+                  [
+                    { 
+                      text: t('common.no'), 
+                      style: 'cancel',
+                      onPress: () => {
+                        sendCommand(`echo "Archivo parcial conservado: ${fileToClean}"`);
+                      }
+                    },
+                    {
+                      text: t('telnet_scripts.delete_file'),
+                      style: 'destructive',
+                      onPress: () => {
+                        sendCommand(`rm -f ${fileToClean} && echo "✅ Archivo parcial eliminado: ${fileToClean}" || echo "❌ Error al eliminar archivo"`);
+                        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                      },
+                    },
+                  ]
+                );
+              }, 1500);
+              
             } catch (error) {
               await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
               Alert.alert(t('common.error'), String(error));
@@ -640,7 +706,10 @@ export default function CommandsScreen() {
           <View style={styles.ddProgressContainer}>
             <View style={styles.ddProgressHeader}>
               <Text style={styles.ddProgressTitle}>💾 {ddProgress.scriptName}</Text>
-              <Text style={styles.ddProgressTime}>⏱️ {ddProgress.elapsed}</Text>
+              <View style={styles.ddProgressTimeContainer}>
+                <Text style={styles.ddProgressTime}>⏱️ {ddProgress.elapsed}</Text>
+                <Text style={styles.ddProgressEta}>⏳ ETA: {ddProgress.eta}</Text>
+              </View>
             </View>
             
             <View style={styles.ddProgressBarContainer}>
@@ -663,6 +732,11 @@ export default function CommandsScreen() {
                 🚀 {ddProgress.speed}
               </Text>
             </View>
+            
+            {/* Archivo de destino */}
+            <Text style={styles.ddProgressFile}>
+              📁 {ddProgress.outputFile}
+            </Text>
             
             <Text style={styles.ddProgressWarning}>
               ⚠️ {t('telnet_scripts.dd_progress_warning')}
@@ -1115,6 +1189,22 @@ const styles = StyleSheet.create({
     color: '#F59E0B',
     textAlign: 'center',
     marginTop: 4,
+  },
+  ddProgressTimeContainer: {
+    alignItems: 'flex-end',
+  },
+  ddProgressEta: {
+    fontSize: 12,
+    color: '#22C55E',
+    fontWeight: '600',
+    marginTop: 2,
+  },
+  ddProgressFile: {
+    fontSize: 11,
+    color: '#9BA1A6',
+    textAlign: 'center',
+    marginTop: 6,
+    fontFamily: 'monospace',
   },
   ddCancelButton: {
     backgroundColor: 'rgba(239, 68, 68, 0.2)',

@@ -1900,3 +1900,18 @@ módulo nativo: val wordOffset = (offset + i) / 2  // Divide de nuevo!
 - [x] Mostrar mensaje sobre archivo parcial después de cancelación
 - [x] Actualizar estado de progreso al cancelar
 - [x] Agregar traducciones ES/EN/DE para cancelación
+
+
+## Mejoras de Backup dd (18 Enero 2026)
+
+### Limpieza Automática
+- [x] Agregar comando rm para eliminar archivo parcial tras cancelación
+- [x] Preguntar al usuario si desea eliminar el archivo parcial
+- [x] Mostrar nombre del archivo que se eliminará
+
+### Estimación de Tiempo Restante
+- [x] Calcular velocidad promedio de transferencia
+- [x] Estimar tiempo restante basado en bytes pendientes
+- [x] Mostrar ETA en formato legible (mm:ss o hh:mm:ss)
+- [x] Actualizar estimación en tiempo real
+- [x] Agregar traducciones ES/EN/DE para nuevos textos
