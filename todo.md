@@ -1928,3 +1928,23 @@ módulo nativo: val wordOffset = (offset + i) / 2  // Divide de nuevo!
 - [x] Pedir confirmación final antes de proceder con restauración
 - [x] Agregar el script a los scripts predefinidos de Telnet (categoría backup)
 - [x] Agregar traducciones ES/EN/DE para el nuevo script
+
+
+## Script de Restauración Guiado con Verificación Automática (18 Enero 2026)
+
+- [x] Crear script guided_restore.sh que integre verificación + restauración
+- [x] Paso 1: Ejecutar verificación de integridad automáticamente
+- [x] Paso 2: Mostrar resumen de verificación (archivo, tamaño, MD5, espacio)
+- [x] Paso 3: Solicitar confirmación final del usuario
+- [x] Paso 4: Ejecutar dd restore con progreso
+- [x] Paso 5: Verificar restauración exitosa
+- [x] Agregar manejo de errores en cada paso
+- [x] Agregar opción de rollback si falla la restauración
+- [x] Agregar el script a los scripts predefinidos de Telnet (categoría backup)
+- [x] Agregar traducciones ES/EN/DE para el script de restauración guiado
+- [x] Crear componente de guía de instalación completa paso a paso
+- [x] Incluir sección de preparación y verificación
+- [x] Incluir sección de backup del sistema
+- [x] Incluir sección de instalación del Toolbox
+- [x] Incluir sección de restauración guiada
+- [x] Agregar traducciones ES/EN/DE para la guía completa

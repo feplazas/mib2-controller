@@ -1,0 +1,82 @@
+{
+  "installation_guide": {
+    "title": "Complete MIB2 Toolbox Installation Guide",
+    "critical_warning": "CRITICAL WARNING: This guide modifies the MIB2 system. ALWAYS make backups BEFORE proceeding. The user is responsible for any damage.",
+    
+    "phase1_title": "PHASE 1: Preparation and Verification",
+    "phase1_requirements_title": "Prerequisites:",
+    "req_adapter": "USB Ethernet adapter (ASIX spoofed or D-Link DUB-E100)",
+    "req_sd_card": "SD card with at least 8 GB of free space",
+    "req_android": "Android device with MIB2 Controller app",
+    "req_toolbox": "MIB2 Toolbox files on SD",
+    "req_battery": "Car battery charged or engine running",
+    
+    "phase1_verify_title": "Connection verification:",
+    "step": "Step",
+    "verify_connection": "Verify network connection",
+    "verify_connection_desc": "Should respond with ping times. If no response, check Ethernet cable and adapter.",
+    "verify_telnet": "Connect via Telnet",
+    "verify_root": "Verify root access",
+    "verify_root_desc": "Should respond 'root'. If not, the connection is not valid.",
+    
+    "phase2_title": "PHASE 2: Critical System Backup",
+    "backup_critical": "NEVER skip this phase. Without backup, you CANNOT recover the system if something goes wrong.",
+    "mount_sd": "Mount SD card",
+    "create_backup_dir": "Create backup directory",
+    "backup_critical_binary": "Backup critical binary (MANDATORY)",
+    "backup_critical_desc": "This is the MOST IMPORTANT file. Without this backup, you cannot revert the patch changes.",
+    "backup_config": "Backup system configuration",
+    "backup_full_optional": "FULL system backup (OPTIONAL but RECOMMENDED)",
+    "backup_full_time": "This will take 10-30 minutes depending on system size. DO NOT interrupt the process.",
+    
+    "phase3_title": "PHASE 3: Toolbox Installation",
+    "copy_toolbox": "Copy Toolbox files to SD",
+    "copy_toolbox_desc": "Copy Toolbox files (install.sh, bootstrap/, apps/) to /mnt/sd/ using an SD card reader on your PC.",
+    "run_installer": "Run installer",
+    "run_installer_desc": "The installer will ask for confirmation. Answer 'y' when prompted.",
+    "verify_installation": "Verify installation",
+    "apply_patch": "Apply system patch",
+    "patch_warning": "This step modifies the system binary. Make sure you have the backup from step 6.",
+    "reboot_system": "Reboot MIB2",
+    "reboot_desc": "The system will take 2-3 minutes to reboot. Wait for the MIB2 screen to turn back on.",
+    
+    "phase4_title": "PHASE 4: Post-Installation Verification",
+    "reconnect_telnet": "Reconnect via Telnet",
+    "reconnect_desc": "After reboot, reconnect via Telnet (IP: 192.168.1.4).",
+    "verify_toolbox": "Verify Toolbox is working",
+    "installation_complete": "Installation completed successfully! Toolbox is ready to use.",
+    
+    "phase5_title": "PHASE 5: Restoration (If needed)",
+    "restore_when": "You only need to restore if something went wrong during installation or if the system doesn't boot properly.",
+    "restore_binary_title": "Quick restoration (critical binary only):",
+    "restore_guided_title": "Full restoration (with verification):",
+    "restore_guided_desc": "The guided_restore.sh script performs a full restoration with automatic integrity verification:",
+    "restore_guided_features": "The script verifies MD5, available space and asks for confirmation before restoring. It's the SAFEST way to restore.",
+    
+    "troubleshooting_title": "Troubleshooting",
+    "problem_no_connection": "Problem: No Telnet connection",
+    "solution_check_cable": "Check that the Ethernet cable is properly connected",
+    "solution_check_ip": "Verify that the IP is 192.168.1.4",
+    "solution_restart_mib2": "Restart the MIB2 (hold the power button for 10 seconds)",
+    
+    "problem_mount_failed": "Problem: Cannot mount SD",
+    "solution_try_alt_device": "Try /dev/mmc0t01 or /dev/sd0 instead of /dev/mmcblk0p1",
+    "solution_check_sd_format": "Verify that the SD is formatted as FAT32 or QNX6",
+    
+    "problem_install_failed": "Problem: Installation failed",
+    "solution_restore_binary": "Restore the critical binary from backup (Step 6 of Phase 2)",
+    "solution_check_space": "Verify there's enough space on the system",
+    "solution_check_permissions": "Verify you have root permissions (whoami should respond 'root')",
+    
+    "problem_system_broken": "Problem: System doesn't boot after installation",
+    "solution_use_guided_restore": "Use the guided restoration script with the full backup from Step 8. This will restore the system to its original state.",
+    
+    "resources_title": "Additional Resources in the App",
+    "resource_scripts": "'Commands' screen: Predefined scripts for each step",
+    "resource_commands": "'Commands' screen: Interactive Telnet terminal",
+    "resource_backups": "'Backups' screen: EEPROM backup management",
+    "resource_diagnostics": "'Diagnostics' screen: Network and system tools",
+    
+    "final_tip": "Final tip: Save this guide and backups in a safe place. You never know when you'll need them."
+  }
+}

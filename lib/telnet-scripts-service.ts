@@ -349,6 +349,36 @@ export const TELNET_SCRIPTS: TelnetScript[] = [
     warningKey: 'telnet_scripts.dd_restore_system_warning',
     order: 9,
   },
+  {
+    id: 'guided_restore',
+    name: '🧑‍💻 Restauración Guiada (con verificación)',
+    nameKey: 'telnet_scripts.guided_restore_name',
+    description: '🔒 SEGURO: Proceso de restauración guiado paso a paso con verificación automática de integridad. Verifica MD5, espacio y pide confirmación antes de restaurar.',
+    descriptionKey: 'telnet_scripts.guided_restore_desc',
+    category: 'backup',
+    commands: [
+      'echo "🧑‍💻 RESTAURACIÓN GUIADA DE BACKUP"',
+      'echo "========================================"',
+      'echo ""',
+      'echo "Este script te guiará paso a paso en la restauración"',
+      'echo "con verificación automática de integridad."',
+      'echo ""',
+      'echo "Listando backups disponibles:"',
+      'ls -lah /mnt/sd/backups/*.img 2>/dev/null || ls -lah /mnt/sd/mib2*.img 2>/dev/null',
+      'echo ""',
+      'echo "Para ejecutar la restauración guiada:"',
+      'echo "sh /mnt/sd/guided_restore.sh /mnt/sd/backups/NOMBRE_ARCHIVO.img"',
+      'echo ""',
+      'echo "Ejemplo:"',
+      'echo "sh /mnt/sd/guided_restore.sh /mnt/sd/backups/mib2_full_backup.img"',
+      'echo ""',
+      'echo "⚠️ IMPORTANTE: El script verificará la integridad antes de restaurar"'
+    ],
+    riskLevel: 'warning',
+    requiresConfirmation: false,
+    warningKey: 'telnet_scripts.guided_restore_info',
+    order: 10,
+  },
 
   // ============================================
   // CATEGORÍA: PREPARACIÓN

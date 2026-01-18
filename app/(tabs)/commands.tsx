@@ -30,6 +30,7 @@ import {
 } from "@/lib/mib2-state-service";
 
 import { showAlert } from '@/lib/translated-alert';
+import { InstallationGuide } from '@/components/installation-guide';
 
 export default function CommandsScreen() {
   const t = useTranslation();
@@ -40,6 +41,7 @@ export default function CommandsScreen() {
   const [showScriptsModal, setShowScriptsModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<ScriptCategory>('verification');
   const [isExecutingScript, setIsExecutingScript] = useState(false);
+  const [showInstallationGuide, setShowInstallationGuide] = useState(false);
   const [showGuideModal, setShowGuideModal] = useState(false);
   const [currentGuideStep, setCurrentGuideStep] = useState(0);
   
@@ -692,12 +694,11 @@ export default function CommandsScreen() {
             <Text style={styles.scriptsButtonText}>{t('telnet_scripts.scripts_library')}</Text>
           </Pressable>
           <Pressable
-            onPress={() => { setCurrentGuideStep(0); setShowGuideModal(true); }}
-            style={[styles.guideButton, !isConnected && styles.scriptsButtonDisabled]}
-            disabled={!isConnected}
+            onPress={() => setShowInstallationGuide(true)}
+            style={styles.guideButton}
           >
-            <Text style={styles.scriptsButtonIcon}>🚀</Text>
-            <Text style={styles.guideButtonText}>{t('telnet_scripts.installation_guide')}</Text>
+            <Text style={styles.scriptsButtonIcon}>📖</Text>
+            <Text style={styles.guideButtonText}>{t('installation_guide.title')}</Text>
           </Pressable>
         </View>
 
@@ -1023,6 +1024,24 @@ export default function CommandsScreen() {
               </Pressable>
             </View>
           </View>
+        </View>
+      </Modal>
+
+      {/* Installation Guide Modal */}
+      <Modal
+        visible={showInstallationGuide}
+        animationType="slide"
+        transparent={false}
+        onRequestClose={() => setShowInstallationGuide(false)}
+      >
+        <View style={{ flex: 1, backgroundColor: colors.background }}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>{t('installation_guide.title')}</Text>
+            <Pressable onPress={() => setShowInstallationGuide(false)} style={styles.closeButton}>
+              <Text style={styles.closeButtonText}>✕</Text>
+            </Pressable>
+          </View>
+          <InstallationGuide />
         </View>
       </Modal>
     </ScreenContainer>
