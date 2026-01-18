@@ -663,144 +663,18 @@ class UsbNativeModule : Module() {
       }
     }
 
-    AsyncFunction("spoofVIDPID") { targetVID: Int, targetPID: Int, magicValue: Int, promise: Promise ->
-      try {
-        val connection = currentConnection
-        if (connection == null) {
-          promise.reject("NO_CONNECTION", "No active device connection", null)
-          return@AsyncFunction
-        }
-
-        // Read current VID/PID
-        val currentVIDBytes = ByteArray(2)
-        val currentPIDBytes = ByteArray(2)
-        
-        connection.controlTransfer(
-          USB_DIR_IN or USB_TYPE_VENDOR or USB_RECIP_DEVICE,
-          ASIX_CMD_READ_EEPROM,
-          EEPROM_VID_OFFSET,
-          0,
-          currentVIDBytes,
-          2,
-          5000
-        )
-        
-        connection.controlTransfer(
-          USB_DIR_IN or USB_TYPE_VENDOR or USB_RECIP_DEVICE,
-          ASIX_CMD_READ_EEPROM,
-          EEPROM_PID_OFFSET,
-          0,
-          currentPIDBytes,
-          2,
-          5000
-        )
-
-        val currentVID = ((currentVIDBytes[1].toInt() and 0xFF) shl 8) or (currentVIDBytes[0].toInt() and 0xFF)
-        val currentPID = ((currentPIDBytes[1].toInt() and 0xFF) shl 8) or (currentPIDBytes[0].toInt() and 0xFF)
-
-        Log.d(TAG, "Current VID:PID = ${String.format("%04X:%04X", currentVID, currentPID)}")
-        Log.d(TAG, "Target VID:PID = ${String.format("%04X:%04X", targetVID, targetPID)}")
-
-        // Write new VID (little endian)
-        val vidLow = targetVID and 0xFF
-        val vidHigh = (targetVID shr 8) and 0xFF
-        
-        connection.controlTransfer(
-          USB_DIR_OUT or USB_TYPE_VENDOR or USB_RECIP_DEVICE,
-          ASIX_CMD_WRITE_EEPROM,
-          EEPROM_VID_OFFSET,
-          vidLow,
-          null,
-          0,
-          5000
-        )
-        
-        runBlocking { delay(10) }
-        
-        connection.controlTransfer(
-          USB_DIR_OUT or USB_TYPE_VENDOR or USB_RECIP_DEVICE,
-          ASIX_CMD_WRITE_EEPROM,
-          EEPROM_VID_OFFSET + 1,
-          vidHigh,
-          null,
-          0,
-          5000
-        )
-
-        runBlocking { delay(10) }
-
-        // Write new PID (little endian)
-        val pidLow = targetPID and 0xFF
-        val pidHigh = (targetPID shr 8) and 0xFF
-        
-        connection.controlTransfer(
-          USB_DIR_OUT or USB_TYPE_VENDOR or USB_RECIP_DEVICE,
-          ASIX_CMD_WRITE_EEPROM,
-          EEPROM_PID_OFFSET,
-          pidLow,
-          null,
-          0,
-          5000
-        )
-        runBlocking { delay(100) }
-        
-        connection.controlTransfer(
-          USB_DIR_OUT or USB_TYPE_VENDOR or USB_RECIP_DEVICE,
-          ASIX_CMD_WRITE_EEPROM,
-          EEPROM_PID_OFFSET + 1,
-          pidHigh,
-          null,
-          0,
-          5000
-        )
-
-        Log.d(TAG, "Spoofing complete, verifying...")
-
-        // Verify write
-        runBlocking { delay(100) }
-        
-        val verifyVIDBytes = ByteArray(2)
-        val verifyPIDBytes = ByteArray(2)
-        
-        connection.controlTransfer(
-          USB_DIR_IN or USB_TYPE_VENDOR or USB_RECIP_DEVICE,
-          ASIX_CMD_READ_EEPROM,
-          EEPROM_VID_OFFSET,
-          0,
-          verifyVIDBytes,
-          2,
-          5000
-        )
-        
-        connection.controlTransfer(
-          USB_DIR_IN or USB_TYPE_VENDOR or USB_RECIP_DEVICE,
-          ASIX_CMD_READ_EEPROM,
-          EEPROM_PID_OFFSET,
-          0,
-          verifyPIDBytes,
-          2,
-          5000
-        )
-
-        val verifyVID = ((verifyVIDBytes[1].toInt() and 0xFF) shl 8) or (verifyVIDBytes[0].toInt() and 0xFF)
-        val verifyPID = ((verifyPIDBytes[1].toInt() and 0xFF) shl 8) or (verifyPIDBytes[0].toInt() and 0xFF)
-
-        val success = (verifyVID == targetVID) && (verifyPID == targetPID)
-        
-        Log.d(TAG, "Verification: VID:PID = ${String.format("%04X:%04X", verifyVID, verifyPID)}, Success: $success")
-
-        promise.resolve(mapOf(
-          "success" to success,
-          "previousVID" to currentVID,
-          "previousPID" to currentPID,
-          "newVID" to verifyVID,
-          "newPID" to verifyPID
-        ))
-      } catch (e: Exception) {
-        Log.e(TAG, "Error spoofing VID/PID: ${e.message}")
-        promise.reject("SPOOF_ERROR", e.message, e)
-      }
-    }
+    // NOTA: La función spoofVIDPID fue ELIMINADA por seguridad.
+    // Esta función tenía múltiples errores:
+    // 1. No habilitaba modo de escritura EEPROM (comando 0x0d)
+    // 2. Usaba byte offsets en lugar de word offsets
+    // 3. Escribía bytes individuales en lugar de words de 16 bits
+    // 4. No deshabilitaba modo de escritura después (comando 0x0e)
+    //
+    // En su lugar, usar writeEEPROM() que SÍ implementa correctamente:
+    // - Habilitación de modo escritura
+    // - Escritura de words completos
+    // - Deshabilitación de modo escritura
+    // - Verificación post-escritura
   }
 
   private fun identifyChipset(vendorId: Int, productId: Int): String {

@@ -12,6 +12,7 @@ export type SpoofStep =
   | 'writing_pid_low' 
   | 'writing_pid_high' 
   | 'verifying' 
+  | 'rolling_back'  // Nuevo: rollback automático si verificación falla
   | 'success' 
   | 'error';
 
@@ -283,6 +284,7 @@ export function getStepText(step: SpoofStep): string {
 
 export function getStepIcon(currentStep: SpoofStep, step: SpoofStep, isExecuting: boolean): string {
   if (currentStep === step && isExecuting) return '⏳';
+  if (currentStep === 'rolling_back' && step === 'rolling_back') return '⚠️'; // Icono de advertencia para rollback
   if (currentStep === 'success' && ['validating', 'creating_backup', 'writing_vid_low', 'writing_vid_high', 'writing_pid_low', 'writing_pid_high', 'verifying'].includes(step)) return '✅';
   if (currentStep === 'error') return '❌';
   return '⚪';

@@ -30,6 +30,7 @@ export default function AutoSpoofScreen() {
       'writing_pid_low': t('auto_spoof.step_writing_pid_low'),
       'writing_pid_high': t('auto_spoof.step_writing_pid_high'),
       'verifying': t('auto_spoof.step_verifying'),
+      'rolling_back': t('auto_spoof.step_rolling_back'),
       'success': t('auto_spoof.step_success'),
       'error': t('auto_spoof.step_error'),
     };
@@ -236,7 +237,48 @@ export default function AutoSpoofScreen() {
       const pidHigh = await usbService.readEEPROM(0x8B, 1);
 
       if (vidLow.data !== '01' || vidHigh.data !== '20' || pidLow.data !== '05' || pidHigh.data !== '3C') {
-        throw new Error(t('auto_spoof.error_verification_failed'));
+        // ROLLBACK AUTOMÁTICO: Restaurar VID/PID original
+        usbLogger.error('SPOOF', 'Verificación fallida - iniciando rollback automático');
+        dispatch({ type: 'SET_STEP', payload: 'rolling_back' });
+        
+        try {
+          // Obtener VID/PID original del dispositivo
+          const originalVidLow = device.vendorId & 0xFF;
+          const originalVidHigh = (device.vendorId >> 8) & 0xFF;
+          const originalPidLow = device.productId & 0xFF;
+          const originalPidHigh = (device.productId >> 8) & 0xFF;
+          
+          const originalVidHex = originalVidLow.toString(16).padStart(2, '0') + originalVidHigh.toString(16).padStart(2, '0');
+          const originalPidHex = originalPidLow.toString(16).padStart(2, '0') + originalPidHigh.toString(16).padStart(2, '0');
+          
+          usbLogger.info('ROLLBACK', `Restaurando VID original: 0x${originalVidHex.toUpperCase()}`);
+          await usbService.writeEEPROM(0x88, originalVidHex, false);
+          
+          usbLogger.info('ROLLBACK', `Restaurando PID original: 0x${originalPidHex.toUpperCase()}`);
+          await usbService.writeEEPROM(0x8A, originalPidHex, false);
+          
+          // Verificar rollback
+          const rollbackVidLow = await usbService.readEEPROM(0x88, 1);
+          const rollbackVidHigh = await usbService.readEEPROM(0x89, 1);
+          
+          const expectedVidLow = originalVidLow.toString(16).padStart(2, '0').toLowerCase();
+          const expectedVidHigh = originalVidHigh.toString(16).padStart(2, '0').toLowerCase();
+          
+          if (rollbackVidLow.data.toLowerCase() === expectedVidLow && 
+              rollbackVidHigh.data.toLowerCase() === expectedVidHigh) {
+            usbLogger.success('ROLLBACK', 'Rollback exitoso - VID/PID original restaurado');
+            throw new Error(t('auto_spoof.error_verification_failed_rollback_success'));
+          } else {
+            usbLogger.error('ROLLBACK', 'Rollback falló - el adaptador puede estar en estado inconsistente');
+            throw new Error(t('auto_spoof.error_verification_failed_rollback_failed'));
+          }
+        } catch (rollbackError: any) {
+          if (rollbackError.message.includes('rollback')) {
+            throw rollbackError; // Re-throw si es nuestro error de rollback
+          }
+          usbLogger.error('ROLLBACK', `Error durante rollback: ${rollbackError.message}`);
+          throw new Error(t('auto_spoof.error_verification_failed_rollback_error'));
+        }
       }
 
       // Éxito

@@ -55,7 +55,9 @@ export interface EEPROMBackup {
  * 
  * ADVERTENCIA CRÍTICA:
  * La restauración completa de EEPROM está DESHABILITADA debido a bugs de offset.
- * Solo se permite restaurar VID/PID usando la función spoofVIDPID que está probada.
+ * Solo se permite restaurar VID/PID usando writeEEPROM que está probada.
+ * 
+ * NOTA: La función spoofVIDPID fue ELIMINADA por seguridad.
  * 
  * SISTEMA DE INTEGRIDAD:
  * - Checksum MD5 + SHA256 dual para máxima seguridad
@@ -376,7 +378,7 @@ class BackupService {
    * ADVERTENCIA: La restauración completa de EEPROM está DESHABILITADA
    * debido a bugs críticos de offset que causaron bricking de adaptadores.
    * 
-   * Esta función SOLO restaura VID/PID usando spoofVIDPID que está probada.
+   * Esta función SOLO restaura VID/PID usando writeEEPROM que está probada.
    * 
    * VERIFICACIÓN DE INTEGRIDAD OBLIGATORIA antes de restaurar.
    */
@@ -408,15 +410,33 @@ class BackupService {
       
       usbLogger.info('RESTORE', `VID/PID a restaurar: ${vid.toString(16).toUpperCase()}:${pid.toString(16).toUpperCase()}`);
       
-      // Usar spoofVIDPID que está PROBADA y funciona correctamente
-      const result = await usbService.spoofVIDPID(vid, pid);
+      // Usar writeEEPROM que está PROBADA y funciona correctamente
+      // Convertir VID a hex string (little endian: low byte first)
+      const vidLow = vid & 0xFF;
+      const vidHigh = (vid >> 8) & 0xFF;
+      const vidHex = vidLow.toString(16).padStart(2, '0') + vidHigh.toString(16).padStart(2, '0');
       
-      if (result.success) {
-        usbLogger.success('RESTORE', `VID/PID restaurado: ${result.newVID.toString(16).toUpperCase()}:${result.newPID.toString(16).toUpperCase()}`);
-        return { success: true, vid: result.newVID, pid: result.newPID };
-      } else {
-        throw new Error('spoof_failed');
+      // Convertir PID a hex string (little endian: low byte first)
+      const pidLow = pid & 0xFF;
+      const pidHigh = (pid >> 8) & 0xFF;
+      const pidHex = pidLow.toString(16).padStart(2, '0') + pidHigh.toString(16).padStart(2, '0');
+      
+      usbLogger.info('RESTORE', `Escribiendo VID: 0x${vidHex.toUpperCase()} en offset 0x88`);
+      const vidResult = await usbService.writeEEPROM(0x88, vidHex, false);
+      
+      if (!vidResult.verified) {
+        throw new Error('vid_write_failed');
       }
+      
+      usbLogger.info('RESTORE', `Escribiendo PID: 0x${pidHex.toUpperCase()} en offset 0x8A`);
+      const pidResult = await usbService.writeEEPROM(0x8A, pidHex, false);
+      
+      if (!pidResult.verified) {
+        throw new Error('pid_write_failed');
+      }
+      
+      usbLogger.success('RESTORE', `VID/PID restaurado: ${vid.toString(16).toUpperCase()}:${pid.toString(16).toUpperCase()}`);
+      return { success: true, vid, pid };
     } catch (error) {
       console.error('[BackupService] Error restoring VID/PID:', error);
       usbLogger.error('RESTORE', `Error al restaurar VID/PID: ${error}`, error);

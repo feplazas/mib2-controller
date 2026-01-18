@@ -26,13 +26,9 @@ export interface EEPROMDumpResult {
   size: number;
 }
 
-export interface SpoofResult {
-  success: boolean;
-  previousVID: number;
-  previousPID: number;
-  newVID: number;
-  newPID: number;
-}
+// NOTA: SpoofResult fue ELIMINADO junto con spoofVIDPID por seguridad.
+// La función spoofVIDPID tenía errores críticos que podían causar bricking.
+// En su lugar, usar writeEEPROM() que implementa correctamente la escritura.
 
 export interface EEPROMTypeResult {
   type: 'external_eeprom' | 'efuse' | 'unknown';
@@ -49,7 +45,7 @@ interface UsbNativeModuleInterface {
   writeEEPROM(offset: number, dataHex: string, magicValue: number, skipVerification: boolean): Promise<{ bytesWritten: number; verified: boolean }>;
   dumpEEPROM(): Promise<EEPROMDumpResult>;
   detectEEPROMType(): Promise<EEPROMTypeResult>;
-  spoofVIDPID(targetVID: number, targetPID: number, magicValue: number): Promise<SpoofResult>;
+  // spoofVIDPID fue ELIMINADO por seguridad - usar writeEEPROM() en su lugar
 }
 
 // Mock module for web platform
@@ -62,7 +58,7 @@ const mockModule: UsbNativeModuleInterface = {
   writeEEPROM: async () => ({ bytesWritten: 0, verified: false }),
   dumpEEPROM: async () => ({ data: '', bytes: [], size: 0 }),
   detectEEPROMType: async () => ({ type: 'unknown', writable: false, reason: 'Not available on web' }),
-  spoofVIDPID: async () => ({ success: false, previousVID: 0, previousPID: 0, newVID: 0, newPID: 0 }),
+  // spoofVIDPID fue ELIMINADO por seguridad - usar writeEEPROM() en su lugar
 };
 
 const UsbNativeModule = Platform.OS === 'android' 

@@ -1948,3 +1948,11 @@ módulo nativo: val wordOffset = (offset + i) / 2  // Divide de nuevo!
 - [x] Incluir sección de instalación del Toolbox
 - [x] Incluir sección de restauración guiada
 - [x] Agregar traducciones ES/EN/DE para la guía completa
+
+
+## Mejoras de Seguridad - Eliminación spoofVIDPID y Rollback (18 Ene 2026)
+
+- [x] Eliminar función spoofVIDPID del módulo Kotlin (UsbNativeModule.kt)
+- [x] Eliminar referencias a spoofVIDPID en TypeScript (usb-service.ts, modules/usb-native/index.ts)
+- [x] Implementar rollback automático si verificación post-escritura falla
+- [x] Agregar traducciones para mensajes de rollback ES/EN/DE

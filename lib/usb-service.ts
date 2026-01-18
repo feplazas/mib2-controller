@@ -1,9 +1,13 @@
 import { Platform } from 'react-native';
-import UsbNativeModule, { type UsbDevice as NativeUsbDevice, type EEPROMReadResult, type EEPROMDumpResult, type SpoofResult } from '../modules/usb-native';
+import UsbNativeModule, { type UsbDevice as NativeUsbDevice, type EEPROMReadResult, type EEPROMDumpResult } from '../modules/usb-native';
 import { usbLogger } from './usb-logger';
 
 export type UsbDevice = NativeUsbDevice;
-export { type EEPROMReadResult, type EEPROMDumpResult, type SpoofResult };
+export { type EEPROMReadResult, type EEPROMDumpResult };
+
+// NOTA: SpoofResult y spoofVIDPID fueron ELIMINADOS por seguridad.
+// La función spoofVIDPID tenía errores críticos que podían causar bricking.
+// En su lugar, usar writeEEPROM() que implementa correctamente la escritura.
 
 // Magic value for EEPROM write authorization (as specified in Guíaspoofing.pdf)
 export const MAGIC_VALUE = 0xDEADBEEF;
@@ -208,28 +212,12 @@ class UsbService {
     }
   }
 
-  /**
-   * Spoof VID/PID para hacer adaptador compatible con MIB2
-   */
-  async spoofVIDPID(targetVID: number = TARGET_VID, targetPID: number = TARGET_PID): Promise<SpoofResult> {
-    if (Platform.OS !== 'android') {
-      throw new Error('USB operations only available on Android');
-    }
-
-    if (this.currentDeviceId === null) {
-      throw new Error('No device connected');
-    }
-
-    try {
-      console.log(`[UsbService] Spoofing VID/PID to ${this.formatVIDPID(targetVID, targetPID)}`);
-      const result = await UsbNativeModule.spoofVIDPID(targetVID, targetPID, MAGIC_VALUE);
-      console.log(`[UsbService] Spoof ${result.success ? 'successful' : 'failed'}`);
-      return result;
-    } catch (error) {
-      console.error('[UsbService] Error spoofing VID/PID:', error);
-      throw error;
-    }
-  }
+  // NOTA: La función spoofVIDPID fue ELIMINADA por seguridad.
+  // Tenía errores críticos:
+  // 1. No habilitaba modo de escritura EEPROM
+  // 2. Usaba byte offsets en lugar de word offsets
+  // 3. Escribía bytes individuales en lugar de words
+  // En su lugar, usar writeEEPROM() directamente desde auto-spoof.tsx
 
   /**
    * Crear backup automático de EEPROM
