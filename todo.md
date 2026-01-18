@@ -1866,3 +1866,15 @@ módulo nativo: val wordOffset = (offset + i) / 2  // Divide de nuevo!
 - [x] Agregar comando: Listar backups existentes
 - [x] Agregar comando: Restaurar binario crítico desde backup
 - [x] Agregar traducciones ES/EN/DE para comandos de backup
+
+
+## Backup Completo de Partición con dd (18 Enero 2026)
+
+### Tareas
+- [x] Agregar comando: Verificar tamaño de particiones del sistema
+- [x] Agregar comando: Backup completo de partición del sistema con dd
+- [x] Agregar comando: Backup de partición de datos con dd
+- [x] Agregar comando: Verificar integridad del backup con md5sum
+- [x] Agregar comando: Restaurar partición desde imagen dd (emergencia)
+- [x] Agregar advertencias sobre tiempo y espacio requerido
+- [x] Agregar traducciones ES/EN/DE para comandos de dd
