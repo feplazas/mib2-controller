@@ -1740,7 +1740,9 @@
     "list_processes_name": "List processes",
     "list_processes_desc": "Shows running system processes",
     "network_info_name": "Network information",
-    "network_info_desc": "Shows system network configuration"
+    "network_info_desc": "Shows system network configuration",
+    "verify_backup_integrity_name": "🔍 Verify backup integrity",
+    "verify_backup_integrity_desc": "Performs complete backup integrity verification before restoration. Verifies MD5, available space and shows detailed information."
   },
   "mib2_state": {
     "system_status": "System Status",

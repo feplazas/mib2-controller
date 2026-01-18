@@ -1915,3 +1915,16 @@ módulo nativo: val wordOffset = (offset + i) / 2  // Divide de nuevo!
 - [x] Mostrar ETA en formato legible (mm:ss o hh:mm:ss)
 - [x] Actualizar estimación en tiempo real
 - [x] Agregar traducciones ES/EN/DE para nuevos textos
+
+
+## Script de Verificación Pre-Restauración dd (18 Enero 2026)
+
+- [x] Crear script shell verify_backup_integrity.sh para QNX
+- [x] Verificar que el archivo de backup existe
+- [x] Verificar que el archivo MD5 existe
+- [x] Calcular MD5 del backup y comparar con el archivo .md5
+- [x] Verificar espacio disponible en la partición destino
+- [x] Mostrar información del backup (tamaño, fecha, partición)
+- [x] Pedir confirmación final antes de proceder con restauración
+- [x] Agregar el script a los scripts predefinidos de Telnet (categoría backup)
+- [x] Agregar traducciones ES/EN/DE para el nuevo script

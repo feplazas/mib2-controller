@@ -1740,7 +1740,9 @@
     "list_processes_name": "Prozesse auflisten",
     "list_processes_desc": "Zeigt laufende Systemprozesse",
     "network_info_name": "Netzwerkinformationen",
-    "network_info_desc": "Zeigt System-Netzwerkkonfiguration"
+    "network_info_desc": "Zeigt System-Netzwerkkonfiguration",
+    "verify_backup_integrity_name": "🔍 Backup-Integrität überprüfen",
+    "verify_backup_integrity_desc": "Führt vollständige Backup-Integritätsprüfung vor der Wiederherstellung durch. Überprüft MD5, verfügbaren Speicherplatz und zeigt detaillierte Informationen."
   },
   "mib2_state": {
     "system_status": "Systemstatus",
