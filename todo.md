@@ -2120,3 +2120,11 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Verificar todas las referencias al bundleId en el proyecto (solo 2 archivos, ambos corregidos)
 - [x] Compilar nuevo APK con la corrección (build en progreso)
 - [x] Sincronizar con GitHub (commit 9f29120 pushed)
+
+
+## Optimización de Build Size (20 Ene 2026)
+
+- [x] Analizar archivos grandes en el proyecto (60+ MB de PNGs innecesarios)
+- [x] Crear .easignore para excluir archivos innecesarios
+- [x] Reducir tamaño del proyecto de 168 MB a ~18 MB (sin node_modules)
+- [ ] Sincronizar con GitHub

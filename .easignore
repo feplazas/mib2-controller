@@ -1,0 +1,85 @@
+# EAS Build Ignore File
+# Files and directories listed here will be excluded from the build archive
+# This significantly reduces upload time and build size
+
+# Documentation and markdown files
+*.md
+!README.md
+PRIVACY.md
+store-listing.md
+CODE_REVIEW_*.txt
+SECURITY_AUDIT_*.md
+
+# Play Store assets (not needed for build)
+play-store-assets/
+*.psd
+*.ai
+*.sketch
+*.fig
+
+# Large PNG files in root (design assets, not app assets)
+icon_1024x1024.png
+icon_512x512_v2.png
+icon_192x192.png
+icon_256x256.png
+icon_adaptive_foreground.png
+banner_1200x500.png
+feature_graphic_*.png
+promo_graphic_*.png
+screenshot_*.png
+
+# Git and version control
+.git/
+.github/
+.gitignore
+.gitattributes
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Test files
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+__tests__/
+__mocks__/
+
+# Build artifacts (will be regenerated)
+dist/
+dist-android/
+.expo/
+.expo-shared/
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Package manager files (not needed, dependencies are in node_modules)
+pnpm-lock.yaml
+yarn.lock
+package-lock.json
+
+# Environment files (secrets should be in EAS)
+.env
+.env.local
+.env.*.local
+
+# Screenshots from webdev
+/home/ubuntu/screenshots/
+
+# Uploaded files (if any)
+/home/ubuntu/upload/
