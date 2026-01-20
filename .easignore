@@ -71,7 +71,6 @@ temp/
 # Package manager files (not needed, dependencies are in node_modules)
 pnpm-lock.yaml
 yarn.lock
-package-lock.json
 
 # Environment files (secrets should be in EAS)
 .env
