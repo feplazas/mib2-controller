@@ -283,7 +283,7 @@ export default function UsbStatusScreen() {
   return (
     <ScreenContainer className="p-4">
       <ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }

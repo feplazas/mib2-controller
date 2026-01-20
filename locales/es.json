@@ -1107,6 +1107,8 @@
     "developer": "Desarrollador",
     "license": "Licencia",
     "language_description": "Selecciona el idioma de la aplicación",
+    "tab_sound": "Sonido de Pestañas",
+    "tab_sound_description": "Reproduce un sonido sutil al cambiar de pestaña",
     "language_auto": "Automático",
     "language_auto_desc": "Usar idioma del sistema",
     "select_language": "Seleccionar Idioma",

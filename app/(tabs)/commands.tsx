@@ -758,7 +758,7 @@ export default function CommandsScreen() {
           <ScrollView
             ref={scrollViewRef}
             className="flex-1 p-4"
-            contentContainerStyle={{ flexGrow: 1 }}
+            contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}
           >
             {messages.length === 0 ? (
               <View className="flex-1 items-center justify-center">

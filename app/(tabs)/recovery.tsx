@@ -115,7 +115,7 @@ export default function RecoveryScreen() {
   return (
     <ScreenContainer className="p-6">
       <ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }

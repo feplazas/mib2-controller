@@ -1107,6 +1107,8 @@
     "developer": "Entwickler",
     "license": "Lizenz",
     "language_description": "App-Sprache auswählen",
+    "tab_sound": "Tab-Ton",
+    "tab_sound_description": "Dezenten Ton beim Tab-Wechsel abspielen",
     "language_auto": "Automatisch",
     "language_auto_desc": "Systemsprache verwenden",
     "select_language": "Sprache auswählen",

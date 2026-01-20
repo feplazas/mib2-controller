@@ -291,7 +291,7 @@ export default function HomeScreen() {
 
   return (
     <ScreenContainer className="p-6">
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}>
         <View className="flex-1 gap-6">
           {/* Header - Premium Design */}
           <View className="items-center gap-3 mb-2">

@@ -16,7 +16,7 @@ export default function ToolsScreen() {
 
   return (
     <ScreenContainer className="p-4">
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}>
         <View className="gap-4">
           <View className="mb-4">
             <Text className="text-3xl font-bold text-foreground">{t('home.tools')}</Text>

@@ -2076,3 +2076,20 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Crear/obtener archivo de sonido sutil para tab switch (Pixabay)
 - [x] Verificar que no se rompe ninguna funcionalidad existente
 - [x] Probar en preview web y preparar para dispositivo real
+
+
+## Build APK con EAS (20 Ene 2026)
+
+- [x] Verificar configuración de EAS y eas.json
+- [x] Ejecutar EAS Build para Android (APK preview)
+- [x] Monitorear progreso del build
+- [x] Entregar enlace de descarga del APK
+
+
+## Correcciones de UX y Sonido (20 Ene 2026)
+
+- [x] Corregir scroll incompleto en pestañas (paddingBottom: 100 en todos los ScrollView)
+- [x] Reducir volumen del sonido a la mitad (de 30% a 15%)
+- [x] Agregar toggle en Settings para desactivar sonido de pestañas
+- [x] Probar correcciones en preview (TypeScript sin errores)
+- [ ] Compilar nuevo APK con correcciones

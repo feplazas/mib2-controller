@@ -1107,6 +1107,8 @@
     "developer": "Developer",
     "license": "License",
     "language_description": "Select application language",
+    "tab_sound": "Tab Sound",
+    "tab_sound_description": "Play a subtle sound when switching tabs",
     "language_auto": "Automatic",
     "language_auto_desc": "Use system language",
     "select_language": "Select Language",

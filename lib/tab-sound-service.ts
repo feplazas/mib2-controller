@@ -20,7 +20,24 @@ import { useEffect, useCallback } from "react";
 const TAB_SWITCH_SOUND = require("@/assets/sounds/tab-switch.mp3");
 
 // Volumen del sonido (0-1, bajo para ser sutil)
-const SOUND_VOLUME = 0.3;
+const SOUND_VOLUME = 0.15;
+
+// Estado global para habilitar/deshabilitar sonido
+let soundEnabled = true;
+
+/**
+ * Obtener estado actual del sonido
+ */
+export function isSoundEnabled(): boolean {
+  return soundEnabled;
+}
+
+/**
+ * Habilitar o deshabilitar sonido de pestañas
+ */
+export function setSoundEnabled(enabled: boolean): void {
+  soundEnabled = enabled;
+}
 
 /**
  * Hook para reproducir sonido de cambio de pestaña
@@ -64,8 +81,8 @@ export function useTabSound() {
 
   // Función para reproducir el sonido
   const playTabSound = useCallback(() => {
-    // No reproducir en web (autoplay restrictions)
-    if (Platform.OS === "web") return;
+    // No reproducir si está deshabilitado o en web
+    if (!soundEnabled || Platform.OS === "web") return;
 
     try {
       // Configurar volumen bajo

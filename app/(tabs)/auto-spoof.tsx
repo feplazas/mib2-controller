@@ -568,7 +568,7 @@ export default function AutoSpoofScreen() {
 
   return (
     <ScreenContainer className="p-4">
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}>
         <View className="gap-4">
           {/* Header */}
           <View className="items-center mb-4">
