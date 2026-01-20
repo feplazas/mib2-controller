@@ -42,15 +42,17 @@ MIB2, Volkswagen, VW, Seat, Skoda, CarPlay, Android Auto, Toolbox, USB, Telnet, 
 ## 📸 Assets Gráficos Requeridos
 
 ### Icono de la Aplicación
-- [ ] **Icon high-res** (512x512px, PNG, 32-bit, sin transparencia)
+- [x] **Icon high-res** (512x512px, PNG, 32-bit, sin transparencia)
   - Ubicación: `play-store-assets/icon-512.png`
   - Debe ser el mismo diseño que el icono de la app
+  - Generado: 512x512px, 328KB
 
 ### Feature Graphic
-- [ ] **Feature graphic** (1024x500px, PNG o JPG)
+- [x] **Feature graphic** (1024x500px, PNG o JPG)
   - Ubicación: `play-store-assets/feature-graphic.png`
   - Debe mostrar el nombre de la app y funcionalidad principal
   - Sin bordes ni transparencia
+  - Generado: 1024x500px, 581KB
 
 ### Screenshots (mínimo 2, máximo 8)
 Resolución recomendada: 1080x1920px (9:16) o similar
@@ -196,7 +198,7 @@ Resolución recomendada: 1080x1920px (9:16) o similar
 - ✅ versionCode 5
 
 **Pendiente**:
-- ⏳ Generar assets gráficos (icon high-res, feature graphic, screenshots)
+- ⏳ Generar screenshots de las 7 pantallas principales
 - ⏳ Compilar AAB de producción
 - ⏳ Testing en dispositivos reales
 - ⏳ Publicación en Play Console
