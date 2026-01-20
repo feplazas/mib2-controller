@@ -339,12 +339,12 @@
     "spoof": "Spoof",
     "diag": "Diag",
     "config": "Config",
-    "diagnostics": "Diagnóstico",
+    "actions": "Acciones",
     "tools": "Herramientas"
   },
-  "diagnostics": {
-    "title": "Diagnóstico",
-    "subtitle": "Herramientas avanzadas y utilidades del sistema",
+  "actions": {
+    "title": "Acciones",
+    "subtitle": "Herramientas y utilidades del sistema",
     "usb_status": "Estado USB",
     "usb_status_desc": "Información detallada del adaptador conectado",
     "recovery": "Recuperación",
@@ -500,7 +500,7 @@
     "inactive": "Inactiva",
     "usb_adapter": "Adaptador USB",
     "complete_prerequisites": "Completa los prerequisitos antes de instalar",
-    "diagnostics": "Diagnósticos",
+    "actions": "Acciones",
     "backups": "Backups",
     "emmc_method": "Método eMMC",
     "installation_steps": "Pasos de Instalación",
@@ -1899,7 +1899,7 @@
     "resource_scripts": "Pantalla 'Comandos': Scripts predefinidos para cada paso",
     "resource_commands": "Pantalla 'Comandos': Terminal Telnet interactiva",
     "resource_backups": "Pantalla 'Backups': Gestión de backups de EEPROM",
-    "resource_diagnostics": "Pantalla 'Diagnóstico': Herramientas de red y sistema",
+    "resource_actions": "Pantalla 'Acciones': Herramientas de red y sistema",
     "final_tip": "Consejo final: Guarda esta guía y los backups en un lugar seguro. Nunca se sabe cuándo los necesitarás."
   }
 }

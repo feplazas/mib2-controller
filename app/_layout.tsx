@@ -113,7 +113,16 @@ function RootLayoutInner() {
         <QueryClientProvider client={queryClient}>
           {/* Default to hiding native headers so raw route segments don't appear (e.g. "(tabs)", "products/[id]"). */}
           {/* If a screen needs the native header, explicitly enable it and set a human title via Stack.Screen options. */}
-          <Stack screenOptions={{ headerShown: false }}>
+          <Stack 
+            screenOptions={{ 
+              headerShown: false,
+              // Animaciones de transición ultra premium
+              animation: 'fade_from_bottom',
+              animationDuration: 250,
+              gestureEnabled: true,
+              gestureDirection: 'horizontal',
+            }}
+          >
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="oauth/callback" />
           </Stack>

@@ -339,12 +339,12 @@
     "spoof": "Spoof",
     "diag": "Diag",
     "config": "Konfig",
-    "diagnostics": "Diagnose",
+    "actions": "Aktionen",
     "tools": "Werkzeuge"
   },
-  "diagnostics": {
-    "title": "Diagnose",
-    "subtitle": "Erweiterte Tools und Systemdienstprogramme",
+  "actions": {
+    "title": "Aktionen",
+    "subtitle": "Tools und Systemdienstprogramme",
     "usb_status": "USB-Status",
     "usb_status_desc": "Detaillierte Informationen zum angeschlossenen Adapter",
     "recovery": "Wiederherstellung",
@@ -500,7 +500,7 @@
     "inactive": "Inaktiv",
     "usb_adapter": "USB-Adapter",
     "complete_prerequisites": "Voraussetzungen vor der Installation abschließen",
-    "diagnostics": "Diagnosen",
+    "actions": "Aktionen",
     "backups": "Backups",
     "emmc_method": "eMMC-Methode",
     "installation_steps": "Installationsschritte",
@@ -1899,7 +1899,7 @@
     "resource_scripts": "'Befehle'-Bildschirm: Vordefinierte Skripte für jeden Schritt",
     "resource_commands": "'Befehle'-Bildschirm: Interaktives Telnet-Terminal",
     "resource_backups": "'Backups'-Bildschirm: EEPROM-Backup-Verwaltung",
-    "resource_diagnostics": "'Diagnose'-Bildschirm: Netzwerk- und System-Tools",
+    "resource_actions": "'Aktionen'-Bildschirm: Netzwerk- und System-Tools",
     "final_tip": "Abschließender Tipp: Bewahren Sie diese Anleitung und Backups an einem sicheren Ort auf. Man weiß nie, wann man sie braucht."
   }
 }

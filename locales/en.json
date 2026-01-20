@@ -339,12 +339,12 @@
     "spoof": "Spoof",
     "diag": "Diag",
     "config": "Config",
-    "diagnostics": "Diagnostics",
+    "actions": "Actions",
     "tools": "Tools"
   },
-  "diagnostics": {
-    "title": "Diagnostics",
-    "subtitle": "Advanced tools and system utilities",
+  "actions": {
+    "title": "Actions",
+    "subtitle": "Tools and system utilities",
     "usb_status": "USB Status",
     "usb_status_desc": "Detailed information about connected adapter",
     "recovery": "Recovery",
@@ -500,7 +500,7 @@
     "inactive": "Inactive",
     "usb_adapter": "USB Adapter",
     "complete_prerequisites": "Complete prerequisites before installing",
-    "diagnostics": "Diagnostics",
+    "actions": "Actions",
     "backups": "Backups",
     "emmc_method": "eMMC Method",
     "installation_steps": "Installation Steps",
@@ -1899,7 +1899,7 @@
     "resource_scripts": "'Commands' screen: Predefined scripts for each step",
     "resource_commands": "'Commands' screen: Interactive Telnet terminal",
     "resource_backups": "'Backups' screen: EEPROM backup management",
-    "resource_diagnostics": "'Diagnostics' screen: Network and system tools",
+    "resource_actions": "'Actions' screen: Network and system tools",
     "final_tip": "Final tip: Save this guide and backups in a safe place. You never know when you'll need them."
   }
 }

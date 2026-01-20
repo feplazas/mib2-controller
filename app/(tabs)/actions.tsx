@@ -38,48 +38,48 @@ export default function DiagnosticsScreen() {
     {
       id: 'usb-status',
       icon: 'cable.connector',
-      titleKey: 'diagnostics.usb_status',
-      descriptionKey: 'diagnostics.usb_status_desc',
+      titleKey: 'actions.usb_status',
+      descriptionKey: 'actions.usb_status_desc',
       route: '/(tabs)/usb-status',
       color: '#007AFF', // iOS Blue
     },
     {
       id: 'recovery',
       icon: 'arrow.counterclockwise',
-      titleKey: 'diagnostics.recovery',
-      descriptionKey: 'diagnostics.recovery_desc',
+      titleKey: 'actions.recovery',
+      descriptionKey: 'actions.recovery_desc',
       route: '/(tabs)/recovery',
       color: '#FF9500', // iOS Orange
     },
     {
       id: 'diag',
       icon: 'stethoscope',
-      titleKey: 'diagnostics.system_diag',
-      descriptionKey: 'diagnostics.system_diag_desc',
+      titleKey: 'actions.system_diag',
+      descriptionKey: 'actions.system_diag_desc',
       route: '/(tabs)/diag',
       color: '#34C759', // iOS Green
     },
     {
       id: 'fec',
       icon: 'qrcode',
-      titleKey: 'diagnostics.fec_generator',
-      descriptionKey: 'diagnostics.fec_generator_desc',
+      titleKey: 'actions.fec_generator',
+      descriptionKey: 'actions.fec_generator_desc',
       route: '/(tabs)/fec',
       color: '#AF52DE', // iOS Purple
     },
     {
       id: 'tools',
       icon: 'hammer.fill',
-      titleKey: 'diagnostics.advanced_tools',
-      descriptionKey: 'diagnostics.advanced_tools_desc',
+      titleKey: 'actions.advanced_tools',
+      descriptionKey: 'actions.advanced_tools_desc',
       route: '/(tabs)/tools',
       color: '#FF3B30', // iOS Red
     },
     {
       id: 'backups',
       icon: 'externaldrive.fill',
-      titleKey: 'diagnostics.backups',
-      descriptionKey: 'diagnostics.backups_desc',
+      titleKey: 'actions.backups',
+      descriptionKey: 'actions.backups_desc',
       route: '/(tabs)/backups',
       color: '#5856D6', // iOS Indigo
     },
@@ -100,10 +100,10 @@ export default function DiagnosticsScreen() {
         {/* Header */}
         <View style={styles.header}>
           <Text style={[styles.title, { color: colors.foreground }]}>
-            {t('diagnostics.title')}
+            {t('actions.title')}
           </Text>
           <Text style={[styles.subtitle, { color: colors.muted }]}>
-            {t('diagnostics.subtitle')}
+            {t('actions.subtitle')}
           </Text>
         </View>
 
@@ -148,7 +148,7 @@ export default function DiagnosticsScreen() {
         <View style={[styles.footer, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <IconSymbol name="info.circle" size={18} color={colors.muted} />
           <Text style={[styles.footerText, { color: colors.muted }]}>
-            {t('diagnostics.footer_info')}
+            {t('actions.footer_info')}
           </Text>
         </View>
       </ScrollView>

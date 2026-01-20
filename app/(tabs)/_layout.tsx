@@ -14,7 +14,7 @@ import { useTranslation } from "@/lib/language-context";
  * - Home: Dashboard and connection status
  * - USB: USB adapter management and spoofing
  * - Tools: Telnet commands, macros, and utilities
- * - Diagnostics: All diagnostic tools, recovery, FEC, backups
+ * - Actions: All tools, recovery, FEC, backups
  * - Settings: App configuration
  */
 export default function TabLayout() {
@@ -29,6 +29,9 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
+        // Animaciones de transición ultra premium
+        animation: 'shift',
+        tabBarHideOnKeyboard: true,
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.muted,
         headerShown: false,
@@ -57,6 +60,9 @@ export default function TabLayout() {
         tabBarIconStyle: {
           marginTop: 4,
         },
+        // Transiciones suaves estilo iOS
+        lazy: true,
+        freezeOnBlur: true,
       }}
     >
       {/* Main visible tabs - 5 tabs following iOS HIG */}
@@ -100,13 +106,13 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="diagnostics"
+        name="actions"
         options={{
-          title: t('tabs.diagnostics'),
+          title: t("tabs.actions"),
           tabBarIcon: ({ color, focused }) => (
             <IconSymbol 
               size={focused ? 26 : 24} 
-              name="waveform.path.ecg" 
+             name="bolt.fill" 
               color={color} 
             />
           ),
@@ -126,7 +132,7 @@ export default function TabLayout() {
         }}
       />
       
-      {/* Hidden tabs - accessible via navigation from Diagnostics hub */}
+      {/* Hidden tabs - accessible via navigation from Actions hub */}
       <Tabs.Screen
         name="usb-status"
         options={{ href: null }}

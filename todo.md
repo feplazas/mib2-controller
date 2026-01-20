@@ -375,8 +375,8 @@
 ### PRIORIDAD MEDIA - Safety & UX
 - [x] Backup automático de EEPROM antes de modificar
 - [ ] Cálculo y validación de checksum
-- [ ] Detección de eFuse (advertir si chip está bloqueado)
-- [ ] Restauración de EEPROM desde backup
+- [x] Detección de eFuse (advertir si chip está bloqueado)
+- [x] Restauración de EEPROM desde backup (solo VID/PID por seguridad)
 - [x] Interfaz gráfica para visualizar mapa de memoria (pantalla spoofing existente)
 
 ### Offsets de Memoria EEPROM (ASIX AX88772)
@@ -2021,3 +2021,39 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [ ] Actualizar tab bar con pestaña de Diagnóstico visible
 - [ ] Refinar iconos con estilo SF Symbols ultra premium Apple-like
 - [ ] Agregar traducciones para nueva pestaña de Diagnóstico
+
+
+## Renombrar Pestaña y Animaciones (20 Ene 2026)
+
+- [ ] Renombrar pestaña de Diagnóstico a Acciones en tab bar
+- [ ] Actualizar traducciones ES/EN/DE para Acciones
+- [ ] Agregar animaciones de transición entre pantallas
+- [ ] Implementar animaciones de entrada/salida fluidas
+
+
+## Mejoras de UX y Traducciones (20 Ene 2026)
+
+### Renombrado de Pestaña Diagnóstico a Acciones
+- [x] Actualizar traducciones en es.json (diagnostics -> actions)
+- [x] Actualizar traducciones en en.json (diagnostics -> actions)
+- [x] Actualizar traducciones en de.json (diagnostics -> actions)
+- [x] Actualizar claves de traducción en actions.tsx
+- [x] Actualizar comentario en _layout.tsx de tabs
+
+### Animaciones de Transición Ultra Premium
+- [x] Agregar animación 'shift' a la navegación de tabs
+- [x] Agregar animación 'fade_from_bottom' al Stack navigator
+- [x] Configurar lazy loading para mejor rendimiento
+- [x] Habilitar gestos de navegación horizontal
+- [x] Configurar freezeOnBlur para optimización de memoria
+
+### Auditoría Exhaustiva de Funcionalidades
+- [x] Verificar módulo Kotlin USB contra Guíaspoofing.pdf
+- [x] Verificar implementación de writeEEPROM (correcta)
+- [x] Verificar implementación de detectEEPROMType (correcta)
+- [x] Verificar implementación de dumpEEPROM (correcta)
+- [x] Confirmar que spoofVIDPID fue eliminada (seguridad)
+- [x] Verificar scripts Telnet contra MIB2Acceso.pdf
+- [x] Confirmar que comandos dd NO se auto-ejecutan
+- [x] Verificar sistema de backup con integridad MD5/SHA256
+- [x] Confirmar que todas las funcionalidades son reales (sin mockups)
