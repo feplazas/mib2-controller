@@ -2136,3 +2136,13 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Configurar build.gradle para habilitar minifyEnabled y shrinkResources (via plugin)
 - [x] Actualizar eas.json para producción con R8 y appVersionSource
 - [x] Sincronizar con GitHub (commit 9954995 pushed)
+
+
+## Build Release APK con ProGuard/R8 (20 Ene 2026)
+
+- [x] Incrementar versionCode a 4 para release
+- [x] Ejecutar EAS Build con perfil production-apk (APK) - fallido por Corepack
+- [x] Crear hook eas-build-pre-install.sh para habilitar Corepack/pnpm
+- [x] Ejecutar múltiples builds - todos fallaron por problema de instalación de dependencias
+- [ ] Investigar logs detallados del error de instalación
+- [ ] Considerar build local o alternativa
