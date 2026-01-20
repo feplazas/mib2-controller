@@ -166,7 +166,7 @@ export default function FECScreen() {
 
   return (
     <ScreenContainer className="p-4">
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 120 }}>
         <View className="gap-6">
           {/* Header */}
           <View className="gap-2">

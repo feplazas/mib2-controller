@@ -600,7 +600,13 @@ export default function CommandsScreen() {
 
   return (
     <ScreenContainer className="flex-1">
-      <View className="flex-1 p-4 gap-4">
+      <ScrollView 
+        className="flex-1"
+        contentContainerStyle={{ paddingBottom: 120 }}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
+      <View className="p-4 gap-4">
         {/* Header */}
         <View className="flex-row items-center justify-between">
           <View>
@@ -879,6 +885,7 @@ export default function CommandsScreen() {
           </ScrollView>
         </View>
       </View>
+      </ScrollView>
 
       {/* Scripts Library Modal */}
       <Modal

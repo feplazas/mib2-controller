@@ -2092,4 +2092,12 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Reducir volumen del sonido a la mitad (de 30% a 15%)
 - [x] Agregar toggle en Settings para desactivar sonido de pestañas
 - [x] Probar correcciones en preview (TypeScript sin errores)
-- [ ] Compilar nuevo APK con correcciones
+- [x] Compilar nuevo APK con correcciones (build 51f4b698)
+
+
+## Corrección de Scroll Incompleto (20 Ene 2026 - Parte 2)
+
+- [x] Corregir scroll en pantalla Tools (commands.tsx) - ScrollView principal con paddingBottom: 120
+- [x] Corregir scroll en pantalla Actions/FEC (fec.tsx) - paddingBottom: 120 agregado
+- [x] Verificar que el scroll funcione correctamente (TypeScript sin errores)
+- [ ] Compilar nuevo APK con las correcciones
