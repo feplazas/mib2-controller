@@ -79,7 +79,7 @@ Control remoto para unidades MIB2 STD2 Technisat Preh sin navegación
 ### Soporte
 
 Para soporte técnico, reportar bugs o solicitar funcionalidades, visita:
-- GitHub: [tu-usuario]/mib2-controller
+- GitHub: https://github.com/feplazas/mib2-controller
 - Foros de la comunidad MIB2
 
 ### Licencia
@@ -97,7 +97,7 @@ Tools
 Everyone
 
 ## Privacy Policy URL
-https://github.com/[tu-usuario]/mib2-controller/blob/main/PRIVACY.md
+https://github.com/feplazas/mib2-controller/blob/main/PRIVACY.md
 
 ## Tags/Keywords
 MIB2, Volkswagen, VW, Seat, Skoda, CarPlay, Android Auto, Toolbox, USB, Telnet, FEC, ASIX, Spoofing, Infotainment

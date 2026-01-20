@@ -2146,3 +2146,14 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Ejecutar múltiples builds - todos fallaron por problema de instalación de dependencias
 - [ ] Investigar logs detallados del error de instalación
 - [ ] Considerar build local o alternativa
+
+
+## Preflight Play Store (20 Ene 2026)
+- [ ] Verificar app.config.ts (nombre, versión, permisos)
+- [ ] Verificar store-listing.md (descripción, keywords)
+- [ ] Verificar PRIVACY.md (política de privacidad)
+- [ ] Generar screenshots de las 7 pantallas principales
+- [ ] Crear feature graphic (1024x500px)
+- [ ] Crear app icon high-res (512x512px)
+- [ ] Compilar AAB de producción con EAS
+- [ ] Crear checklist de preflight completo
