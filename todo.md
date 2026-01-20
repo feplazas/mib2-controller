@@ -2100,4 +2100,15 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Corregir scroll en pantalla Tools (commands.tsx) - ScrollView principal con paddingBottom: 120
 - [x] Corregir scroll en pantalla Actions/FEC (fec.tsx) - paddingBottom: 120 agregado
 - [x] Verificar que el scroll funcione correctamente (TypeScript sin errores)
-- [ ] Compilar nuevo APK con las correcciones
+- [x] Compilar nuevo APK con las correcciones (build 09521061)
+
+
+## Preparación para Play Store y GitHub (20 Ene 2026)
+
+- [ ] Limpieza de archivos innecesarios (logs, caches, temporales)
+- [ ] Eliminar console.log y comentarios de desarrollo
+- [ ] Verificar y actualizar app.config.ts para producción
+- [ ] Verificar y actualizar eas.json para producción
+- [ ] Crear .gitignore completo
+- [ ] Crear commit con todos los cambios
+- [ ] Sincronizar con GitHub del usuario
