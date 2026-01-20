@@ -25,7 +25,6 @@ export interface MIB2Command {
   descriptionKey: string;
   command: string;
   requiresConfirmation: boolean;
-  expertOnly: boolean;
   firmwareVersion?: string;
   notesKey?: string;
 }
@@ -40,7 +39,6 @@ export const MIB2_COMMANDS: MIB2Command[] = [
     descriptionKey: 'commands.firmware_version_desc',
     command: 'cat /net/rcc/mnt/efs-persist/FW/version.txt',
     requiresConfirmation: false,
-    expertOnly: false,
   },
   {
     id: 'system_info',
@@ -50,7 +48,6 @@ export const MIB2_COMMANDS: MIB2Command[] = [
     descriptionKey: 'commands.system_info_desc',
     command: 'uname -a',
     requiresConfirmation: false,
-    expertOnly: false,
   },
   {
     id: 'cpu_info',
@@ -60,7 +57,6 @@ export const MIB2_COMMANDS: MIB2Command[] = [
     descriptionKey: 'commands.cpu_info_desc',
     command: 'cat /proc/cpuinfo',
     requiresConfirmation: false,
-    expertOnly: false,
   },
   {
     id: 'serial_number',
@@ -70,7 +66,6 @@ export const MIB2_COMMANDS: MIB2Command[] = [
     descriptionKey: 'commands.serial_number_desc',
     command: 'cat /net/rcc/mnt/efs-persist/serialnumber',
     requiresConfirmation: false,
-    expertOnly: false,
   },
   {
     id: 'hardware_version',
@@ -80,7 +75,6 @@ export const MIB2_COMMANDS: MIB2Command[] = [
     descriptionKey: 'commands.hardware_version_desc',
     command: 'cat /net/rcc/mnt/efs-persist/HWVersion',
     requiresConfirmation: false,
-    expertOnly: false,
   },
 
   // ========== DIAGNOSTIC COMMANDS ==========
@@ -92,7 +86,6 @@ export const MIB2_COMMANDS: MIB2Command[] = [
     descriptionKey: 'commands.memory_info_desc',
     command: 'free',
     requiresConfirmation: false,
-    expertOnly: false,
   },
   {
     id: 'mounted_devices',
@@ -102,7 +95,6 @@ export const MIB2_COMMANDS: MIB2Command[] = [
     descriptionKey: 'commands.mounted_devices_desc',
     command: 'mount',
     requiresConfirmation: false,
-    expertOnly: false,
   },
   {
     id: 'network_interfaces',
@@ -112,7 +104,6 @@ export const MIB2_COMMANDS: MIB2Command[] = [
     descriptionKey: 'commands.network_interfaces_desc',
     command: 'ifconfig',
     requiresConfirmation: false,
-    expertOnly: false,
   },
   {
     id: 'running_processes',
@@ -122,7 +113,6 @@ export const MIB2_COMMANDS: MIB2Command[] = [
     descriptionKey: 'commands.running_processes_desc',
     command: 'ps aux',
     requiresConfirmation: false,
-    expertOnly: false,
   },
   {
     id: 'disk_usage',
@@ -132,7 +122,6 @@ export const MIB2_COMMANDS: MIB2Command[] = [
     descriptionKey: 'commands.disk_usage_desc',
     command: 'df -h',
     requiresConfirmation: false,
-    expertOnly: false,
   },
   {
     id: 'temperature',
@@ -142,7 +131,6 @@ export const MIB2_COMMANDS: MIB2Command[] = [
     descriptionKey: 'commands.temperature_desc',
     command: 'cat /sys/class/thermal/thermal_zone0/temp',
     requiresConfirmation: false,
-    expertOnly: false,
   },
 
   // ========== ADAPTATION COMMANDS ==========
@@ -154,7 +142,6 @@ export const MIB2_COMMANDS: MIB2Command[] = [
     descriptionKey: 'commands.list_adaptations_desc',
     command: 'ls -la /net/rcc/mnt/efs-persist/Adaptation/',
     requiresConfirmation: false,
-    expertOnly: false,
   },
   {
     id: 'backup_adaptations',
@@ -164,7 +151,6 @@ export const MIB2_COMMANDS: MIB2Command[] = [
     descriptionKey: 'commands.backup_adaptations_desc',
     command: 'cp -r /net/rcc/mnt/efs-persist/Adaptation /net/rcc/mnt/efs-persist/Adaptation_backup_$(date +%Y%m%d)',
     requiresConfirmation: true,
-    expertOnly: false,
     notesKey: 'commands.backup_adaptations_notes',
   },
   {
@@ -175,7 +161,6 @@ export const MIB2_COMMANDS: MIB2Command[] = [
     descriptionKey: 'commands.enable_green_menu_desc',
     command: 'echo "1" > /net/rcc/mnt/efs-persist/Adaptation/GreenMenu',
     requiresConfirmation: true,
-    expertOnly: true,
     notesKey: 'commands.enable_green_menu_notes',
   },
   {
@@ -186,7 +171,6 @@ export const MIB2_COMMANDS: MIB2Command[] = [
     descriptionKey: 'commands.disable_green_menu_desc',
     command: 'echo "0" > /net/rcc/mnt/efs-persist/Adaptation/GreenMenu',
     requiresConfirmation: true,
-    expertOnly: true,
   },
   {
     id: 'enable_video_in_motion',
@@ -196,7 +180,6 @@ export const MIB2_COMMANDS: MIB2Command[] = [
     descriptionKey: 'commands.enable_vim_desc',
     command: 'echo "1" > /net/rcc/mnt/efs-persist/Adaptation/VideoInMotion',
     requiresConfirmation: true,
-    expertOnly: true,
     notesKey: 'commands.enable_vim_notes',
   },
   {
@@ -207,7 +190,6 @@ export const MIB2_COMMANDS: MIB2Command[] = [
     descriptionKey: 'commands.enable_camera_guidelines_desc',
     command: 'echo "1" > /net/rcc/mnt/efs-persist/Adaptation/CameraGuidelines',
     requiresConfirmation: true,
-    expertOnly: false,
   },
 
   // ========== SKIN COMMANDS ==========
@@ -219,7 +201,6 @@ export const MIB2_COMMANDS: MIB2Command[] = [
     descriptionKey: 'commands.list_skins_desc',
     command: 'ls -la /net/rcc/mnt/efs-system/etc/skins/',
     requiresConfirmation: false,
-    expertOnly: false,
   },
   {
     id: 'current_skin',
@@ -229,7 +210,6 @@ export const MIB2_COMMANDS: MIB2Command[] = [
     descriptionKey: 'commands.current_skin_desc',
     command: 'cat /net/rcc/mnt/efs-persist/skin.cfg',
     requiresConfirmation: false,
-    expertOnly: false,
   },
   {
     id: 'backup_skin',
@@ -239,7 +219,6 @@ export const MIB2_COMMANDS: MIB2Command[] = [
     descriptionKey: 'commands.backup_skin_desc',
     command: 'cp /net/rcc/mnt/efs-persist/skin.cfg /net/rcc/mnt/efs-persist/skin.cfg.backup',
     requiresConfirmation: true,
-    expertOnly: false,
   },
   {
     id: 'set_skin_default',
@@ -249,7 +228,6 @@ export const MIB2_COMMANDS: MIB2Command[] = [
     descriptionKey: 'commands.restore_default_skin_desc',
     command: 'echo "default" > /net/rcc/mnt/efs-persist/skin.cfg',
     requiresConfirmation: true,
-    expertOnly: false,
   },
 
   // ========== NETWORK COMMANDS ==========
@@ -261,7 +239,6 @@ export const MIB2_COMMANDS: MIB2Command[] = [
     descriptionKey: 'commands.wifi_status_desc',
     command: 'wpa_cli status',
     requiresConfirmation: false,
-    expertOnly: false,
   },
   {
     id: 'network_routes',
@@ -271,7 +248,6 @@ export const MIB2_COMMANDS: MIB2Command[] = [
     descriptionKey: 'commands.network_routes_desc',
     command: 'route -n',
     requiresConfirmation: false,
-    expertOnly: false,
   },
   {
     id: 'ping_gateway',
@@ -281,7 +257,6 @@ export const MIB2_COMMANDS: MIB2Command[] = [
     descriptionKey: 'commands.ping_gateway_desc',
     command: 'ping -c 4 192.168.1.1',
     requiresConfirmation: false,
-    expertOnly: false,
   },
   {
     id: 'dns_servers',
@@ -291,7 +266,6 @@ export const MIB2_COMMANDS: MIB2Command[] = [
     descriptionKey: 'commands.dns_servers_desc',
     command: 'cat /etc/resolv.conf',
     requiresConfirmation: false,
-    expertOnly: false,
   },
 
   // ========== FILESYSTEM COMMANDS ==========
@@ -303,7 +277,6 @@ export const MIB2_COMMANDS: MIB2Command[] = [
     descriptionKey: 'commands.list_root_desc',
     command: 'ls -la /',
     requiresConfirmation: false,
-    expertOnly: false,
   },
   {
     id: 'list_persist',
@@ -313,7 +286,6 @@ export const MIB2_COMMANDS: MIB2Command[] = [
     descriptionKey: 'commands.list_persist_desc',
     command: 'ls -la /net/rcc/mnt/efs-persist/',
     requiresConfirmation: false,
-    expertOnly: false,
   },
   {
     id: 'list_system',
@@ -323,7 +295,6 @@ export const MIB2_COMMANDS: MIB2Command[] = [
     descriptionKey: 'commands.list_system_desc',
     command: 'ls -la /net/rcc/mnt/efs-system/',
     requiresConfirmation: false,
-    expertOnly: false,
   },
   {
     id: 'disk_partitions',
@@ -333,7 +304,6 @@ export const MIB2_COMMANDS: MIB2Command[] = [
     descriptionKey: 'commands.disk_partitions_desc',
     command: 'fdisk -l',
     requiresConfirmation: false,
-    expertOnly: true,
   },
 
   // ========== ADVANCED COMMANDS ==========
@@ -345,7 +315,6 @@ export const MIB2_COMMANDS: MIB2Command[] = [
     descriptionKey: 'commands.reboot_system_desc',
     command: 'reboot',
     requiresConfirmation: true,
-    expertOnly: true,
     notesKey: 'commands.reboot_system_notes',
   },
   {
@@ -356,7 +325,6 @@ export const MIB2_COMMANDS: MIB2Command[] = [
     descriptionKey: 'commands.kill_process_desc',
     command: 'kill -9 <PID>',
     requiresConfirmation: true,
-    expertOnly: true,
     notesKey: 'commands.kill_process_notes',
   },
   {
@@ -367,7 +335,6 @@ export const MIB2_COMMANDS: MIB2Command[] = [
     descriptionKey: 'commands.clear_logs_desc',
     command: 'rm -f /var/log/*.log',
     requiresConfirmation: true,
-    expertOnly: true,
   },
   {
     id: 'factory_reset_adaptations',
@@ -377,7 +344,6 @@ export const MIB2_COMMANDS: MIB2Command[] = [
     descriptionKey: 'commands.factory_reset_desc',
     command: 'rm -rf /net/rcc/mnt/efs-persist/Adaptation/* && reboot',
     requiresConfirmation: true,
-    expertOnly: true,
     notesKey: 'commands.factory_reset_notes',
   },
 ];
@@ -417,17 +383,10 @@ export function getCommandsByRisk(riskLevel: RiskLevel): MIB2Command[] {
 }
 
 /**
- * Get expert-only commands
+ * Get all commands
  */
-export function getExpertCommands(): MIB2Command[] {
-  return MIB2_COMMANDS.filter(cmd => cmd.expertOnly);
-}
-
-/**
- * Get safe commands (non-expert)
- */
-export function getSafeCommands(): MIB2Command[] {
-  return MIB2_COMMANDS.filter(cmd => !cmd.expertOnly);
+export function getAllCommands(): MIB2Command[] {
+  return MIB2_COMMANDS;
 }
 
 /**

@@ -1983,3 +1983,14 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [ ] Buscar mensajes de error sin traducir
 - [ ] Buscar advertencias y pop-ups sin traducir
 - [ ] Completar traducciones faltantes en los 3 idiomas
+
+
+## Eliminación de Modo Experto y PIN (18 Ene 2026)
+
+- [ ] Eliminar archivos de servicios: pin-service.ts, expert-mode-service.ts
+- [ ] Eliminar pantallas: pin-setup.tsx, expert-mode.tsx
+- [ ] Eliminar referencias en pantalla de Configuración
+- [ ] Eliminar referencias en pantalla de Comandos
+- [ ] Actualizar navegación (eliminar rutas de PIN)
+- [ ] Limpiar traducciones obsoletas de PIN y Modo Experto
+- [ ] Verificar que todas las protecciones actuales funcionan sin Modo Experto

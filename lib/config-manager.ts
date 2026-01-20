@@ -15,10 +15,6 @@ export interface AppConfiguration {
   macros: any[];
   settings: {
     telnetConfig: any;
-    expertMode: {
-      enabled: boolean;
-      pinHash?: string;
-    };
     theme: string;
     notificationsEnabled: boolean;
   };
@@ -33,8 +29,7 @@ const STORAGE_KEYS = {
   PROFILES: '@mib2_profiles',
   ACTIVE_PROFILE: '@mib2_active_profile',
   TELNET_CONFIG: '@mib2_telnet_config',
-  EXPERT_MODE: '@mib2_expert_mode',
-  EXPERT_PIN: '@mib2_expert_pin',
+
   THEME: '@mib2_theme',
   NOTIFICATIONS: '@mib2_notifications_enabled',
 };
@@ -59,9 +54,6 @@ export class ConfigManager {
         macros: [],
         settings: {
           telnetConfig: null,
-          expertMode: {
-            enabled: false,
-          },
           theme: 'light',
           notificationsEnabled: true,
         },
@@ -91,21 +83,7 @@ export class ConfigManager {
         console.warn('[ConfigManager] Error loading telnet config:', error);
       }
 
-      // Cargar configuración de Modo Experto
-      try {
-        const expertModeJson = await AsyncStorage.getItem(STORAGE_KEYS.EXPERT_MODE);
-        if (expertModeJson) {
-          const expertMode = JSON.parse(expertModeJson);
-          config.settings.expertMode.enabled = expertMode.enabled || false;
-        }
 
-        const pinHash = await AsyncStorage.getItem(STORAGE_KEYS.EXPERT_PIN);
-        if (pinHash) {
-          config.settings.expertMode.pinHash = pinHash;
-        }
-      } catch (error) {
-        console.warn('[ConfigManager] Error loading expert mode:', error);
-      }
 
       // Cargar tema
       try {
@@ -211,18 +189,7 @@ export class ConfigManager {
         console.log('[ConfigManager] Imported Telnet configuration');
       }
 
-      // Importar configuración de Modo Experto
-      if (config.settings.expertMode) {
-        await AsyncStorage.setItem(
-          STORAGE_KEYS.EXPERT_MODE,
-          JSON.stringify({ enabled: config.settings.expertMode.enabled })
-        );
 
-        if (config.settings.expertMode.pinHash) {
-          await AsyncStorage.setItem(STORAGE_KEYS.EXPERT_PIN, config.settings.expertMode.pinHash);
-        }
-        console.log('[ConfigManager] Imported Expert Mode configuration');
-      }
 
       // Importar tema
       if (config.settings.theme) {

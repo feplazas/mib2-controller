@@ -19,7 +19,6 @@ export interface CommandMacro {
   steps: MacroStep[];
   estimatedDuration: number; // in seconds
   riskLevel: 'safe' | 'moderate' | 'high';
-  requiresExpertMode: boolean;
 }
 
 export const PREDEFINED_MACROS: CommandMacro[] = [
@@ -31,7 +30,7 @@ export const PREDEFINED_MACROS: CommandMacro[] = [
     category: 'backup',
     estimatedDuration: 30,
     riskLevel: 'safe',
-    requiresExpertMode: false,
+
     steps: [
       {
         command: 'date',
@@ -67,7 +66,7 @@ export const PREDEFINED_MACROS: CommandMacro[] = [
     category: 'backup',
     estimatedDuration: 10,
     riskLevel: 'safe',
-    requiresExpertMode: false,
+
     steps: [
       {
         command: 'mkdir -p /net/rcc/mnt/efs-persist/backups',
@@ -95,7 +94,7 @@ export const PREDEFINED_MACROS: CommandMacro[] = [
     category: 'adaptation',
     estimatedDuration: 15,
     riskLevel: 'high',
-    requiresExpertMode: true,
+
     steps: [
       {
         command: 'cp -r /net/rcc/mnt/efs-persist/Adaptation /net/rcc/mnt/efs-persist/Adaptation_backup_pre_activation',
@@ -131,7 +130,7 @@ export const PREDEFINED_MACROS: CommandMacro[] = [
     category: 'adaptation',
     estimatedDuration: 10,
     riskLevel: 'moderate',
-    requiresExpertMode: false,
+
     steps: [
       {
         command: 'cp -r /net/rcc/mnt/efs-persist/Adaptation /net/rcc/mnt/efs-persist/Adaptation_backup_safe',
@@ -164,7 +163,7 @@ export const PREDEFINED_MACROS: CommandMacro[] = [
     category: 'diagnostic',
     estimatedDuration: 20,
     riskLevel: 'safe',
-    requiresExpertMode: false,
+
     steps: [
       {
         command: 'free',
@@ -201,7 +200,7 @@ export const PREDEFINED_MACROS: CommandMacro[] = [
     category: 'diagnostic',
     estimatedDuration: 15,
     riskLevel: 'safe',
-    requiresExpertMode: false,
+
     steps: [
       {
         command: 'ifconfig',
@@ -233,7 +232,7 @@ export const PREDEFINED_MACROS: CommandMacro[] = [
     category: 'diagnostic',
     estimatedDuration: 10,
     riskLevel: 'safe',
-    requiresExpertMode: false,
+
     steps: [
       {
         command: 'cat /net/rcc/mnt/efs-persist/FW/version.txt',
@@ -266,7 +265,7 @@ export const PREDEFINED_MACROS: CommandMacro[] = [
     category: 'maintenance',
     estimatedDuration: 15,
     riskLevel: 'moderate',
-    requiresExpertMode: true,
+
     steps: [
       {
         command: 'df -h',
@@ -318,17 +317,10 @@ export function getMacroById(id: string): CommandMacro | undefined {
 }
 
 /**
- * Get safe macros (non-expert)
+ * Get all macros
  */
-export function getSafeMacros(): CommandMacro[] {
-  return PREDEFINED_MACROS.filter(macro => !macro.requiresExpertMode);
-}
-
-/**
- * Get expert macros
- */
-export function getExpertMacros(): CommandMacro[] {
-  return PREDEFINED_MACROS.filter(macro => macro.requiresExpertMode);
+export function getAllMacros(): CommandMacro[] {
+  return PREDEFINED_MACROS;
 }
 
 /**

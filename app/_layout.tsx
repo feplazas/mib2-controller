@@ -9,7 +9,7 @@ import { Platform } from "react-native";
 import "@/lib/_core/nativewind-pressable";
 import { ThemeProvider } from "@/lib/theme-provider";
 import { TelnetProvider } from "@/lib/telnet-provider";
-import { ExpertModeProvider } from "@/lib/expert-mode-provider";
+
 import { ProfilesProvider } from "@/lib/profiles-provider";
 import { UsbStatusProvider } from "@/lib/usb-status-context";
 import { LanguageProvider, useLanguage } from "@/lib/language-context";
@@ -39,13 +39,11 @@ function RootLayoutContent() {
   return (
     <ThemeProvider>
       <ProfilesProvider>
-        <ExpertModeProvider>
-          <TelnetProvider>
-            <UsbStatusProvider>
-              <RootLayoutInner />
-            </UsbStatusProvider>
-          </TelnetProvider>
-        </ExpertModeProvider>
+        <TelnetProvider>
+          <UsbStatusProvider>
+            <RootLayoutInner />
+          </UsbStatusProvider>
+        </TelnetProvider>
       </ProfilesProvider>
     </ThemeProvider>
   );

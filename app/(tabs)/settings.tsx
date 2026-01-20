@@ -5,7 +5,7 @@ import { router } from "expo-router";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { useTelnet } from "@/lib/telnet-provider";
-import { useExpertMode } from "@/lib/expert-mode-provider";
+
 import { useUsbStatus } from "@/lib/usb-status-context";
 import { usbService } from "@/lib/usb-service";
 import * as Clipboard from 'expo-clipboard';
@@ -16,7 +16,7 @@ import { showAlert } from '@/lib/translated-alert';
 export default function SettingsScreen() {
   const t = useTranslation();
   const { config, updateConfig, clearMessages } = useTelnet();
-  const { isExpertMode, isPinSet, enableExpertMode, disableExpertMode, setPin, changePin, resetPin } = useExpertMode();
+
   // Language is now automatically detected from system locale
   
   const [host, setHost] = useState(config.host);
@@ -24,12 +24,7 @@ export default function SettingsScreen() {
   const [username, setUsername] = useState(config.username);
   const [password, setPassword] = useState(config.password);
 
-  const [showPinSetup, setShowPinSetup] = useState(false);
-  const [showPinEntry, setShowPinEntry] = useState(false);
-  const [showPinChange, setShowPinChange] = useState(false);
-  const [pinInput, setPinInput] = useState('');
-  const [pinConfirm, setPinConfirm] = useState('');
-  const [oldPinInput, setOldPinInput] = useState('');
+
   const [showDebugInfo, setShowDebugInfo] = useState(false);
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
   const { selectedLanguage, setLanguage: setAppLanguage } = useLanguage();
@@ -74,118 +69,15 @@ export default function SettingsScreen() {
     );
   };
 
-  const handleSetupPin = async () => {
-    if (pinInput.length < 4) {
-      showAlert('alerts.pin_inválido', 'alerts.el_pin_debe_tener_al_menos_4_dígitos');
-      return;
-    }
 
-    if (pinInput !== pinConfirm) {
-      showAlert('alerts.error', 'alerts.los_pins_no_coinciden');
-      return;
-    }
 
-    try {
-      await setPin(pinInput);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      showAlert('alerts.éxito', 'alerts.pin_configurado_correctamente');
-      setShowPinSetup(false);
-      setPinInput('');
-      setPinConfirm('');
-    } catch (error) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert(t('common.error'), error instanceof Error ? error.message : t('settings.pin_setup_error'));
-    }
-  };
 
-  const handleToggleExpertMode = async () => {
-    if (isExpertMode) {
-      // Disable expert mode
-      await disableExpertMode();
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      showAlert('alerts.modo_experto_desactivado', 'alerts.los_comandos_avanzados_están_ahora_ocultos');
-    } else {
-      // Enable expert mode - requires PIN
-      if (!isPinSet) {
-        Alert.alert(
-          t('settings.setup_pin'),
-          t('settings.setup_pin_required'),
-          [
-            { text: t('common.cancel'), style: 'cancel' },
-            { text: t('settings.setup_pin'), onPress: () => setShowPinSetup(true) },
-          ]
-        );
-      } else {
-        setShowPinEntry(true);
-      }
-    }
-  };
 
-  const handleEnableExpertMode = async () => {
-    if (pinInput.length < 4) {
-      showAlert('alerts.pin_inválido', 'alerts.ingresa_tu_pin_de_seguridad');
-      return;
-    }
 
-    const success = await enableExpertMode(pinInput);
-    
-    if (success) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      showAlert('alerts.modo_experto_activado', 'alerts.ahora_tienes_acceso_a_comandos_avanzados');
-      setShowPinEntry(false);
-      setPinInput('');
-    } else {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      showAlert('alerts.pin_incorrecto', 'alerts.el_pin_ingresado_no_es_válido');
-      setPinInput('');
-    }
-  };
 
-  const handleChangePin = async () => {
-    if (oldPinInput.length < 4 || pinInput.length < 4) {
-      showAlert('alerts.pin_inválido', 'alerts.los_pins_deben_tener_al_menos_4_dígitos');
-      return;
-    }
 
-    if (pinInput !== pinConfirm) {
-      showAlert('alerts.error', 'alerts.los_nuevos_pins_no_coinciden');
-      return;
-    }
 
-    const success = await changePin(oldPinInput, pinInput);
-    
-    if (success) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      showAlert('alerts.éxito', 'alerts.pin_cambiado_correctamente');
-      setShowPinChange(false);
-      setOldPinInput('');
-      setPinInput('');
-      setPinConfirm('');
-    } else {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      showAlert('alerts.error', 'alerts.el_pin_actual_es_incorrecto');
-      setOldPinInput('');
-    }
-  };
 
-  const handleResetPin = () => {
-    Alert.alert(
-      t('settings.reset_pin'),
-      t('settings.reset_pin_confirm'),
-      [
-        { text: t('common.cancel'), style: 'cancel' },
-        {
-          text: t('settings.reset'),
-          style: 'destructive',
-          onPress: async () => {
-            await resetPin();
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-            showAlert('alerts.pin_restablecido', 'alerts.el_pin_ha_sido_eliminado');
-          },
-        },
-      ]
-    );
-  };
 
   return (
     <ScreenContainer className="p-6">
@@ -365,249 +257,9 @@ export default function SettingsScreen() {
             </View>
           </View>
 
-          {/* Expert Mode Section */}
-          <View className="bg-surface rounded-2xl p-6 border border-border">
-            <View className="flex-row items-center justify-between mb-4">
-              <View className="flex-1 mr-4">
-                <Text className="text-lg font-semibold text-foreground">
-                  {t('settings.expert_mode')}
-                </Text>
-                <Text className="text-xs text-muted mt-1">
-                  {t('settings.expert_mode_desc')}
-                </Text>
-              </View>
-              <Switch
-                value={isExpertMode}
-                onValueChange={handleToggleExpertMode}
-                trackColor={{ false: '#767577', true: '#0066CC' }}
-                thumbColor={isExpertMode ? '#ffffff' : '#f4f3f4'}
-              />
-            </View>
 
-            {isExpertMode && (
-              <View className="bg-error/10 border border-error rounded-lg p-3 mb-4">
-                <Text className="text-error text-xs font-semibold">
-                  ⚠️ {t('settings.expert_mode_active')}
-                </Text>
-                <Text className="text-error text-xs mt-1">
-                  {t('settings.expert_mode_warning')}
-                </Text>
-              </View>
-            )}
 
-            {isPinSet ? (
-              <View className="gap-2">
-                <TouchableOpacity
-                  onPress={() => setShowPinChange(true)}
-                  className="bg-primary/20 border border-primary px-4 py-3 rounded-xl active:opacity-80"
-                >
-                  <Text className="text-primary font-semibold text-center">
-                    {t('settings.change_pin')}
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={handleResetPin}
-                  className="bg-error/20 border border-error px-4 py-3 rounded-xl active:opacity-80"
-                >
-                  <Text className="text-error font-semibold text-center">
-                    {t('settings.reset_pin')}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            ) : (
-              <TouchableOpacity
-                onPress={() => setShowPinSetup(true)}
-                className="bg-primary px-4 py-3 rounded-xl active:opacity-80"
-              >
-                <Text className="text-white font-semibold text-center">
-                  {t('settings.setup_security_pin')}
-                </Text>
-              </TouchableOpacity>
-            )}
-          </View>
 
-          {/* PIN Setup Modal */}
-          {showPinSetup && (
-            <View className="bg-primary/10 border border-primary rounded-2xl p-6">
-              <Text className="text-lg font-semibold text-foreground mb-4">
-                {t('settings.setup_security_pin')}
-              </Text>
-              <View className="gap-4">
-                <View>
-                  <Text className="text-sm font-medium text-foreground mb-2">
-                    {t('settings.new_pin')}
-                  </Text>
-                  <TextInput
-                    value={pinInput}
-                    onChangeText={setPinInput}
-                    placeholder="****"
-                    secureTextEntry
-                    keyboardType="numeric"
-                    maxLength={8}
-                    className="bg-background border border-border rounded-xl px-4 py-3 text-foreground"
-                  />
-                </View>
-                <View>
-                  <Text className="text-sm font-medium text-foreground mb-2">
-                    {t('settings.confirm_pin')}
-                  </Text>
-                  <TextInput
-                    value={pinConfirm}
-                    onChangeText={setPinConfirm}
-                    placeholder="****"
-                    secureTextEntry
-                    keyboardType="numeric"
-                    maxLength={8}
-                    className="bg-background border border-border rounded-xl px-4 py-3 text-foreground"
-                  />
-                </View>
-                <View className="flex-row gap-3">
-                  <TouchableOpacity
-                    onPress={() => {
-                      setShowPinSetup(false);
-                      setPinInput('');
-                      setPinConfirm('');
-                    }}
-                    className="flex-1 bg-muted/20 border border-border px-4 py-3 rounded-xl active:opacity-80"
-                  >
-                    <Text className="text-foreground font-semibold text-center">
-                      {t('common.cancel')}
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={handleSetupPin}
-                    className="flex-1 bg-primary px-4 py-3 rounded-xl active:opacity-80"
-                  >
-                    <Text className="text-white font-semibold text-center">
-                      {t('settings.save_pin')}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          )}
-
-          {/* PIN Entry Modal */}
-          {showPinEntry && (
-            <View className="bg-primary/10 border border-primary rounded-2xl p-6">
-              <Text className="text-lg font-semibold text-foreground mb-4">
-                {t('settings.enter_pin')}
-              </Text>
-              <View className="gap-4">
-                <View>
-                  <Text className="text-sm font-medium text-foreground mb-2">
-                    {t('settings.security_pin')}
-                  </Text>
-                  <TextInput
-                    value={pinInput}
-                    onChangeText={setPinInput}
-                    placeholder="****"
-                    secureTextEntry
-                    keyboardType="numeric"
-                    maxLength={8}
-                    className="bg-background border border-border rounded-xl px-4 py-3 text-foreground"
-                  />
-                </View>
-                <View className="flex-row gap-3">
-                  <TouchableOpacity
-                    onPress={() => {
-                      setShowPinEntry(false);
-                      setPinInput('');
-                    }}
-                    className="flex-1 bg-muted/20 border border-border px-4 py-3 rounded-xl active:opacity-80"
-                  >
-                    <Text className="text-foreground font-semibold text-center">
-                      {t('common.cancel')}
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={handleEnableExpertMode}
-                    className="flex-1 bg-primary px-4 py-3 rounded-xl active:opacity-80"
-                  >
-                    <Text className="text-white font-semibold text-center">
-                      {t('settings.activate')}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          )}
-
-          {/* PIN Change Modal */}
-          {showPinChange && (
-            <View className="bg-primary/10 border border-primary rounded-2xl p-6">
-              <Text className="text-lg font-semibold text-foreground mb-4">
-                {t('settings.change_pin')}
-              </Text>
-              <View className="gap-4">
-                <View>
-                  <Text className="text-sm font-medium text-foreground mb-2">
-                    {t('settings.current_pin')}
-                  </Text>
-                  <TextInput
-                    value={oldPinInput}
-                    onChangeText={setOldPinInput}
-                    placeholder="****"
-                    secureTextEntry
-                    keyboardType="numeric"
-                    maxLength={8}
-                    className="bg-background border border-border rounded-xl px-4 py-3 text-foreground"
-                  />
-                </View>
-                <View>
-                  <Text className="text-sm font-medium text-foreground mb-2">
-                    {t('settings.new_pin')}
-                  </Text>
-                  <TextInput
-                    value={pinInput}
-                    onChangeText={setPinInput}
-                    placeholder="****"
-                    secureTextEntry
-                    keyboardType="numeric"
-                    maxLength={8}
-                    className="bg-background border border-border rounded-xl px-4 py-3 text-foreground"
-                  />
-                </View>
-                <View>
-                  <Text className="text-sm font-medium text-foreground mb-2">
-                    {t('settings.confirm_new_pin')}
-                  </Text>
-                  <TextInput
-                    value={pinConfirm}
-                    onChangeText={setPinConfirm}
-                    placeholder="****"
-                    secureTextEntry
-                    keyboardType="numeric"
-                    maxLength={8}
-                    className="bg-background border border-border rounded-xl px-4 py-3 text-foreground"
-                  />
-                </View>
-                <View className="flex-row gap-3">
-                  <TouchableOpacity
-                    onPress={() => {
-                      setShowPinChange(false);
-                      setOldPinInput('');
-                      setPinInput('');
-                      setPinConfirm('');
-                    }}
-                    className="flex-1 bg-muted/20 border border-border px-4 py-3 rounded-xl active:opacity-80"
-                  >
-                    <Text className="text-foreground font-semibold text-center">
-                      {t('common.cancel')}
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={handleChangePin}
-                    className="flex-1 bg-primary px-4 py-3 rounded-xl active:opacity-80"
-                  >
-                    <Text className="text-white font-semibold text-center">
-                      {t('settings.change')}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          )}
 
           {/* Connection Settings */}
           <View className="bg-surface rounded-2xl p-6 border border-border">
