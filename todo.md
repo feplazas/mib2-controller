@@ -1974,3 +1974,12 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [ ] Agregar estado isSafeTestRunning al spoof-reducer.ts
 - [ ] Mostrar indicador visual claro de que es modo simulación
 - [ ] Agregar traducciones ES/EN/DE para Safe Test Mode
+
+
+## Auditoría de Traducciones (18 Ene 2026)
+
+- [ ] Auditar archivos de traducción es.json, en.json, de.json
+- [ ] Buscar textos hardcodeados en componentes TSX
+- [ ] Buscar mensajes de error sin traducir
+- [ ] Buscar advertencias y pop-ups sin traducir
+- [ ] Completar traducciones faltantes en los 3 idiomas

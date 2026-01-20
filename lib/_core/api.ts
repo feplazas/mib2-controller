@@ -85,7 +85,7 @@ export async function apiCall<T>(endpoint: string, options: RequestInit = {}): P
     if (error instanceof Error) {
       throw error;
     }
-    throw new Error("Unknown error occurred");
+    throw new Error("common.unknown_error");
   }
 }
 

@@ -374,7 +374,7 @@ export class AdapterDatabase {
   static getTargetAdapter(): AdapterSpec {
     const target = this.findByVidPid(0x2001, 0x3C05);
     if (!target) {
-      throw new Error('Target adapter not found in database');
+      throw new Error('common.target_adapter_not_found');
     }
     return target;
   }

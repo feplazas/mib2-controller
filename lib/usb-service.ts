@@ -141,11 +141,11 @@ class UsbService {
    */
   async readEEPROM(offset: number, length: number): Promise<EEPROMReadResult> {
     if (Platform.OS !== 'android') {
-      throw new Error('USB operations only available on Android');
+      throw new Error('common.usb_operations_android_only');
     }
 
     if (this.currentDeviceId === null) {
-      throw new Error('No device connected');
+      throw new Error('common.no_device_connected');
     }
 
     try {
@@ -164,11 +164,11 @@ class UsbService {
    */
   async writeEEPROM(offset: number, dataHex: string, skipVerification: boolean = false): Promise<{ bytesWritten: number; verified: boolean }> {
     if (Platform.OS !== 'android') {
-      throw new Error('USB operations only available on Android');
+      throw new Error('common.usb_operations_android_only');
     }
 
     if (this.currentDeviceId === null) {
-      throw new Error('No device connected');
+      throw new Error('common.no_device_connected');
     }
 
     try {
@@ -194,11 +194,11 @@ class UsbService {
    */
   async dumpEEPROM(): Promise<EEPROMDumpResult> {
     if (Platform.OS !== 'android') {
-      throw new Error('USB operations only available on Android');
+      throw new Error('common.usb_operations_android_only');
     }
 
     if (this.currentDeviceId === null) {
-      throw new Error('No device connected');
+      throw new Error('common.no_device_connected');
     }
 
     try {
@@ -334,7 +334,7 @@ class UsbService {
    */
   async detectEEPROMType(): Promise<{ type: 'external_eeprom' | 'efuse' | 'unknown'; writable: boolean; reason: string }> {
     if (Platform.OS !== 'android') {
-      throw new Error('EEPROM detection only available on Android');
+      throw new Error('common.eeprom_detection_android_only');
     }
 
     try {
@@ -375,11 +375,11 @@ class UsbService {
     eepromType: 'external_eeprom' | 'efuse' | 'unknown';
   }> {
     if (Platform.OS !== 'android') {
-      throw new Error('Dry-run only available on Android');
+      throw new Error('common.dryrun_android_only');
     }
 
     if (this.currentDeviceId === null) {
-      throw new Error('No device connected');
+      throw new Error('common.no_device_connected');
     }
 
     const warnings: string[] = [];
@@ -509,11 +509,11 @@ class UsbService {
     details: string;
   }> {
     if (Platform.OS !== 'android') {
-      throw new Error('Checksum verification only available on Android');
+      throw new Error('common.checksum_verification_android_only');
     }
 
     if (this.currentDeviceId === null) {
-      throw new Error('No device connected');
+      throw new Error('common.no_device_connected');
     }
 
     try {
@@ -611,11 +611,11 @@ class UsbService {
     errors: string[];
   }> {
     if (Platform.OS !== 'android') {
-      throw new Error('Safe Test Mode only available on Android');
+      throw new Error('common.safe_test_mode_android_only');
     }
 
     if (this.currentDeviceId === null) {
-      throw new Error('No device connected');
+      throw new Error('common.no_device_connected');
     }
 
     const steps: Array<{
@@ -658,7 +658,7 @@ class UsbService {
       
       if (!currentDevice) {
         addStep('Validación de dispositivo', 'failed', Date.now() - step1Start, 'Dispositivo no encontrado');
-        throw new Error('Device not found');
+        throw new Error('common.device_not_found');
       }
 
       const isCompatible = this.isCompatibleForSpoofing(currentDevice);

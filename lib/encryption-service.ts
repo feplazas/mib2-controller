@@ -240,7 +240,7 @@ class EncryptionService {
       console.log('[EncryptionService] Encryption key deleted');
     } catch (error) {
       console.error('[EncryptionService] Error deleting encryption key:', error);
-      throw new Error('No se pudo eliminar la clave de cifrado');
+      throw new Error('common.could_not_delete_encryption_key');
     }
   }
 
@@ -276,7 +276,7 @@ class EncryptionService {
       return newKey;
     } catch (error) {
       console.error('[EncryptionService] Error rotating encryption key:', error);
-      throw new Error('No se pudo rotar la clave de cifrado');
+      throw new Error('common.could_not_rotate_encryption_key');
     }
   }
 }

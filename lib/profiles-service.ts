@@ -448,7 +448,7 @@ class ProfilesService {
       return newProfile;
     } catch (error) {
       console.error('[ProfilesService] Error saving custom profile:', error);
-      throw new Error('No se pudo guardar el perfil personalizado');
+      throw new Error('common.could_not_save_profile');
     }
   }
 
@@ -461,7 +461,7 @@ class ProfilesService {
       const index = customProfiles.findIndex(p => p.id === id);
       
       if (index === -1) {
-        throw new Error('Perfil no encontrado');
+        throw new Error('common.profile_not_found');
       }
       
       customProfiles[index] = {
@@ -473,7 +473,7 @@ class ProfilesService {
       console.log(`[ProfilesService] Custom profile updated: ${id}`);
     } catch (error) {
       console.error('[ProfilesService] Error updating custom profile:', error);
-      throw new Error('No se pudo actualizar el perfil');
+      throw new Error('common.could_not_update_profile');
     }
   }
 
@@ -489,7 +489,7 @@ class ProfilesService {
       console.log(`[ProfilesService] Custom profile deleted: ${id}`);
     } catch (error) {
       console.error('[ProfilesService] Error deleting custom profile:', error);
-      throw new Error('No se pudo eliminar el perfil');
+      throw new Error('common.could_not_delete_profile');
     }
   }
 

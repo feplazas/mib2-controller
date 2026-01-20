@@ -425,14 +425,14 @@ class BackupService {
       const vidResult = await usbService.writeEEPROM(0x88, vidHex, false);
       
       if (!vidResult.verified) {
-        throw new Error('vid_write_failed');
+        throw new Error('common.vid_write_failed');
       }
       
       usbLogger.info('RESTORE', `Escribiendo PID: 0x${pidHex.toUpperCase()} en offset 0x8A`);
       const pidResult = await usbService.writeEEPROM(0x8A, pidHex, false);
       
       if (!pidResult.verified) {
-        throw new Error('pid_write_failed');
+        throw new Error('common.pid_write_failed');
       }
       
       usbLogger.success('RESTORE', `VID/PID restaurado: ${vid.toString(16).toUpperCase()}:${pid.toString(16).toUpperCase()}`);
@@ -539,7 +539,7 @@ class BackupService {
       
       // Validar estructura
       if (!backup.id || !backup.data || !backup.size) {
-        throw new Error('invalid_backup_format');
+        throw new Error('common.invalid_backup_format');
       }
       
       // Verificar integridad del backup importado
