@@ -338,7 +338,26 @@
     "usb": "USB",
     "spoof": "Spoof",
     "diag": "Diag",
-    "config": "Config"
+    "config": "Config",
+    "diagnostics": "Diagnóstico",
+    "tools": "Herramientas"
+  },
+  "diagnostics": {
+    "title": "Diagnóstico",
+    "subtitle": "Herramientas avanzadas y utilidades del sistema",
+    "usb_status": "Estado USB",
+    "usb_status_desc": "Información detallada del adaptador conectado",
+    "recovery": "Recuperación",
+    "recovery_desc": "Herramientas para recuperar adaptadores dañados",
+    "system_diag": "Diagnóstico del Sistema",
+    "system_diag_desc": "Logs en tiempo real y estado del sistema",
+    "fec_generator": "Generador FEC",
+    "fec_generator_desc": "Generar códigos FEC para activar funciones",
+    "advanced_tools": "Herramientas Avanzadas",
+    "advanced_tools_desc": "Utilidades para usuarios expertos",
+    "backups": "Backups",
+    "backups_desc": "Gestionar copias de seguridad de EEPROM",
+    "footer_info": "Estas herramientas son para usuarios avanzados. Úsalas con precaución."
   },
   "home": {
     "title": "MIB2 USB Controller",

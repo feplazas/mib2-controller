@@ -1,45 +1,127 @@
-// Fallback for using MaterialIcons on Android and web.
+// SF Symbols to Material Icons mapping for cross-platform consistency
+// Uses native SF Symbols on iOS, Material Icons on Android and web
 
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { SymbolWeight, SymbolViewProps } from "expo-symbols";
 import { ComponentProps } from "react";
 import { OpaqueColorValue, type StyleProp, type TextStyle } from "react-native";
 
-type IconMapping = Record<SymbolViewProps["name"], ComponentProps<typeof MaterialIcons>["name"]>;
+type MaterialIconName = ComponentProps<typeof MaterialIcons>["name"];
 type IconSymbolName = keyof typeof MAPPING;
 
 /**
- * Add your SF Symbols to Material Icons mappings here.
- * - see Material Icons in the [Icons Directory](https://icons.expo.fyi).
- * - see SF Symbols in the [SF Symbols](https://developer.apple.com/sf-symbols/) app.
+ * SF Symbols to Material Icons Mapping
+ * 
+ * Ultra Premium Apple-like icon set for MIB2 Controller
+ * 
+ * Reference:
+ * - SF Symbols: https://developer.apple.com/sf-symbols/
+ * - Material Icons: https://icons.expo.fyi/
  */
 const MAPPING = {
+  // Navigation & Tab Bar
   "house.fill": "home",
-  "person.2.fill": "people",
-  "play.fill": "play-arrow",
-  "paperplane.fill": "send",
-  "chevron.left.forwardslash.chevron.right": "code",
-  "chevron.right": "chevron-right",
   "gear": "settings",
   "wrench.fill": "build",
-  "key.fill": "vpn-key",
-  "hammer.fill": "construction",
-  "bolt.fill": "flash-on",
-  "folder.fill": "folder",
-  "chart.bar.fill": "bar-chart",
-  "list.bullet": "list",
-  "arrow.clockwise": "refresh",
   "cable.connector": "usb",
-  "stethoscope": "bug-report",
+  "waveform.path.ecg": "monitor-heart",
+  
+  // Diagnostics & Tools
+  "stethoscope": "healing",
+  "hammer.fill": "construction",
+  "arrow.counterclockwise": "restore",
+  "qrcode": "qr-code-2",
+  "externaldrive.fill": "storage",
+  "folder.fill": "folder",
+  "doc.fill": "description",
+  "terminal.fill": "terminal",
+  
+  // Status & Indicators
+  "checkmark.circle.fill": "check-circle",
+  "xmark.circle.fill": "cancel",
+  "exclamationmark.triangle.fill": "warning",
+  "info.circle": "info-outline",
+  "info.circle.fill": "info",
+  "bolt.fill": "flash-on",
+  "bolt.slash.fill": "flash-off",
+  
+  // Actions
+  "play.fill": "play-arrow",
+  "pause.fill": "pause",
+  "stop.fill": "stop",
+  "arrow.clockwise": "refresh",
+  "arrow.right.circle.fill": "arrow-circle-right",
+  "chevron.right": "chevron-right",
+  "chevron.left": "chevron-left",
+  "chevron.down": "expand-more",
+  "chevron.up": "expand-less",
+  "plus.circle.fill": "add-circle",
+  "minus.circle.fill": "remove-circle",
+  "trash.fill": "delete",
+  "pencil": "edit",
+  "square.and.arrow.up": "share",
+  "doc.on.doc": "content-copy",
+  
+  // Communication
+  "paperplane.fill": "send",
   "antenna.radiowaves.left.and.right": "wifi-tethering",
-  "bandage.fill": "healing",
+  "wifi": "wifi",
+  "wifi.slash": "wifi-off",
+  "network": "lan",
+  
+  // Security & Keys
+  "key.fill": "vpn-key",
+  "lock.fill": "lock",
+  "lock.open.fill": "lock-open",
+  "shield.fill": "security",
+  "shield.checkmark.fill": "verified-user",
+  
+  // Data & Charts
+  "chart.bar.fill": "bar-chart",
+  "chart.pie.fill": "pie-chart",
+  "list.bullet": "list",
+  "list.number": "format-list-numbered",
   "archivebox.fill": "inventory",
-} as IconMapping;
+  "tray.fill": "inbox",
+  
+  // Devices & Hardware
+  "car.fill": "directions-car",
+  "cpu.fill": "memory",
+  "memorychip.fill": "memory",
+  "sdcard.fill": "sd-card",
+  "display": "desktop-windows",
+  
+  // People & Users
+  "person.fill": "person",
+  "person.2.fill": "people",
+  "person.circle.fill": "account-circle",
+  
+  // Misc
+  "bandage.fill": "healing",
+  "sparkles": "auto-awesome",
+  "star.fill": "star",
+  "heart.fill": "favorite",
+  "flag.fill": "flag",
+  "tag.fill": "local-offer",
+  "clock.fill": "schedule",
+  "calendar": "calendar-today",
+  "globe": "language",
+  "magnifyingglass": "search",
+  "slider.horizontal.3": "tune",
+  "ellipsis.circle": "more-horiz",
+  "questionmark.circle": "help-outline",
+  
+  // Code & Development
+  "chevron.left.forwardslash.chevron.right": "code",
+  "curlybraces": "data-object",
+  "number": "tag",
+} as const satisfies Record<string, MaterialIconName>;
 
 /**
- * An icon component that uses native SF Symbols on iOS, and Material Icons on Android and web.
- * This ensures a consistent look across platforms, and optimal resource usage.
- * Icon `name`s are based on SF Symbols and require manual mapping to Material Icons.
+ * IconSymbol Component
+ * 
+ * Cross-platform icon component that uses native SF Symbols on iOS
+ * and Material Icons on Android and web for consistent premium look.
  */
 export function IconSymbol({
   name,
@@ -53,5 +135,13 @@ export function IconSymbol({
   style?: StyleProp<TextStyle>;
   weight?: SymbolWeight;
 }) {
-  return <MaterialIcons color={color} size={size} name={MAPPING[name]} style={style} />;
+  const iconName = MAPPING[name];
+  
+  // Fallback to a default icon if mapping not found
+  if (!iconName) {
+    console.warn(`IconSymbol: No mapping found for "${String(name)}", using default`);
+    return <MaterialIcons color={color} size={size} name="help-outline" style={style} />;
+  }
+  
+  return <MaterialIcons color={color} size={size} name={iconName} style={style} />;
 }

@@ -2013,3 +2013,11 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [ ] Mostrar advertencia si la unidad no es compatible
 - [ ] Bloquear operaciones peligrosas en unidades no compatibles
 - [ ] Agregar traducciones ES/EN/DE para mensajes de compatibilidad
+
+
+## Pestaña de Diagnóstico y Look Ultra Premium (20 Ene 2026)
+
+- [ ] Crear pantalla de Diagnóstico que agrupe: USB Status, Recovery, Diag, FEC, Tools, Backups
+- [ ] Actualizar tab bar con pestaña de Diagnóstico visible
+- [ ] Refinar iconos con estilo SF Symbols ultra premium Apple-like
+- [ ] Agregar traducciones para nueva pestaña de Diagnóstico

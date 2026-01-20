@@ -1,6 +1,6 @@
 import { Tabs } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Platform, View } from "react-native";
+import { Platform } from "react-native";
 
 import { HapticTab } from "@/components/haptic-tab";
 import { IconSymbol } from "@/components/ui/icon-symbol";
@@ -8,13 +8,13 @@ import { useColors } from "@/hooks/use-colors";
 import { useTranslation } from "@/lib/language-context";
 
 /**
- * Tab Layout - Apple HIG Inspired
+ * Tab Layout - Ultra Premium Apple HIG Inspired
  * 
- * Simplified navigation with 5 main tabs following iOS design patterns:
+ * Clean, minimal navigation with 5 main tabs following iOS design patterns:
  * - Home: Dashboard and connection status
  * - USB: USB adapter management and spoofing
  * - Tools: Telnet commands, macros, and utilities
- * - Toolbox: MIB2 Toolbox installation and management
+ * - Diagnostics: All diagnostic tools, recovery, FEC, backups
  * - Settings: App configuration
  */
 export default function TabLayout() {
@@ -22,9 +22,9 @@ export default function TabLayout() {
   const t = useTranslation();
   const insets = useSafeAreaInsets();
   
-  // iOS-style tab bar dimensions
-  const bottomPadding = Platform.OS === "web" ? 16 : Math.max(insets.bottom, 12);
-  const tabBarHeight = 49 + bottomPadding; // iOS standard is 49pt
+  // iOS-style tab bar dimensions (49pt standard height)
+  const bottomPadding = Platform.OS === "web" ? 20 : Math.max(insets.bottom, 16);
+  const tabBarHeight = 49 + bottomPadding;
 
   return (
     <Tabs
@@ -34,13 +34,13 @@ export default function TabLayout() {
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarStyle: {
-          paddingTop: 8,
+          paddingTop: 10,
           paddingBottom: bottomPadding,
           height: tabBarHeight,
           backgroundColor: colors.background,
           borderTopColor: colors.border,
           borderTopWidth: 0.5,
-          // iOS-style blur effect simulation
+          // iOS-style positioning
           ...(Platform.OS === 'web' ? {} : {
             position: 'absolute',
             bottom: 0,
@@ -51,11 +51,11 @@ export default function TabLayout() {
         tabBarLabelStyle: {
           fontSize: 10,
           fontWeight: '500',
-          letterSpacing: -0.2,
-          marginTop: 2,
+          letterSpacing: -0.1,
+          marginTop: 4,
         },
         tabBarIconStyle: {
-          marginTop: 2,
+          marginTop: 4,
         },
       }}
     >
@@ -100,13 +100,13 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="toolbox"
+        name="diagnostics"
         options={{
-          title: "Toolbox",
+          title: t('tabs.diagnostics'),
           tabBarIcon: ({ color, focused }) => (
             <IconSymbol 
               size={focused ? 26 : 24} 
-              name="hammer.fill" 
+              name="waveform.path.ecg" 
               color={color} 
             />
           ),
@@ -126,7 +126,7 @@ export default function TabLayout() {
         }}
       />
       
-      {/* Hidden tabs - accessible via navigation but not shown in tab bar */}
+      {/* Hidden tabs - accessible via navigation from Diagnostics hub */}
       <Tabs.Screen
         name="usb-status"
         options={{ href: null }}
@@ -149,6 +149,10 @@ export default function TabLayout() {
       />
       <Tabs.Screen
         name="backups"
+        options={{ href: null }}
+      />
+      <Tabs.Screen
+        name="toolbox"
         options={{ href: null }}
       />
     </Tabs>
