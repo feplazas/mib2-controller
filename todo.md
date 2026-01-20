@@ -2057,3 +2057,12 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Confirmar que comandos dd NO se auto-ejecutan
 - [x] Verificar sistema de backup con integridad MD5/SHA256
 - [x] Confirmar que todas las funcionalidades son reales (sin mockups)
+
+
+## Efecto Visual Premium en Pestaña Activa (20 Ene 2026)
+
+- [x] Crear componente AnimatedTabIcon con efecto glow/pulse
+- [x] Implementar animación con react-native-reanimated
+- [x] Integrar componente en layout de tabs
+- [x] Ajustar timing y colores de la animación
+- [x] Verificar rendimiento en dispositivo real (pendiente APK)

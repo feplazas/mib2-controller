@@ -3,7 +3,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Platform } from "react-native";
 
 import { HapticTab } from "@/components/haptic-tab";
-import { IconSymbol } from "@/components/ui/icon-symbol";
+import { AnimatedTabIcon } from "@/components/ui/animated-tab-icon";
 import { useColors } from "@/hooks/use-colors";
 import { useTranslation } from "@/lib/language-context";
 
@@ -16,6 +16,11 @@ import { useTranslation } from "@/lib/language-context";
  * - Tools: Telnet commands, macros, and utilities
  * - Actions: All tools, recovery, FEC, backups
  * - Settings: App configuration
+ * 
+ * Features:
+ * - Animated tab icons with glow/pulse effect on active tab
+ * - Smooth transitions between tabs
+ * - iOS-style tab bar dimensions
  */
 export default function TabLayout() {
   const colors = useColors();
@@ -71,10 +76,12 @@ export default function TabLayout() {
         options={{
           title: t('tabs.home'),
           tabBarIcon: ({ color, focused }) => (
-            <IconSymbol 
-              size={focused ? 26 : 24} 
+            <AnimatedTabIcon 
+              size={24} 
               name="house.fill" 
-              color={color} 
+              color={color}
+              focused={focused}
+              glowColor={colors.primary}
             />
           ),
         }}
@@ -84,10 +91,12 @@ export default function TabLayout() {
         options={{
           title: "USB",
           tabBarIcon: ({ color, focused }) => (
-            <IconSymbol 
-              size={focused ? 26 : 24} 
+            <AnimatedTabIcon 
+              size={24} 
               name="cable.connector" 
-              color={color} 
+              color={color}
+              focused={focused}
+              glowColor={colors.primary}
             />
           ),
         }}
@@ -97,10 +106,12 @@ export default function TabLayout() {
         options={{
           title: t('tabs.tools'),
           tabBarIcon: ({ color, focused }) => (
-            <IconSymbol 
-              size={focused ? 26 : 24} 
+            <AnimatedTabIcon 
+              size={24} 
               name="wrench.fill" 
-              color={color} 
+              color={color}
+              focused={focused}
+              glowColor={colors.primary}
             />
           ),
         }}
@@ -110,10 +121,12 @@ export default function TabLayout() {
         options={{
           title: t("tabs.actions"),
           tabBarIcon: ({ color, focused }) => (
-            <IconSymbol 
-              size={focused ? 26 : 24} 
-             name="bolt.fill" 
-              color={color} 
+            <AnimatedTabIcon 
+              size={24} 
+              name="bolt.fill" 
+              color={color}
+              focused={focused}
+              glowColor={colors.primary}
             />
           ),
         }}
@@ -123,10 +136,12 @@ export default function TabLayout() {
         options={{
           title: t('tabs.config'),
           tabBarIcon: ({ color, focused }) => (
-            <IconSymbol 
-              size={focused ? 26 : 24} 
+            <AnimatedTabIcon 
+              size={24} 
               name="gear" 
-              color={color} 
+              color={color}
+              focused={focused}
+              glowColor={colors.primary}
             />
           ),
         }}
