@@ -2112,3 +2112,11 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Crear .gitignore completo (ya existía)
 - [x] Crear commit con todos los cambios (commit 2012584)
 - [x] Sincronizar con GitHub del usuario (pushed to feplazas/mib2-controller)
+
+
+## BUG CRÍTICO: Inconsistencia bundleId OAuth (20 Ene 2026)
+
+- [x] Corregir bundleId en constants/oauth.ts (mib2_controller → mib2controller)
+- [x] Verificar todas las referencias al bundleId en el proyecto (solo 2 archivos, ambos corregidos)
+- [ ] Compilar nuevo APK con la corrección
+- [ ] Sincronizar con GitHub
