@@ -2066,3 +2066,13 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Integrar componente en layout de tabs
 - [x] Ajustar timing y colores de la animación
 - [x] Verificar rendimiento en dispositivo real (pendiente APK)
+
+
+## Haptic Feedback y Sonido Premium en Pestañas (20 Ene 2026)
+
+- [x] Analizar componente HapticTab existente
+- [x] Agregar haptic feedback sutil al cambiar de pestaña
+- [x] Implementar efecto de sonido premium con expo-audio
+- [x] Crear/obtener archivo de sonido sutil para tab switch (Pixabay)
+- [x] Verificar que no se rompe ninguna funcionalidad existente
+- [x] Probar en preview web y preparar para dispositivo real
