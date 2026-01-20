@@ -2105,10 +2105,10 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 
 ## Preparación para Play Store y GitHub (20 Ene 2026)
 
-- [ ] Limpieza de archivos innecesarios (logs, caches, temporales)
-- [ ] Eliminar console.log y comentarios de desarrollo
-- [ ] Verificar y actualizar app.config.ts para producción
-- [ ] Verificar y actualizar eas.json para producción
-- [ ] Crear .gitignore completo
-- [ ] Crear commit con todos los cambios
-- [ ] Sincronizar con GitHub del usuario
+- [x] Limpieza de archivos innecesarios (logs, caches, temporales)
+- [x] Eliminar console.log y comentarios de desarrollo (mantenidos console.error/warn para debugging)
+- [x] Verificar y actualizar app.config.ts para producción (versionCode: 2)
+- [x] Verificar y actualizar eas.json para producción
+- [x] Crear .gitignore completo (ya existía)
+- [x] Crear commit con todos los cambios (commit 2012584)
+- [x] Sincronizar con GitHub del usuario (pushed to feplazas/mib2-controller)
