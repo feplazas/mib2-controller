@@ -2128,3 +2128,11 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Crear .easignore para excluir archivos innecesarios
 - [x] Reducir tamaño del proyecto de 168 MB a ~18 MB (sin node_modules)
 - [x] Sincronizar con GitHub (commit 7170c50 pushed)
+
+
+## Configuración ProGuard/R8 (20 Ene 2026)
+
+- [x] Crear archivo proguard-rules.pro con reglas para React Native, Expo y USB nativo
+- [x] Configurar build.gradle para habilitar minifyEnabled y shrinkResources (via plugin)
+- [x] Actualizar eas.json para producción con R8 y appVersionSource
+- [ ] Sincronizar con GitHub

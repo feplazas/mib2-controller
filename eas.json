@@ -1,6 +1,7 @@
 {
   "cli": {
-    "version": ">= 16.0.0"
+    "version": ">= 16.0.0",
+    "appVersionSource": "remote"
   },
   "build": {
     "development": {
@@ -25,7 +26,8 @@
       "distribution": "store",
       "android": {
         "buildType": "app-bundle",
-        "withoutCredentials": false
+        "withoutCredentials": false,
+        "gradleCommand": ":app:bundleRelease"
       },
       "env": {
         "GRADLE_OPTS": "-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx4096m -Dorg.gradle.internal.http.connectionTimeout=120000 -Dorg.gradle.internal.http.socketTimeout=120000"
