@@ -2,6 +2,8 @@ import { View, Text, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/lib/language-context';
+import Animated, { useAnimatedStyle, withRepeat, withTiming, useSharedValue, withSequence } from 'react-native-reanimated';
+import { useEffect } from 'react';
 
 export type UsbStatus = 'disconnected' | 'detected' | 'connected';
 
@@ -12,9 +14,9 @@ interface UsbStatusIndicatorProps {
 }
 
 /**
- * Indicador Visual de Estado USB
+ * Indicador Visual de Estado USB - Premium Design
  * 
- * Muestra el estado actual de la conexión USB con colores:
+ * Muestra el estado actual de la conexión USB con diseño sofisticado:
  * - 🔴 Rojo: Desconectado (sin dispositivos)
  * - 🟡 Amarillo: Detectado (dispositivo encontrado, sin permisos)
  * - 🟢 Verde: Conectado (dispositivo conectado y listo)
@@ -22,34 +24,60 @@ interface UsbStatusIndicatorProps {
 export function UsbStatusIndicator({ status, deviceName, onPress }: UsbStatusIndicatorProps) {
   const router = useRouter();
   const t = useTranslation();
+  const pulseOpacity = useSharedValue(1);
+
+  // Animación de pulso para estado "detected"
+  useEffect(() => {
+    if (status === 'detected') {
+      pulseOpacity.value = withRepeat(
+        withSequence(
+          withTiming(0.5, { duration: 800 }),
+          withTiming(1, { duration: 800 })
+        ),
+        -1,
+        false
+      );
+    } else {
+      pulseOpacity.value = withTiming(1, { duration: 200 });
+    }
+  }, [status]);
+
+  const pulseStyle = useAnimatedStyle(() => ({
+    opacity: pulseOpacity.value,
+  }));
 
   const handlePress = () => {
     if (onPress) {
       onPress();
     } else {
-      // Por defecto, navegar a la pantalla USB Status
       router.push('/(tabs)/usb-status');
     }
   };
 
   const statusConfig = {
     disconnected: {
-      color: 'bg-red-500',
-      icon: '🔴',
+      bgColor: 'bg-error/10',
+      borderColor: 'border-error/30',
+      dotColor: 'bg-error',
+      textColor: 'text-error',
       text: t('usb.no_device'),
       description: t('usb.connect_adapter_desc'),
     },
     detected: {
-      color: 'bg-yellow-500',
-      icon: '🟡',
+      bgColor: 'bg-warning/10',
+      borderColor: 'border-warning/30',
+      dotColor: 'bg-warning',
+      textColor: 'text-warning',
       text: t('usb.device_detected'),
       description: deviceName || t('usb.tap_for_permissions'),
     },
     connected: {
-      color: 'bg-green-500',
-      icon: '🟢',
-      text: 'USB Conectado',
-      description: deviceName || 'Dispositivo listo',
+      bgColor: 'bg-success/10',
+      borderColor: 'border-success/30',
+      dotColor: 'bg-success',
+      textColor: 'text-success',
+      text: t('usb.connected'),
+      description: deviceName || t('usb.device_ready'),
     },
   };
 
@@ -59,29 +87,40 @@ export function UsbStatusIndicator({ status, deviceName, onPress }: UsbStatusInd
     <Pressable
       onPress={handlePress}
       style={({ pressed }) => [
-        { opacity: pressed ? 0.7 : 1 },
+        { opacity: pressed ? 0.8 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] },
       ]}
       className="w-full"
     >
-      <View className="bg-surface border border-border rounded-xl p-4 flex-row items-center gap-3">
-        {/* Indicador de color */}
-        <View className={cn('w-3 h-3 rounded-full', config.color)} />
-        
-        {/* Icono de estado */}
-        <Text className="text-2xl">{config.icon}</Text>
+      <View className={cn(
+        'rounded-2xl p-4 flex-row items-center gap-4 border',
+        config.bgColor,
+        config.borderColor
+      )}>
+        {/* Indicador de estado con animación */}
+        <Animated.View 
+          style={pulseStyle}
+          className={cn(
+            'w-12 h-12 rounded-xl items-center justify-center',
+            config.bgColor
+          )}
+        >
+          <View className={cn('w-4 h-4 rounded-full', config.dotColor)} />
+        </Animated.View>
         
         {/* Información de estado */}
         <View className="flex-1">
-          <Text className="text-base font-semibold text-foreground">
+          <Text className={cn('text-base font-bold', config.textColor)}>
             {config.text}
           </Text>
-          <Text className="text-sm text-muted mt-0.5">
+          <Text className="text-sm text-muted mt-0.5" numberOfLines={1}>
             {config.description}
           </Text>
         </View>
         
-        {/* Flecha para indicar que es clickeable */}
-        <Text className="text-muted text-xl">›</Text>
+        {/* Flecha premium */}
+        <View className="bg-surface/50 w-8 h-8 rounded-full items-center justify-center">
+          <Text className="text-muted text-lg font-light">›</Text>
+        </View>
       </View>
     </Pressable>
   );

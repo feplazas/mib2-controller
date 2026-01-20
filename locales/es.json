@@ -382,6 +382,7 @@
     "connecting": "Conectando...",
     "disconnected": "Desconectado",
     "subtitle": "Control remoto para unidades MIB2 STD2 Technisat Preh",
+    "compatibility_notice": "⚠️ Solo compatible con MIB2 STD2 Technisat Preh. No compatible con Navi 1SD.",
     "network_adapter_detected": "Adaptador de Red Detectado",
     "interface": "Interfaz:",
     "adapter_ip": "IP del Adaptador:",

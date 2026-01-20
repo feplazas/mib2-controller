@@ -1994,3 +1994,12 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [ ] Actualizar navegación (eliminar rutas de PIN)
 - [ ] Limpiar traducciones obsoletas de PIN y Modo Experto
 - [ ] Verificar que todas las protecciones actuales funcionan sin Modo Experto
+
+
+## Mejora Visual Premium y Aclaración de Compatibilidad (20 Ene 2026)
+
+- [ ] Actualizar paleta de colores premium en theme.config.js
+- [ ] Mejorar pantalla Home con look premium
+- [ ] Agregar aclaración de compatibilidad MIB2 STD2 Technisat Preh (no Navi 1SD)
+- [ ] Mejorar componentes visuales (tarjetas, botones, indicadores)
+- [ ] Actualizar traducciones ES/EN/DE con aclaración de compatibilidad

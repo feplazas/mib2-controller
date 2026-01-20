@@ -382,6 +382,7 @@
     "connecting": "Verbinde...",
     "disconnected": "Getrennt",
     "subtitle": "Fernsteuerung für MIB2 STD2 Technisat Preh Einheiten",
+    "compatibility_notice": "⚠️ Nur kompatibel mit MIB2 STD2 Technisat Preh. Nicht kompatibel mit Navi 1SD.",
     "network_adapter_detected": "Netzwerkadapter erkannt",
     "interface": "Schnittstelle:",
     "adapter_ip": "Adapter-IP:",

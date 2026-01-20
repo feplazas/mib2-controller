@@ -262,12 +262,22 @@ export default function HomeScreen() {
     <ScreenContainer className="p-6">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View className="flex-1 gap-6">
-          {/* Header */}
-          <View className="items-center gap-2">
-            <Text className="text-3xl font-bold text-foreground">MIB2 Controller</Text>
-            <Text className="text-sm text-muted text-center">
+          {/* Header - Premium Design */}
+          <View className="items-center gap-3 mb-2">
+            <View className="bg-primary/10 px-4 py-1 rounded-full">
+              <Text className="text-xs font-semibold text-primary uppercase tracking-wider">
+                MIB2 STD2 Technisat Preh
+              </Text>
+            </View>
+            <Text className="text-3xl font-bold text-foreground tracking-tight">MIB2 Controller</Text>
+            <Text className="text-sm text-muted text-center px-4">
               {t('home.subtitle')}
             </Text>
+            <View className="bg-warning/10 px-3 py-1.5 rounded-lg mt-1">
+              <Text className="text-xs text-warning text-center font-medium">
+                {t('home.compatibility_notice')}
+              </Text>
+            </View>
           </View>
 
           {/* USB Status Indicator - REAL TIME */}
@@ -276,9 +286,9 @@ export default function HomeScreen() {
             deviceName={usbDevice?.product || usbDevice?.deviceName}
           />
 
-          {/* Network Adapter Info */}
+          {/* Network Adapter Info - Premium Design */}
           {networkAdapter && (
-            <View className="bg-surface rounded-2xl p-4 border border-border">
+            <View className="bg-surface rounded-2xl p-4 border border-success/20 shadow-sm">
               <View className="flex-row items-center gap-2 mb-2">
                 <View className="w-3 h-3 rounded-full bg-success" />
                 <Text className="text-sm font-semibold text-foreground">{t('home.network_adapter_detected')}</Text>
@@ -300,8 +310,8 @@ export default function HomeScreen() {
             </View>
           )}
 
-          {/* Connection Status Card */}
-          <View className="bg-surface rounded-2xl p-6 border border-border">
+          {/* Connection Status Card - Premium Design */}
+          <View className="bg-surface rounded-2xl p-6 border border-border shadow-sm">
             <View className="flex-row items-center gap-3 mb-4">
               <View className={`w-4 h-4 rounded-full ${getStatusColor()}`} />
               <Text className="text-lg font-semibold text-foreground">{getStatusText()}</Text>
