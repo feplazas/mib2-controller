@@ -2118,5 +2118,5 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 
 - [x] Corregir bundleId en constants/oauth.ts (mib2_controller → mib2controller)
 - [x] Verificar todas las referencias al bundleId en el proyecto (solo 2 archivos, ambos corregidos)
-- [ ] Compilar nuevo APK con la corrección
-- [ ] Sincronizar con GitHub
+- [x] Compilar nuevo APK con la corrección (build en progreso)
+- [x] Sincronizar con GitHub (commit 9f29120 pushed)
