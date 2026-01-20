@@ -11,7 +11,7 @@
         "gradleCommand": ":app:assembleDebug",
         "buildType": "apk"
       },
-      "node": "20.18.0"
+      "node": "20.19.4"
     },
     "preview": {
       "distribution": "internal",
@@ -19,7 +19,7 @@
         "buildType": "apk",
         "withoutCredentials": false
       },
-      "node": "20.18.0",
+      "node": "20.19.4",
       "env": {
         "GRADLE_OPTS": "-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx4096m -Dorg.gradle.internal.http.connectionTimeout=120000 -Dorg.gradle.internal.http.socketTimeout=120000"
       }
@@ -31,7 +31,7 @@
         "withoutCredentials": false,
         "gradleCommand": ":app:bundleRelease"
       },
-      "node": "20.18.0",
+      "node": "20.19.4",
       "env": {
         "GRADLE_OPTS": "-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx4096m -Dorg.gradle.internal.http.connectionTimeout=120000 -Dorg.gradle.internal.http.socketTimeout=120000"
       }
@@ -42,7 +42,7 @@
         "buildType": "apk",
         "withoutCredentials": false
       },
-      "node": "20.18.0",
+      "node": "20.19.4",
       "env": {
         "GRADLE_OPTS": "-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx4096m -Dorg.gradle.internal.http.connectionTimeout=120000 -Dorg.gradle.internal.http.socketTimeout=120000"
       }
