@@ -2003,3 +2003,13 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [ ] Agregar aclaración de compatibilidad MIB2 STD2 Technisat Preh (no Navi 1SD)
 - [ ] Mejorar componentes visuales (tarjetas, botones, indicadores)
 - [ ] Actualizar traducciones ES/EN/DE con aclaración de compatibilidad
+
+
+## Detección Automática de Compatibilidad MIB2 (20 Ene 2026)
+
+- [ ] Crear servicio mib2-compatibility-service.ts con lógica de detección
+- [ ] Detectar tipo de unidad MIB2 basado en firmware y hardware
+- [ ] Verificar si es STD2 Technisat Preh sin navegación (1 slot SD)
+- [ ] Mostrar advertencia si la unidad no es compatible
+- [ ] Bloquear operaciones peligrosas en unidades no compatibles
+- [ ] Agregar traducciones ES/EN/DE para mensajes de compatibilidad

@@ -13,6 +13,7 @@ import { detectUSBEthernetAdapter, detectSubnet, validateAdapterConnectivity, ty
 import { useTranslation } from "@/lib/language-context";
 
 import { showAlert } from '@/lib/translated-alert';
+import { mib2CompatibilityService, type CompatibilityStatus, type MIB2UnitInfo } from '@/lib/mib2-compatibility-service';
 export default function HomeScreen() {
   const t = useTranslation();
   const { isConnected, isConnecting, config, updateConfig, connect, disconnect, sendCommand } = useTelnet();
@@ -26,6 +27,8 @@ export default function HomeScreen() {
   const [detectingToolbox, setDetectingToolbox] = useState(false);
   const [networkAdapter, setNetworkAdapter] = useState<NetworkInterface | null>(null);
   const [detectedSubnet, setDetectedSubnet] = useState<string>('192.168.1');
+  const [mib2Compatibility, setMib2Compatibility] = useState<CompatibilityStatus>('not_connected');
+  const [mib2UnitInfo, setMib2UnitInfo] = useState<MIB2UnitInfo | null>(null);
 
   // Detectar adaptador de red automáticamente cuando USB se conecta
   useEffect(() => {
@@ -91,6 +94,34 @@ export default function HomeScreen() {
         return { output: '', success: true };
       });
       setToolboxInfo(info);
+      
+      // Check MIB2 compatibility based on detected toolbox info
+      if (info) {
+        const compatResult = await mib2CompatibilityService.checkCompatibility(
+          undefined,
+          info.version || undefined,
+          undefined
+        );
+        setMib2Compatibility(compatResult.unitInfo.compatibilityStatus);
+        setMib2UnitInfo(compatResult.unitInfo);
+        
+        // Show warning if not compatible
+        if (!compatResult.canProceed && compatResult.blockingReason) {
+          Alert.alert(
+            t('home.compatibility_error_title'),
+            t(compatResult.blockingReason),
+            [{ text: t('home.understood') }]
+          );
+        } else if (compatResult.unitInfo.warnings.length > 0) {
+          // Show warnings but allow to proceed
+          const warningMessages = compatResult.unitInfo.warnings.map(w => t(w)).join('\n');
+          Alert.alert(
+            t('home.compatibility_warning_title'),
+            warningMessages,
+            [{ text: t('home.understood') }]
+          );
+        }
+      }
     } catch (error) {
       console.error('Error detecting toolbox:', error);
     } finally {
