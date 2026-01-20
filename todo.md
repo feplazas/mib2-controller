@@ -2135,4 +2135,4 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Crear archivo proguard-rules.pro con reglas para React Native, Expo y USB nativo
 - [x] Configurar build.gradle para habilitar minifyEnabled y shrinkResources (via plugin)
 - [x] Actualizar eas.json para producción con R8 y appVersionSource
-- [ ] Sincronizar con GitHub
+- [x] Sincronizar con GitHub (commit 9954995 pushed)
