@@ -94,9 +94,10 @@ Ubicación: `play-store-assets/screenshot-01-home.png` a `screenshot-09-settings
 
 ### APK/AAB Firmado
 - [x] **Compilar AAB** con EAS Build (perfil `production`)
-  - Build ID: eb54c4d2-da25-4e4e-b496-f48f79649686
+  - Build ID: a11a6f86-a4f8-4e47-ac37-63abf0eae622
   - Estado: En progreso (10-15 minutos estimados)
-  - Logs: https://expo.dev/accounts/feplazas/projects/mib2_controller/builds/eb54c4d2-da25-4e4e-b496-f48f79649686
+  - Logs: https://expo.dev/accounts/feplazas/projects/mib2_controller/builds/a11a6f86-a4f8-4e47-ac37-63abf0eae622
+  - Expo doctor: 17/17 checks passed
 - [x] **Verificar firma**: Keystore `u0sZn_81IL` (Expo managed)
 - [ ] **Probar instalación** en dispositivo real
 - [ ] **Verificar funcionalidades**:
@@ -205,7 +206,7 @@ Ubicación: `play-store-assets/screenshot-01-home.png` a `screenshot-09-settings
 
 **Pendiente**:
 - ✅ Screenshots generados (9 pantallas en PNG)
-- ⏳ AAB de producción compilándose (build eb54c4d2)
+- ⏳ AAB de producción compilándose (build a11a6f86)
 - ⏳ Testing en dispositivos reales
 - ⏳ Publicación en Play Console
 
