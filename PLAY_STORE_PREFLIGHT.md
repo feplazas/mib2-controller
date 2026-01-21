@@ -55,17 +55,20 @@ MIB2, Volkswagen, VW, Seat, Skoda, CarPlay, Android Auto, Toolbox, USB, Telnet, 
   - Generado: 1024x500px, 581KB
 
 ### Screenshots (mínimo 2, máximo 8)
-Resolución recomendada: 1080x1920px (9:16) o similar
+Resolución: 945x2048px (aspect ratio ~9:19.5)
 
-1. [ ] **Home screen** - Detección de adaptador USB
-2. [ ] **Auto-Spoof** - Proceso de spoofing en acción
-3. [ ] **Telnet Terminal** - Terminal con comandos ejecutándose
-4. [ ] **FEC Codes** - Lista de códigos FEC disponibles
-5. [ ] **Installation Guide** - Guía de instalación de Toolbox
-6. [ ] **Backups** - Gestión de backups de EEPROM
-7. [ ] **Settings** - Pantalla de configuración
+1. [x] **Home screen** - Detección de adaptador USB
+2. [x] **Auto-Spoof** - Proceso de spoofing en acción
+3. [x] **Telnet Terminal** - Terminal con comandos ejecutándose
+4. [x] **FEC Codes** - Lista de códigos FEC disponibles
+5. [x] **Installation Guide** - Guía de instalación de Toolbox
+6. [x] **Backups** - Gestión de backups de EEPROM
+7. [x] **Recovery** - Recuperación de adaptadores dañados
+8. [x] **Actions** - Hub de herramientas y utilidades
+9. [x] **Settings** - Pantalla de configuración
 
-**Nota**: Los screenshots deben ser capturas reales de la app en dispositivo Android, no mockups.
+Generados: 9 screenshots PNG (945x2048px, 34-84 KB cada uno)
+Ubicación: `play-store-assets/screenshot-01-home.png` a `screenshot-09-settings.png`
 
 ---
 
@@ -198,7 +201,7 @@ Resolución recomendada: 1080x1920px (9:16) o similar
 - ✅ versionCode 5
 
 **Pendiente**:
-- ⏳ Generar screenshots de las 7 pantallas principales
+- ✅ Screenshots generados (9 pantallas en PNG)
 - ⏳ Compilar AAB de producción
 - ⏳ Testing en dispositivos reales
 - ⏳ Publicación en Play Console
