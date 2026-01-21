@@ -93,8 +93,11 @@ Ubicación: `play-store-assets/screenshot-01-home.png` a `screenshot-09-settings
 ## 🔧 Build de Producción
 
 ### APK/AAB Firmado
-- [ ] **Compilar AAB** con EAS Build (perfil `production`)
-- [ ] **Verificar firma**: Keystore `u0sZn_81IL` (Expo managed)
+- [x] **Compilar AAB** con EAS Build (perfil `production`)
+  - Build ID: eb54c4d2-da25-4e4e-b496-f48f79649686
+  - Estado: En progreso (10-15 minutos estimados)
+  - Logs: https://expo.dev/accounts/feplazas/projects/mib2_controller/builds/eb54c4d2-da25-4e4e-b496-f48f79649686
+- [x] **Verificar firma**: Keystore `u0sZn_81IL` (Expo managed)
 - [ ] **Probar instalación** en dispositivo real
 - [ ] **Verificar funcionalidades**:
   - Detección de adaptador USB
@@ -202,7 +205,7 @@ Ubicación: `play-store-assets/screenshot-01-home.png` a `screenshot-09-settings
 
 **Pendiente**:
 - ✅ Screenshots generados (9 pantallas en PNG)
-- ⏳ Compilar AAB de producción
+- ⏳ AAB de producción compilándose (build eb54c4d2)
 - ⏳ Testing en dispositivos reales
 - ⏳ Publicación en Play Console
 
