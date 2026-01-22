@@ -1,66 +1,51 @@
 # Play Store Screenshots
 
+## Total Screenshots: 13
+
 ## Orden de Subida a Play Console
 
-Subir los screenshots en este orden para mostrar el flujo lógico de la app:
+Play Store permite máximo 8 screenshots. Subir los primeros 8 en este orden para mostrar el flujo lógico de la app:
 
-1. **screenshot-01-home.png** - Home Screen
-   - Pantalla principal con detección de adaptador USB
-   - Estado de conexión MIB2 (Disconnected)
-   - Botones Quick Search y Full Scan
-   - Campos de IP Address y Port
+1. **screenshot-01-home.png** (296KB)
+   - **Caption**: "Home - Connect USB adapter and scan for MIB2 unit"
 
-2. **screenshot-02-auto-spoof.png** - Auto-Spoof
-   - Proceso de spoofing automático de USB VID/PID
-   - Target Values (D-Link DUB-E100)
-   - Important Warnings sobre ASIX adapters
-   - Opción Force y Simulation (Dry-Run)
+2. **screenshot-02-auto-spoof.png** (457KB)
+   - **Caption**: "Auto-Spoof - Modify adapter VID/PID for MIB2 compatibility"
 
-3. **screenshot-03-telnet.png** - Telnet Terminal
-   - Terminal Telnet con estado Disconnected
-   - Scripts Library y Installation Guide buttons
-   - Quick Commands (VERSION, MIB_INFO, MOUNT, UPTIME, IFCONFIG)
-   - Campo de entrada de comandos
+3. **screenshot-03-telnet.png** (240KB)
+   - **Caption**: "Telnet - Built-in terminal with quick commands"
 
-4. **screenshot-04-fec-codes.png** - FEC Code Generator
-   - Feature Enable Codes para activación de funciones
-   - Campos VIN y VCRN para generación personalizada
-   - Predefined FEC Codes (Apple CarPlay, Android Auto, MirrorLink)
-   - Link al generador online (vwcoding.ru)
+4. **screenshot-04-fec-codes.png** (361KB)
+   - **Caption**: "FEC Codes - Enable CarPlay, Android Auto, and more"
 
-5. **screenshot-05-installation-guide.png** - Installation Guide
-   - Guía completa de instalación de MIB2 Toolbox
-   - CRITICAL WARNING sobre backups
-   - PHASE 1: Preparation and Verification
-   - Prerequisites y Connection verification
-   - Comando ping 192.168.1.4
+5. **screenshot-05-installation-guide.png** (501KB)
+   - **Caption**: "Installation Guide - Step-by-step MIB2 Toolbox setup"
 
-6. **screenshot-06-backups.png** - EEPROM Backups
-   - Gestión de backups de EEPROM
-   - Security Notice (VID/PID restoration only)
-   - Integrity Verification System (MD5/SHA256)
-   - Estado "No backups available"
+6. **screenshot-06-backups.png** (445KB)
+   - **Caption**: "Backups - EEPROM backup management with integrity verification"
 
-7. **screenshot-07-recovery.png** - Recovery
-   - Herramientas de recuperación de adaptadores dañados
-   - Estado "No Device" (Connect USB adapter)
-   - Available Backups (0)
-   - Recovery Instructions (6 pasos)
+7. **screenshot-07-recovery.png** (346KB)
+   - **Caption**: "Recovery - Restore damaged adapters from backups"
 
-8. **screenshot-08-actions.png** - Actions
-   - Tools and system utilities
-   - USB Status (información detallada del adaptador)
-   - Recovery (recuperación de adaptadores)
-   - System Diagnostics (logs en tiempo real)
-   - FEC Generator
-   - Advanced Tools (para usuarios expertos)
-   - Backups (gestión de copias EEPROM)
+8. **screenshot-08-actions.png** (381KB)
+   - **Caption**: "Actions - Central hub for all tools and utilities"
 
-9. **screenshot-09-settings.png** - Settings (duplicado, usar solo si necesario)
-   - Configuración de la aplicación
-   - Language selector (English)
-   - Tab Sound toggle
-   - Help section con FAQs
+## Screenshots Adicionales (no subir a Play Store, solo para documentación)
+
+9. **screenshot-09-settings.png** (293KB)
+   - **Caption**: "Settings - Customize app behavior and preferences"
+
+10. **screenshot-10-home-connected.png** (44KB)
+   - **Caption**: "Home - USB adapter connected and ready"
+
+11. **screenshot-11-usb-device-info.png** (42KB)
+   - **Caption**: "USB - Detailed device information and chipset detection"
+
+12. **screenshot-12-auto-spoof-warnings.png** (62KB)
+   - **Caption**: "Auto-Spoof - Important warnings and target values"
+
+13. **screenshot-13-diagnostic-logs.png** (48KB)
+   - **Caption**: "Diagnostic - System logs and operation history"
 
 ## Especificaciones Técnicas
 
@@ -68,7 +53,7 @@ Subir los screenshots en este orden para mostrar el flujo lógico de la app:
 - **Resolución**: 945x2048px (aspect ratio ~9:19.5)
 - **Orientación**: Portrait (vertical)
 - **Dispositivo**: Android real (no emulador)
-- **Tamaño promedio**: 34-84 KB por screenshot
+- **Tamaño**: 42KB - 501KB por screenshot
 
 ## Notas para Play Store
 
@@ -88,3 +73,8 @@ Subir los screenshots en este orden para mostrar el flujo lógico de la app:
 6. **Backups**: Sistema de respaldo con verificación de integridad MD5/SHA256
 7. **Recovery**: Herramientas de recuperación para adaptadores dañados
 8. **Actions**: Hub central de todas las herramientas y utilidades del sistema
+9. **Settings**: Configuración de idioma, sonidos, y ayuda
+10. **Home Connected**: Vista de conexión exitosa con adaptador USB
+11. **USB Device Info**: Información detallada del chipset y fabricante
+12. **Auto-Spoof Warnings**: Advertencias importantes y valores objetivo
+13. **Diagnostic Logs**: Historial de operaciones y logs del sistema
