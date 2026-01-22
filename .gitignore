@@ -76,3 +76,4 @@ android/build/
 ios/Pods/
 ios/build/
 ios/*.xcworkspace
+.expo/
