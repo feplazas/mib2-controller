@@ -1,10 +1,8 @@
 # Play Store Screenshots
 
-## Total Screenshots: 13
+## Screenshots para Play Store (8 total)
 
-## Orden de Subida a Play Console
-
-Play Store permite máximo 8 screenshots. Subir los primeros 8 en este orden para mostrar el flujo lógico de la app:
+Subir estos 8 screenshots en orden para mostrar el flujo lógico de la app:
 
 1. **screenshot-01-home.png** (296KB)
    - **Caption**: "Home - Connect USB adapter and scan for MIB2 unit"
@@ -30,51 +28,17 @@ Play Store permite máximo 8 screenshots. Subir los primeros 8 en este orden par
 8. **screenshot-08-actions.png** (381KB)
    - **Caption**: "Actions - Central hub for all tools and utilities"
 
-## Screenshots Adicionales (no subir a Play Store, solo para documentación)
-
-9. **screenshot-09-settings.png** (293KB)
-   - **Caption**: "Settings - Customize app behavior and preferences"
-
-10. **screenshot-10-home-connected.png** (44KB)
-   - **Caption**: "Home - USB adapter connected and ready"
-
-11. **screenshot-11-usb-device-info.png** (42KB)
-   - **Caption**: "USB - Detailed device information and chipset detection"
-
-12. **screenshot-12-auto-spoof-warnings.png** (62KB)
-   - **Caption**: "Auto-Spoof - Important warnings and target values"
-
-13. **screenshot-13-diagnostic-logs.png** (48KB)
-   - **Caption**: "Diagnostic - System logs and operation history"
-
 ## Especificaciones Técnicas
 
 - **Formato**: PNG (RGB, 8-bit/color)
 - **Resolución**: 945x2048px (aspect ratio ~9:19.5)
 - **Orientación**: Portrait (vertical)
 - **Dispositivo**: Android real (no emulador)
-- **Tamaño**: 42KB - 501KB por screenshot
+- **Tamaño**: 240KB - 501KB por screenshot
 
 ## Notas para Play Store
 
 - **Mínimo requerido**: 2 screenshots
 - **Máximo permitido**: 8 screenshots
-- **Recomendación**: Subir los primeros 8 (del 01 al 08)
 - **Idioma**: Screenshots en inglés (idioma universal)
 - **Orden**: Mantener el orden numérico para mostrar flujo lógico
-
-## Descripción de Cada Pantalla (para Store Listing)
-
-1. **Home**: Conexión y detección automática de adaptadores USB-Ethernet
-2. **Auto-Spoof**: Modificación automática de VID/PID para compatibilidad MIB2
-3. **Telnet**: Terminal integrado con comandos rápidos y biblioteca de scripts
-4. **FEC Codes**: Generador de códigos para activar CarPlay, Android Auto y más
-5. **Installation**: Guía paso a paso para instalar MIB2 Toolbox en la unidad
-6. **Backups**: Sistema de respaldo con verificación de integridad MD5/SHA256
-7. **Recovery**: Herramientas de recuperación para adaptadores dañados
-8. **Actions**: Hub central de todas las herramientas y utilidades del sistema
-9. **Settings**: Configuración de idioma, sonidos, y ayuda
-10. **Home Connected**: Vista de conexión exitosa con adaptador USB
-11. **USB Device Info**: Información detallada del chipset y fabricante
-12. **Auto-Spoof Warnings**: Advertencias importantes y valores objetivo
-13. **Diagnostic Logs**: Historial de operaciones y logs del sistema
