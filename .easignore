@@ -31,7 +31,7 @@ screenshot_*.png
 # Git and version control
 .git/
 .github/
-.gitignore
+# .gitignore  <- REQUIRED for expo-doctor check, do NOT exclude
 .gitattributes
 
 # IDE and editor files
