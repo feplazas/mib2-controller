@@ -68,8 +68,9 @@ tmp/
 temp/
 *.tmp
 
-# Package manager files (not needed, dependencies are in node_modules)
-pnpm-lock.yaml
+# Package manager files
+# NOTE: pnpm-lock.yaml is REQUIRED for expo-doctor check, do NOT exclude it
+# pnpm-lock.yaml  <- COMMENTED OUT - must be included in build
 yarn.lock
 
 # Environment files (secrets should be in EAS)
