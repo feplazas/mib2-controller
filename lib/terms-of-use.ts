@@ -63,7 +63,7 @@ export const termsOfUse: Record<'es' | 'en' | 'de', TermsOfUse> = {
       },
       {
         title: '12. Contacto',
-        content: 'Si tiene preguntas sobre estos Términos de Uso, puede contactarnos en:\n\nCorreo electrónico: [agregar correo de soporte]\nSitio web: https://github.com/feplazas/mib2-controller',
+        content: 'Si tiene preguntas sobre estos Términos de Uso, puede contactarnos en:\n\nCorreo electrónico: feplazas@gmail.com\nSitio web: https://github.com/feplazas/mib2-controller',
       },
     ],
   },
@@ -117,7 +117,7 @@ export const termsOfUse: Record<'es' | 'en' | 'de', TermsOfUse> = {
       },
       {
         title: '12. Contact',
-        content: 'If you have questions about these Terms of Use, you can contact us at:\n\nEmail: [add support email]\nWebsite: https://github.com/feplazas/mib2-controller',
+        content: 'If you have questions about these Terms of Use, you can contact us at:\n\nEmail: feplazas@gmail.com\nWebsite: https://github.com/feplazas/mib2-controller',
       },
     ],
   },
@@ -171,7 +171,7 @@ export const termsOfUse: Record<'es' | 'en' | 'de', TermsOfUse> = {
       },
       {
         title: '12. Kontakt',
-        content: 'Wenn Sie Fragen zu diesen Nutzungsbedingungen haben, können Sie uns kontaktieren unter:\n\nE-Mail: [Support-E-Mail hinzufügen]\nWebsite: https://github.com/feplazas/mib2-controller',
+        content: 'Wenn Sie Fragen zu diesen Nutzungsbedingungen haben, können Sie uns kontaktieren unter:\n\nE-Mail: feplazas@gmail.com\nWebsite: https://github.com/feplazas/mib2-controller',
       },
     ],
   },

@@ -325,6 +325,10 @@
 - [ ] Usuario debe ejecutar: eas build --platform android --profile preview
 - [ ] Usuario debe descargar e instalar APK generado
 
+## Correcciones Play Store (22 Ene 2026)
+
+- [x] Add contact email (feplazas@gmail.com) to Settings - Terms of Use
+
 ## Problemas Reportados por Usuario (11 Ene 2026)
 
 - [ ] App no aparece en diálogo de selección USB de Android
