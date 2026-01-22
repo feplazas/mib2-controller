@@ -607,7 +607,7 @@ If your app is rejected, you'll receive an email with the rejection reason. Comm
 ```
 Dear Google Play Review Team,
 
-I am appealing the rejection of MIB2 Controller (space.manus.mib2controller.t20260110134809) on the grounds that this app is a legitimate owner-use diagnostic tool for vehicle infotainment systems, not a hacking or circumvention tool.
+I am appealing the rejection of MIB2 Controller (com.feplazas.mib2controller) on the grounds that this app is a legitimate owner-use diagnostic tool for vehicle infotainment systems, not a hacking or circumvention tool.
 
 Key points:
 
@@ -773,7 +773,7 @@ Print this checklist and verify each item before submitting:
 **Build:**
 - EAS Build: https://expo.dev/accounts/feplazas/projects/mib2_controller/builds/a11a6f86-a4f8-4e47-ac37-63abf0eae622
 - Version: 1.0.0 (build 6)
-- Package: space.manus.mib2controller.t20260110134809
+- Package: com.feplazas.mib2controller
 
 ---
 

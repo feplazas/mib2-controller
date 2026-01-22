@@ -137,7 +137,7 @@ Resultado esperado: **Everyone / PEGI 3**
 #### Opción C: Usar mi sitio temporal (Temporal, 1 minuto)
 
 Si necesitas publicar YA y crear la política después:
-- URL temporal: `https://manus.im/privacy` (placeholder)
+- URL temporal: `https://feplazas.github.io/mib2-controller-privacy/` (placeholder)
 - **IMPORTANTE**: Reemplazar con URL real en 24-48 horas
 
 **Agregar URL** en Play Console → Store listing → Política de privacidad
@@ -274,7 +274,7 @@ Si Google rechaza la app por "herramienta de hacking" o violación de políticas
 ```
 Dear Google Play Review Team,
 
-We are appealing the rejection of "MIB2 Controller" (package: space.manus.mib2controller.t20260110134809).
+We are appealing the rejection of "MIB2 Controller" (package: com.feplazas.mib2controller).
 
 This is a legitimate diagnostic tool for vehicle owners to manage their MIB2 infotainment systems. It is NOT a hacking tool or malware.
 

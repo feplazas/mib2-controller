@@ -5,7 +5,7 @@
 **Date:** January 21, 2026  
 **Author / Contact:** Felipe Plazas (Attorney-at-law)  
 **Support contact:** feplazas@gmail.com  
-**App package name:** space.manus.mib2controller.t20260110134809  
+**App package name:** com.feplazas.mib2controller  
 **App version / build:** 1.0.0 (versionCode 6)  
 
 ---
@@ -291,7 +291,7 @@ The following terms are present in the app's Terms of Use (accessible via Settin
 
 **Version:** 1.0.0  
 **Build number (versionCode):** 6  
-**Package name:** space.manus.mib2controller.t20260110134809  
+**Package name:** com.feplazas.mib2controller  
 **Build date:** January 21, 2026  
 **Git commit hash:** d250b43b216c1c7313fd37e508c37abfe7d8aa92  
 **EAS Build ID:** a11a6f86-a4f8-4e47-ac37-63abf0eae622  

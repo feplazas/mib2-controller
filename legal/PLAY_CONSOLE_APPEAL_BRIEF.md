@@ -2,7 +2,7 @@
 ## MIB2 Controller - Compliance Summary
 
 **App:** MIB2 Controller  
-**Package:** space.manus.mib2controller.t20260110134809  
+**Package:** com.feplazas.mib2controller  
 **Version:** 1.0.0 (build 6)  
 **Date:** January 21, 2026  
 

@@ -4,7 +4,7 @@
 
 ### App Config (app.config.ts)
 - [x] **Nombre de la app**: MIB2 Controller
-- [x] **Package name**: space.manus.mib2controller.t20260110134809
+- [x] **Package name**: com.feplazas.mib2controller
 - [x] **Version**: 1.0.0
 - [x] **versionCode**: 5
 - [x] **Icono**: assets/images/icon.png (512x512px)
