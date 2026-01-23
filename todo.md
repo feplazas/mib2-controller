@@ -2289,3 +2289,30 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Modificar performSpoof para escribir en ambas ubicaciones si se detecta dual
 - [x] Actualizar verificación para ambas ubicaciones
 - [x] Actualizar rollback para ambas ubicaciones
+
+
+## BUG: Verificación falla pero escritura funciona (23 Ene 2026)
+- [ ] La escritura funciona correctamente (confirmado con "Forzar sin verificación")
+- [ ] La verificación falla con "2 bytes don't match at positions 0, 1"
+- [ ] El adaptador tiene EEPROM externa sin eFuse (confirmado por Test EEPROM)
+- [ ] Analizar logs de verificación para encontrar el bug
+- [ ] Corregir la lógica de verificación
+
+
+## CORRECCIÓN DEFINITIVA - Endianness ASIX (23 Ene 2026)
+
+### Problema Identificado
+- [x] La verificación fallaba aunque la escritura funcionaba correctamente
+- [x] El spoofing funcionaba con "Forzar sin verificación"
+- [x] El adaptador tiene EEPROM externa sin eFuse
+
+### Causa Raíz
+- [x] ASIX devuelve datos en BIG-ENDIAN (confirmado por asix_eepromtool)
+- [x] La herramienta de referencia usa be16toh() para convertir de big-endian a host
+- [x] Nuestro código NO hacía esta conversión en readEEPROM
+- [x] Inconsistencia: escribíamos en big-endian pero leíamos sin conversión
+
+### Corrección Aplicada
+- [x] readEEPROM: Ahora intercambia bytes (buffer[1] = byte par, buffer[0] = byte impar)
+- [x] Verificación: Ahora usa el mismo formato que readEEPROM
+- [x] Formato consistente en toda la cadena: write -> read -> verify

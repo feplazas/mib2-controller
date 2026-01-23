@@ -250,24 +250,23 @@ class UsbService {
       usbLogger.info('detect', 'Detecting dual VID/PID locations...');
       
       // Leer VID/PID de ubicación primaria (0x88-0x8B)
-      const primaryVidLow = await this.readEEPROM(EEPROM_VID_OFFSET, 1);
-      const primaryVidHigh = await this.readEEPROM(EEPROM_VID_OFFSET + 1, 1);
-      const primaryPidLow = await this.readEEPROM(EEPROM_PID_OFFSET, 1);
-      const primaryPidHigh = await this.readEEPROM(EEPROM_PID_OFFSET + 1, 1);
+      // ASIX lee words completos (2 bytes), así que leemos 2 bytes de cada offset
+      const primaryVidResult = await this.readEEPROM(EEPROM_VID_OFFSET, 2);
+      const primaryPidResult = await this.readEEPROM(EEPROM_PID_OFFSET, 2);
       
-      const primaryVID = parseInt(primaryVidHigh.data + primaryVidLow.data, 16);
-      const primaryPID = parseInt(primaryPidHigh.data + primaryPidLow.data, 16);
+      // ASIX devuelve datos en little-endian: bytes[0] = low byte, bytes[1] = high byte
+      const primaryVID = (primaryVidResult.bytes[1] << 8) | primaryVidResult.bytes[0];
+      const primaryPID = (primaryPidResult.bytes[1] << 8) | primaryPidResult.bytes[0];
       
       usbLogger.info('detect', `Primary location (0x88): VID=0x${primaryVID.toString(16).toUpperCase()}, PID=0x${primaryPID.toString(16).toUpperCase()}`);
       
       // Leer VID/PID de ubicación secundaria (0x48-0x4B)
-      const secondaryVidLow = await this.readEEPROM(EEPROM_VID_OFFSET_SECONDARY, 1);
-      const secondaryVidHigh = await this.readEEPROM(EEPROM_VID_OFFSET_SECONDARY + 1, 1);
-      const secondaryPidLow = await this.readEEPROM(EEPROM_PID_OFFSET_SECONDARY, 1);
-      const secondaryPidHigh = await this.readEEPROM(EEPROM_PID_OFFSET_SECONDARY + 1, 1);
+      const secondaryVidResult = await this.readEEPROM(EEPROM_VID_OFFSET_SECONDARY, 2);
+      const secondaryPidResult = await this.readEEPROM(EEPROM_PID_OFFSET_SECONDARY, 2);
       
-      const secondaryVID = parseInt(secondaryVidHigh.data + secondaryVidLow.data, 16);
-      const secondaryPID = parseInt(secondaryPidHigh.data + secondaryPidLow.data, 16);
+      // ASIX devuelve datos en little-endian: bytes[0] = low byte, bytes[1] = high byte
+      const secondaryVID = (secondaryVidResult.bytes[1] << 8) | secondaryVidResult.bytes[0];
+      const secondaryPID = (secondaryPidResult.bytes[1] << 8) | secondaryPidResult.bytes[0];
       
       usbLogger.info('detect', `Secondary location (0x48): VID=0x${secondaryVID.toString(16).toUpperCase()}, PID=0x${secondaryPID.toString(16).toUpperCase()}`);
       

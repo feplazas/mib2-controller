@@ -203,14 +203,18 @@ class UsbNativeModule : Module() {
             return@AsyncFunction
           }
 
-          // ASIX returns data with:
-          // buffer[0] = byte at even address (data[i])
-          // buffer[1] = byte at odd address (data[i+1])
-          data[i] = buffer[0]
+          // ASIX returns data in BIG-ENDIAN format (confirmed by asix_eepromtool):
+          // The tool uses be16toh() to convert from big-endian to host byte order
+          // This means:
+          // buffer[0] = HIGH byte of the word = byte at ODD address (i+1)
+          // buffer[1] = LOW byte of the word = byte at EVEN address (i)
+          // 
+          // So we need to SWAP the bytes to get the correct order:
+          data[i] = buffer[1]      // LOW byte = byte at even address
           bytesRead++
           
           if (i + 1 < length) {
-            data[i + 1] = buffer[1]
+            data[i + 1] = buffer[0]  // HIGH byte = byte at odd address
             bytesRead++
           }
           
@@ -389,12 +393,16 @@ class UsbNativeModule : Module() {
                 break
               }
 
-              // ASIX returns data with:
-              // buffer[0] = byte at even address (data[i])
-              // buffer[1] = byte at odd address (data[i+1])
-              verifyData[i] = buffer[0]  // byte at even address
+              // ASIX returns data in BIG-ENDIAN format (confirmed by asix_eepromtool):
+              // buffer[0] = HIGH byte of the word = byte at ODD address
+              // buffer[1] = LOW byte of the word = byte at EVEN address
+              // 
+              // We wrote using: wIndex = (byte0 << 8) | byte1
+              // where byte0 is at even address (goes to HIGH byte of wIndex)
+              // So when reading back, we need to swap:
+              verifyData[i] = buffer[1]  // LOW byte = byte at even address (what we sent as byte0)
               if (i + 1 < data.size) {
-                verifyData[i + 1] = buffer[1]  // byte at odd address
+                verifyData[i + 1] = buffer[0]  // HIGH byte = byte at odd address (what we sent as byte1)
               }
               
               Log.d(TAG, "[ASIX] Verify read word $wordOffset: byte0=0x${String.format("%02X", buffer[0].toInt() and 0xFF)}, byte1=0x${String.format("%02X", buffer[1].toInt() and 0xFF)}")
