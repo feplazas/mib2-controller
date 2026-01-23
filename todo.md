@@ -2191,3 +2191,18 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
   - "Error durante rollback:"
   - "Error en spoofing:"
 - [x] Buscar y migrar todos los textos hardcodeados a sistema de traducciones - CORREGIDO: agregadas claves safe_test.* en ES/EN/DE
+
+
+## Build APK Firmado (23 Ene 2026)
+- [ ] Verificar configuración de EAS
+- [ ] Ejecutar EAS Build para APK firmado
+- [ ] Descargar y entregar APK al usuario
+
+
+## BUG CRÍTICO - Verificación EEPROM (23 Ene 2026 - URGENTE)
+- [x] Error persiste: "Verification failed: 2 bytes don't match at positions 0, 1"
+- [x] El fix anterior de word offset NO funcionó
+- [x] Problema: La verificación lee bytes incorrectos después de escribir
+- [x] Analizar el orden de bytes (endianness) en lectura vs escritura
+- [x] Verificar que la lectura use el mismo formato que la escritura
+- [x] CORREGIDO: Cambiado de big-endian a LITTLE-ENDIAN en writeEEPROM, readEEPROM y verificación
