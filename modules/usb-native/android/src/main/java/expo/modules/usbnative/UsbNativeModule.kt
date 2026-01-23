@@ -322,8 +322,8 @@ class UsbNativeModule : Module() {
           bytesWritten += if (i + 1 < data.size) 2 else 1
           wordIndex++
           
-          // Delay 50ms between writes (as per asix_eepromtool specification)
-          runBlocking { delay(50) }
+          // Delay 100ms between writes (increased for reliability)
+          runBlocking { delay(100) }
         }
         
         // STEP 3: Disable EEPROM writing
@@ -342,77 +342,107 @@ class UsbNativeModule : Module() {
           Log.w(TAG, "[ASIX] Warning: Failed to disable EEPROM write mode (non-fatal)")
         }
         
-        // Wait 500ms for device to stabilize
-        Log.d(TAG, "[ASIX] Write sequence completed. Wrote $bytesWritten bytes. Waiting 500ms for device to stabilize...")
-        runBlocking { delay(500) }
+        // Wait 1000ms for device to stabilize before verification
+        Log.d(TAG, "[ASIX] Write sequence completed. Wrote $bytesWritten bytes. Waiting 1000ms for device to stabilize...")
+        runBlocking { delay(1000) }
         Log.d(TAG, "[ASIX] Device ready for verification")
         
         // Verificación opcional (puede omitirse para adaptadores con protección de escritura)
         if (!skipVerification) {
-          Log.d(TAG, "Starting verification of written data...")
-          val verifyData = ByteArray(data.size)
+          Log.d(TAG, "Starting verification of written data with retries...")
           
-          // Read back data word by word (same as write - using word offsets)
-          for (i in data.indices step 2) {
-            val wordOffset = (offset + i) / 2  // Word offset, same as in write
-            val buffer = ByteArray(2)
+          // Try verification up to 3 times with increasing delays
+          val maxRetries = 3
+          var verificationSuccess = false
+          var lastMismatchPositions = mutableListOf<Int>()
+          var lastVerifyData = ByteArray(data.size)
+          
+          for (attempt in 1..maxRetries) {
+            Log.d(TAG, "Verification attempt $attempt of $maxRetries...")
             
-            val result = connection.controlTransfer(
-              USB_DIR_IN or USB_TYPE_VENDOR or USB_RECIP_DEVICE,
-              ASIX_CMD_READ_EEPROM,
-              wordOffset,  // Use word offset, not byte offset
-              0,
-              buffer,
-              buffer.size,
-              5000
-            )
+            // Wait before each verification attempt (increasing delay)
+            val waitTime = attempt * 500L
+            Log.d(TAG, "Waiting ${waitTime}ms before verification attempt $attempt...")
+            runBlocking { delay(waitTime) }
+            
+            val verifyData = ByteArray(data.size)
+            var readSuccess = true
+            
+            // Read back data word by word (same as write - using word offsets)
+            for (i in data.indices step 2) {
+              val wordOffset = (offset + i) / 2  // Word offset, same as in write
+              val buffer = ByteArray(2)
+              
+              val result = connection.controlTransfer(
+                USB_DIR_IN or USB_TYPE_VENDOR or USB_RECIP_DEVICE,
+                ASIX_CMD_READ_EEPROM,
+                wordOffset,  // Use word offset, not byte offset
+                0,
+                buffer,
+                buffer.size,
+                5000
+              )
 
-            if (result < 0) {
-              Log.e(TAG, "Verification read failed at word offset $wordOffset (byte offset ${offset + i})")
-              promise.reject("VERIFY_FAILED", "Failed to read EEPROM for verification at word offset $wordOffset", null)
-              return@AsyncFunction
-            }
+              if (result < 0) {
+                Log.e(TAG, "Verification read failed at word offset $wordOffset (byte offset ${offset + i})")
+                readSuccess = false
+                break
+              }
 
-            // ASIX returns data in BIG-ENDIAN format (same as be16toh in reference):
-            // buffer[0] = HIGH byte of word = byte at even address (data[i])
-            // buffer[1] = LOW byte of word = byte at odd address (data[i+1])
-            // We need to apply be16toh equivalent: swap bytes back
-            verifyData[i] = buffer[0]  // byte at even address
-            if (i + 1 < data.size) {
-              verifyData[i + 1] = buffer[1]  // byte at odd address
+              // ASIX returns data with:
+              // buffer[0] = byte at even address (data[i])
+              // buffer[1] = byte at odd address (data[i+1])
+              verifyData[i] = buffer[0]  // byte at even address
+              if (i + 1 < data.size) {
+                verifyData[i + 1] = buffer[1]  // byte at odd address
+              }
+              
+              Log.d(TAG, "[ASIX] Verify read word $wordOffset: byte0=0x${String.format("%02X", buffer[0].toInt() and 0xFF)}, byte1=0x${String.format("%02X", buffer[1].toInt() and 0xFF)}")
             }
             
-            Log.d(TAG, "[ASIX] Verify read word $wordOffset: byte0=0x${String.format("%02X", buffer[0].toInt() and 0xFF)}, byte1=0x${String.format("%02X", buffer[1].toInt() and 0xFF)}")
+            if (!readSuccess) {
+              Log.w(TAG, "Read failed on attempt $attempt, will retry...")
+              continue
+            }
+            
+            // Comparar bytes escritos vs leídos
+            val mismatchPositions = mutableListOf<Int>()
+            for (i in data.indices) {
+              if (data[i] != verifyData[i]) {
+                mismatchPositions.add(i)
+                Log.w(TAG, "Mismatch at offset ${offset + i}: wrote 0x${String.format("%02X", data[i].toInt() and 0xFF)}, read 0x${String.format("%02X", verifyData[i].toInt() and 0xFF)}")
+              }
+            }
+            
+            lastMismatchPositions = mismatchPositions
+            lastVerifyData = verifyData
+            
+            if (mismatchPositions.isEmpty()) {
+              verificationSuccess = true
+              Log.d(TAG, "Verification successful on attempt $attempt: all $bytesWritten bytes match")
+              break
+            } else {
+              Log.w(TAG, "Verification attempt $attempt failed: ${mismatchPositions.size} bytes don't match")
+            }
           }
           
-          // Comparar bytes escritos vs leídos
-          val mismatchPositions = mutableListOf<Int>()
-          for (i in data.indices) {
-            if (data[i] != verifyData[i]) {
-              mismatchPositions.add(i)
-              Log.w(TAG, "Mismatch at offset ${offset + i}: wrote 0x${String.format("%02X", data[i].toInt() and 0xFF)}, read 0x${String.format("%02X", verifyData[i].toInt() and 0xFF)}")
-            }
-          }
-          
-          if (mismatchPositions.isNotEmpty()) {
+          if (!verificationSuccess) {
             val writtenHex = data.joinToString("") { "%02X".format(it) }
-            val readHex = verifyData.joinToString("") { "%02X".format(it) }
-            Log.e(TAG, "Verification failed: ${mismatchPositions.size} bytes don't match")
+            val readHex = lastVerifyData.joinToString("") { "%02X".format(it) }
+            Log.e(TAG, "Verification failed after $maxRetries attempts: ${lastMismatchPositions.size} bytes don't match")
             Log.e(TAG, "Written: $writtenHex")
             Log.e(TAG, "Read back: $readHex")
-            Log.e(TAG, "Mismatch positions: ${mismatchPositions.joinToString(", ")}")
+            Log.e(TAG, "Mismatch positions: ${lastMismatchPositions.joinToString(", ")}")
             
             promise.reject(
               "VERIFY_FAILED",
-              "Verification failed: ${mismatchPositions.size} bytes don't match at positions ${mismatchPositions.joinToString(", ")}",
+              "Verification failed: ${lastMismatchPositions.size} bytes don't match at positions ${lastMismatchPositions.joinToString(", ")}. This adapter may have write-protected EEPROM or eFuse.",
               null
             )
             return@AsyncFunction
           }
-          
-          Log.d(TAG, "Verification successful: all $bytesWritten bytes match")
         } else {
-          Log.w(TAG, "Verification skipped as requested (force mode)")
+          Log.w(TAG, "Verification skipped as requested (force mode)")  
         }
         
         promise.resolve(mapOf("bytesWritten" to bytesWritten, "verified" to !skipVerification))

@@ -2244,3 +2244,33 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Dry Run: Vista rápida de cambios (mantener)
 - [x] Safe Test: Simulación completa del proceso (mantener)
 - [x] Ambos tienen propósitos diferentes y complementarios
+
+
+## BUG PERSISTENTE - Verificación EEPROM v10 (23 Ene 2026)
+- [ ] Error sigue apareciendo después de corrección BIG-ENDIAN
+- [ ] Posible causa: validación de checksum
+- [ ] Analizar video YouTube: https://youtu.be/NGaXMYTP_YA
+- [ ] Buscar documentación adicional online
+- [ ] Implementar solución definitiva
+
+
+## Corrección Definitiva de Verificación EEPROM (23 Ene 2026)
+
+### Investigación Realizada
+- [x] Analizado video de YouTube sobre spoofing ASIX
+- [x] Revisado código fuente del driver Linux (asix_common.c)
+- [x] Revisado código de asix_eepromtool (herramienta de referencia)
+- [x] Analizado issues de GitHub sobre problemas similares
+
+### Hallazgos Clave
+- El problema NO es el formato de bytes (endianness)
+- Algunos adaptadores tienen EEPROM protegida por hardware (pin WP)
+- Algunos chips tienen VID/PID grabado en eFuse (ignora EEPROM)
+- Algunos chips tienen VID/PID en DOS ubicaciones (0x48 y 0x88)
+- El driver Linux NO verifica después de escribir
+
+### Cambios Implementados
+- [x] Aumentado delay entre escrituras de 50ms a 100ms
+- [x] Aumentado delay antes de verificación de 500ms a 1000ms
+- [x] Agregados 3 reintentos de verificación con delays incrementales (500ms, 1000ms, 1500ms)
+- [x] Mensaje de error mejorado indicando posible EEPROM protegida o eFuse
