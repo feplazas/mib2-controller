@@ -19,6 +19,40 @@ export default function AutoSpoofScreen() {
   const { status, device } = useUsbStatus();
   const [state, dispatch] = useReducer(spoofReducer, initialSpoofState);
 
+  // Helper para traducir claves de safe_test con parámetros
+  const translateSafeTestKey = (key: string, t: (key: string) => string): string => {
+    // Si la clave contiene '|', tiene parámetros
+    if (key.includes('|')) {
+      const parts = key.split('|');
+      const translationKey = parts[0];
+      const params = parts.slice(1);
+      
+      // Obtener la traducción base
+      let translated = t(translationKey);
+      
+      // Si no se encontró traducción, devolver la clave original
+      if (translated === translationKey) {
+        return key.replace(/\|/g, ' ');
+      }
+      
+      // Reemplazar {{0}}, {{1}}, etc. con los parámetros
+      params.forEach((param, index) => {
+        translated = translated.replace(`{{${index}}}`, param);
+      });
+      
+      return translated;
+    }
+    
+    // Si la clave empieza con 'safe_test.', intentar traducir
+    if (key.startsWith('safe_test.')) {
+      const translated = t(key);
+      return translated !== key ? translated : key;
+    }
+    
+    // Devolver la clave original si no es una clave de traducción
+    return key;
+  };
+
   // Helper para obtener texto de paso traducido
   const getStepText = (step: string): string => {
     const stepTexts: Record<string, string> = {
@@ -1022,8 +1056,8 @@ export default function AutoSpoofScreen() {
                         {step.status === 'passed' ? '✅' : step.status === 'failed' ? '❌' : step.status === 'warning' ? '⚠️' : '⏭️'}
                       </Text>
                       <View className="flex-1">
-                        <Text className="text-xs text-foreground font-medium">{step.name}</Text>
-                        <Text className="text-xs text-muted">{step.details}</Text>
+                        <Text className="text-xs text-foreground font-medium">{translateSafeTestKey(step.name, t)}</Text>
+                        <Text className="text-xs text-muted">{translateSafeTestKey(step.details, t)}</Text>
                       </View>
                     </View>
                   ))}
@@ -1036,7 +1070,7 @@ export default function AutoSpoofScreen() {
                       {t('auto_spoof.warnings')}:
                     </Text>
                     {state.safeTestResult.warnings.map((w, i) => (
-                      <Text key={i} className="text-xs text-yellow-500">⚠️ {w}</Text>
+                      <Text key={i} className="text-xs text-yellow-500">⚠️ {translateSafeTestKey(w, t)}</Text>
                     ))}
                   </View>
                 )}

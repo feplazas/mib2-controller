@@ -344,14 +344,15 @@ class UsbNativeModule : Module() {
           Log.d(TAG, "Starting verification of written data...")
           val verifyData = ByteArray(data.size)
           
-          for (i in data.indices) {
-            val currentOffset = offset + i
+          // Read back data word by word (same as write - using word offsets)
+          for (i in data.indices step 2) {
+            val wordOffset = (offset + i) / 2  // Word offset, same as in write
             val buffer = ByteArray(2)
             
             val result = connection.controlTransfer(
               USB_DIR_IN or USB_TYPE_VENDOR or USB_RECIP_DEVICE,
               ASIX_CMD_READ_EEPROM,
-              currentOffset,
+              wordOffset,  // Use word offset, not byte offset
               0,
               buffer,
               buffer.size,
@@ -359,12 +360,18 @@ class UsbNativeModule : Module() {
             )
 
             if (result < 0) {
-              Log.e(TAG, "Verification read failed at offset $currentOffset")
-              promise.reject("VERIFY_FAILED", "Failed to read EEPROM for verification at offset $currentOffset", null)
+              Log.e(TAG, "Verification read failed at word offset $wordOffset (byte offset ${offset + i})")
+              promise.reject("VERIFY_FAILED", "Failed to read EEPROM for verification at word offset $wordOffset", null)
               return@AsyncFunction
             }
 
-            verifyData[i] = buffer[0]
+            // ASIX returns data in big-endian format (same as write)
+            verifyData[i] = buffer[0]  // High byte
+            if (i + 1 < data.size) {
+              verifyData[i + 1] = buffer[1]  // Low byte
+            }
+            
+            Log.d(TAG, "[ASIX] Verify read word $wordOffset: 0x${String.format("%02X", buffer[0].toInt() and 0xFF)}${String.format("%02X", buffer[1].toInt() and 0xFF)}")
           }
           
           // Comparar bytes escritos vs leídos

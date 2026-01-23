@@ -2161,3 +2161,33 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [ ] Crear app icon high-res (512x512px)
 - [ ] Compilar AAB de producción con EAS
 - [ ] Crear checklist de preflight completo
+
+
+## Bugs Reportados (23 Ene 2026)
+
+### BUG 1: Error de Spoofing con Adaptador Genérico (0x0120:0x772B)
+- [x] Safe Test dice "Real spoofing WOULD SUCCEED" pero falla en ejecución real
+- [x] Error: "Verification failed: 2 bytes don't match at positions 0, 1"
+- [x] Error durante rollback: "Error durante rollback: Verification failed"
+- [x] Adaptador: VID 0x0120, PID 0x772B (genérico susceptible de spoofing)
+- [x] Investigar por qué Safe Test pasa pero ejecución real falla
+- [x] Revisar lógica de verificación post-escritura - CORREGIDO: verificación usaba byte offset en lugar de word offset
+- [x] Revisar lógica de rollback automático
+
+### BUG 2: Textos en Español cuando App está en Otro Idioma
+- [x] Textos hardcodeados en español aparecen en UI cuando idioma es EN/DE
+- [x] Textos afectados en Safe Test Result:
+  - "Steps executed:" (debería ser traducido)
+  - "Validación de dispositivo"
+  - "Detección de EEPROM"
+  - "Lectura de VID/PID"
+  - "Verificación de checksum"
+  - "Simulación de backup"
+  - "Simulación escritura VID"
+  - "Simulación escritura PID"
+  - "Simulación verificación"
+  - "Warnings:"
+- [x] Textos afectados en logs de Diagnostic:
+  - "Error durante rollback:"
+  - "Error en spoofing:"
+- [x] Buscar y migrar todos los textos hardcodeados a sistema de traducciones - CORREGIDO: agregadas claves safe_test.* en ES/EN/DE

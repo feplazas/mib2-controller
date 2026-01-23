@@ -1050,6 +1050,55 @@
     "warnings": "Warnings",
     "errors": "Errors"
   },
+  "safe_test": {
+    "progress": {
+      "init": "Initializing safe test mode...",
+      "validating": "Validating device compatibility...",
+      "detecting_eeprom": "Detecting EEPROM type...",
+      "reading_vidpid": "Reading current VID/PID...",
+      "verifying_checksum": "Verifying EEPROM checksum...",
+      "simulating_backup": "Simulating backup creation...",
+      "simulating_write_vid": "Simulating VID write...",
+      "simulating_write_pid": "Simulating PID write...",
+      "simulating_verify": "Simulating post-write verification...",
+      "generating_report": "Generating simulation report..."
+    },
+    "step": {
+      "device_validation": "Device validation",
+      "eeprom_detection": "EEPROM detection",
+      "vidpid_read": "VID/PID read",
+      "status_check": "Status check",
+      "checksum_verify": "Checksum verification",
+      "backup_simulation": "Backup simulation",
+      "vid_write_simulation": "VID write simulation",
+      "pid_write_simulation": "PID write simulation",
+      "verify_simulation": "Verification simulation"
+    },
+    "detail": {
+      "device_not_found": "Device not found",
+      "device_compatible": "Compatible device: {{0}} ({{1}})",
+      "device_not_asix": "Device is not ASIX or D-Link: {{0}}",
+      "efuse_detected": "eFuse type EEPROM detected - VID/PID modification NOT possible",
+      "external_eeprom_writable": "External EEPROM detected - Writing possible",
+      "eeprom_type_info": "Type: {{0}}, Writable: {{1}}",
+      "eeprom_detection_failed": "Could not detect EEPROM type: {{0}}",
+      "current_vidpid": "Current VID: {{0}}, Current PID: {{1}}",
+      "already_spoofed": "Adapter already has target VID/PID - No changes required",
+      "eeprom_read_error": "Error reading EEPROM: {{0}}",
+      "checksum_valid": "Valid checksum: {{0}}",
+      "checksum_invalid_no_affect": "Invalid checksum but does not affect VID/PID",
+      "checksum_error": "Could not verify checksum: {{0}}",
+      "backup_simulated": "Simulated backup: VID={{0}}, PID={{1}}",
+      "would_write": "Would write: offset {{0}} = {{1}} ({{2}})",
+      "write_skipped_not_writable": "Write skipped - EEPROM not writable",
+      "would_verify": "Would verify that VID/PID = {{0}}",
+      "verify_skipped_no_write": "Verification skipped - No write performed"
+    },
+    "warning": {
+      "device_may_not_be_compatible": "Device may not be compatible with MIB2",
+      "already_configured": "Adapter is already configured with D-Link VID/PID"
+    }
+  },
   "diag": {
     "title": "Diagnostic",
     "system_info": "System Information",
