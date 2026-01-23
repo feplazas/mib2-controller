@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      .slide-container {
+        width: 1280px;
+        min-height: 720px;
+        background: #0F172A;
+        position: relative;
+        overflow: hidden;
+        font-family: 'Inter', sans-serif;
+      }
+      .grid-pattern {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: 
+          linear-gradient(rgba(148, 163, 184, 0.1) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(148, 163, 184, 0.1) 1px, transparent 1px);
+        background-size: 40px 40px;
+        z-index: 1;
+      }
+      .content {
+        position: relative;
+        z-index: 2;
+        min-height: 720px;
+      }
+      .header-banner {
+        width: 100%;
+        height: 180px;
+        position: relative;
+        overflow: hidden;
+      }
+      .header-banner img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        opacity: 0.4;
+        filter: brightness(0.6);
+      }
+      .header-banner::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(180deg, transparent 0%, #0F172A 100%);
+      }
+      .title-section {
+        position: absolute;
+        top: 60px;
+        left: 80px;
+        z-index: 3;
+      }
+      .page-title {
+        font-family: 'Roboto Mono', monospace;
+        font-size: 36px;
+        font-weight: 700;
+        color: #38BDF8;
+        line-height: 1.3;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+        padding-top: 40px;
+        padding-left: 80px;
+        padding-right: 80px;
+      }
+      .feature-card {
+        border: 1px solid rgba(56, 189, 248, 0.2);
+        background: rgba(15, 23, 42, 0.6);
+        min-height: 200px;
+      }
+      .feature-header {
+        padding-top: 24px;
+        padding-left: 24px;
+        padding-right: 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .feature-icon {
+        font-size: 32px;
+        color: #38BDF8;
+        width: 48px;
+        text-align: center;
+      }
+      .feature-title {
+        font-family: 'Roboto Mono', monospace;
+        font-size: 22px;
+        font-weight: 600;
+        color: #F8FAFC;
+        line-height: 1.3;
+      }
+      .feature-description {
+        padding-top: 16px;
+        padding-left: 24px;
+        padding-right: 24px;
+        font-size: 16px;
+        color: #94A3B8;
+        line-height: 1.6;
+      }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="grid-pattern"></div>
+        
+        <div class="content">
+            <div class="header-banner">
+                <img src="/home/ubuntu/upload/search_images/JYH7av5dCCTa.jpg" alt="Digital diagnostic tools">
+            </div>
+            
+            <div class="title-section">
+                <div class="page-title">Four Core Features<br>Address Critical Repair Needs</div>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <i class="fas fa-broadcast-tower feature-icon"></i>
+                        <div class="feature-title">Auto-Spoof<br>(CarPlay/Android Auto)</div>
+                    </div>
+                    <div class="feature-description">
+                        Restores factory CarPlay and Android Auto functionality on compatible MIB2 units through authorized configuration changes. Essential for repair shops restoring vehicle functionality after hardware replacement or software updates.
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <i class="fas fa-code feature-icon"></i>
+                        <div class="feature-title">FEC Code<br>Management</div>
+                    </div>
+                    <div class="feature-description">
+                        Reads and modifies Feature Enable Codes (FEC) to configure unit capabilities according to vehicle specifications. Allows technicians to match unit configuration to vehicle's original equipment or customer requirements.
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <i class="fas fa-terminal feature-icon"></i>
+                        <div class="feature-title">Telnet Diagnostic<br>Access</div>
+                    </div>
+                    <div class="feature-description">
+                        Establishes secure Telnet connections for advanced troubleshooting, log analysis, and system diagnostics. Equivalent to professional diagnostic tools used in automotive repair facilities.
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <i class="fas fa-database feature-icon"></i>
+                        <div class="feature-title">Backup &<br>Restore</div>
+                    </div>
+                    <div class="feature-description">
+                        Creates complete configuration backups before modifications and restores them when needed. Critical safety feature preventing permanent damage during repair procedures.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

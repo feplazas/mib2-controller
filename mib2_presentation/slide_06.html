@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      .slide-container {
+        width: 1280px;
+        min-height: 720px;
+        background: #0F172A;
+        position: relative;
+        overflow: hidden;
+        font-family: 'Inter', sans-serif;
+      }
+      .grid-pattern {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: 
+          linear-gradient(rgba(148, 163, 184, 0.1) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(148, 163, 184, 0.1) 1px, transparent 1px);
+        background-size: 40px 40px;
+        z-index: 1;
+      }
+      .content {
+        position: relative;
+        z-index: 2;
+        padding-top: 50px;
+        padding-left: 80px;
+        padding-right: 80px;
+        min-height: 720px;
+      }
+      .page-title {
+        font-family: 'Roboto Mono', monospace;
+        font-size: 36px;
+        font-weight: 700;
+        color: #38BDF8;
+        line-height: 1.3;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 24px;
+      }
+      .intro-text {
+        font-size: 17px;
+        color: #94A3B8;
+        line-height: 1.5;
+        margin-bottom: 20px;
+        max-width: 1000px;
+      }
+      /* Changed layout: two columns to reduce vertical height */
+      .methods-list {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px 40px; /* vertical gap 12, horizontal 40 */
+        margin-top: 12px; /* reduced from 20px to save vertical space */
+      }
+      .method-item {
+        display: grid;
+        grid-template-columns: 60px 1fr;
+        gap: 20px;
+        border-left: 2px solid rgba(56, 189, 248, 0.3);
+        padding-top: 8px; /* slightly reduced inner padding */
+        padding-left: 20px;
+        padding-right: 20px;
+        background: rgba(56, 189, 248, 0.03);
+      }
+      .method-number {
+        font-family: 'Roboto Mono', monospace;
+        font-size: 32px;
+        font-weight: 700;
+        color: #38BDF8;
+        line-height: 1;
+      }
+      .method-content {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .method-title {
+        font-family: 'Roboto Mono', monospace;
+        font-size: 20px;
+        font-weight: 600;
+        color: #F8FAFC;
+        line-height: 1.3;
+      }
+      .method-description {
+        font-size: 15px;
+        color: #94A3B8;
+        line-height: 1.5;
+      }
+      .highlight {
+        color: #38BDF8;
+        font-weight: 600;
+      }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="grid-pattern"></div>
+        
+        <div class="content">
+            <div class="page-title">Testing Without Hardware<br>Through Alternative Methods</div>
+            
+            <div class="intro-text">
+                <strong style="color: #F8FAFC;">Challenge for Reviewers:</strong> MIB2 Controller requires specialized automotive hardware (MIB2 unit) that may not be readily available to Google Play reviewers. Five alternative verification methods are available:
+            </div>
+            
+            <div class="methods-list">
+                <div class="method-item">
+                    <div class="method-number">1</div>
+                    <div class="method-content">
+                        <div class="method-title">UI/UX Review (No Hardware Required)</div>
+                        <div class="method-description">Install app on any Android device, navigate through welcome tutorial, verify all UI elements are functional and professional, confirm app displays appropriate "Disconnected" status without hardware, verify no crashes or freezes.</div>
+                    </div>
+                </div>
+                
+                <div class="method-item">
+                    <div class="method-number">2</div>
+                    <div class="method-content">
+                        <div class="method-title">APK Analysis (Standard Android Tools)</div>
+                        <div class="method-description"><span class="highlight">APK Analyzer (Android Studio):</span> Verify permissions, resources, code structure. <span class="highlight">jadx:</span> Review decompiled source code. <span class="highlight">Wireshark:</span> Capture traffic to confirm no external connections. <span class="highlight">ADB Logcat:</span> Monitor app logs during operation.</div>
+                    </div>
+                </div>
+                
+                <div class="method-item">
+                    <div class="method-number">3</div>
+                    <div class="method-content">
+                        <div class="method-title">Demo Mode APK (Available Upon Request)</div>
+                        <div class="method-description">Simulates MIB2 unit responses with realistic mock data, allows reviewers to navigate all app features without hardware, displays authentic device information and diagnostic logs. Contact: <span class="highlight">feplazas@gmail.com</span></div>
+                    </div>
+                </div>
+                
+                <div class="method-item">
+                    <div class="method-number">4</div>
+                    <div class="method-content">
+                        <div class="method-title">Video Demonstration (Available Upon Request)</div>
+                        <div class="method-description">Complete hardware setup and connection procedure, all app features demonstrated with real MIB2 unit, real-time interaction showing legitimate diagnostic use. Private YouTube link provided to reviewers.</div>
+                    </div>
+                </div>
+                
+                <div class="method-item">
+                    <div class="method-number">5</div>
+                    <div class="method-content">
+                        <div class="method-title">Remote Testing Assistance</div>
+                        <div class="method-description">Live video call (Google Meet/Zoom) with developer demonstrating app, remote access to test device with hardware connected (TeamViewer/AnyDesk), custom test build with additional logging for reviewer verification. Schedule: <span class="highlight">feplazas@gmail.com</span> (24-48 hour response time)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

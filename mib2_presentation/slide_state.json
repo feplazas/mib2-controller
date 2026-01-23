@@ -1,0 +1,132 @@
+{
+  "project_info": {
+    "title": "MIB2 Controller enables legitimate automotive repair",
+    "created": 1769162834.2876303,
+    "last_updated": 1769163322.0697708,
+    "total_slides": 10
+  },
+  "slides": [
+    {
+      "id": "slide_01",
+      "state": "edited",
+      "pageNum": 1
+    },
+    {
+      "id": "slide_02",
+      "state": "edited",
+      "pageNum": 2
+    },
+    {
+      "id": "slide_03",
+      "state": "edited",
+      "pageNum": 3
+    },
+    {
+      "id": "slide_04",
+      "state": "edited",
+      "pageNum": 4
+    },
+    {
+      "id": "slide_05",
+      "state": "edited",
+      "pageNum": 5
+    },
+    {
+      "id": "slide_06",
+      "state": "edited",
+      "pageNum": 6
+    },
+    {
+      "id": "slide_07",
+      "state": "edited",
+      "pageNum": 7
+    },
+    {
+      "id": "slide_08",
+      "state": "edited",
+      "pageNum": 8
+    },
+    {
+      "id": "slide_09",
+      "state": "edited",
+      "pageNum": 9
+    },
+    {
+      "id": "slide_10",
+      "state": "edited",
+      "pageNum": 10
+    }
+  ],
+  "outline": [
+    {
+      "id": "slide_01",
+      "title": "MIB2 Controller enables legitimate automotive repair",
+      "summary": "Introduction to MIB2 Controller as a professional diagnostic tool for authorized repair, with target users and legal framework under DMCA exemptions.",
+      "image_plan": "/home/ubuntu/upload/search_images/s2Z6plv4HNrW.jpg - Image 5 shows an automotive technician working on a car's interior, which visually supports the theme of specialized automotive repair and diagnostics.",
+      "slide_template_key": ""
+    },
+    {
+      "id": "slide_02",
+      "title": "Four core features address critical repair needs",
+      "summary": "Overview of Auto-Spoof, FEC Code Management, Telnet Diagnostic Access, and Backup & Restore features with their repair applications.",
+      "image_plan": "/home/ubuntu/upload/search_images/JYH7av5dCCTa.jpg - Image 6 shows a technician using a digital tool for diagnostics, reinforcing the concept of digital tools for repair and the four core features.",
+      "slide_template_key": ""
+    },
+    {
+      "id": "slide_03",
+      "title": "Specialized hardware requirements limit access",
+      "summary": "Detailed breakdown of required equipment (MIB2 unit, USB-Ethernet adapter, OTG cable, Android device) with costs and availability restrictions.",
+      "image_plan": "/home/ubuntu/upload/search_images/jnvXDNHOkFyy.jpg; /home/ubuntu/upload/search_images/J9e4nVZ4HNgN.jpg - Images 7 and 8 show the specialized USB-Ethernet and OTG cables required, directly illustrating the hardware requirements discussed on the slide.",
+      "slide_template_key": ""
+    },
+    {
+      "id": "slide_04",
+      "title": "All communication is local with zero data collection",
+      "summary": "Network architecture showing exclusive local communication via USB Ethernet, no external servers, and comprehensive privacy compliance.",
+      "image_plan": "",
+      "slide_template_key": ""
+    },
+    {
+      "id": "slide_05",
+      "title": "Legal compliance under DMCA exemptions",
+      "summary": "Detailed explanation of applicable DMCA exemptions (37 C.F.R. § 201.40) for vehicle repair, interoperability, and security research.",
+      "image_plan": "/home/ubuntu/upload/search_images/Gp8Gehbb9Ear.jpg; /home/ubuntu/upload/search_images/lXBb41WUDhDZ.jpg; /home/ubuntu/upload/search_images/1sDIaf7AeAwc.jpg - Images 1, 2, and 3 are professional diagnostic tools, which visually support the legal compliance section by showing the \"identical legal framework\" used by established tools.",
+      "slide_template_key": ""
+    },
+    {
+      "id": "slide_06",
+      "title": "Testing without hardware through alternative methods",
+      "summary": "Five alternative verification methods for reviewers: UI review, APK analysis, demo mode, video demonstration, and remote testing assistance.",
+      "image_plan": "",
+      "slide_template_key": ""
+    },
+    {
+      "id": "slide_07",
+      "title": "Comprehensive documentation ensures transparency",
+      "summary": "Overview of in-app documentation, external documentation (privacy policy, testing instructions), user support, and legal disclaimers.",
+      "image_plan": "",
+      "slide_template_key": ""
+    },
+    {
+      "id": "slide_08",
+      "title": "Google Play policy compliance across all areas",
+      "summary": "Detailed compliance with Device and Network Abuse, Deceptive Behavior, Malicious Behavior, and User Data policies.",
+      "image_plan": "",
+      "slide_template_key": ""
+    },
+    {
+      "id": "slide_09",
+      "title": "Misuse prevention through hardware and safety features",
+      "summary": "Explanation of how hardware requirements, technical knowledge barriers, and built-in safety features (backups, confirmations, read-only mode) prevent misuse.",
+      "image_plan": "/home/ubuntu/upload/search_images/oSYGVOtAmN9w.jpg - Image 4 shows complex wiring and automotive work, visually supporting the idea of specialized equipment and the technical nature of the work, which helps prevent misuse.",
+      "slide_template_key": ""
+    },
+    {
+      "id": "slide_10",
+      "title": "Developer commitment to transparency and compliance",
+      "summary": "Open communication with Google Play, responsive support, commitment to policy updates, post-launch monitoring, and request for approval.",
+      "image_plan": "",
+      "slide_template_key": ""
+    }
+  ]
+}

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      .slide-container {
+        width: 1280px;
+        min-height: 720px;
+        background: #0F172A;
+        position: relative;
+        overflow: hidden;
+        font-family: 'Inter', sans-serif;
+      }
+      .grid-pattern {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: 
+          linear-gradient(rgba(148, 163, 184, 0.1) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(148, 163, 184, 0.1) 1px, transparent 1px);
+        background-size: 40px 40px;
+        z-index: 1;
+      }
+      .content {
+        position: relative;
+        z-index: 2;
+        padding-top: 50px; /* keep upper padding of the title */
+        padding-left: 70px;
+        padding-right: 70px;
+        min-height: 720px;
+      }
+      .page-title {
+        font-family: 'Roboto Mono', monospace;
+        font-size: 36px;
+        font-weight: 700;
+        color: #38BDF8;
+        line-height: 1.3;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 28px;
+      }
+      /* Refresh layout: place all sections in a single row to reduce vertical stacking */
+      .sections-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+      }
+      .doc-section {
+        border: 1px solid rgba(56, 189, 248, 0.3);
+        background: rgba(15, 23, 42, 0.4);
+        padding-top: 16px;
+        padding-left: 18px;
+        padding-right: 18px;
+        min-height: 220px; /* reduced min-height to compact layout */
+      }
+      .section-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .section-icon {
+        font-size: 28px;
+        color: #38BDF8;
+        width: 40px;
+        text-align: center;
+      }
+      .section-title {
+        font-family: 'Roboto Mono', monospace;
+        font-size: 22px;
+        font-weight: 700;
+        color: #F8FAFC;
+        line-height: 1.3;
+      }
+      .section-content {
+        font-size: 15px;
+        color: #94A3B8;
+        line-height: 1.6;
+      }
+      .doc-item { margin-bottom: 8px; }
+      .doc-item-title { font-weight: 600; color: #F8FAFC; margin-bottom: 4px; }
+      .doc-item-desc { color: #94A3B8; }
+      .highlight-link { color: #38BDF8; font-family: 'Roboto Mono', monospace; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="grid-pattern"></div>
+        
+        <div class="content">
+            <div class="page-title">Comprehensive Documentation<br>Ensures Transparency and User Safety</div>
+            
+            <div class="sections-grid">
+                <div class="doc-section">
+                    <div class="section-header">
+                        <i class="fas fa-mobile-alt section-icon"></i>
+                        <div class="section-title">In-App Documentation</div>
+                    </div>
+                    <div class="section-content">
+                        <div class="doc-item">
+                            <div class="doc-item-title">Welcome Tutorial</div>
+                            <div class="doc-item-desc">4-screen step-by-step setup guide with hardware requirements</div>
+                        </div>
+                        <div class="doc-item">
+                            <div class="doc-item-title">Contextual Help</div>
+                            <div class="doc-item-desc">Explanatory text on each screen describing functionality</div>
+                        </div>
+                        <div class="doc-item">
+                            <div class="doc-item-title">FAQ Section</div>
+                            <div class="doc-item-desc">Accessible from Settings menu with hardware compatibility info</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="doc-section">
+                    <div class="section-header">
+                        <i class="fas fa-file-alt section-icon"></i>
+                        <div class="section-title">External Documentation</div>
+                    </div>
+                    <div class="section-content">
+                        <div class="doc-item">
+                            <div class="doc-item-title">Privacy Policy</div>
+                            <div class="doc-item-desc">Clearly states zero data collection, explains app purpose and legal compliance (Updated January 2026)</div>
+                            <div class="highlight-link">https://feplazas.github.io/mib2-controller-privacy/</div>
+                        </div>
+                        <div class="doc-item">
+                            <div class="doc-item-title">Testing Instructions</div>
+                            <div class="doc-item-desc">Comprehensive 12-section document for reviewers (companion to this presentation)</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="doc-section">
+                    <div class="section-header">
+                        <i class="fas fa-headset section-icon"></i>
+                        <div class="section-title">User Support</div>
+                    </div>
+                    <div class="section-content">
+                        <div class="doc-item">
+                            <div class="doc-item-title">Email Support</div>
+                            <div class="doc-item-desc">feplazas@gmail.com</div>
+                        </div>
+                        <div class="doc-item">
+                            <div class="doc-item-title">Response Time</div>
+                            <div class="doc-item-desc">24-48 hours for all inquiries</div>
+                        </div>
+                        <div class="doc-item">
+                            <div class="doc-item-title">Languages</div>
+                            <div class="doc-item-desc">English, Spanish</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="doc-section">
+                    <div class="section-header">
+                        <i class="fas fa-shield-alt section-icon"></i>
+                        <div class="section-title">Legal Disclaimers</div>
+                    </div>
+                    <div class="section-content">
+                        <div class="doc-item">
+                            <div class="doc-item-desc">Users are responsible for compliance with local laws and regulations</div>
+                        </div>
+                        <div class="doc-item">
+                            <div class="doc-item-desc">Developer assumes no liability for misuse or unauthorized modifications</div>
+                        </div>
+                        <div class="doc-item">
+                            <div class="doc-item-desc">Warnings displayed before potentially irreversible operations (FEC code changes)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

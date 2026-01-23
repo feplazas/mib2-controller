@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      .slide-container {
+        width: 1280px;
+        min-height: 720px;
+        background: #0F172A;
+        position: relative;
+        overflow: hidden;
+        font-family: 'Inter', sans-serif;
+      }
+      .grid-pattern {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: 
+          linear-gradient(rgba(148, 163, 184, 0.1) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(148, 163, 184, 0.1) 1px, transparent 1px);
+        background-size: 40px 40px;
+        z-index: 1;
+      }
+      .content-wrapper {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        min-height: 720px;
+      }
+      .left-section {
+        flex: 0 0 60%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding-top: 60px; /* keep title upper padding */
+        padding-left: 80px;
+        padding-right: 40px;
+      }
+      .right-section {
+        flex: 0 0 40%;
+        position: relative;
+        overflow: hidden;
+      }
+      .right-section img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        opacity: 0.7;
+        filter: brightness(0.8) contrast(1.1);
+      }
+      .right-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, #0F172A 0%, transparent 30%);
+        z-index: 1;
+      }
+      .title {
+        font-family: 'Roboto Mono', monospace;
+        font-size: 56px;
+        font-weight: 700;
+        color: #38BDF8;
+        line-height: 1.2;
+        margin-bottom: 20px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+      .subtitle {
+        font-family: 'Inter', sans-serif;
+        font-size: 28px;
+        font-weight: 400;
+        color: #F8FAFC;
+        line-height: 1.4;
+        margin-bottom: 24px; /* reduced to save vertical space */
+      }
+      .metadata {
+        font-family: 'Roboto Mono', monospace;
+        font-size: 16px;
+        color: #94A3B8;
+        line-height: 1.6;
+        display: grid; /* compact layout */
+        grid-template-columns: repeat(2, auto);
+        gap: 8px 24px;
+        align-items: center;
+      }
+      .metadata-item {
+        display: flex;
+        margin-bottom: 0;
+      }
+      .metadata-label {
+        color: #38BDF8;
+        margin-right: 8px;
+        min-width: 100px;
+      }
+      .metadata-value {
+        color: #F8FAFC;
+      }
+      .decorative-line {
+        position: absolute;
+        height: 1px;
+        background: #38BDF8;
+        opacity: 0.3;
+      }
+      .line-1 {
+        top: 160px; /* nudged up to balance layout */
+        left: 80px;
+        width: 200px;
+      }
+      .line-2 {
+        top: 480px; /* nudged up to reduce overall bottom */
+        left: 80px;
+        width: 150px;
+      }
+      .corner-accent {
+        position: absolute;
+        width: 60px;
+        height: 60px;
+        border: 2px solid #38BDF8;
+        opacity: 0.3;
+      }
+      .corner-tl {
+        top: 40px;
+        left: 40px;
+        border-right: none;
+        border-bottom: none;
+      }
+      .corner-br {
+        bottom: 40px;
+        right: 40px;
+        border-left: none;
+        border-top: none;
+      }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="grid-pattern"></div>
+        <div class="corner-accent corner-tl"></div>
+        <div class="corner-accent corner-br"></div>
+        <div class="decorative-line line-1"></div>
+        <div class="decorative-line line-2"></div>
+        
+        <div class="content-wrapper">
+            <div class="left-section">
+                <div class="title">MIB2<br>Controller</div>
+                <div class="subtitle">Google Play Review Presentation</div>
+                <div class="metadata">
+                    <div class="metadata-item">
+                        <span class="metadata-label">Package:</span>
+                        <span class="metadata-value">com.feplazas.mib2controller</span>
+                    </div>
+                    <div class="metadata-item">
+                        <span class="metadata-label">Version:</span>
+                        <span class="metadata-value">1.0.0 (versionCode 7)</span>
+                    </div>
+                    <div class="metadata-item">
+                        <span class="metadata-label">Developer:</span>
+                        <span class="metadata-value">Felipe Plazas</span>
+                    </div>
+                    <div class="metadata-item">
+                        <span class="metadata-label">Contact:</span>
+                        <span class="metadata-value">feplazas@gmail.com</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="right-section">
+                <img src="/home/ubuntu/upload/search_images/s2Z6plv4HNrW.jpg" alt="Automotive technician working on car systems">
+            </div>
+        </div>
+    </div>
+</body>
+</html>
