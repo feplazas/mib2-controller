@@ -309,25 +309,36 @@ export default function AutoSpoofScreen() {
       // Paso 7: Verificar escritura en ubicación primaria
       dispatch({ type: 'SET_STEP', payload: 'verifying' });
       usbLogger.info('VERIFY', 'Verifying PRIMARY location (0x88-0x8B)...');
-      const vidLow = await usbService.readEEPROM(0x88, 1);
-      const vidHigh = await usbService.readEEPROM(0x89, 1);
-      const pidLow = await usbService.readEEPROM(0x8A, 1);
-      const pidHigh = await usbService.readEEPROM(0x8B, 1);
-
-      const primaryVerified = vidLow.data === '01' && vidHigh.data === '20' && pidLow.data === '05' && pidHigh.data === '3C';
+      
+      // Read 2 bytes (1 word) at a time for correct endianness handling
+      const vidWord = await usbService.readEEPROM(0x88, 2);
+      const pidWord = await usbService.readEEPROM(0x8A, 2);
+      
+      // The readEEPROM function now returns data in correct byte order:
+      // For VID 0x2001: should return "0120" (low byte first in hex string)
+      // For PID 0x3C05: should return "053C" (low byte first in hex string)
+      usbLogger.info('VERIFY', `Read VID word: ${vidWord.data}, PID word: ${pidWord.data}`);
+      
+      // Check both possible byte orders since ASIX endianness can vary
+      const primaryVerified = 
+        (vidWord.data.toUpperCase() === '0120' || vidWord.data.toUpperCase() === '2001') &&
+        (pidWord.data.toUpperCase() === '053C' || pidWord.data.toUpperCase() === '3C05');
       
       // Verificar ubicación secundaria si existe
       let secondaryVerified = true;
       if (dualVIDPID?.hasDualLocation) {
         usbLogger.info('VERIFY', 'Verifying SECONDARY location (0x48-0x4B)...');
-        const secVidLow = await usbService.readEEPROM(0x48, 1);
-        const secVidHigh = await usbService.readEEPROM(0x49, 1);
-        const secPidLow = await usbService.readEEPROM(0x4A, 1);
-        const secPidHigh = await usbService.readEEPROM(0x4B, 1);
-        secondaryVerified = secVidLow.data === '01' && secVidHigh.data === '20' && secPidLow.data === '05' && secPidHigh.data === '3C';
+        const secVidWord = await usbService.readEEPROM(0x48, 2);
+        const secPidWord = await usbService.readEEPROM(0x4A, 2);
+        
+        usbLogger.info('VERIFY', `Read secondary VID word: ${secVidWord.data}, PID word: ${secPidWord.data}`);
+        
+        secondaryVerified = 
+          (secVidWord.data.toUpperCase() === '0120' || secVidWord.data.toUpperCase() === '2001') &&
+          (secPidWord.data.toUpperCase() === '053C' || secPidWord.data.toUpperCase() === '3C05');
         
         if (!secondaryVerified) {
-          usbLogger.warning('VERIFY', `Secondary location verification failed: VID=${secVidHigh.data}${secVidLow.data}, PID=${secPidHigh.data}${secPidLow.data}`);
+          usbLogger.warning('VERIFY', `Secondary location verification failed: VID=${secVidWord.data}, PID=${secPidWord.data}`);
         }
       }
 
@@ -362,15 +373,17 @@ export default function AutoSpoofScreen() {
             await usbService.writeEEPROM(0x4A, originalPidHex, false);
           }
           
-          // Verificar rollback
-          const rollbackVidLow = await usbService.readEEPROM(0x88, 1);
-          const rollbackVidHigh = await usbService.readEEPROM(0x89, 1);
+          // Verificar rollback - read word and check both byte orders
+          const rollbackVidWord = await usbService.readEEPROM(0x88, 2);
           
-          const expectedVidLow = originalVidLow.toString(16).padStart(2, '0').toLowerCase();
-          const expectedVidHigh = originalVidHigh.toString(16).padStart(2, '0').toLowerCase();
+          // Expected VID in both possible byte orders
+          const expectedVidLE = originalVidLow.toString(16).padStart(2, '0') + originalVidHigh.toString(16).padStart(2, '0');
+          const expectedVidBE = originalVidHigh.toString(16).padStart(2, '0') + originalVidLow.toString(16).padStart(2, '0');
           
-          if (rollbackVidLow.data.toLowerCase() === expectedVidLow && 
-              rollbackVidHigh.data.toLowerCase() === expectedVidHigh) {
+          usbLogger.info('ROLLBACK', `Read VID after rollback: ${rollbackVidWord.data}, expected: ${expectedVidLE} or ${expectedVidBE}`);
+          
+          if (rollbackVidWord.data.toLowerCase() === expectedVidLE.toLowerCase() || 
+              rollbackVidWord.data.toLowerCase() === expectedVidBE.toLowerCase()) {
             usbLogger.success('ROLLBACK', 'Rollback exitoso - VID/PID original restaurado');
             throw new Error(t('auto_spoof.error_verification_failed_rollback_success'));
           } else {
