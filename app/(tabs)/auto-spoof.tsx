@@ -213,6 +213,18 @@ export default function AutoSpoofScreen() {
       }
       await new Promise(resolve => setTimeout(resolve, 500));
 
+      // Paso 1.5: Detectar si hay VID/PID duplicado en offset 0x48
+      usbLogger.info('SPOOF', 'Detecting dual VID/PID locations...');
+      let dualVIDPID: Awaited<ReturnType<typeof usbService.detectDualVIDPID>> | null = null;
+      try {
+        dualVIDPID = await usbService.detectDualVIDPID();
+        if (dualVIDPID.hasDualLocation) {
+          usbLogger.warning('SPOOF', `DUAL VID/PID DETECTED! Will write to both 0x48 and 0x88`);
+        }
+      } catch (detectError) {
+        usbLogger.warning('SPOOF', `Could not detect dual VID/PID: ${detectError}. Proceeding with primary location only.`);
+      }
+
       // Paso 2: Crear backup automático
       dispatch({ type: 'SET_STEP', payload: 'creating_backup' });
       dispatch({ type: 'RESET_PROGRESS', payload: { operation: 'read', totalBytes: state.eepromProgress.totalBytes } });
@@ -228,51 +240,100 @@ export default function AutoSpoofScreen() {
       await new Promise(resolve => setTimeout(resolve, 200));
 
       // Resetear progreso para escritura
-      dispatch({ type: 'RESET_PROGRESS', payload: { operation: 'write', totalBytes: state.eepromProgress.totalBytes } });
+      // Si hay dual location, tenemos 8 bytes en total (4 en cada ubicación)
+      const totalBytesToWrite = dualVIDPID?.hasDualLocation ? 8 : 4;
+      dispatch({ type: 'RESET_PROGRESS', payload: { operation: 'write', totalBytes: totalBytesToWrite } });
       dispatch({ type: 'UPDATE_PROGRESS', payload: { progress: 0 } });
       dispatch({ type: 'UPDATE_PROGRESS', payload: { bytesProcessed: 0 } });
       
+      // ============================================
+      // ESCRITURA EN UBICACIÓN PRIMARIA (0x88-0x8B)
+      // ============================================
+      usbLogger.info('SPOOF', 'Writing to PRIMARY location (0x88-0x8B)...');
+      
       // Paso 3: Escribir VID completo (word en offset 0x88 = 0x0120 para VID 0x2001 en little-endian)
-      // IMPORTANTE: Escribimos 2 bytes a la vez porque ASIX usa word offsets internamente
-      // Byte offset 0x88 -> Word offset 0x44
-      // Datos: 0x01 (byte bajo) + 0x20 (byte alto) = VID 0x2001
       dispatch({ type: 'SET_STEP', payload: 'writing_vid_low' });
-      dispatch({ type: 'UPDATE_PROGRESS', payload: { progress: 25 } });
+      const progressStep = dualVIDPID?.hasDualLocation ? 12.5 : 25;
+      dispatch({ type: 'UPDATE_PROGRESS', payload: { progress: progressStep } });
       dispatch({ type: 'UPDATE_PROGRESS', payload: { bytesProcessed: 1 } });
       await usbService.writeEEPROM(0x88, '0120', state.skipVerification);
       await new Promise(resolve => setTimeout(resolve, 100));
 
       // Actualizar progreso para VID completo
       dispatch({ type: 'SET_STEP', payload: 'writing_vid_high' });
-      dispatch({ type: 'UPDATE_PROGRESS', payload: { progress: 50 } });
+      dispatch({ type: 'UPDATE_PROGRESS', payload: { progress: progressStep * 2 } });
       dispatch({ type: 'UPDATE_PROGRESS', payload: { bytesProcessed: 2 } });
       await new Promise(resolve => setTimeout(resolve, 100));
 
       // Paso 4: Escribir PID completo (word en offset 0x8A = 0x053C para PID 0x3C05 en little-endian)
-      // Byte offset 0x8A -> Word offset 0x45
-      // Datos: 0x05 (byte bajo) + 0x3C (byte alto) = PID 0x3C05
       dispatch({ type: 'SET_STEP', payload: 'writing_pid_low' });
-      dispatch({ type: 'UPDATE_PROGRESS', payload: { progress: 75 } });
+      dispatch({ type: 'UPDATE_PROGRESS', payload: { progress: progressStep * 3 } });
       dispatch({ type: 'UPDATE_PROGRESS', payload: { bytesProcessed: 3 } });
       await usbService.writeEEPROM(0x8A, '053C', state.skipVerification);
       await new Promise(resolve => setTimeout(resolve, 100));
 
       // Actualizar progreso para PID completo
       dispatch({ type: 'SET_STEP', payload: 'writing_pid_high' });
-      dispatch({ type: 'UPDATE_PROGRESS', payload: { progress: 100 } });
+      dispatch({ type: 'UPDATE_PROGRESS', payload: { progress: progressStep * 4 } });
       dispatch({ type: 'UPDATE_PROGRESS', payload: { bytesProcessed: 4 } });
       await new Promise(resolve => setTimeout(resolve, 100));
 
-      // Paso 7: Verificar escritura
+      // ============================================
+      // ESCRITURA EN UBICACIÓN SECUNDARIA (0x48-0x4B) SI EXISTE
+      // ============================================
+      if (dualVIDPID?.hasDualLocation) {
+        usbLogger.info('SPOOF', 'Writing to SECONDARY location (0x48-0x4B)...');
+        
+        // Escribir VID en ubicación secundaria
+        dispatch({ type: 'UPDATE_PROGRESS', payload: { progress: progressStep * 5 } });
+        dispatch({ type: 'UPDATE_PROGRESS', payload: { bytesProcessed: 5 } });
+        await usbService.writeEEPROM(0x48, '0120', state.skipVerification);
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        dispatch({ type: 'UPDATE_PROGRESS', payload: { progress: progressStep * 6 } });
+        dispatch({ type: 'UPDATE_PROGRESS', payload: { bytesProcessed: 6 } });
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        // Escribir PID en ubicación secundaria
+        dispatch({ type: 'UPDATE_PROGRESS', payload: { progress: progressStep * 7 } });
+        dispatch({ type: 'UPDATE_PROGRESS', payload: { bytesProcessed: 7 } });
+        await usbService.writeEEPROM(0x4A, '053C', state.skipVerification);
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        dispatch({ type: 'UPDATE_PROGRESS', payload: { progress: 100 } });
+        dispatch({ type: 'UPDATE_PROGRESS', payload: { bytesProcessed: 8 } });
+        
+        usbLogger.success('SPOOF', 'Successfully wrote to BOTH locations (0x48 and 0x88)');
+      }
+
+      // Paso 7: Verificar escritura en ubicación primaria
       dispatch({ type: 'SET_STEP', payload: 'verifying' });
+      usbLogger.info('VERIFY', 'Verifying PRIMARY location (0x88-0x8B)...');
       const vidLow = await usbService.readEEPROM(0x88, 1);
       const vidHigh = await usbService.readEEPROM(0x89, 1);
       const pidLow = await usbService.readEEPROM(0x8A, 1);
       const pidHigh = await usbService.readEEPROM(0x8B, 1);
 
-      if (vidLow.data !== '01' || vidHigh.data !== '20' || pidLow.data !== '05' || pidHigh.data !== '3C') {
+      const primaryVerified = vidLow.data === '01' && vidHigh.data === '20' && pidLow.data === '05' && pidHigh.data === '3C';
+      
+      // Verificar ubicación secundaria si existe
+      let secondaryVerified = true;
+      if (dualVIDPID?.hasDualLocation) {
+        usbLogger.info('VERIFY', 'Verifying SECONDARY location (0x48-0x4B)...');
+        const secVidLow = await usbService.readEEPROM(0x48, 1);
+        const secVidHigh = await usbService.readEEPROM(0x49, 1);
+        const secPidLow = await usbService.readEEPROM(0x4A, 1);
+        const secPidHigh = await usbService.readEEPROM(0x4B, 1);
+        secondaryVerified = secVidLow.data === '01' && secVidHigh.data === '20' && secPidLow.data === '05' && secPidHigh.data === '3C';
+        
+        if (!secondaryVerified) {
+          usbLogger.warning('VERIFY', `Secondary location verification failed: VID=${secVidHigh.data}${secVidLow.data}, PID=${secPidHigh.data}${secPidLow.data}`);
+        }
+      }
+
+      if (!primaryVerified) {
         // ROLLBACK AUTOMÁTICO: Restaurar VID/PID original
-        usbLogger.error('SPOOF', 'Verificación fallida - iniciando rollback automático');
+        usbLogger.error('SPOOF', 'Verificación fallida en ubicación primaria - iniciando rollback automático');
         dispatch({ type: 'SET_STEP', payload: 'rolling_back' });
         
         try {
@@ -285,11 +346,21 @@ export default function AutoSpoofScreen() {
           const originalVidHex = originalVidLow.toString(16).padStart(2, '0') + originalVidHigh.toString(16).padStart(2, '0');
           const originalPidHex = originalPidLow.toString(16).padStart(2, '0') + originalPidHigh.toString(16).padStart(2, '0');
           
-          usbLogger.info('ROLLBACK', `Restaurando VID original: 0x${originalVidHex.toUpperCase()}`);
+          // Rollback ubicación primaria
+          usbLogger.info('ROLLBACK', `Restaurando VID original en 0x88: 0x${originalVidHex.toUpperCase()}`);
           await usbService.writeEEPROM(0x88, originalVidHex, false);
           
-          usbLogger.info('ROLLBACK', `Restaurando PID original: 0x${originalPidHex.toUpperCase()}`);
+          usbLogger.info('ROLLBACK', `Restaurando PID original en 0x8A: 0x${originalPidHex.toUpperCase()}`);
           await usbService.writeEEPROM(0x8A, originalPidHex, false);
+          
+          // Rollback ubicación secundaria si existe
+          if (dualVIDPID?.hasDualLocation) {
+            usbLogger.info('ROLLBACK', `Restaurando VID original en 0x48: 0x${originalVidHex.toUpperCase()}`);
+            await usbService.writeEEPROM(0x48, originalVidHex, false);
+            
+            usbLogger.info('ROLLBACK', `Restaurando PID original en 0x4A: 0x${originalPidHex.toUpperCase()}`);
+            await usbService.writeEEPROM(0x4A, originalPidHex, false);
+          }
           
           // Verificar rollback
           const rollbackVidLow = await usbService.readEEPROM(0x88, 1);

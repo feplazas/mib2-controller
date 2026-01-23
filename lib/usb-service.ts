@@ -13,8 +13,13 @@ export { type EEPROMReadResult, type EEPROMDumpResult };
 export const MAGIC_VALUE = 0xDEADBEEF;
 
 // EEPROM offsets for VID/PID (as specified in Guíaspoofing.pdf)
+// Primary location (most common)
 export const EEPROM_VID_OFFSET = 0x88;
 export const EEPROM_PID_OFFSET = 0x8A;
+
+// Secondary location (some chips have VID/PID duplicated here)
+export const EEPROM_VID_OFFSET_SECONDARY = 0x48;
+export const EEPROM_PID_OFFSET_SECONDARY = 0x4A;
 
 // Target VID/PID for D-Link DUB-E100 (MIB2 compatible)
 export const TARGET_VID = 0x2001;
@@ -218,6 +223,86 @@ class UsbService {
   // 2. Usaba byte offsets en lugar de word offsets
   // 3. Escribía bytes individuales en lugar de words
   // En su lugar, usar writeEEPROM() directamente desde auto-spoof.tsx
+
+  /**
+   * Detectar si el adaptador tiene VID/PID duplicado en offset 0x48
+   * Algunos chips AX88772B tienen VID/PID en dos ubicaciones: 0x48-0x4B y 0x88-0x8B
+   * @returns Objeto con información sobre ubicaciones de VID/PID
+   */
+  async detectDualVIDPID(): Promise<{
+    hasDualLocation: boolean;
+    primaryOffset: number;
+    secondaryOffset: number | null;
+    primaryVID: number;
+    primaryPID: number;
+    secondaryVID: number | null;
+    secondaryPID: number | null;
+  }> {
+    if (Platform.OS !== 'android') {
+      throw new Error('common.usb_operations_android_only');
+    }
+
+    if (this.currentDeviceId === null) {
+      throw new Error('common.no_device_connected');
+    }
+
+    try {
+      usbLogger.info('detect', 'Detecting dual VID/PID locations...');
+      
+      // Leer VID/PID de ubicación primaria (0x88-0x8B)
+      const primaryVidLow = await this.readEEPROM(EEPROM_VID_OFFSET, 1);
+      const primaryVidHigh = await this.readEEPROM(EEPROM_VID_OFFSET + 1, 1);
+      const primaryPidLow = await this.readEEPROM(EEPROM_PID_OFFSET, 1);
+      const primaryPidHigh = await this.readEEPROM(EEPROM_PID_OFFSET + 1, 1);
+      
+      const primaryVID = parseInt(primaryVidHigh.data + primaryVidLow.data, 16);
+      const primaryPID = parseInt(primaryPidHigh.data + primaryPidLow.data, 16);
+      
+      usbLogger.info('detect', `Primary location (0x88): VID=0x${primaryVID.toString(16).toUpperCase()}, PID=0x${primaryPID.toString(16).toUpperCase()}`);
+      
+      // Leer VID/PID de ubicación secundaria (0x48-0x4B)
+      const secondaryVidLow = await this.readEEPROM(EEPROM_VID_OFFSET_SECONDARY, 1);
+      const secondaryVidHigh = await this.readEEPROM(EEPROM_VID_OFFSET_SECONDARY + 1, 1);
+      const secondaryPidLow = await this.readEEPROM(EEPROM_PID_OFFSET_SECONDARY, 1);
+      const secondaryPidHigh = await this.readEEPROM(EEPROM_PID_OFFSET_SECONDARY + 1, 1);
+      
+      const secondaryVID = parseInt(secondaryVidHigh.data + secondaryVidLow.data, 16);
+      const secondaryPID = parseInt(secondaryPidHigh.data + secondaryPidLow.data, 16);
+      
+      usbLogger.info('detect', `Secondary location (0x48): VID=0x${secondaryVID.toString(16).toUpperCase()}, PID=0x${secondaryPID.toString(16).toUpperCase()}`);
+      
+      // Determinar si hay VID/PID duplicado
+      // Consideramos que hay duplicado si:
+      // 1. Los valores en 0x48 coinciden con los de 0x88
+      // 2. O si los valores en 0x48 son VID/PID válidos (no 0x0000 ni 0xFFFF)
+      const isValidSecondary = secondaryVID !== 0x0000 && secondaryVID !== 0xFFFF && 
+                                secondaryPID !== 0x0000 && secondaryPID !== 0xFFFF;
+      const matchesPrimary = secondaryVID === primaryVID && secondaryPID === primaryPID;
+      
+      const hasDualLocation = isValidSecondary && matchesPrimary;
+      
+      if (hasDualLocation) {
+        usbLogger.warning('detect', 'DUAL VID/PID DETECTED! Both 0x48 and 0x88 contain valid VID/PID');
+      } else if (isValidSecondary) {
+        usbLogger.info('detect', 'Secondary location has different VID/PID (may be old data)');
+      } else {
+        usbLogger.info('detect', 'No dual VID/PID detected (secondary location empty or invalid)');
+      }
+      
+      return {
+        hasDualLocation,
+        primaryOffset: EEPROM_VID_OFFSET,
+        secondaryOffset: hasDualLocation ? EEPROM_VID_OFFSET_SECONDARY : null,
+        primaryVID,
+        primaryPID,
+        secondaryVID: isValidSecondary ? secondaryVID : null,
+        secondaryPID: isValidSecondary ? secondaryPID : null,
+      };
+    } catch (error: any) {
+      usbLogger.error('detect', `Error detecting dual VID/PID: ${error.message}`);
+      throw error;
+    }
+  }
 
   /**
    * Crear backup automático de EEPROM

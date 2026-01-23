@@ -2274,3 +2274,18 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Aumentado delay antes de verificación de 500ms a 1000ms
 - [x] Agregados 3 reintentos de verificación con delays incrementales (500ms, 1000ms, 1500ms)
 - [x] Mensaje de error mejorado indicando posible EEPROM protegida o eFuse
+
+
+## Escritura Dual VID/PID (23 Ene 2026)
+- [ ] Detectar si existe VID/PID duplicado en offset 0x48
+- [ ] Implementar escritura en ambos offsets (0x48 y 0x88)
+- [ ] Actualizar UI para mostrar información de escritura dual
+- [ ] Generar APK con la nueva funcionalidad
+
+
+## Escritura Dual VID/PID (23 Ene 2026)
+- [x] Agregar constantes para offset secundario 0x48 (EEPROM_VID_OFFSET_SECONDARY, EEPROM_PID_OFFSET_SECONDARY)
+- [x] Crear función detectDualVIDPID() en usb-service.ts
+- [x] Modificar performSpoof para escribir en ambas ubicaciones si se detecta dual
+- [x] Actualizar verificación para ambas ubicaciones
+- [x] Actualizar rollback para ambas ubicaciones
