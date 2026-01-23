@@ -2206,3 +2206,14 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Analizar el orden de bytes (endianness) en lectura vs escritura
 - [x] Verificar que la lectura use el mismo formato que la escritura
 - [x] CORREGIDO: Cambiado de big-endian a LITTLE-ENDIAN en writeEEPROM, readEEPROM y verificación
+
+
+## BUGS CRÍTICOS - SOLUCIÓN DEFINITIVA REQUERIDA (23 Ene 2026)
+- [x] BUG PERSISTENTE: Verificación EEPROM sigue fallando después de fix de endianness
+  - CORREGIDO: Unificado formato de bytes en write/read/verify (byte0=even address, byte1=odd address)
+- [x] TEXTO HARDCODEADO: "Confirmado Compatible" en pantalla USB (debe ser traducido)
+  - CORREGIDO: Agregadas claves chipset.confirmed_compatible/experimental/incompatible/unknown en ES/EN/DE
+- [x] Buscar TODOS los textos hardcodeados en español en el código
+  - CORREGIDO: chipset-status-badge.tsx y eeprom-progress-indicator.tsx ahora usan traducciones
+- [x] Implementar solución definitiva para verificación EEPROM
+  - CORREGIDO: Formato consistente en UsbNativeModule.kt para write, read y verify

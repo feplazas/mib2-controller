@@ -203,17 +203,18 @@ class UsbNativeModule : Module() {
             return@AsyncFunction
           }
 
-          // ASIX returns data in LITTLE-ENDIAN format
-          // buffer[0] = low byte (first in memory), buffer[1] = high byte (second in memory)
-          data[i] = buffer[0]  // Low byte
+          // ASIX returns data with:
+          // buffer[0] = byte at even address (data[i])
+          // buffer[1] = byte at odd address (data[i+1])
+          data[i] = buffer[0]
           bytesRead++
           
           if (i + 1 < length) {
-            data[i + 1] = buffer[1]  // High byte
+            data[i + 1] = buffer[1]
             bytesRead++
           }
           
-          Log.d(TAG, "[ASIX] Read word $wordOffset: low=0x${String.format("%02X", buffer[0].toInt() and 0xFF)}, high=0x${String.format("%02X", buffer[1].toInt() and 0xFF)}")
+          Log.d(TAG, "[ASIX] Read word $wordOffset: byte0=0x${String.format("%02X", buffer[0].toInt() and 0xFF)}, byte1=0x${String.format("%02X", buffer[1].toInt() and 0xFF)}")
         }
 
         val hexString = data.joinToString("") { "%02X".format(it) }
@@ -278,21 +279,26 @@ class UsbNativeModule : Module() {
         // Process data in pairs (words)
         var wordIndex = 0
         for (i in data.indices step 2) {
-          // Combine two bytes into a 16-bit word (LITTLE-ENDIAN for ASIX)
-          // ASIX EEPROM uses little-endian: first byte is LOW byte, second byte is HIGH byte
-          val lowByte = data[i].toInt() and 0xFF
-          val highByte = if (i + 1 < data.size) (data[i + 1].toInt() and 0xFF) else 0
-          val word = (highByte shl 8) or lowByte  // Little-endian: low byte first in memory
+          // ASIX EEPROM word format in wIndex:
+          // The ASIX USB protocol expects the word in wIndex with:
+          // - bits 0-7 (low byte of wIndex): first byte from memory (data[i])
+          // - bits 8-15 (high byte of wIndex): second byte from memory (data[i+1])
+          // This matches how the EEPROM stores data: byte at even address in low bits
+          val byte0 = data[i].toInt() and 0xFF
+          val byte1 = if (i + 1 < data.size) (data[i + 1].toInt() and 0xFF) else 0
+          // wIndex format: byte1 in high bits, byte0 in low bits
+          // This is how ASIX expects it - NOT swapped
+          val word = (byte1 shl 8) or byte0
           
           val wordOffset = (offset + i) / 2  // Offset in words, not bytes
           
-          Log.d(TAG, "[ASIX] Writing word $wordIndex at offset $wordOffset: 0x${String.format("%04X", word)} (low: 0x${String.format("%02X", lowByte)}, high: 0x${String.format("%02X", highByte)})")
+          Log.d(TAG, "[ASIX] Writing word $wordIndex at offset $wordOffset: wIndex=0x${String.format("%04X", word)} (byte0: 0x${String.format("%02X", byte0)}, byte1: 0x${String.format("%02X", byte1)})")
           
           val result = connection.controlTransfer(
             USB_DIR_OUT or USB_TYPE_VENDOR or USB_RECIP_DEVICE,
             ASIX_CMD_WRITE_EEPROM,
-            wordOffset,      // wValue: word offset
-            word,            // wIndex: data word (big-endian)
+            wordOffset,      // wValue: word offset (0-based)
+            word,            // wIndex: data word (byte1<<8 | byte0)
             null,
             0,
             5000
@@ -367,14 +373,15 @@ class UsbNativeModule : Module() {
               return@AsyncFunction
             }
 
-            // ASIX returns data in LITTLE-ENDIAN format
-            // buffer[0] = low byte, buffer[1] = high byte
-            verifyData[i] = buffer[0]  // Low byte (first in memory)
+            // ASIX returns data in the same format as write:
+            // buffer[0] = byte at even address (data[i])
+            // buffer[1] = byte at odd address (data[i+1])
+            verifyData[i] = buffer[0]
             if (i + 1 < data.size) {
-              verifyData[i + 1] = buffer[1]  // High byte (second in memory)
+              verifyData[i + 1] = buffer[1]
             }
             
-            Log.d(TAG, "[ASIX] Verify read word $wordOffset: low=0x${String.format("%02X", buffer[0].toInt() and 0xFF)}, high=0x${String.format("%02X", buffer[1].toInt() and 0xFF)}")
+            Log.d(TAG, "[ASIX] Verify read word $wordOffset: byte0=0x${String.format("%02X", buffer[0].toInt() and 0xFF)}, byte1=0x${String.format("%02X", buffer[1].toInt() and 0xFF)}")
           }
           
           // Comparar bytes escritos vs leídos

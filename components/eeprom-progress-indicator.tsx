@@ -7,6 +7,7 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { useColors } from '@/hooks/use-colors';
+import { useTranslation } from '@/lib/language-context';
 
 interface EepromProgressIndicatorProps {
   progress: number; // 0-100
@@ -24,6 +25,7 @@ export function EepromProgressIndicator({
   estimatedTimeRemaining,
 }: EepromProgressIndicatorProps) {
   const colors = useColors();
+  const t = useTranslation();
   const progressWidth = useSharedValue(0);
 
   useEffect(() => {
@@ -59,7 +61,7 @@ export function EepromProgressIndicator({
             {operation === 'read' ? '📖' : '✍️'}
           </Text>
           <Text className="text-base font-bold text-foreground">
-            {operation === 'read' ? 'Leyendo EEPROM' : 'Escribiendo EEPROM'}
+            {operation === 'read' ? t('eeprom_progress.reading') : t('eeprom_progress.writing')}
           </Text>
         </View>
         <Text className="text-lg font-bold text-primary">
@@ -84,7 +86,7 @@ export function EepromProgressIndicator({
       {/* Información Detallada */}
       <View className="gap-2">
         <View className="flex-row justify-between">
-          <Text className="text-sm text-muted">Bytes procesados:</Text>
+          <Text className="text-sm text-muted">{t('eeprom_progress.bytes_processed')}:</Text>
           <Text className="text-sm text-foreground font-mono">
             {formatBytes(bytesProcessed)} / {formatBytes(totalBytes)}
           </Text>
@@ -92,7 +94,7 @@ export function EepromProgressIndicator({
 
         {estimatedTimeRemaining !== undefined && estimatedTimeRemaining > 0 && (
           <View className="flex-row justify-between">
-            <Text className="text-sm text-muted">Tiempo restante:</Text>
+            <Text className="text-sm text-muted">{t('eeprom_progress.time_remaining')}:</Text>
             <Text className="text-sm text-foreground font-mono">
               ~{formatTime(estimatedTimeRemaining)}
             </Text>
@@ -102,7 +104,7 @@ export function EepromProgressIndicator({
         {progress >= 100 && (
           <View className="mt-2 bg-green-500/10 rounded-lg p-2">
             <Text className="text-sm text-green-500 font-semibold text-center">
-              ✅ {operation === 'read' ? 'Lectura' : 'Escritura'} completada
+              ✅ {operation === 'read' ? t('eeprom_progress.read_completed') : t('eeprom_progress.write_completed')}
             </Text>
           </View>
         )}

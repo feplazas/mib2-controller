@@ -1468,7 +1468,19 @@
     "previous": "Previous",
     "skip": "Skip Tutorial"
   },
+  "eeprom_progress": {
+    "reading": "Reading EEPROM",
+    "writing": "Writing EEPROM",
+    "bytes_processed": "Bytes processed",
+    "time_remaining": "Time remaining",
+    "read_completed": "Read completed",
+    "write_completed": "Write completed"
+  },
   "chipset": {
+    "confirmed_compatible": "Confirmed Compatible",
+    "experimental": "Experimental",
+    "incompatible": "Incompatible",
+    "unknown": "Unknown",
     "confirmed_message": "{{chipset}} is confirmed compatible for MIB2 spoofing. Tested and working correctly.",
     "experimental_message": "{{chipset}} is experimental. Shares similar ASIX architecture and should work, but is not 100% confirmed.",
     "incompatible_message": "{{chipset}} is NOT compatible with spoofing on Android. Requires specific tools or does not support VID/PID modification.",

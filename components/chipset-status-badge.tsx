@@ -9,6 +9,7 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { useColors } from '@/hooks/use-colors';
+import { useTranslation } from '@/lib/language-context';
 
 export type ChipsetCompatibility = 'confirmed' | 'experimental' | 'incompatible' | 'unknown';
 
@@ -20,6 +21,7 @@ interface ChipsetStatusBadgeProps {
 
 export function ChipsetStatusBadge({ chipset, compatibility, animated = true }: ChipsetStatusBadgeProps) {
   const colors = useColors();
+  const t = useTranslation();
   const scale = useSharedValue(1);
   const opacity = useSharedValue(1);
 
@@ -59,7 +61,7 @@ export function ChipsetStatusBadge({ chipset, compatibility, animated = true }: 
       case 'confirmed':
         return {
           icon: '✅',
-          label: 'Confirmado Compatible',
+          label: t('chipset.confirmed_compatible'),
           bgColor: 'rgba(34, 197, 94, 0.1)', // green
           borderColor: 'rgba(34, 197, 94, 0.5)',
           textColor: '#22C55E',
@@ -67,7 +69,7 @@ export function ChipsetStatusBadge({ chipset, compatibility, animated = true }: 
       case 'experimental':
         return {
           icon: '⚠️',
-          label: 'Experimental',
+          label: t('chipset.experimental'),
           bgColor: 'rgba(251, 191, 36, 0.1)', // yellow
           borderColor: 'rgba(251, 191, 36, 0.5)',
           textColor: '#FBBF24',
@@ -75,7 +77,7 @@ export function ChipsetStatusBadge({ chipset, compatibility, animated = true }: 
       case 'incompatible':
         return {
           icon: '❌',
-          label: 'Incompatible',
+          label: t('chipset.incompatible'),
           bgColor: 'rgba(239, 68, 68, 0.1)', // red
           borderColor: 'rgba(239, 68, 68, 0.5)',
           textColor: '#EF4444',
@@ -83,7 +85,7 @@ export function ChipsetStatusBadge({ chipset, compatibility, animated = true }: 
       default:
         return {
           icon: '❓',
-          label: 'Desconocido',
+          label: t('chipset.unknown'),
           bgColor: 'rgba(156, 163, 175, 0.1)', // gray
           borderColor: 'rgba(156, 163, 175, 0.5)',
           textColor: '#9CA3AF',
