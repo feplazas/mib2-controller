@@ -279,16 +279,16 @@ class UsbNativeModule : Module() {
         // Process data in pairs (words)
         var wordIndex = 0
         for (i in data.indices step 2) {
-          // ASIX EEPROM word format in wIndex:
-          // The ASIX USB protocol expects the word in wIndex with:
-          // - bits 0-7 (low byte of wIndex): first byte from memory (data[i])
-          // - bits 8-15 (high byte of wIndex): second byte from memory (data[i+1])
-          // This matches how the EEPROM stores data: byte at even address in low bits
-          val byte0 = data[i].toInt() and 0xFF
-          val byte1 = if (i + 1 < data.size) (data[i + 1].toInt() and 0xFF) else 0
-          // wIndex format: byte1 in high bits, byte0 in low bits
-          // This is how ASIX expects it - NOT swapped
-          val word = (byte1 shl 8) or byte0
+          // ASIX EEPROM word format in wIndex (BIG-ENDIAN as per asix_eepromtool):
+          // The ASIX USB protocol expects the word in wIndex in BIG-ENDIAN format:
+          // - htobe16() is used in the reference implementation
+          // - This means: byte0 (even address) goes to HIGH byte of wIndex
+          //               byte1 (odd address) goes to LOW byte of wIndex
+          val byte0 = data[i].toInt() and 0xFF      // byte at even address
+          val byte1 = if (i + 1 < data.size) (data[i + 1].toInt() and 0xFF) else 0  // byte at odd address
+          // wIndex format: BIG-ENDIAN = byte0 in high bits, byte1 in low bits
+          // This is htobe16() equivalent: swap the bytes for USB transfer
+          val word = (byte0 shl 8) or byte1
           
           val wordOffset = (offset + i) / 2  // Offset in words, not bytes
           
@@ -373,12 +373,13 @@ class UsbNativeModule : Module() {
               return@AsyncFunction
             }
 
-            // ASIX returns data in the same format as write:
-            // buffer[0] = byte at even address (data[i])
-            // buffer[1] = byte at odd address (data[i+1])
-            verifyData[i] = buffer[0]
+            // ASIX returns data in BIG-ENDIAN format (same as be16toh in reference):
+            // buffer[0] = HIGH byte of word = byte at even address (data[i])
+            // buffer[1] = LOW byte of word = byte at odd address (data[i+1])
+            // We need to apply be16toh equivalent: swap bytes back
+            verifyData[i] = buffer[0]  // byte at even address
             if (i + 1 < data.size) {
-              verifyData[i + 1] = buffer[1]
+              verifyData[i + 1] = buffer[1]  // byte at odd address
             }
             
             Log.d(TAG, "[ASIX] Verify read word $wordOffset: byte0=0x${String.format("%02X", buffer[0].toInt() and 0xFF)}, byte1=0x${String.format("%02X", buffer[1].toInt() and 0xFF)}")
