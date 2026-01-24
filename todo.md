@@ -2413,3 +2413,41 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 
 - [x] Agregar chipset al indicador de valores guardados
 - [x] Mostrar toast al guardar valores durante spoofing
+
+
+## Manual Theme Switch v21 (24 Ene 2026)
+
+- [ ] Agregar estado de tema manual en ThemeProvider
+- [ ] Crear switch de tema en pantalla Config
+- [ ] Agregar traducciones i18n para nuevos textos
+
+
+## Final Release v21 (24 Ene 2026)
+
+### Traducciones
+- [ ] Revisar traducciones EN completas
+- [ ] Revisar traducciones ES completas
+- [ ] Revisar traducciones DE completas
+
+### Estilo iOS Premium
+- [ ] Mejorar estilo visual ultra premium iOS-like
+
+### Auditoría Anti-Bricking
+- [ ] Auditar lógica de protección EEPROM
+- [ ] Auditar validación de chipsets compatibles
+- [ ] Auditar proceso de backup antes de spoofing
+- [ ] Auditar verificación post-escritura
+- [ ] Auditar Emergency Restore
+
+### Deployment
+- [ ] Commit y sync a GitHub
+- [ ] Preparar preflight Play Store
+
+
+## Final Release v21 (24 Ene 2026)
+
+- [x] Revisar traducciones EN/ES/DE
+- [x] Auditar lógica anti-bricking de intervención MIB2
+- [x] Aplicar estilo visual ultra premium iOS-like
+- [ ] Commit y sync a GitHub
+- [ ] Preparar preflight para Play Store

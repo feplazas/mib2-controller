@@ -1,19 +1,37 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Appearance, View, useColorScheme as useSystemColorScheme } from "react-native";
 import { colorScheme as nativewindColorScheme, vars } from "nativewind";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { SchemeColors, type ColorScheme } from "@/constants/theme";
 
+// Theme mode: 'system' follows device, 'light'/'dark' are manual overrides
+type ThemeMode = 'system' | 'light' | 'dark';
+
 type ThemeContextValue = {
   colorScheme: ColorScheme;
+  themeMode: ThemeMode;
+  setThemeMode: (mode: ThemeMode) => void;
+  // Legacy support
   setColorScheme: (scheme: ColorScheme) => void;
 };
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
+const THEME_STORAGE_KEY = '@mib2_theme_mode';
+
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const systemScheme = useSystemColorScheme() ?? "light";
-  const [colorScheme, setColorSchemeState] = useState<ColorScheme>(systemScheme);
+  const [themeMode, setThemeModeState] = useState<ThemeMode>('system');
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Calculate actual color scheme based on mode
+  const colorScheme: ColorScheme = useMemo(() => {
+    if (themeMode === 'system') {
+      return systemScheme;
+    }
+    return themeMode;
+  }, [themeMode, systemScheme]);
 
   const applyScheme = useCallback((scheme: ColorScheme) => {
     nativewindColorScheme.set(scheme);
@@ -29,14 +47,44 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const setColorScheme = useCallback((scheme: ColorScheme) => {
-    setColorSchemeState(scheme);
-    applyScheme(scheme);
-  }, [applyScheme]);
-
+  // Load saved theme mode on mount
   useEffect(() => {
-    applyScheme(colorScheme);
-  }, [applyScheme, colorScheme]);
+    const loadThemeMode = async () => {
+      try {
+        const savedMode = await AsyncStorage.getItem(THEME_STORAGE_KEY);
+        if (savedMode && ['system', 'light', 'dark'].includes(savedMode)) {
+          setThemeModeState(savedMode as ThemeMode);
+        }
+      } catch (error) {
+        console.warn('Failed to load theme mode:', error);
+      } finally {
+        setIsLoaded(true);
+      }
+    };
+    loadThemeMode();
+  }, []);
+
+  // Apply scheme when colorScheme changes
+  useEffect(() => {
+    if (isLoaded) {
+      applyScheme(colorScheme);
+    }
+  }, [applyScheme, colorScheme, isLoaded]);
+
+  // Set theme mode and persist
+  const setThemeMode = useCallback(async (mode: ThemeMode) => {
+    setThemeModeState(mode);
+    try {
+      await AsyncStorage.setItem(THEME_STORAGE_KEY, mode);
+    } catch (error) {
+      console.warn('Failed to save theme mode:', error);
+    }
+  }, []);
+
+  // Legacy support - directly set color scheme (sets manual mode)
+  const setColorScheme = useCallback((scheme: ColorScheme) => {
+    setThemeMode(scheme);
+  }, [setThemeMode]);
 
   const themeVariables = useMemo(
     () =>
@@ -57,11 +105,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo(
     () => ({
       colorScheme,
+      themeMode,
+      setThemeMode,
       setColorScheme,
     }),
-    [colorScheme, setColorScheme],
+    [colorScheme, themeMode, setThemeMode, setColorScheme],
   );
-  console.log(value, themeVariables)
 
   return (
     <ThemeContext.Provider value={value}>

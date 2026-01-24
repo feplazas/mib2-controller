@@ -11,6 +11,7 @@ import { usbService } from "@/lib/usb-service";
 import * as Clipboard from 'expo-clipboard';
 
 import { useTranslation, useLanguage, LanguageOption } from "@/lib/language-context";
+import { useThemeContext } from "@/lib/theme-provider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect } from "react";
 
@@ -29,7 +30,9 @@ export default function SettingsScreen() {
 
   const [showDebugInfo, setShowDebugInfo] = useState(false);
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
+  const [showThemeSelector, setShowThemeSelector] = useState(false);
   const { selectedLanguage, setLanguage: setAppLanguage } = useLanguage();
+  const { themeMode, setThemeMode } = useThemeContext();
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const { status, device, devices } = useUsbStatus();
 

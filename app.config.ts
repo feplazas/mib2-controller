@@ -33,7 +33,7 @@ const config: ExpoConfig = {
     bundleIdentifier: env.iosBundleId,
   },
   android: {
-    versionCode: 20,
+    versionCode: 21,
     adaptiveIcon: {
       backgroundColor: "#0a1929",
       foregroundImage: "./assets/images/android-icon-foreground.png",
