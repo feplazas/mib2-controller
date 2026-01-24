@@ -270,22 +270,29 @@ class UsbService {
       
       usbLogger.info('detect', `Secondary location (0x48): VID=0x${secondaryVID.toString(16).toUpperCase()}, PID=0x${secondaryPID.toString(16).toUpperCase()}`);
       
-      // Determinar si hay VID/PID duplicado
-      // Consideramos que hay duplicado si:
-      // 1. Los valores en 0x48 coinciden con los de 0x88
-      // 2. O si los valores en 0x48 son VID/PID válidos (no 0x0000 ni 0xFFFF)
+      // Determinar si hay VID/PID en ubicación secundaria
+      // IMPORTANTE: El chip AX88772B puede usar 0x48 como ubicación PRINCIPAL para reportar al SO
+      // incluso si 0x88 tiene valores diferentes. Por eso debemos escribir en AMBAS ubicaciones
+      // si la secundaria tiene valores válidos (no 0x0000 ni 0xFFFF)
       const isValidSecondary = secondaryVID !== 0x0000 && secondaryVID !== 0xFFFF && 
                                 secondaryPID !== 0x0000 && secondaryPID !== 0xFFFF;
-      const matchesPrimary = secondaryVID === primaryVID && secondaryPID === primaryPID;
+      const isValidPrimary = primaryVID !== 0x0000 && primaryVID !== 0xFFFF && 
+                              primaryPID !== 0x0000 && primaryPID !== 0xFFFF;
       
-      const hasDualLocation = isValidSecondary && matchesPrimary;
+      // Si AMBAS ubicaciones tienen valores válidos, debemos escribir en ambas
+      // Esto es crítico porque algunos chips usan 0x48 como fuente principal para el SO
+      const hasDualLocation = isValidSecondary && isValidPrimary;
       
       if (hasDualLocation) {
-        usbLogger.warning('detect', 'DUAL VID/PID DETECTED! Both 0x48 and 0x88 contain valid VID/PID');
+        usbLogger.warning('detect', `DUAL VID/PID DETECTED! Primary (0x88): VID=0x${primaryVID.toString(16).toUpperCase()}, PID=0x${primaryPID.toString(16).toUpperCase()}`);
+        usbLogger.warning('detect', `                       Secondary (0x48): VID=0x${secondaryVID.toString(16).toUpperCase()}, PID=0x${secondaryPID.toString(16).toUpperCase()}`);
+        usbLogger.warning('detect', 'WILL WRITE TO BOTH LOCATIONS to ensure complete spoofing');
       } else if (isValidSecondary) {
-        usbLogger.info('detect', 'Secondary location has different VID/PID (may be old data)');
+        usbLogger.info('detect', 'Only secondary location has valid VID/PID');
+      } else if (isValidPrimary) {
+        usbLogger.info('detect', 'Only primary location has valid VID/PID');
       } else {
-        usbLogger.info('detect', 'No dual VID/PID detected (secondary location empty or invalid)');
+        usbLogger.warning('detect', 'No valid VID/PID found in either location!');
       }
       
       return {

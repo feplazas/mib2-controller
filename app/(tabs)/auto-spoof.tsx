@@ -342,9 +342,13 @@ export default function AutoSpoofScreen() {
         }
       }
 
-      if (!primaryVerified) {
+      // Verificar que AMBAS ubicaciones estén correctas si hay dual location
+      const allVerified = primaryVerified && secondaryVerified;
+      
+      if (!allVerified) {
         // ROLLBACK AUTOMÁTICO: Restaurar VID/PID original
-        usbLogger.error('SPOOF', 'Verificación fallida en ubicación primaria - iniciando rollback automático');
+        const failLocation = !primaryVerified ? 'primaria (0x88)' : 'secundaria (0x48)';
+        usbLogger.error('SPOOF', `Verificación fallida en ubicación ${failLocation} - iniciando rollback automático`);
         dispatch({ type: 'SET_STEP', payload: 'rolling_back' });
         
         try {
