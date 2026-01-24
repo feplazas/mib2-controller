@@ -326,7 +326,7 @@ export default function RecoveryScreen() {
                           // Compartir archivo
                           await Sharing.shareAsync(backup.filepath, {
                             mimeType: 'application/octet-stream',
-                            dialogTitle: `Compartir Backup - ${backup.deviceName}`,
+                            dialogTitle: `${t('backups.share_backup')} - ${backup.deviceName}`,
                           });
 
                           await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -347,7 +347,7 @@ export default function RecoveryScreen() {
                           isRestoring ? 'text-muted' : 'text-green-400'
                         }`}
                       >
-                        📤 Compartir Backup
+                        📤 {t('backups.share_backup')}
                       </Text>
                     </TouchableOpacity>
                   </View>

@@ -14,6 +14,18 @@ import { spoofReducer, initialSpoofState, getStepIcon } from '@/lib/spoof-reduce
 import { useTranslation } from "@/lib/language-context";
 import { usbLogger } from '@/lib/usb-logger';
 import { showAlert } from '@/lib/translated-alert';
+
+// UI Configuration - Control which buttons are visible
+const UI_CONFIG = {
+  showDryRun: false,        // Oculto: Safe Test es más completo
+  showChecksum: false,      // Oculto: muy técnico para usuarios normales
+  showTestSpoofing: false,  // Oculto: redundante con Safe Test
+  showQuickSpoof: false,    // Oculto: redundante con Execute
+  showSafeTest: true,       // Visible: único modo de prueba
+  showForceOption: true,    // Visible: opción avanzada
+  showExecute: true,        // Visible: botón principal
+};
+
 export default function AutoSpoofScreen() {
   const t = useTranslation();
   const { status, device } = useUsbStatus();
@@ -881,26 +893,27 @@ export default function AutoSpoofScreen() {
             </View>
           </View>
 
-          {/* Checkbox Forzar sin Verificación */}
+          {/* Checkbox Forzar sin Verificación - Opción avanzada discreta */}
           <TouchableOpacity
             onPress={() => {
               dispatch({ type: 'TOGGLE_SKIP_VERIFICATION' });
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             }}
             disabled={state.isExecuting}
-            className="flex-row items-start gap-3 p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/30"
+            className={`flex-row items-center gap-3 p-3 rounded-xl ${
+              state.skipVerification ? 'bg-yellow-500/15' : 'bg-surface'
+            }`}
           >
-            <View className={`w-6 h-6 rounded border-2 items-center justify-center ${
-              state.skipVerification ? 'bg-yellow-500 border-yellow-500' : 'border-yellow-500'
+            <View className={`w-5 h-5 rounded-md items-center justify-center ${
+              state.skipVerification ? 'bg-yellow-500' : 'bg-muted/30'
             }`}>
-              {state.skipVerification && <Text className="text-background font-bold">✓</Text>}
+              {state.skipVerification && <Text className="text-background text-xs font-bold">✓</Text>}
             </View>
             <View className="flex-1">
-              <Text className="text-base font-semibold text-yellow-500 mb-1">
-                ⚠️ {t('auto_spoof.force_no_verification')}
-              </Text>
-              <Text className="text-xs text-muted leading-relaxed">
-                {t('auto_spoof.force_no_verification_desc')}
+              <Text className={`text-sm font-medium ${
+                state.skipVerification ? 'text-yellow-500' : 'text-muted'
+              }`}>
+                {t('auto_spoof.force_no_verification')}
               </Text>
             </View>
           </TouchableOpacity>
@@ -908,7 +921,7 @@ export default function AutoSpoofScreen() {
           {/* Botones de Seguridad: Dry-Run y Checksum */}
           <View className="gap-3">
             {/* Botón Dry-Run (Simulación) */}
-            <TouchableOpacity
+            {UI_CONFIG.showDryRun && <TouchableOpacity
               onPress={handleDryRun}
               disabled={state.isDryRunning || !device}
               className={`rounded-xl p-4 items-center border-2 ${
@@ -940,10 +953,10 @@ export default function AutoSpoofScreen() {
               <Text className="text-xs text-muted mt-1">
                 {t('auto_spoof.dry_run_desc')}
               </Text>
-            </TouchableOpacity>
+            </TouchableOpacity>}
 
             {/* Resultado Dry-Run */}
-            {state.dryRunResult && (
+            {UI_CONFIG.showDryRun && state.dryRunResult && (
               <View className={`rounded-xl p-4 border ${
                 state.dryRunResult.wouldSucceed ? 'bg-green-500/5 border-green-500/30' : 'bg-yellow-500/5 border-yellow-500/30'
               }`}>
@@ -979,7 +992,7 @@ export default function AutoSpoofScreen() {
             )}
 
             {/* Botón Verificar Checksum */}
-            <TouchableOpacity
+            {UI_CONFIG.showChecksum && <TouchableOpacity
               onPress={handleVerifyChecksum}
               disabled={state.isVerifyingChecksum || !device}
               className={`rounded-xl p-4 items-center border-2 ${
@@ -1011,10 +1024,10 @@ export default function AutoSpoofScreen() {
               <Text className="text-xs text-muted mt-1">
                 {t('auto_spoof.verify_checksum_desc')}
               </Text>
-            </TouchableOpacity>
+            </TouchableOpacity>}
 
             {/* Resultado Checksum */}
-            {state.checksumResult && (
+            {UI_CONFIG.showChecksum && state.checksumResult && (
               <View className={`rounded-xl p-4 border ${
                 state.checksumResult.valid ? 'bg-green-500/5 border-green-500/30' : 'bg-red-500/5 border-red-500/30'
               }`}>
@@ -1049,35 +1062,35 @@ export default function AutoSpoofScreen() {
             <TouchableOpacity
               onPress={handleSafeTest}
               disabled={state.isSafeTestRunning || !device}
-              className={`rounded-xl p-4 items-center border-2 ${
+              className={`rounded-2xl p-4 items-center ${
                 state.safeTestResult?.wouldSucceedInRealMode
-                  ? 'bg-green-500/10 border-green-500'
+                  ? 'bg-green-500/15'
                   : state.safeTestResult && !state.safeTestResult.wouldSucceedInRealMode
-                  ? 'bg-yellow-500/10 border-yellow-500'
+                  ? 'bg-yellow-500/15'
                   : state.isSafeTestRunning
-                  ? 'bg-muted/20 border-muted opacity-50'
-                  : 'bg-indigo-500/10 border-indigo-500 active:opacity-80'
+                  ? 'bg-surface opacity-50'
+                  : 'bg-surface active:opacity-80'
               }`}
             >
-              <View className="flex-row items-center gap-2">
-                <Text className="text-xl">
+              <View className="flex-row items-center gap-3">
+                <Text className="text-2xl">
                   {state.isSafeTestRunning ? '⏳' : state.safeTestResult?.wouldSucceedInRealMode ? '✅' : state.safeTestResult ? '⚠️' : '🛡️'}
                 </Text>
-                <Text className={`text-base font-bold ${
-                  state.safeTestResult?.wouldSucceedInRealMode
-                    ? 'text-green-500'
-                    : state.safeTestResult && !state.safeTestResult.wouldSucceedInRealMode
-                    ? 'text-yellow-500'
-                    : state.isSafeTestRunning
-                    ? 'text-muted'
-                    : 'text-indigo-500'
-                }`}>
-                  {state.isSafeTestRunning ? t('auto_spoof.safe_test_running') : t('auto_spoof.safe_test_mode')}
-                </Text>
+                <View className="flex-1">
+                  <Text className={`text-base font-semibold ${
+                    state.safeTestResult?.wouldSucceedInRealMode
+                      ? 'text-green-500'
+                      : state.safeTestResult && !state.safeTestResult.wouldSucceedInRealMode
+                      ? 'text-yellow-500'
+                      : 'text-foreground'
+                  }`}>
+                    {state.isSafeTestRunning ? t('auto_spoof.safe_test_running') : t('auto_spoof.safe_test_mode')}
+                  </Text>
+                  <Text className="text-xs text-muted mt-0.5">
+                    {t('auto_spoof.safe_test_desc')}
+                  </Text>
+                </View>
               </View>
-              <Text className="text-xs text-muted mt-1">
-                {t('auto_spoof.safe_test_desc')}
-              </Text>
             </TouchableOpacity>
 
             {/* Progreso Safe Test */}
@@ -1190,7 +1203,7 @@ export default function AutoSpoofScreen() {
           {/* Botones de Test y Spoof Rápido */}
           <View className="gap-3">
             {/* Botón Test de Spoofing */}
-            <TouchableOpacity
+            {UI_CONFIG.showTestSpoofing && <TouchableOpacity
               onPress={handleTestSpoofing}
               disabled={state.isTesting}
               className={`rounded-xl p-4 items-center border-2 ${
@@ -1222,10 +1235,10 @@ export default function AutoSpoofScreen() {
               <Text className="text-xs text-muted mt-1">
                 {t('auto_spoof.test_spoofing_desc')}
               </Text>
-            </TouchableOpacity>
+            </TouchableOpacity>}
 
             {/* Botón Spoof Rápido */}
-            <TouchableOpacity
+            {UI_CONFIG.showQuickSpoof && <TouchableOpacity
               onPress={handleQuickSpoof}
               disabled={!canExecute || state.isExecuting}
               className={`rounded-xl p-4 items-center border-2 ${
@@ -1245,32 +1258,24 @@ export default function AutoSpoofScreen() {
               <Text className="text-xs text-muted mt-1">
                 {t('auto_spoof.quick_spoof_desc')}
               </Text>
-            </TouchableOpacity>
+            </TouchableOpacity>}
           </View>
 
           {/* Botón de Ejecución Principal */}
           <TouchableOpacity
             onPress={executeAutoSpoof}
             disabled={!canExecute || state.isExecuting}
-            className={`rounded-2xl p-6 items-center ${
+            className={`rounded-2xl py-4 px-6 items-center ${
               canExecute && !state.isExecuting
-                ? 'bg-primary'
-                : 'bg-muted opacity-50'
+                ? 'bg-primary active:opacity-90'
+                : 'bg-muted/50'
             }`}
           >
-            <Text className="text-2xl font-bold text-background mb-2">
-              {state.isExecuting ? '⏳ ' + t('auto_spoof.executing') : '🚀 ' + t('auto_spoof.execute_auto_spoof')}
+            <Text className={`text-lg font-semibold ${
+              canExecute && !state.isExecuting ? 'text-background' : 'text-muted'
+            }`}>
+              {state.isExecuting ? t('auto_spoof.executing') : t('auto_spoof.execute_auto_spoof')}
             </Text>
-            {!canExecute && !state.isExecuting && (
-              <Text className="text-xs text-background opacity-70">
-                {t('auto_spoof.connect_compatible_adapter')}
-              </Text>
-            )}
-            {canExecute && !state.isExecuting && (
-              <Text className="text-xs text-background/80 mt-1">
-                {t('auto_spoof.with_triple_confirmation')}
-              </Text>
-            )}
           </TouchableOpacity>
         </View>
       </ScrollView>

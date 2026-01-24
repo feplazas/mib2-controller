@@ -2333,3 +2333,35 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Corregir orden de bytes en writeEEPROM (little-endian)
 - [ ] Probar Emergency Restore con adaptador real
 - [ ] Verificar que spoofing funciona correctamente después de corrección de bytes
+
+## Visual Overhaul v17
+- [ ] Corregir textos hardcodeados en español (Compartir Resultado, VID/PID Objetivo, etc.)
+- [ ] Eliminar redundancias en UI (Simulation vs Safe Test vs Dry-Run)
+- [ ] Simplificar pantalla Auto-Spoof (reducir ruido visual)
+- [ ] Aplicar estilo iOS-like consistente en toda la app
+- [ ] Mantener Emergency Restore como está (pendiente mejora futura)
+
+
+## UI Overhaul v17
+
+### Phase 1: Audit Spanish Hardcoded Texts
+- [x] Identified hardcoded Spanish texts in auto-spoof.tsx
+- [x] Migrated safe_test texts to i18n system
+
+### Phase 2: Eliminate UI Redundancies
+- [x] Hidden Dry-Run button (redundant with Safe Test)
+- [x] Hidden Verify Checksum button (too technical)
+- [x] Hidden Test Spoofing button (redundant with Safe Test)
+- [x] Hidden Quick Spoof button (redundant with Execute)
+- [x] Kept Safe Test as the only test mode
+- [x] Kept Execute as the main action button
+- [x] Kept Force option for advanced users
+
+### Phase 3: iOS-like Styling
+- [x] Applied consistent styling to auto-spoof.tsx
+- [x] Simplified button styles (removed vibrant borders)
+- [x] Used subtle backgrounds
+- [x] Improved typography and spacing
+
+### Version Update
+- [x] Incremented versionCode from 16 to 17
