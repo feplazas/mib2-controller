@@ -237,6 +237,10 @@ export default function AutoSpoofScreen() {
         usbLogger.warning('SPOOF', `Could not detect dual VID/PID: ${detectError}. Proceeding with primary location only.`);
       }
 
+      // Paso 1.6: Guardar valores originales para Emergency Restore mejorado
+      usbLogger.info('SPOOF', 'Saving original values for emergency restore...');
+      await usbService.saveOriginalValues(device);
+
       // Paso 2: Crear backup automático
       dispatch({ type: 'SET_STEP', payload: 'creating_backup' });
       dispatch({ type: 'RESET_PROGRESS', payload: { operation: 'read', totalBytes: state.eepromProgress.totalBytes } });
@@ -705,19 +709,19 @@ export default function AutoSpoofScreen() {
       <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}>
         <View className="gap-4">
           {/* Header */}
-          <View className="items-center mb-4">
-            <Text className="text-3xl font-bold text-foreground mb-2">
-              🔧 {t('auto_spoof.title')}
+          <View className="items-center mb-5">
+            <Text className="text-2xl font-bold text-foreground">
+              {t('auto_spoof.title')}
             </Text>
-            <Text className="text-sm text-muted text-center">
+            <Text className="text-sm text-muted text-center mt-1">
               {t('auto_spoof.subtitle')}
             </Text>
           </View>
 
           {/* Estado del Dispositivo */}
-          <View className="bg-surface rounded-2xl p-6 border border-border">
-            <Text className="text-lg font-bold text-foreground mb-4">
-              📱 {t('auto_spoof.connected_device')}
+          <View className="bg-surface rounded-2xl p-5">
+            <Text className="text-xs font-semibold text-muted uppercase tracking-wide mb-4">
+              {t('auto_spoof.connected_device')}
             </Text>
             {device ? (
               <View className="gap-2">
@@ -763,9 +767,9 @@ export default function AutoSpoofScreen() {
           )}
 
           {/* Valores Objetivo */}
-          <View className="bg-surface rounded-2xl p-6 border border-border">
-            <Text className="text-lg font-bold text-foreground mb-4">
-              🎯 {t('auto_spoof.target_values')}
+          <View className="bg-surface rounded-2xl p-5">
+            <Text className="text-xs font-semibold text-muted uppercase tracking-wide mb-4">
+              {t('auto_spoof.target_values')}
             </Text>
             <View className="gap-2">
               <View className="flex-row justify-between">
@@ -870,8 +874,8 @@ export default function AutoSpoofScreen() {
           )}
 
           {/* Advertencias de Seguridad */}
-          <View className="bg-red-500/10 rounded-2xl p-6 border border-red-500">
-            <Text className="text-lg font-bold text-red-500 mb-3">
+          <View className="bg-warning/10 rounded-2xl p-5">
+            <Text className="text-sm font-semibold text-warning uppercase tracking-wide mb-3">
               {t('auto_spoof.important_warnings')}
             </Text>
             <View className="gap-2">
@@ -1062,14 +1066,14 @@ export default function AutoSpoofScreen() {
             <TouchableOpacity
               onPress={handleSafeTest}
               disabled={state.isSafeTestRunning || !device}
-              className={`rounded-2xl p-4 items-center ${
+              className={`rounded-xl p-4 ${
                 state.safeTestResult?.wouldSucceedInRealMode
-                  ? 'bg-green-500/15'
+                  ? 'bg-success/10'
                   : state.safeTestResult && !state.safeTestResult.wouldSucceedInRealMode
-                  ? 'bg-yellow-500/15'
+                  ? 'bg-warning/10'
                   : state.isSafeTestRunning
                   ? 'bg-surface opacity-50'
-                  : 'bg-surface active:opacity-80'
+                  : 'bg-surface active:opacity-70'
               }`}
             >
               <View className="flex-row items-center gap-3">
@@ -1079,9 +1083,9 @@ export default function AutoSpoofScreen() {
                 <View className="flex-1">
                   <Text className={`text-base font-semibold ${
                     state.safeTestResult?.wouldSucceedInRealMode
-                      ? 'text-green-500'
+                      ? 'text-success'
                       : state.safeTestResult && !state.safeTestResult.wouldSucceedInRealMode
-                      ? 'text-yellow-500'
+                      ? 'text-warning'
                       : 'text-foreground'
                   }`}>
                     {state.isSafeTestRunning ? t('auto_spoof.safe_test_running') : t('auto_spoof.safe_test_mode')}
@@ -1265,14 +1269,14 @@ export default function AutoSpoofScreen() {
           <TouchableOpacity
             onPress={executeAutoSpoof}
             disabled={!canExecute || state.isExecuting}
-            className={`rounded-2xl py-4 px-6 items-center ${
+            className={`rounded-xl py-4 items-center ${
               canExecute && !state.isExecuting
-                ? 'bg-primary active:opacity-90'
-                : 'bg-muted/50'
+                ? 'bg-primary active:opacity-80'
+                : 'bg-muted/30'
             }`}
           >
-            <Text className={`text-lg font-semibold ${
-              canExecute && !state.isExecuting ? 'text-background' : 'text-muted'
+            <Text className={`text-base font-semibold ${
+              canExecute && !state.isExecuting ? 'text-white' : 'text-muted'
             }`}>
               {state.isExecuting ? t('auto_spoof.executing') : t('auto_spoof.execute_auto_spoof')}
             </Text>

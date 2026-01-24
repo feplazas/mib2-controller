@@ -1265,7 +1265,9 @@
     "next_steps": "📝 Nächste Schritte",
     "step1": "1. Adapter trennen und neu verbinden",
     "step2": "2. Mit MIB2 USB-Port verbinden",
-    "step3": "3. Prüfen, ob MIB2 ihn erkennt"
+    "step3": "3. Prüfen, ob MIB2 ihn erkennt",
+    "share_result": "Ergebnis teilen",
+    "close": "Schließen"
   },
   "alerts": {
     "código_duplicado": "Doppelter Code",
@@ -1444,7 +1446,9 @@
     "confirm_restore": "Ja, Wiederherstellen",
     "restoring": "Wiederherstellen...",
     "emergency_restore_success": "Wiederherstellung erfolgreich",
-    "emergency_restore_failed": "Wiederherstellung fehlgeschlagen"
+    "emergency_restore_failed": "Wiederherstellung fehlgeschlagen",
+    "used_saved_values": "ℹ️ Gespeicherte Originalwerte von vor dem Spoofing werden verwendet",
+    "used_default_values": "⚠️ Keine gespeicherten Werte gefunden. ASIX-Standardwerte werden verwendet (0x0B95:0x772B)"
   },
   "onboarding": {
     "step1_title": "USB-Adapter verbinden",

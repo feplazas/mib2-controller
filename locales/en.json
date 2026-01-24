@@ -1265,7 +1265,9 @@
     "next_steps": "📝 Next Steps",
     "step1": "1. Disconnect and reconnect the adapter",
     "step2": "2. Connect to MIB2 USB port",
-    "step3": "3. Verify that the MIB2 recognizes it"
+    "step3": "3. Verify that the MIB2 recognizes it",
+    "share_result": "Share Result",
+    "close": "Close"
   },
   "alerts": {
     "código_duplicado": "Duplicate Code",
@@ -1436,8 +1438,11 @@
     "view_backups": "View Backups",
     "view_backups_desc": "Manage and restore backup copies",
     "emergency_restore": "Emergency Restore",
-    "emergency_restore_desc": "Restore to original ASIX values",
     "emergency_restore_title": "Emergency Restore",
+    "emergency_restore_desc": "Restore to original ASIX values",
+    "emergency_restore_failed": "Emergency restore failed",
+    "used_saved_values": "ℹ️ Using saved original values from before spoofing",
+    "used_default_values": "⚠️ No saved values found. Using ASIX default values (0x0B95:0x772B)",
     "emergency_restore_confirm": "This will restore your adapter to original ASIX values (VID: 0x0B95, PID: 0x772B).\n\nUse this if your adapter was corrupted during spoofing.",
     "emergency_restore_warning_title": "\u26a0\ufe0f Final Confirmation",
     "emergency_restore_warning": "This will write to BOTH EEPROM locations (0x48 and 0x88).\n\nMake sure:\n\u2022 The correct adapter is connected\n\u2022 Do NOT disconnect during the process\n\nContinue?",

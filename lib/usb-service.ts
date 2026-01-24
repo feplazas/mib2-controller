@@ -1,6 +1,10 @@
 import { Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import UsbNativeModule, { type UsbDevice as NativeUsbDevice, type EEPROMReadResult, type EEPROMDumpResult } from '../modules/usb-native';
 import { usbLogger } from './usb-logger';
+
+// Key para almacenar valores originales del adaptador
+const ORIGINAL_VALUES_KEY = '@mib2_original_adapter_values';
 
 export type UsbDevice = NativeUsbDevice;
 export { type EEPROMReadResult, type EEPROMDumpResult };
@@ -949,6 +953,64 @@ class UsbService {
   }
 
   /**
+   * Guardar valores originales del adaptador antes del spoofing
+   * Esto permite restaurar el adaptador a su estado original real
+   */
+  async saveOriginalValues(device: UsbDevice): Promise<void> {
+    try {
+      const originalValues = {
+        vendorId: device.vendorId,
+        productId: device.productId,
+        chipset: device.chipset || 'unknown',
+        deviceName: device.deviceName,
+        savedAt: new Date().toISOString(),
+      };
+      
+      await AsyncStorage.setItem(ORIGINAL_VALUES_KEY, JSON.stringify(originalValues));
+      usbLogger.info('ORIGINAL', `Saved original values: VID=0x${device.vendorId.toString(16).toUpperCase()}, PID=0x${device.productId.toString(16).toUpperCase()}`);
+    } catch (error: any) {
+      usbLogger.error('ORIGINAL', `Failed to save original values: ${error.message}`);
+    }
+  }
+
+  /**
+   * Obtener valores originales guardados del adaptador
+   * @returns Valores originales o null si no hay guardados
+   */
+  async getOriginalValues(): Promise<{
+    vendorId: number;
+    productId: number;
+    chipset: string;
+    deviceName: string;
+    savedAt: string;
+  } | null> {
+    try {
+      const stored = await AsyncStorage.getItem(ORIGINAL_VALUES_KEY);
+      if (stored) {
+        const values = JSON.parse(stored);
+        usbLogger.info('ORIGINAL', `Retrieved original values: VID=0x${values.vendorId.toString(16).toUpperCase()}, PID=0x${values.productId.toString(16).toUpperCase()}`);
+        return values;
+      }
+      return null;
+    } catch (error: any) {
+      usbLogger.error('ORIGINAL', `Failed to get original values: ${error.message}`);
+      return null;
+    }
+  }
+
+  /**
+   * Limpiar valores originales guardados
+   */
+  async clearOriginalValues(): Promise<void> {
+    try {
+      await AsyncStorage.removeItem(ORIGINAL_VALUES_KEY);
+      usbLogger.info('ORIGINAL', 'Cleared saved original values');
+    } catch (error: any) {
+      usbLogger.error('ORIGINAL', `Failed to clear original values: ${error.message}`);
+    }
+  }
+
+  /**
    * EMERGENCY RESTORE: Restaurar adaptador a valores originales ASIX
    * 
    * Esta función escribe los valores originales de ASIX (VID: 0x0B95, PID: 0x772B)
@@ -1043,6 +1105,126 @@ class UsbService {
       return {
         success: false,
         message: `Emergency restore failed: ${error.message}`,
+        details
+      };
+    }
+  }
+
+  /**
+   * EMERGENCY RESTORE MEJORADO: Restaurar adaptador a valores originales guardados
+   * 
+   * Esta función primero intenta usar los valores originales guardados antes del spoofing.
+   * Si no hay valores guardados, usa los valores ASIX genéricos como fallback.
+   * 
+   * @param skipVerification - Si es true, no verifica la escritura
+   * @returns Resultado de la restauración con información de qué valores se usaron
+   */
+  async emergencyRestoreOriginal(skipVerification: boolean = false): Promise<{
+    success: boolean;
+    message: string;
+    usedSavedValues: boolean;
+    restoredVID: number;
+    restoredPID: number;
+    details: {
+      primaryWritten: boolean;
+      secondaryWritten: boolean;
+      primaryVerified: boolean;
+      secondaryVerified: boolean;
+    };
+  }> {
+    // Intentar obtener valores originales guardados
+    const savedValues = await this.getOriginalValues();
+    
+    let targetVID: number;
+    let targetPID: number;
+    let usedSavedValues = false;
+    
+    if (savedValues) {
+      targetVID = savedValues.vendorId;
+      targetPID = savedValues.productId;
+      usedSavedValues = true;
+      usbLogger.info('EMERGENCY', `Using SAVED original values: VID=0x${targetVID.toString(16).toUpperCase()}, PID=0x${targetPID.toString(16).toUpperCase()}`);
+    } else {
+      // Fallback a valores ASIX genéricos
+      targetVID = 0x0B95;
+      targetPID = 0x772B;
+      usbLogger.warning('EMERGENCY', `No saved values found. Using ASIX defaults: VID=0x${targetVID.toString(16).toUpperCase()}, PID=0x${targetPID.toString(16).toUpperCase()}`);
+    }
+    
+    // Convertir a hex string en little-endian
+    const vidHex = (targetVID & 0xFF).toString(16).padStart(2, '0') + 
+                   ((targetVID >> 8) & 0xFF).toString(16).padStart(2, '0');
+    const pidHex = (targetPID & 0xFF).toString(16).padStart(2, '0') + 
+                   ((targetPID >> 8) & 0xFF).toString(16).padStart(2, '0');
+    
+    usbLogger.info('EMERGENCY', `VID hex: ${vidHex.toUpperCase()}, PID hex: ${pidHex.toUpperCase()}`);
+    
+    const details = {
+      primaryWritten: false,
+      secondaryWritten: false,
+      primaryVerified: false,
+      secondaryVerified: false
+    };
+    
+    try {
+      // Escribir en ubicación PRIMARIA (0x88-0x8B)
+      usbLogger.info('EMERGENCY', 'Writing to PRIMARY location (0x88-0x8B)...');
+      
+      const vidPrimaryResult = await this.writeEEPROM(0x88, vidHex, skipVerification);
+      await this.delay(200);
+      const pidPrimaryResult = await this.writeEEPROM(0x8A, pidHex, skipVerification);
+      
+      details.primaryWritten = true;
+      details.primaryVerified = vidPrimaryResult.verified && pidPrimaryResult.verified;
+      
+      // Escribir en ubicación SECUNDARIA (0x48-0x4B)
+      usbLogger.info('EMERGENCY', 'Writing to SECONDARY location (0x48-0x4B)...');
+      
+      await this.delay(200);
+      const vidSecondaryResult = await this.writeEEPROM(0x48, vidHex, skipVerification);
+      await this.delay(200);
+      const pidSecondaryResult = await this.writeEEPROM(0x4A, pidHex, skipVerification);
+      
+      details.secondaryWritten = true;
+      details.secondaryVerified = vidSecondaryResult.verified && pidSecondaryResult.verified;
+      
+      const success = details.primaryWritten && details.secondaryWritten;
+      const fullyVerified = details.primaryVerified && details.secondaryVerified;
+      
+      const vidStr = `0x${targetVID.toString(16).toUpperCase()}`;
+      const pidStr = `0x${targetPID.toString(16).toUpperCase()}`;
+      const sourceStr = usedSavedValues ? 'saved original' : 'ASIX default';
+      
+      if (success && fullyVerified) {
+        usbLogger.success('EMERGENCY', `Restore completed using ${sourceStr} values!`);
+        return {
+          success: true,
+          message: `Adapter restored to ${sourceStr} values (VID: ${vidStr}, PID: ${pidStr}). Disconnect and reconnect the adapter.`,
+          usedSavedValues,
+          restoredVID: targetVID,
+          restoredPID: targetPID,
+          details
+        };
+      } else if (success && !fullyVerified) {
+        return {
+          success: true,
+          message: `Write completed but verification failed. Values: VID: ${vidStr}, PID: ${pidStr}. Disconnect and reconnect to verify.`,
+          usedSavedValues,
+          restoredVID: targetVID,
+          restoredPID: targetPID,
+          details
+        };
+      } else {
+        throw new Error('Failed to write to one or more locations');
+      }
+    } catch (error: any) {
+      usbLogger.error('EMERGENCY', `Emergency restore failed: ${error.message}`);
+      return {
+        success: false,
+        message: `Emergency restore failed: ${error.message}`,
+        usedSavedValues,
+        restoredVID: targetVID,
+        restoredPID: targetPID,
         details
       };
     }

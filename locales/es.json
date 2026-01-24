@@ -1265,7 +1265,9 @@
     "next_steps": "📝 Próximos Pasos",
     "step1": "1. Desconecta y reconecta el adaptador",
     "step2": "2. Conecta al puerto USB del MIB2",
-    "step3": "3. Verifica que el MIB2 lo reconozca"
+    "step3": "3. Verifica que el MIB2 lo reconozca",
+    "share_result": "Compartir Resultado",
+    "close": "Cerrar"
   },
   "alerts": {
     "código_duplicado": "Código Duplicado",
@@ -1444,7 +1446,9 @@
     "confirm_restore": "Sí, Restaurar",
     "restoring": "Restaurando...",
     "emergency_restore_success": "Restauración Exitosa",
-    "emergency_restore_failed": "Restauración Fallida"
+    "emergency_restore_failed": "Restauración Fallida",
+    "used_saved_values": "ℹ️ Usando valores originales guardados antes del spoofing",
+    "used_default_values": "⚠️ No se encontraron valores guardados. Usando valores ASIX por defecto (0x0B95:0x772B)"
   },
   "onboarding": {
     "step1_title": "Conectar Adaptador USB",

@@ -240,13 +240,17 @@ export default function UsbStatusScreen() {
                     try {
                       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
                       
-                      const result = await usbService.emergencyRestoreASIX(false);
+                      const result = await usbService.emergencyRestoreOriginal(false);
                       
                       if (result.success) {
                         await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                        const sourceInfo = result.usedSavedValues 
+                          ? t('usb.used_saved_values')
+                          : t('usb.used_default_values');
                         Alert.alert(
                           t('usb.emergency_restore_success'),
                           result.message + '\n\n' +
+                          sourceInfo + '\n\n' +
                           `Primary: ${result.details.primaryVerified ? '✅' : '⚠️'}\n` +
                           `Secondary: ${result.details.secondaryVerified ? '✅' : '⚠️'}`
                         );

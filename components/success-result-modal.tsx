@@ -49,53 +49,54 @@ export function SuccessResultModal({
       transparent
       statusBarTranslucent
     >
-      <View className="flex-1 bg-black/80 justify-center items-center px-6">
+      <View className="flex-1 bg-black/70 justify-center items-center px-5">
         <Animated.View
-          entering={ZoomIn.duration(400)}
-          className="bg-surface rounded-3xl p-8 w-full max-w-md border border-border"
+          entering={ZoomIn.duration(300)}
+          className="bg-surface rounded-3xl p-6 w-full max-w-sm"
         >
           <ScrollView showsVerticalScrollIndicator={false}>
-            {/* Success Icon */}
+            {/* Success Icon - iOS style */}
             <Animated.View
-              entering={FadeIn.delay(200).duration(400)}
-              className="items-center mb-6"
+              entering={FadeIn.delay(150).duration(300)}
+              className="items-center mb-5"
             >
-              <View className="bg-green-500/20 rounded-full p-6 mb-4">
-                <Text className="text-6xl">✅</Text>
+              <View className="bg-success/15 rounded-full p-5 mb-3">
+                <Text className="text-5xl">✅</Text>
               </View>
-              <Text className="text-2xl font-bold text-foreground text-center">
+              <Text className="text-xl font-bold text-foreground text-center">
                 {t('success.spoofing_success')}
               </Text>
-              <Text className="text-base text-muted text-center mt-2">
+              <Text className="text-sm text-muted text-center mt-1">
                 {t('success.vid_pid_modified')}
               </Text>
             </Animated.View>
 
-            {/* Device Info */}
-            <View className="bg-background rounded-2xl p-4 mb-6">
-              <Text className="text-sm font-semibold text-foreground mb-3">
+            {/* Device Info - Clean card */}
+            <View className="bg-background rounded-xl p-4 mb-4">
+              <Text className="text-xs font-semibold text-muted uppercase tracking-wide mb-3">
                 {t('success.device_info')}
               </Text>
               <View className="gap-2">
                 <View className="flex-row justify-between">
-                  <Text className="text-sm text-muted">{t('success.device')}:</Text>
+                  <Text className="text-sm text-muted">{t('success.device')}</Text>
                   <Text className="text-sm text-foreground font-medium">
                     {result.deviceName}
                   </Text>
                 </View>
                 <View className="flex-row justify-between">
-                  <Text className="text-sm text-muted">{t('success.chipset')}:</Text>
+                  <Text className="text-sm text-muted">{t('success.chipset')}</Text>
                   <Text className="text-sm text-foreground font-medium">
                     {result.chipset}
                   </Text>
                 </View>
                 <View className="flex-row justify-between">
-                  <Text className="text-sm text-muted">{t('success.date')}:</Text>
+                  <Text className="text-sm text-muted">{t('success.date')}</Text>
                   <Text className="text-sm text-foreground font-medium">
-                    {result.timestamp.toLocaleString('es-ES', {
+                    {result.timestamp.toLocaleDateString(undefined, {
                       day: '2-digit',
                       month: '2-digit',
                       year: 'numeric',
+                    })}, {result.timestamp.toLocaleTimeString(undefined, {
                       hour: '2-digit',
                       minute: '2-digit',
                     })}
@@ -104,91 +105,87 @@ export function SuccessResultModal({
               </View>
             </View>
 
-            {/* Before/After Comparison */}
-            <View className="gap-4 mb-6">
+            {/* Before/After Comparison - Simplified */}
+            <View className="gap-3 mb-4">
               {/* Before */}
-              <View className="bg-red-900/20 rounded-2xl p-4 border border-red-700">
-                <Text className="text-sm font-semibold text-red-400 mb-3">
+              <View className="bg-error/10 rounded-xl p-4">
+                <Text className="text-xs font-semibold text-error uppercase tracking-wide mb-2">
                   {t('success.before_original')}
                 </Text>
-                <View className="gap-2">
-                  <View className="flex-row justify-between">
-                    <Text className="text-sm text-red-300">VID:</Text>
-                    <Text className="text-sm text-red-200 font-mono font-bold">
-                      {result.originalVID}
-                    </Text>
-                  </View>
-                  <View className="flex-row justify-between">
-                    <Text className="text-sm text-red-300">PID:</Text>
-                    <Text className="text-sm text-red-200 font-mono font-bold">
-                      {result.originalPID}
-                    </Text>
-                  </View>
+                <View className="flex-row justify-between">
+                  <Text className="text-sm text-muted">VID</Text>
+                  <Text className="text-sm text-foreground font-mono font-semibold">
+                    {result.originalVID}
+                  </Text>
+                </View>
+                <View className="flex-row justify-between mt-1">
+                  <Text className="text-sm text-muted">PID</Text>
+                  <Text className="text-sm text-foreground font-mono font-semibold">
+                    {result.originalPID}
+                  </Text>
                 </View>
               </View>
 
               {/* Arrow */}
               <View className="items-center">
-                <Text className="text-3xl text-primary">⬇️</Text>
+                <Text className="text-2xl">⬇️</Text>
               </View>
 
               {/* After */}
-              <View className="bg-green-900/20 rounded-2xl p-4 border border-green-700">
-                <Text className="text-sm font-semibold text-green-400 mb-3">
+              <View className="bg-success/10 rounded-xl p-4">
+                <Text className="text-xs font-semibold text-success uppercase tracking-wide mb-2">
                   {t('success.after_modified')}
                 </Text>
-                <View className="gap-2">
-                  <View className="flex-row justify-between">
-                    <Text className="text-sm text-green-300">VID:</Text>
-                    <Text className="text-sm text-green-200 font-mono font-bold">
-                      {result.newVID}
-                    </Text>
-                  </View>
-                  <View className="flex-row justify-between">
-                    <Text className="text-sm text-green-300">PID:</Text>
-                    <Text className="text-sm text-green-200 font-mono font-bold">
-                      {result.newPID}
-                    </Text>
-                  </View>
+                <View className="flex-row justify-between">
+                  <Text className="text-sm text-muted">VID</Text>
+                  <Text className="text-sm text-foreground font-mono font-semibold">
+                    {result.newVID}
+                  </Text>
+                </View>
+                <View className="flex-row justify-between mt-1">
+                  <Text className="text-sm text-muted">PID</Text>
+                  <Text className="text-sm text-foreground font-mono font-semibold">
+                    {result.newPID}
+                  </Text>
                 </View>
               </View>
             </View>
 
-            {/* Next Steps */}
-            <View className="bg-yellow-900/20 rounded-2xl p-4 border border-yellow-700 mb-6">
-              <Text className="text-sm font-semibold text-yellow-400 mb-2">
+            {/* Next Steps - Subtle warning style */}
+            <View className="bg-warning/10 rounded-xl p-4 mb-5">
+              <Text className="text-xs font-semibold text-warning uppercase tracking-wide mb-2">
                 {t('success.next_steps')}
               </Text>
               <View className="gap-1">
-                <Text className="text-sm text-yellow-300">
+                <Text className="text-sm text-foreground">
                   {t('success.step1')}
                 </Text>
-                <Text className="text-sm text-yellow-300">
+                <Text className="text-sm text-foreground">
                   {t('success.step2')}
                 </Text>
-                <Text className="text-sm text-yellow-300">
+                <Text className="text-sm text-foreground">
                   {t('success.step3')}
                 </Text>
               </View>
             </View>
 
-            {/* Action Buttons */}
+            {/* Action Buttons - iOS style */}
             <View className="gap-3">
               <TouchableOpacity
                 onPress={handleShare}
-                className="bg-primary px-6 py-4 rounded-xl active:opacity-80"
+                className="bg-primary py-4 rounded-xl active:opacity-80"
               >
-                <Text className="text-background font-semibold text-center text-base">
-                  📤 Compartir Resultado
+                <Text className="text-white font-semibold text-center text-base">
+                  📤 {t('success.share_result')}
                 </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 onPress={handleClose}
-                className="bg-surface px-6 py-3 rounded-xl border border-border active:opacity-80"
+                className="py-3 rounded-xl active:opacity-60"
               >
-                <Text className="text-foreground font-medium text-center">
-                  Cerrar
+                <Text className="text-primary font-medium text-center text-base">
+                  {t('success.close')}
                 </Text>
               </TouchableOpacity>
             </View>

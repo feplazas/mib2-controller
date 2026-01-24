@@ -2365,3 +2365,38 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 
 ### Version Update
 - [x] Incremented versionCode from 16 to 17
+
+
+## UI Improvements v18
+
+### Textos en español restantes
+- [x] Corregir "Compartir Resultado" en modal de éxito
+- [x] Corregir "Cerrar" en modal de éxito
+
+### Estilo Apple-like
+- [x] Simplificar colores de bordes (menos vibrantes)
+- [x] Mejorar tipografía y espaciado
+- [x] Usar fondos más sutiles
+
+### Emergency Restore mejorado
+- [ ] Guardar valores originales VID/PID antes del spoofing
+- [ ] Leer valores originales guardados en Emergency Restore
+- [ ] Fallback a valores ASIX genéricos si no hay guardados
+
+
+## UI Improvements v18 (24 Ene 2026)
+
+### Textos en español corregidos
+- [x] Corregir "Compartir Resultado" en modal de éxito
+- [x] Corregir "Cerrar" en modal de éxito
+
+### Estilo Apple-like
+- [x] Simplificar colores de bordes (menos vibrantes)
+- [x] Mejorar tipografía y espaciado
+- [x] Usar fondos más sutiles
+
+### Emergency Restore Mejorado
+- [x] Guardar valores originales antes del spoofing
+- [x] Crear función emergencyRestoreOriginal
+- [x] Usar valores guardados con fallback a ASIX
+- [x] Agregar traducciones para mensajes de valores guardados/default
