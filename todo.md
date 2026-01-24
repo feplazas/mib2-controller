@@ -2316,3 +2316,10 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] readEEPROM: Ahora intercambia bytes (buffer[1] = byte par, buffer[0] = byte impar)
 - [x] Verificación: Ahora usa el mismo formato que readEEPROM
 - [x] Formato consistente en toda la cadena: write -> read -> verify
+
+## Limpieza de UI y Sonidos (24 Ene 2026)
+- [x] Quitar sonido de cambio de pestaña (tab navigation)
+- [x] Eliminar toggle de sonido en Settings
+- [ ] Limpiar interfaz redundante
+- [x] Corregir textos hardcodeados en español (usar i18n)
+- [ ] Investigar por qué el spoofing dice éxito pero no funciona

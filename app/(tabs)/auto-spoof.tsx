@@ -347,8 +347,8 @@ export default function AutoSpoofScreen() {
       
       if (!allVerified) {
         // ROLLBACK AUTOMÁTICO: Restaurar VID/PID original
-        const failLocation = !primaryVerified ? 'primaria (0x88)' : 'secundaria (0x48)';
-        usbLogger.error('SPOOF', `Verificación fallida en ubicación ${failLocation} - iniciando rollback automático`);
+        const failLocation = !primaryVerified ? 'primary (0x88)' : 'secondary (0x48)';
+        usbLogger.error('SPOOF', `Verification failed at ${failLocation} location - starting automatic rollback`);
         dispatch({ type: 'SET_STEP', payload: 'rolling_back' });
         
         try {
@@ -362,18 +362,18 @@ export default function AutoSpoofScreen() {
           const originalPidHex = originalPidLow.toString(16).padStart(2, '0') + originalPidHigh.toString(16).padStart(2, '0');
           
           // Rollback ubicación primaria
-          usbLogger.info('ROLLBACK', `Restaurando VID original en 0x88: 0x${originalVidHex.toUpperCase()}`);
+          usbLogger.info('ROLLBACK', `Restoring original VID at 0x88: 0x${originalVidHex.toUpperCase()}`);
           await usbService.writeEEPROM(0x88, originalVidHex, false);
           
-          usbLogger.info('ROLLBACK', `Restaurando PID original en 0x8A: 0x${originalPidHex.toUpperCase()}`);
+          usbLogger.info('ROLLBACK', `Restoring original PID at 0x8A: 0x${originalPidHex.toUpperCase()}`);
           await usbService.writeEEPROM(0x8A, originalPidHex, false);
           
           // Rollback ubicación secundaria si existe
           if (dualVIDPID?.hasDualLocation) {
-            usbLogger.info('ROLLBACK', `Restaurando VID original en 0x48: 0x${originalVidHex.toUpperCase()}`);
+            usbLogger.info('ROLLBACK', `Restoring original VID at 0x48: 0x${originalVidHex.toUpperCase()}`);
             await usbService.writeEEPROM(0x48, originalVidHex, false);
             
-            usbLogger.info('ROLLBACK', `Restaurando PID original en 0x4A: 0x${originalPidHex.toUpperCase()}`);
+            usbLogger.info('ROLLBACK', `Restoring original PID at 0x4A: 0x${originalPidHex.toUpperCase()}`);
             await usbService.writeEEPROM(0x4A, originalPidHex, false);
           }
           
@@ -388,22 +388,22 @@ export default function AutoSpoofScreen() {
           
           if (rollbackVidWord.data.toLowerCase() === expectedVidLE.toLowerCase() || 
               rollbackVidWord.data.toLowerCase() === expectedVidBE.toLowerCase()) {
-            usbLogger.success('ROLLBACK', 'Rollback exitoso - VID/PID original restaurado');
+            usbLogger.success('ROLLBACK', 'Rollback successful - original VID/PID restored');
             throw new Error(t('auto_spoof.error_verification_failed_rollback_success'));
           } else {
-            usbLogger.error('ROLLBACK', 'Rollback falló - el adaptador puede estar en estado inconsistente');
+            usbLogger.error('ROLLBACK', 'Rollback failed - adapter may be in inconsistent state');
             throw new Error(t('auto_spoof.error_verification_failed_rollback_failed'));
           }
         } catch (rollbackError: any) {
           if (rollbackError.message.includes('rollback')) {
             throw rollbackError; // Re-throw si es nuestro error de rollback
           }
-          usbLogger.error('ROLLBACK', `Error durante rollback: ${rollbackError.message}`);
+          usbLogger.error('ROLLBACK', `Error during rollback: ${rollbackError.message}`);
           throw new Error(t('auto_spoof.error_verification_failed_rollback_error'));
         }
       }
 
-      // Éxito
+      // Success
       const verificationNote = state.skipVerification 
         ? '\n' + t('auto_spoof.verification_skipped_note')
         : '';

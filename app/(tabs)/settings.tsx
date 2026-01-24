@@ -11,7 +11,6 @@ import { usbService } from "@/lib/usb-service";
 import * as Clipboard from 'expo-clipboard';
 
 import { useTranslation, useLanguage, LanguageOption } from "@/lib/language-context";
-import { isSoundEnabled, setSoundEnabled } from "@/lib/tab-sound-service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect } from "react";
 
@@ -33,36 +32,7 @@ export default function SettingsScreen() {
   const { selectedLanguage, setLanguage: setAppLanguage } = useLanguage();
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const { status, device, devices } = useUsbStatus();
-  const [tabSoundEnabled, setTabSoundEnabled] = useState(isSoundEnabled());
 
-  // Cargar preferencia de sonido al iniciar
-  useEffect(() => {
-    const loadSoundPreference = async () => {
-      try {
-        const stored = await AsyncStorage.getItem('tabSoundEnabled');
-        if (stored !== null) {
-          const enabled = stored === 'true';
-          setTabSoundEnabled(enabled);
-          setSoundEnabled(enabled);
-        }
-      } catch (error) {
-        console.warn('Error loading sound preference:', error);
-      }
-    };
-    loadSoundPreference();
-  }, []);
-
-  // Handler para toggle de sonido
-  const handleToggleTabSound = async (enabled: boolean) => {
-    setTabSoundEnabled(enabled);
-    setSoundEnabled(enabled);
-    try {
-      await AsyncStorage.setItem('tabSoundEnabled', enabled.toString());
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    } catch (error) {
-      console.warn('Error saving sound preference:', error);
-    }
-  };
 
   const handleSaveSettings = async () => {
     try {
@@ -152,25 +122,6 @@ export default function SettingsScreen() {
             </View>
           </View>
 
-          {/* Sound Settings Section */}
-          <View className="bg-surface rounded-2xl p-6 border border-border">
-            <View className="flex-row items-center justify-between">
-              <View className="flex-1 mr-4">
-                <Text className="text-lg font-semibold text-foreground">
-                  🔊 {t('settings.tab_sound')}
-                </Text>
-                <Text className="text-xs text-muted mt-1">
-                  {t('settings.tab_sound_description')}
-                </Text>
-              </View>
-              <Switch
-                value={tabSoundEnabled}
-                onValueChange={handleToggleTabSound}
-                trackColor={{ false: '#767577', true: '#0a7ea4' }}
-                thumbColor={tabSoundEnabled ? '#ffffff' : '#f4f3f4'}
-              />
-            </View>
-          </View>
 
           {/* Language Selector Modal */}
           {showLanguageSelector && (
