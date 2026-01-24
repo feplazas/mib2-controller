@@ -2458,3 +2458,23 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Crear componente CopyableCodeBlock
 - [x] Actualizar guías para usar el componente copiable
 - [x] Agregar feedback visual al copiar
+
+
+## Mejoras v23 (24 Ene 2026)
+
+### Targets adicionales de spoofing
+- [x] Agregar D-Link DUB-E100 alternativo (0x2001, 0x1A02)
+- [x] Agregar SMSC9500 (0x0424, 0x9500)
+- [x] Agregar Germaneers LAN9514 (0x2721, 0xEC00)
+- [x] Agregar Cinterion AH6A 3G (0x1E2D, 0x0055)
+- [x] Agregar Cinterion ALS1/ALS6 (0x1E2D, 0x0060)
+
+### Estilo visual ultra premium
+- [x] Mejorar colores y tipografía (tema iOS 18 ya aplicado)
+- [x] Reducir uso de emojis (iconos SF Symbols usados)
+- [x] Mejorar espaciado y sombras (configuración premium)
+
+### Guías y comandos copiables
+- [x] Verificar todos los bloques de código sean copiables (CopyableCodeBlock implementado)
+- [x] Revisar guías para eliminar redundancias (estructura limpia)
+- [x] Asegurar que las guías sean correctas y detalladas (15 pasos completos)
