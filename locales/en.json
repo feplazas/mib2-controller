@@ -1925,6 +1925,8 @@
     "system_already_patched_short": "Already patched"
   },
   "installation_guide": {
+    "tap_to_copy": "Tap code blocks to copy to clipboard",
+    "telnet_credentials": "User: root | Password: (empty, just press Enter)",
     "title": "Complete MIB2 Toolbox Installation Guide",
     "critical_warning": "CRITICAL WARNING: This guide modifies the MIB2 system. ALWAYS make backups BEFORE proceeding. The user is responsible for any damage.",
     "phase1_title": "PHASE 1: Preparation and Verification",

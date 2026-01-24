@@ -1,10 +1,12 @@
 import { ScrollView, Text, View, StyleSheet } from 'react-native';
 import { useColors } from '@/hooks/use-colors';
 import { useTranslation } from '@/lib/language-context';
+import { CopyableCodeBlock } from './copyable-code-block';
 
 /**
  * Guía completa de instalación y configuración del MIB2 Toolbox
  * Incluye todos los pasos desde la preparación hasta la restauración
+ * Los bloques de código son copiables al portapapeles
  */
 export function InstallationGuide() {
   const colors = useColors();
@@ -51,15 +53,6 @@ export function InstallationGuide() {
       color: colors.primary,
       marginTop: 16,
       marginBottom: 8,
-    },
-    command: {
-      fontFamily: 'monospace',
-      fontSize: 13,
-      color: colors.success,
-      backgroundColor: colors.surface,
-      padding: 12,
-      borderRadius: 8,
-      marginVertical: 8,
     },
     warning: {
       backgroundColor: '#FFF3CD',
@@ -111,6 +104,12 @@ export function InstallationGuide() {
       lineHeight: 22,
       marginBottom: 6,
     },
+    copyHint: {
+      fontSize: 12,
+      color: colors.muted,
+      fontStyle: 'italic',
+      marginBottom: 4,
+    },
   });
 
   return (
@@ -118,6 +117,10 @@ export function InstallationGuide() {
       <View style={styles.content}>
         <Text style={styles.title}>
           {t('installation_guide.title')}
+        </Text>
+
+        <Text style={styles.copyHint}>
+          💡 {t('installation_guide.tap_to_copy') || 'Tap code blocks to copy to clipboard'}
         </Text>
 
         <View style={styles.danger}>
@@ -148,9 +151,7 @@ export function InstallationGuide() {
         <Text style={styles.stepNumber}>
           {t('installation_guide.step')} 1: {t('installation_guide.verify_connection')}
         </Text>
-        <Text style={styles.command}>
-          ping 192.168.1.4
-        </Text>
+        <CopyableCodeBlock code="ping 192.168.1.4" />
         <Text style={styles.paragraph}>
           {t('installation_guide.verify_connection_desc')}
         </Text>
@@ -158,18 +159,15 @@ export function InstallationGuide() {
         <Text style={styles.stepNumber}>
           {t('installation_guide.step')} 2: {t('installation_guide.verify_telnet')}
         </Text>
-        <Text style={styles.command}>
-          telnet 192.168.1.4{'\n'}
-          # Usuario: root{'\n'}
-          # Contraseña: (vacía, solo Enter)
+        <CopyableCodeBlock code="telnet 192.168.1.4" />
+        <Text style={styles.paragraph}>
+          {t('installation_guide.telnet_credentials') || '# User: root\n# Password: (empty, just press Enter)'}
         </Text>
 
         <Text style={styles.stepNumber}>
           {t('installation_guide.step')} 3: {t('installation_guide.verify_root')}
         </Text>
-        <Text style={styles.command}>
-          whoami
-        </Text>
+        <CopyableCodeBlock code="whoami" />
         <Text style={styles.paragraph}>
           {t('installation_guide.verify_root_desc')}
         </Text>
@@ -188,28 +186,24 @@ export function InstallationGuide() {
         <Text style={styles.stepNumber}>
           {t('installation_guide.step')} 4: {t('installation_guide.mount_sd')}
         </Text>
-        <Text style={styles.command}>
-          mkdir -p /mnt/sd{'\n'}
-          mount -t qnx6 /dev/mmcblk0p1 /mnt/sd{'\n'}
-          ls /mnt/sd
-        </Text>
+        <CopyableCodeBlock code="mkdir -p /mnt/sd" />
+        <CopyableCodeBlock code="mount -t qnx6 /dev/mmcblk0p1 /mnt/sd" />
+        <CopyableCodeBlock code="ls /mnt/sd" />
 
         <Text style={styles.stepNumber}>
           {t('installation_guide.step')} 5: {t('installation_guide.create_backup_dir')}
         </Text>
-        <Text style={styles.command}>
-          mkdir -p /mnt/sd/backups{'\n'}
-          df -h /mnt/sd
-        </Text>
+        <CopyableCodeBlock code="mkdir -p /mnt/sd/backups" />
+        <CopyableCodeBlock code="df -h /mnt/sd" />
 
         <Text style={styles.stepNumber}>
           {t('installation_guide.step')} 6: {t('installation_guide.backup_critical_binary')}
         </Text>
-        <Text style={styles.command}>
-          cp /net/rcc/dev/shmem/tsd.mibstd2.system.swap \{'\n'}
-             /mnt/sd/backups/tsd_original_$(date +%Y%m%d).bin{'\n'}
-          ls -lh /mnt/sd/backups/
-        </Text>
+        <CopyableCodeBlock 
+          code="cp /net/rcc/dev/shmem/tsd.mibstd2.system.swap /mnt/sd/backups/tsd_original_$(date +%Y%m%d).bin" 
+          multiLine 
+        />
+        <CopyableCodeBlock code="ls -lh /mnt/sd/backups/" />
         <Text style={styles.paragraph}>
           {t('installation_guide.backup_critical_desc')}
         </Text>
@@ -217,10 +211,14 @@ export function InstallationGuide() {
         <Text style={styles.stepNumber}>
           {t('installation_guide.step')} 7: {t('installation_guide.backup_config')}
         </Text>
-        <Text style={styles.command}>
-          tar -czf /mnt/sd/backups/etc_backup_$(date +%Y%m%d).tar.gz /etc{'\n'}
-          tar -czf /mnt/sd/backups/eso_backup_$(date +%Y%m%d).tar.gz /eso 2{'>'}/ dev/null
-        </Text>
+        <CopyableCodeBlock 
+          code="tar -czf /mnt/sd/backups/etc_backup_$(date +%Y%m%d).tar.gz /etc" 
+          multiLine 
+        />
+        <CopyableCodeBlock 
+          code="tar -czf /mnt/sd/backups/eso_backup_$(date +%Y%m%d).tar.gz /eso 2>/dev/null" 
+          multiLine 
+        />
 
         <Text style={styles.stepNumber}>
           {t('installation_guide.step')} 8: {t('installation_guide.backup_full_optional')}
@@ -230,10 +228,14 @@ export function InstallationGuide() {
             ⏱️ {t('installation_guide.backup_full_time')}
           </Text>
         </View>
-        <Text style={styles.command}>
-          dd if=/dev/mmcblk0 of=/mnt/sd/backups/mib2_full_backup.img bs=4M status=progress{'\n'}
-          md5sum /mnt/sd/backups/mib2_full_backup.img {'>'} /mnt/sd/backups/mib2_full_backup.img.md5
-        </Text>
+        <CopyableCodeBlock 
+          code="dd if=/dev/mmcblk0 of=/mnt/sd/backups/mib2_full_backup.img bs=4M status=progress" 
+          multiLine 
+        />
+        <CopyableCodeBlock 
+          code="md5sum /mnt/sd/backups/mib2_full_backup.img > /mnt/sd/backups/mib2_full_backup.img.md5" 
+          multiLine 
+        />
 
         {/* FASE 3: INSTALACIÓN DEL TOOLBOX */}
         <Text style={styles.sectionTitle}>
@@ -250,11 +252,9 @@ export function InstallationGuide() {
         <Text style={styles.stepNumber}>
           {t('installation_guide.step')} 10: {t('installation_guide.run_installer')}
         </Text>
-        <Text style={styles.command}>
-          cd /mnt/sd{'\n'}
-          chmod +x install.sh{'\n'}
-          ./install.sh
-        </Text>
+        <CopyableCodeBlock code="cd /mnt/sd" />
+        <CopyableCodeBlock code="chmod +x install.sh" />
+        <CopyableCodeBlock code="./install.sh" />
         <Text style={styles.paragraph}>
           {t('installation_guide.run_installer_desc')}
         </Text>
@@ -262,10 +262,8 @@ export function InstallationGuide() {
         <Text style={styles.stepNumber}>
           {t('installation_guide.step')} 11: {t('installation_guide.verify_installation')}
         </Text>
-        <Text style={styles.command}>
-          ls -la /eso{'\n'}
-          ls -la /eso/bin
-        </Text>
+        <CopyableCodeBlock code="ls -la /eso" />
+        <CopyableCodeBlock code="ls -la /eso/bin" />
 
         <Text style={styles.stepNumber}>
           {t('installation_guide.step')} 12: {t('installation_guide.apply_patch')}
@@ -275,16 +273,12 @@ export function InstallationGuide() {
             ⚠️ {t('installation_guide.patch_warning')}
           </Text>
         </View>
-        <Text style={styles.command}>
-          /eso/bin/patch_swap.sh
-        </Text>
+        <CopyableCodeBlock code="/eso/bin/patch_swap.sh" />
 
         <Text style={styles.stepNumber}>
           {t('installation_guide.step')} 13: {t('installation_guide.reboot_system')}
         </Text>
-        <Text style={styles.command}>
-          reboot
-        </Text>
+        <CopyableCodeBlock code="reboot" />
         <Text style={styles.paragraph}>
           {t('installation_guide.reboot_desc')}
         </Text>
@@ -304,10 +298,8 @@ export function InstallationGuide() {
         <Text style={styles.stepNumber}>
           {t('installation_guide.step')} 15: {t('installation_guide.verify_toolbox')}
         </Text>
-        <Text style={styles.command}>
-          ls /eso/bin{'\n'}
-          /eso/bin/gem.sh --help
-        </Text>
+        <CopyableCodeBlock code="ls /eso/bin" />
+        <CopyableCodeBlock code="/eso/bin/gem.sh --help" />
 
         <View style={styles.success}>
           <Text style={styles.successText}>
@@ -327,20 +319,17 @@ export function InstallationGuide() {
         <Text style={styles.subsectionTitle}>
           {t('installation_guide.restore_binary_title')}
         </Text>
-        <Text style={styles.command}>
-          cp /mnt/sd/backups/tsd_original_YYYYMMDD.bin \{'\n'}
-             /net/rcc/dev/shmem/tsd.mibstd2.system.swap{'\n'}
-          reboot
-        </Text>
+        <CopyableCodeBlock 
+          code="cp /mnt/sd/backups/tsd_original_YYYYMMDD.bin /net/rcc/dev/shmem/tsd.mibstd2.system.swap" 
+          multiLine 
+        />
+        <CopyableCodeBlock code="reboot" />
 
         <Text style={styles.subsectionTitle}>
           {t('installation_guide.restore_guided_title')}
         </Text>
         <Text style={styles.paragraph}>
           {t('installation_guide.restore_guided_desc')}
-        </Text>
-        <Text style={styles.command}>
-          sh /mnt/sd/guided_restore.sh /mnt/sd/backups/mib2_full_backup.img
         </Text>
 
         <View style={styles.warning}>

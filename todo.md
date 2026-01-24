@@ -2451,3 +2451,10 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Aplicar estilo visual ultra premium iOS-like
 - [x] Commit y sync a GitHub
 - [x] Preparar preflight para Play Store
+
+
+## Copyable Code Blocks v22 (24 Ene 2026)
+
+- [x] Crear componente CopyableCodeBlock
+- [x] Actualizar guías para usar el componente copiable
+- [x] Agregar feedback visual al copiar
