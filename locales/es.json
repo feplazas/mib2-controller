@@ -1448,7 +1448,15 @@
     "emergency_restore_success": "Restauración Exitosa",
     "emergency_restore_failed": "Restauración Fallida",
     "used_saved_values": "ℹ️ Usando valores originales guardados antes del spoofing",
-    "used_default_values": "⚠️ No se encontraron valores guardados. Usando valores ASIX por defecto (0x0B95:0x772B)"
+    "used_default_values": "⚠️ No se encontraron valores guardados. Usando valores ASIX por defecto (0x0B95:0x772B)",
+    "saved_original_values": "Valores Originales Guardados",
+    "saved_at": "Guardado el",
+    "clear_saved_values": "Limpiar Valores Guardados",
+    "clear_saved_values_title": "Limpiar Valores Guardados",
+    "clear_saved_values_confirm": "Esto eliminará los valores VID/PID originales guardados.\n\nEmergency Restore usará los valores ASIX por defecto (0x0B95:0x772B) en su lugar.",
+    "clear_saved_values_success": "Valores guardados eliminados correctamente",
+    "no_saved_values": "Sin Valores Originales Guardados",
+    "no_saved_values_desc": "Los valores originales se guardarán automáticamente antes de tu primera operación de spoofing."
   },
   "onboarding": {
     "step1_title": "Conectar Adaptador USB",

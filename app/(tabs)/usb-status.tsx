@@ -25,6 +25,23 @@ export default function UsbStatusScreen() {
   const [isDisconnecting, setIsDisconnecting] = useState(false);
   const [isCheckingCompatibility, setIsCheckingCompatibility] = useState(false);
   const [isEmergencyRestoring, setIsEmergencyRestoring] = useState(false);
+  const [savedOriginalValues, setSavedOriginalValues] = useState<{
+    vendorId: number;
+    productId: number;
+    chipset: string;
+    deviceName: string;
+    savedAt: string;
+  } | null>(null);
+  const [isClearingValues, setIsClearingValues] = useState(false);
+
+  // Cargar valores originales guardados al montar
+  useEffect(() => {
+    const loadSavedValues = async () => {
+      const values = await usbService.getOriginalValues();
+      setSavedOriginalValues(values);
+    };
+    loadSavedValues();
+  }, []);
 
   // Simular verificación de compatibilidad cuando se conecta
   useEffect(() => {
@@ -268,6 +285,35 @@ export default function UsbStatusScreen() {
                 }
               ]
             );
+          }
+        }
+      ]
+    );
+  };
+
+  const handleClearSavedValues = async () => {
+    Alert.alert(
+      t('usb.clear_saved_values_title'),
+      t('usb.clear_saved_values_confirm'),
+      [
+        { text: t('common.cancel'), style: 'cancel' },
+        {
+          text: t('usb.clear_saved_values'),
+          style: 'destructive',
+          onPress: async () => {
+            setIsClearingValues(true);
+            try {
+              await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              await usbService.clearOriginalValues();
+              setSavedOriginalValues(null);
+              await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+              showAlert('common.success', 'usb.clear_saved_values_success');
+            } catch (error: any) {
+              await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+              showAlert('alerts.error', error.message);
+            } finally {
+              setIsClearingValues(false);
+            }
           }
         }
       ]
@@ -623,6 +669,53 @@ export default function UsbStatusScreen() {
                   {t('usb.emergency_restore_desc')}
                 </Text>
               </TouchableOpacity>
+
+              {/* Indicador de Valores Originales Guardados */}
+              {savedOriginalValues && (
+                <View className="rounded-xl p-4 border-2 bg-primary/10 border-primary">
+                  <View className="flex-row items-center gap-2 mb-2">
+                    <Text className="text-xl">💾</Text>
+                    <Text className="text-base font-bold text-primary">
+                      {t('usb.saved_original_values')}
+                    </Text>
+                  </View>
+                  <View className="gap-1">
+                    <Text className="text-sm text-muted">
+                      VID: 0x{savedOriginalValues.vendorId.toString(16).toUpperCase().padStart(4, '0')}
+                    </Text>
+                    <Text className="text-sm text-muted">
+                      PID: 0x{savedOriginalValues.productId.toString(16).toUpperCase().padStart(4, '0')}
+                    </Text>
+                    <Text className="text-xs text-muted mt-1">
+                      {t('usb.saved_at')}: {new Date(savedOriginalValues.savedAt).toLocaleString()}
+                    </Text>
+                  </View>
+                  <TouchableOpacity
+                    onPress={handleClearSavedValues}
+                    disabled={isClearingValues}
+                    className="mt-3 rounded-lg py-2 px-4 bg-muted/20 active:opacity-80"
+                  >
+                    <Text className="text-sm text-muted text-center">
+                      {isClearingValues ? t('common.loading') : t('usb.clear_saved_values')}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+
+              {/* Indicador de NO hay valores guardados */}
+              {!savedOriginalValues && (
+                <View className="rounded-xl p-4 border-2 bg-warning/10 border-warning/50">
+                  <View className="flex-row items-center gap-2">
+                    <Text className="text-xl">⚠️</Text>
+                    <Text className="text-sm text-warning">
+                      {t('usb.no_saved_values')}
+                    </Text>
+                  </View>
+                  <Text className="text-xs text-muted mt-2">
+                    {t('usb.no_saved_values_desc')}
+                  </Text>
+                </View>
+              )}
 
               {/* Botón Ver Backups / Restaurar */}
               <TouchableOpacity

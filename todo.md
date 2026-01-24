@@ -2400,3 +2400,10 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Crear función emergencyRestoreOriginal
 - [x] Usar valores guardados con fallback a ASIX
 - [x] Agregar traducciones para mensajes de valores guardados/default
+
+
+## Indicador de Valores Originales v19 (24 Ene 2026)
+
+- [x] Agregar indicador visual de valores originales guardados en USB Status
+- [x] Implementar botón para limpiar valores guardados
+- [x] Agregar traducciones i18n para nuevos textos

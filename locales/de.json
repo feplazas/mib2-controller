@@ -1448,7 +1448,15 @@
     "emergency_restore_success": "Wiederherstellung erfolgreich",
     "emergency_restore_failed": "Wiederherstellung fehlgeschlagen",
     "used_saved_values": "ℹ️ Gespeicherte Originalwerte von vor dem Spoofing werden verwendet",
-    "used_default_values": "⚠️ Keine gespeicherten Werte gefunden. ASIX-Standardwerte werden verwendet (0x0B95:0x772B)"
+    "used_default_values": "⚠️ Keine gespeicherten Werte gefunden. ASIX-Standardwerte werden verwendet (0x0B95:0x772B)",
+    "saved_original_values": "Gespeicherte Originalwerte",
+    "saved_at": "Gespeichert am",
+    "clear_saved_values": "Gespeicherte Werte löschen",
+    "clear_saved_values_title": "Gespeicherte Werte löschen",
+    "clear_saved_values_confirm": "Dies löscht die gespeicherten Original-VID/PID-Werte.\n\nEmergency Restore verwendet stattdessen die ASIX-Standardwerte (0x0B95:0x772B).",
+    "clear_saved_values_success": "Gespeicherte Werte erfolgreich gelöscht",
+    "no_saved_values": "Keine gespeicherten Originalwerte",
+    "no_saved_values_desc": "Originalwerte werden automatisch vor Ihrer ersten Spoofing-Operation gespeichert."
   },
   "onboarding": {
     "step1_title": "USB-Adapter verbinden",

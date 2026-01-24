@@ -1449,7 +1449,15 @@
     "confirm_restore": "Yes, Restore",
     "restoring": "Restoring...",
     "emergency_restore_success": "Restore Successful",
-    "emergency_restore_failed": "Restore Failed"
+    "emergency_restore_failed": "Restore Failed",
+    "saved_original_values": "Saved Original Values",
+    "saved_at": "Saved at",
+    "clear_saved_values": "Clear Saved Values",
+    "clear_saved_values_title": "Clear Saved Values",
+    "clear_saved_values_confirm": "This will delete the saved original VID/PID values.\n\nEmergency Restore will use ASIX default values (0x0B95:0x772B) instead.",
+    "clear_saved_values_success": "Saved values cleared successfully",
+    "no_saved_values": "No Saved Original Values",
+    "no_saved_values_desc": "Original values will be saved automatically before your first spoofing operation."
   },
   "onboarding": {
     "step1_title": "Connect USB Adapter",
