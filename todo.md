@@ -2407,3 +2407,9 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Agregar indicador visual de valores originales guardados en USB Status
 - [x] Implementar botón para limpiar valores guardados
 - [x] Agregar traducciones i18n para nuevos textos
+
+
+## Mejoras Indicador v20 (24 Ene 2026)
+
+- [x] Agregar chipset al indicador de valores guardados
+- [x] Mostrar toast al guardar valores durante spoofing

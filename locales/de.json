@@ -909,6 +909,7 @@
     "category_unknown": "Unbekannt"
   },
   "auto_spoof": {
+    "original_values_saved": "💾 Originalwerte für Emergency Restore gespeichert",
     "title": "Automatisches Spoofing",
     "step_1": "Adapter erkennen",
     "step_2": "EEPROM lesen",

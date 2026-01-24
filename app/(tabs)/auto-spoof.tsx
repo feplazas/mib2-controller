@@ -1,6 +1,7 @@
 import { Text, View, ScrollView, TouchableOpacity, Alert } from 'react-native';
-import { useReducer } from 'react';
+import { useReducer, useState } from 'react';
 import { ScreenContainer } from '@/components/screen-container';
+import { Toast } from '@/components/toast';
 import { useUsbStatus } from '@/lib/usb-status-context';
 import { usbService } from '@/lib/usb-service';
 import { backupService } from '@/lib/backup-service';
@@ -30,6 +31,8 @@ export default function AutoSpoofScreen() {
   const t = useTranslation();
   const { status, device } = useUsbStatus();
   const [state, dispatch] = useReducer(spoofReducer, initialSpoofState);
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
   // Helper para traducir claves de safe_test con parámetros
   const translateSafeTestKey = (key: string, t: (key: string) => string): string => {
@@ -240,6 +243,10 @@ export default function AutoSpoofScreen() {
       // Paso 1.6: Guardar valores originales para Emergency Restore mejorado
       usbLogger.info('SPOOF', 'Saving original values for emergency restore...');
       await usbService.saveOriginalValues(device);
+      
+      // Mostrar toast de confirmación
+      setToastMessage(t('auto_spoof.original_values_saved'));
+      setToastVisible(true);
 
       // Paso 2: Crear backup automático
       dispatch({ type: 'SET_STEP', payload: 'creating_backup' });
@@ -1290,6 +1297,15 @@ export default function AutoSpoofScreen() {
         onClose={() => dispatch({ type: 'SHOW_SUCCESS_MODAL', payload: false })}
         result={state.spoofingResult}
         onShare={handleShareResult}
+      />
+      
+      {/* Toast para notificaciones */}
+      <Toast
+        visible={toastVisible}
+        message={toastMessage}
+        type="success"
+        duration={3000}
+        onHide={() => setToastVisible(false)}
       />
     </ScreenContainer>
   );

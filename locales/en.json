@@ -909,6 +909,7 @@
     "category_unknown": "Unknown"
   },
   "auto_spoof": {
+    "original_values_saved": "💾 Original values saved for Emergency Restore",
     "title": "Automatic Spoofing",
     "step_1": "Detect adapter",
     "step_2": "Read EEPROM",

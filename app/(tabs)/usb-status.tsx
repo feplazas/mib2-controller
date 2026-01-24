@@ -680,11 +680,13 @@ export default function UsbStatusScreen() {
                     </Text>
                   </View>
                   <View className="gap-1">
+                    {savedOriginalValues.chipset && (
+                      <Text className="text-sm font-medium text-foreground">
+                        {savedOriginalValues.chipset}
+                      </Text>
+                    )}
                     <Text className="text-sm text-muted">
-                      VID: 0x{savedOriginalValues.vendorId.toString(16).toUpperCase().padStart(4, '0')}
-                    </Text>
-                    <Text className="text-sm text-muted">
-                      PID: 0x{savedOriginalValues.productId.toString(16).toUpperCase().padStart(4, '0')}
+                      VID: 0x{savedOriginalValues.vendorId.toString(16).toUpperCase().padStart(4, '0')} / PID: 0x{savedOriginalValues.productId.toString(16).toUpperCase().padStart(4, '0')}
                     </Text>
                     <Text className="text-xs text-muted mt-1">
                       {t('usb.saved_at')}: {new Date(savedOriginalValues.savedAt).toLocaleString()}
