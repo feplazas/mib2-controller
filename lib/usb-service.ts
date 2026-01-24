@@ -947,6 +947,106 @@ class UsbService {
   private delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
+
+  /**
+   * EMERGENCY RESTORE: Restaurar adaptador a valores originales ASIX
+   * 
+   * Esta función escribe los valores originales de ASIX (VID: 0x0B95, PID: 0x772B)
+   * en AMBAS ubicaciones de EEPROM (0x48 y 0x88) para restaurar un adaptador
+   * que quedó con valores incorrectos después de un spoofing fallido.
+   * 
+   * @param skipVerification - Si es true, no verifica la escritura
+   * @returns Resultado de la restauración
+   */
+  async emergencyRestoreASIX(skipVerification: boolean = false): Promise<{
+    success: boolean;
+    message: string;
+    details: {
+      primaryWritten: boolean;
+      secondaryWritten: boolean;
+      primaryVerified: boolean;
+      secondaryVerified: boolean;
+    };
+  }> {
+    usbLogger.info('EMERGENCY', 'Starting emergency restore to ASIX original values...');
+    
+    // Valores originales ASIX AX88772B
+    const ASIX_VID = 0x0B95;
+    const ASIX_PID = 0x772B;
+    
+    // Convertir a hex string en little-endian (low byte first)
+    // VID 0x0B95 -> bytes: 95, 0B -> hex string: "950B"
+    const vidHex = (ASIX_VID & 0xFF).toString(16).padStart(2, '0') + 
+                   ((ASIX_VID >> 8) & 0xFF).toString(16).padStart(2, '0');
+    // PID 0x772B -> bytes: 2B, 77 -> hex string: "2B77"
+    const pidHex = (ASIX_PID & 0xFF).toString(16).padStart(2, '0') + 
+                   ((ASIX_PID >> 8) & 0xFF).toString(16).padStart(2, '0');
+    
+    usbLogger.info('EMERGENCY', `VID hex: ${vidHex.toUpperCase()}, PID hex: ${pidHex.toUpperCase()}`);
+    
+    const details = {
+      primaryWritten: false,
+      secondaryWritten: false,
+      primaryVerified: false,
+      secondaryVerified: false
+    };
+    
+    try {
+      // Escribir en ubicación PRIMARIA (0x88-0x8B)
+      usbLogger.info('EMERGENCY', 'Writing to PRIMARY location (0x88-0x8B)...');
+      
+      const vidPrimaryResult = await this.writeEEPROM(0x88, vidHex, skipVerification);
+      await this.delay(200);
+      const pidPrimaryResult = await this.writeEEPROM(0x8A, pidHex, skipVerification);
+      
+      details.primaryWritten = true;
+      details.primaryVerified = vidPrimaryResult.verified && pidPrimaryResult.verified;
+      
+      usbLogger.info('EMERGENCY', `Primary location: written=${details.primaryWritten}, verified=${details.primaryVerified}`);
+      
+      // Escribir en ubicación SECUNDARIA (0x48-0x4B)
+      usbLogger.info('EMERGENCY', 'Writing to SECONDARY location (0x48-0x4B)...');
+      
+      await this.delay(200);
+      const vidSecondaryResult = await this.writeEEPROM(0x48, vidHex, skipVerification);
+      await this.delay(200);
+      const pidSecondaryResult = await this.writeEEPROM(0x4A, pidHex, skipVerification);
+      
+      details.secondaryWritten = true;
+      details.secondaryVerified = vidSecondaryResult.verified && pidSecondaryResult.verified;
+      
+      usbLogger.info('EMERGENCY', `Secondary location: written=${details.secondaryWritten}, verified=${details.secondaryVerified}`);
+      
+      // Determinar éxito
+      const success = details.primaryWritten && details.secondaryWritten;
+      const fullyVerified = details.primaryVerified && details.secondaryVerified;
+      
+      if (success && fullyVerified) {
+        usbLogger.success('EMERGENCY', 'Emergency restore completed successfully!');
+        return {
+          success: true,
+          message: 'Adapter restored to ASIX original values (VID: 0x0B95, PID: 0x772B). Disconnect and reconnect the adapter.',
+          details
+        };
+      } else if (success && !fullyVerified) {
+        usbLogger.info('EMERGENCY', 'Emergency restore completed but verification failed. Disconnect and reconnect to verify.');
+        return {
+          success: true,
+          message: 'Write completed but verification failed. Disconnect and reconnect the adapter to verify.',
+          details
+        };
+      } else {
+        throw new Error('Failed to write to one or more locations');
+      }
+    } catch (error: any) {
+      usbLogger.error('EMERGENCY', `Emergency restore failed: ${error.message}`);
+      return {
+        success: false,
+        message: `Emergency restore failed: ${error.message}`,
+        details
+      };
+    }
+  }
 }
 
 // Exportar instancia singleton

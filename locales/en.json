@@ -1432,7 +1432,17 @@
     "checking_compatibility": "Checking Compatibility",
     "analyzing_chipset": "Analyzing chipset",
     "view_backups": "View Backups",
-    "view_backups_desc": "Manage and restore backup copies"
+    "view_backups_desc": "Manage and restore backup copies",
+    "emergency_restore": "Emergency Restore",
+    "emergency_restore_desc": "Restore to original ASIX values",
+    "emergency_restore_title": "Emergency Restore",
+    "emergency_restore_confirm": "This will restore your adapter to original ASIX values (VID: 0x0B95, PID: 0x772B).\n\nUse this if your adapter was corrupted during spoofing.",
+    "emergency_restore_warning_title": "\u26a0\ufe0f Final Confirmation",
+    "emergency_restore_warning": "This will write to BOTH EEPROM locations (0x48 and 0x88).\n\nMake sure:\n\u2022 The correct adapter is connected\n\u2022 Do NOT disconnect during the process\n\nContinue?",
+    "confirm_restore": "Yes, Restore",
+    "restoring": "Restoring...",
+    "emergency_restore_success": "Restore Successful",
+    "emergency_restore_failed": "Restore Failed"
   },
   "onboarding": {
     "step1_title": "Connect USB Adapter",

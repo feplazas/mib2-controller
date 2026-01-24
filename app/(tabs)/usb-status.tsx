@@ -24,6 +24,7 @@ export default function UsbStatusScreen() {
   const [isTestingEEPROM, setIsTestingEEPROM] = useState(false);
   const [isDisconnecting, setIsDisconnecting] = useState(false);
   const [isCheckingCompatibility, setIsCheckingCompatibility] = useState(false);
+  const [isEmergencyRestoring, setIsEmergencyRestoring] = useState(false);
 
   // Simular verificación de compatibilidad cuando se conecta
   useEffect(() => {
@@ -208,6 +209,65 @@ export default function UsbStatusScreen() {
     } finally {
       setIsTestingEEPROM(false);
     }
+  };
+
+  const handleEmergencyRestore = async () => {
+    if (!device) {
+      showAlert('alerts.error', 'alerts.no_hay_dispositivo_usb_conectado');
+      return;
+    }
+
+    Alert.alert(
+      t('usb.emergency_restore_title'),
+      t('usb.emergency_restore_confirm'),
+      [
+        { text: t('common.cancel'), style: 'cancel' },
+        {
+          text: t('usb.emergency_restore'),
+          style: 'destructive',
+          onPress: async () => {
+            // Segunda confirmación
+            Alert.alert(
+              t('usb.emergency_restore_warning_title'),
+              t('usb.emergency_restore_warning'),
+              [
+                { text: t('common.cancel'), style: 'cancel' },
+                {
+                  text: t('usb.confirm_restore'),
+                  style: 'destructive',
+                  onPress: async () => {
+                    setIsEmergencyRestoring(true);
+                    try {
+                      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+                      
+                      const result = await usbService.emergencyRestoreASIX(false);
+                      
+                      if (result.success) {
+                        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                        Alert.alert(
+                          t('usb.emergency_restore_success'),
+                          result.message + '\n\n' +
+                          `Primary: ${result.details.primaryVerified ? '✅' : '⚠️'}\n` +
+                          `Secondary: ${result.details.secondaryVerified ? '✅' : '⚠️'}`
+                        );
+                      } else {
+                        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+                        Alert.alert(t('usb.emergency_restore_failed'), result.message);
+                      }
+                    } catch (error: any) {
+                      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+                      Alert.alert(t('usb.emergency_restore_failed'), error.message);
+                    } finally {
+                      setIsEmergencyRestoring(false);
+                    }
+                  }
+                }
+              ]
+            );
+          }
+        }
+      ]
+    );
   };
 
   const handleDisconnect = async () => {
@@ -534,6 +594,29 @@ export default function UsbStatusScreen() {
                 </View>
                 <Text className="text-xs text-muted mt-1">
                   {t('usb.backup_desc')}
+                </Text>
+              </TouchableOpacity>
+
+              {/* Botón Emergency Restore ASIX */}
+              <TouchableOpacity
+                onPress={handleEmergencyRestore}
+                disabled={isEmergencyRestoring}
+                className={`rounded-xl p-4 items-center border-2 ${
+                  isEmergencyRestoring 
+                    ? 'bg-muted/20 border-muted opacity-50' 
+                    : 'bg-error/10 border-error active:opacity-80'
+                }`}
+              >
+                <View className="flex-row items-center gap-2">
+                  <Text className="text-xl">🚨</Text>
+                  <Text className={`text-base font-bold ${
+                    isEmergencyRestoring ? 'text-muted' : 'text-error'
+                  }`}>
+                    {isEmergencyRestoring ? t('usb.restoring') : t('usb.emergency_restore')}
+                  </Text>
+                </View>
+                <Text className="text-xs text-muted mt-1">
+                  {t('usb.emergency_restore_desc')}
                 </Text>
               </TouchableOpacity>
 

@@ -1432,7 +1432,17 @@
     "checking_compatibility": "Kompatibilität Prüfen",
     "analyzing_chipset": "Chipsatz analysieren",
     "view_backups": "Backups anzeigen",
-    "view_backups_desc": "Sicherungskopien verwalten und wiederherstellen"
+    "view_backups_desc": "Sicherungskopien verwalten und wiederherstellen",
+    "emergency_restore": "Notfall-Wiederherstellung",
+    "emergency_restore_desc": "Auf ursprüngliche ASIX-Werte zurücksetzen",
+    "emergency_restore_title": "Notfall-Wiederherstellung",
+    "emergency_restore_confirm": "Dies stellt Ihren Adapter auf die ursprünglichen ASIX-Werte zurück (VID: 0x0B95, PID: 0x772B).\n\nVerwenden Sie dies, wenn Ihr Adapter beim Spoofing beschädigt wurde.",
+    "emergency_restore_warning_title": "\u26a0\ufe0f Letzte Bestätigung",
+    "emergency_restore_warning": "Dies schreibt in BEIDE EEPROM-Positionen (0x48 und 0x88).\n\nStellen Sie sicher:\n\u2022 Der richtige Adapter ist verbunden\n\u2022 Trennen Sie NICHT während des Vorgangs\n\nFortfahren?",
+    "confirm_restore": "Ja, Wiederherstellen",
+    "restoring": "Wiederherstellen...",
+    "emergency_restore_success": "Wiederherstellung erfolgreich",
+    "emergency_restore_failed": "Wiederherstellung fehlgeschlagen"
   },
   "onboarding": {
     "step1_title": "USB-Adapter verbinden",

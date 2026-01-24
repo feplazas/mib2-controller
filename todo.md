@@ -2323,3 +2323,13 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [ ] Limpiar interfaz redundante
 - [x] Corregir textos hardcodeados en español (usar i18n)
 - [ ] Investigar por qué el spoofing dice éxito pero no funciona
+
+## Correcciones v16 (24 Ene 2026)
+
+- [x] Quitar sonido de cambio de pestaña
+- [x] Quitar toggle de sonido en settings
+- [x] Traducir logs en español a inglés
+- [x] Agregar función Emergency Restore ASIX
+- [x] Corregir orden de bytes en writeEEPROM (little-endian)
+- [ ] Probar Emergency Restore con adaptador real
+- [ ] Verificar que spoofing funciona correctamente después de corrección de bytes
