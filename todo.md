@@ -2440,8 +2440,8 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [ ] Auditar Emergency Restore
 
 ### Deployment
-- [ ] Commit y sync a GitHub
-- [ ] Preparar preflight Play Store
+- [x] Commit y sync a GitHub
+- [x] Preparar preflight Play Store
 
 
 ## Final Release v21 (24 Ene 2026)
@@ -2449,5 +2449,5 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Revisar traducciones EN/ES/DE
 - [x] Auditar lógica anti-bricking de intervención MIB2
 - [x] Aplicar estilo visual ultra premium iOS-like
-- [ ] Commit y sync a GitHub
-- [ ] Preparar preflight para Play Store
+- [x] Commit y sync a GitHub
+- [x] Preparar preflight para Play Store

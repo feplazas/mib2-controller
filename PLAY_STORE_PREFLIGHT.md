@@ -6,7 +6,7 @@
 - [x] **Nombre de la app**: MIB2 Controller
 - [x] **Package name**: com.feplazas.mib2controller
 - [x] **Version**: 1.0.0
-- [x] **versionCode**: 5
+- [x] **versionCode**: 21
 - [x] **Icono**: assets/images/icon.png (512x512px)
 - [x] **Splash screen**: assets/images/splash-icon.png
 
@@ -194,7 +194,7 @@ Ubicación: `play-store-assets/screenshot-01-home.png` a `screenshot-09-settings
 
 ## ✅ Estado Actual
 
-**Fecha**: 20 Enero 2026
+**Fecha**: 24 Enero 2026
 
 **Completado**:
 - ✅ Configuración de la app
@@ -202,7 +202,11 @@ Ubicación: `play-store-assets/screenshot-01-home.png` a `screenshot-09-settings
 - ✅ Documentación legal (PRIVACY.md)
 - ✅ ProGuard/R8 configurado
 - ✅ Expo doctor 17/17 checks passed
-- ✅ versionCode 5
+- ✅ versionCode 21
+- ✅ Auditoría anti-bricking completada
+- ✅ Traducciones EN/ES/DE completas
+- ✅ Estilo visual iOS premium
+- ✅ Repositorio GitHub sincronizado
 
 **Pendiente**:
 - ✅ Screenshots generados (9 pantallas en PNG)
