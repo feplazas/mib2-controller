@@ -559,15 +559,17 @@ export default function CommandsScreen() {
 
   const renderScriptItem = (script: TelnetScript) => {
     const { enabled, reason } = checkScriptEnabled(script.id);
+    // Permitir ver scripts sin conexión, pero no ejecutarlos
+    const canExecute = isConnected && enabled && !isExecutingScript;
     
     return (
       <Pressable
         key={script.id}
         onPress={() => executeScript(script)}
-        disabled={!enabled || isExecutingScript}
+        disabled={!canExecute}
         style={[
           styles.scriptItem,
-          (!enabled || isExecutingScript) && styles.scriptItemDisabled
+          !canExecute && styles.scriptItemDisabled
         ]}
       >
         <View style={styles.scriptHeader}>
@@ -580,7 +582,14 @@ export default function CommandsScreen() {
               </Text>
             </View>
           )}
-          {!enabled && reason && (
+          {!isConnected && (
+            <View style={[styles.confirmBadge, { backgroundColor: 'rgba(107, 114, 128, 0.2)' }]}>
+              <Text style={[styles.confirmBadgeText, { color: '#6B7280' }]}>
+                {t('common.disconnected')}
+              </Text>
+            </View>
+          )}
+          {isConnected && !enabled && reason && (
             <View style={[styles.confirmBadge, { backgroundColor: 'rgba(239, 68, 68, 0.2)' }]}>
               <Text style={[styles.confirmBadgeText, { color: '#EF4444' }]}>
                 {t(`mib2_state.${reason}_short`)}
@@ -693,8 +702,7 @@ export default function CommandsScreen() {
         <View style={styles.scriptsButtonsRow}>
           <Pressable
             onPress={() => setShowScriptsModal(true)}
-            style={[styles.scriptsButton, !isConnected && styles.scriptsButtonDisabled]}
-            disabled={!isConnected}
+            style={styles.scriptsButton}
           >
             <Text style={styles.scriptsButtonIcon}>📜</Text>
             <Text style={styles.scriptsButtonText}>{t('telnet_scripts.scripts_library')}</Text>

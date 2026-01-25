@@ -2631,3 +2631,17 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 ### Consolidación
 - [x] Verificado: Inicio es dashboard de estado, no tiene funciones redundantes
 - [x] Inicio muestra resúmenes, otras pantallas tienen funciones completas (complementarios)
+
+
+## Correcciones v32 - Textos UI
+
+### Offline Guides
+- [x] Cambiar títulos a: Installation Guide, Troubleshooting Guide, Commands Guide, FEC Guide
+- [x] Actualizar en ES/EN/DE (descripciones vacías para mostrar solo títulos)
+
+### Actions
+- [x] Cambiar texto inferior a "To interact with the MIB2, use the Tools tab."
+- [x] Actualizar en ES/EN/DE
+
+### Telnet Terminal
+- [x] Permitir acceso a Scripts Library sin conexión MIB2 (botón siempre habilitado, scripts muestran badge "Desconectado")

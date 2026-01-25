@@ -356,7 +356,7 @@
     "backups_desc": "EEPROM-Sicherungskopien",
     "guides": "Offline-Anleitungen",
     "guides_desc": "Dokumentation ohne Verbindung",
-    "footer_info": "Um den Adapter oder MIB2 zu ändern, verwenden Sie die Registerkarte Werkzeuge.",
+    "footer_info": "Um mit dem MIB2 zu interagieren, verwenden Sie die Registerkarte Werkzeuge.",
     "category_diagnostic": "Diagnose",
     "category_management": "Verwaltung",
     "category_help": "Hilfe"
@@ -1280,13 +1280,13 @@
   },
   "offline_guides": {
     "installation_title": "Installationsanleitung",
-    "installation_desc": "Vollständiger MIB2 Toolbox Installationsprozess",
-    "troubleshooting_title": "Fehlerbehebung",
-    "troubleshooting_desc": "Lösungen für häufige Probleme",
-    "commands_title": "Häufige Befehle",
-    "commands_desc": "Am häufigsten verwendete Befehle in MIB2",
-    "fec_title": "FEC-Codes",
-    "fec_desc": "Codes zur Aktivierung von Premium-Funktionen"
+    "installation_desc": "",
+    "troubleshooting_title": "Fehlerbehebungsanleitung",
+    "troubleshooting_desc": "",
+    "commands_title": "Befehlsanleitung",
+    "commands_desc": "",
+    "fec_title": "FEC-Anleitung",
+    "fec_desc": ""
   },
   "errors": {
     "no_adapter": "Kein USB-Adapter erkannt",

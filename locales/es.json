@@ -356,7 +356,7 @@
     "backups_desc": "Copias de seguridad de EEPROM",
     "guides": "Guías Offline",
     "guides_desc": "Documentación sin conexión",
-    "footer_info": "Para modificar el adaptador o MIB2, usa la pestaña Herramientas.",
+    "footer_info": "Para interactuar con el MIB2, usa la pestaña Herramientas.",
     "category_diagnostic": "Diagnóstico",
     "category_management": "Gestión",
     "category_help": "Ayuda"
@@ -1280,13 +1280,13 @@
   },
   "offline_guides": {
     "installation_title": "Guía de Instalación",
-    "installation_desc": "Proceso completo de instalación de MIB2 Toolbox",
-    "troubleshooting_title": "Solución de Problemas",
-    "troubleshooting_desc": "Soluciones a problemas comunes",
-    "commands_title": "Comandos Frecuentes",
-    "commands_desc": "Comandos más utilizados en MIB2",
-    "fec_title": "Códigos FEC",
-    "fec_desc": "Códigos para activar funciones premium"
+    "installation_desc": "",
+    "troubleshooting_title": "Guía de Solución de Problemas",
+    "troubleshooting_desc": "",
+    "commands_title": "Guía de Comandos",
+    "commands_desc": "",
+    "fec_title": "Guía FEC",
+    "fec_desc": ""
   },
   "errors": {
     "no_adapter": "No se detectó ningún adaptador USB",

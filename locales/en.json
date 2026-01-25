@@ -356,7 +356,7 @@
     "backups_desc": "EEPROM backup copies",
     "guides": "Offline Guides",
     "guides_desc": "Documentation without connection",
-    "footer_info": "To modify the adapter or MIB2, use the Tools tab.",
+    "footer_info": "To interact with the MIB2, use the Tools tab.",
     "category_diagnostic": "Diagnostics",
     "category_management": "Management",
     "category_help": "Help"
@@ -1280,13 +1280,13 @@
   },
   "offline_guides": {
     "installation_title": "Installation Guide",
-    "installation_desc": "Complete MIB2 Toolbox installation process",
-    "troubleshooting_title": "Troubleshooting",
-    "troubleshooting_desc": "Solutions to common problems",
-    "commands_title": "Common Commands",
-    "commands_desc": "Most used commands in MIB2",
-    "fec_title": "FEC Codes",
-    "fec_desc": "Codes to activate premium features"
+    "installation_desc": "",
+    "troubleshooting_title": "Troubleshooting Guide",
+    "troubleshooting_desc": "",
+    "commands_title": "Commands Guide",
+    "commands_desc": "",
+    "fec_title": "FEC Guide",
+    "fec_desc": ""
   },
   "errors": {
     "no_adapter": "No USB adapter detected",
