@@ -2645,3 +2645,25 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 
 ### Telnet Terminal
 - [x] Permitir acceso a Scripts Library sin conexión MIB2 (botón siempre habilitado, scripts muestran badge "Desconectado")
+
+
+## Correcciones v33 - Traducciones Guías Offline
+
+### Problema identificado
+- [ ] Los títulos de guías muestran claves técnicas: `offline_guides.installation_title`
+- [ ] Las descripciones muestran claves: `offline_guides.installation_desc`
+
+### Solución
+- [ ] Verificar estructura de claves en locales/es.json
+- [ ] Corregir guides.tsx para usar claves correctas
+- [ ] Verificar en los tres idiomas (ES/EN/DE)
+
+
+## Correcciones v33
+
+### Traducciones de Guías Offline
+- [x] Corregir secciones duplicadas de offline_guides en es.json
+- [x] Corregir secciones duplicadas de offline_guides en en.json
+- [x] Corregir secciones duplicadas de offline_guides en de.json
+- [x] Agregar descripciones completas para todas las guías (installation_desc, troubleshooting_desc, commands_desc, fec_desc)
+- [x] Verificar que guides.tsx use correctamente las traducciones

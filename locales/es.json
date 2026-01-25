@@ -1278,16 +1278,6 @@
     "troubleshooting": "Solución de Problemas",
     "resources": "Recursos"
   },
-  "offline_guides": {
-    "installation_title": "Guía de Instalación",
-    "installation_desc": "",
-    "troubleshooting_title": "Guía de Solución de Problemas",
-    "troubleshooting_desc": "",
-    "commands_title": "Guía de Comandos",
-    "commands_desc": "",
-    "fec_title": "Guía FEC",
-    "fec_desc": ""
-  },
   "errors": {
     "no_adapter": "No se detectó ningún adaptador USB",
     "no_permission": "Permiso USB denegado",
@@ -2060,6 +2050,14 @@
     "final_tip": "Consejo final: Guarda esta guía y los backups en un lugar seguro. Nunca se sabe cuándo los necesitarás."
   },
   "offline_guides": {
+    "installation_title": "Guía de Instalación",
+    "installation_desc": "Proceso completo de instalación de MIB2 Toolbox",
+    "troubleshooting_title": "Guía de Solución de Problemas",
+    "troubleshooting_desc": "Soluciones a problemas comunes con MIB2",
+    "commands_title": "Guía de Comandos",
+    "commands_desc": "Comandos más utilizados en MIB2",
+    "fec_title": "Guía FEC",
+    "fec_desc": "Códigos para activar funciones premium",
     "troubleshooting": {
       "title": "Guía de Solución de Problemas",
       "connection_title": "Problemas de Conexión",

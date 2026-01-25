@@ -1278,16 +1278,6 @@
     "troubleshooting": "Fehlerbehebung",
     "resources": "Ressourcen"
   },
-  "offline_guides": {
-    "installation_title": "Installationsanleitung",
-    "installation_desc": "",
-    "troubleshooting_title": "Fehlerbehebungsanleitung",
-    "troubleshooting_desc": "",
-    "commands_title": "Befehlsanleitung",
-    "commands_desc": "",
-    "fec_title": "FEC-Anleitung",
-    "fec_desc": ""
-  },
   "errors": {
     "no_adapter": "Kein USB-Adapter erkannt",
     "no_permission": "USB-Berechtigung verweigert",
@@ -2060,6 +2050,14 @@
     "final_tip": "Abschließender Tipp: Bewahren Sie diese Anleitung und Backups an einem sicheren Ort auf. Man weiß nie, wann man sie braucht."
   },
   "offline_guides": {
+    "installation_title": "Installationsanleitung",
+    "installation_desc": "Vollständiger MIB2 Toolbox-Installationsprozess",
+    "troubleshooting_title": "Fehlerbehebungsanleitung",
+    "troubleshooting_desc": "Lösungen für häufige MIB2-Probleme",
+    "commands_title": "Befehlsanleitung",
+    "commands_desc": "Am häufigsten verwendete MIB2-Befehle",
+    "fec_title": "FEC-Anleitung",
+    "fec_desc": "Codes zur Aktivierung von Premium-Funktionen",
     "troubleshooting": {
       "title": "Fehlerbehebungsanleitung",
       "connection_title": "Verbindungsprobleme",
