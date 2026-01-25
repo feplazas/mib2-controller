@@ -1796,6 +1796,7 @@
     "no_backups": "No backups available",
     "no_backups_message": "Create a backup from the USB screen when you have an adapter connected.",
     "available_backups": "Available backups ({count})",
+    "available_backups_title": "Available Backups",
     "loading": "Loading backups...",
     "vid_pid": "VID/PID",
     "size": "Size",

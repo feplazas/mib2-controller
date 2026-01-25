@@ -448,7 +448,13 @@ export default function BackupsScreen() {
         </View>
         </AnimatedFadeIn>
 
-
+        {/* Información de integridad */}
+        <AnimatedFadeIn direction="up" index={1} staggerDelay={80}>
+        <View style={styles.integrityInfoBox}>
+          <Text style={styles.integrityInfoTitle}>{t('backups.integrity_system')}</Text>
+          <Text style={styles.integrityInfoText}>{t('backups.integrity_system_desc')}</Text>
+        </View>
+        </AnimatedFadeIn>
 
         {/* Estado de conexión */}
         {status !== 'connected' && (
@@ -471,7 +477,7 @@ export default function BackupsScreen() {
         ) : (
           <View style={styles.backupsList}>
             <Text style={styles.sectionTitle}>
-              {t('backups.available_backups', { count: backups.length })}
+              {t('backups.available_backups_title')}
             </Text>
             {backups.map(renderBackupItem)}
           </View>

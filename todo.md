@@ -2916,3 +2916,4 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Bug: Tema automático no detecta modo oscuro del sistema correctamente
 
 - [x] Quitar mensaje informativo (tooltip flotante) de EEPROM Backups que afecta legibilidad
+- [ ] Quitar contador (count) del título Available Backups

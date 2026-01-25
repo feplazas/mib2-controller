@@ -1795,6 +1795,7 @@
     "no_backups": "No hay backups disponibles",
     "no_backups_message": "Crea un backup desde la pantalla USB cuando tengas un adaptador conectado.",
     "available_backups": "Backups disponibles ({count})",
+    "available_backups_title": "Backups Disponibles",
     "loading": "Cargando backups...",
     "vid_pid": "VID/PID",
     "size": "Tamaño",
