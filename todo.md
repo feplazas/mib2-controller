@@ -2529,3 +2529,29 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 ### Implementación
 - [x] Agregar contenido embebido en offline-guides-service.ts (4 guías totales)
 - [x] Agregar traducciones ES/EN/DE para nuevas guías (offline_guides section)
+
+
+## Overhaul Visual iOS Premium v27 (24 Ene 2026)
+
+### Sistema de Diseño iOS
+- [x] Actualizar paleta de colores con tonos premium iOS (theme.config.js v2.0)
+- [x] Definir tipografía SF Pro style con escalas consistentes (designSystem.typography)
+- [x] Establecer sistema de espaciado (8px grid) (designSystem.spacing)
+- [x] Definir radios de borde uniformes (16-20px) (designSystem.radius)
+
+### Componentes Principales
+- [x] Refactorizar ScreenContainer con blur effects (ya tiene bg-background)
+- [x] Mejorar botones con estilo iOS (ios-button.tsx con haptic y animaciones)
+- [x] Actualizar cards con sombras suaves y elevación (ios-card.tsx)
+- [x] Mejorar inputs con estilo iOS nativo (ios-section.tsx con IOSRow)
+
+### Pantallas
+- [x] Home screen con hero section premium (ya tiene diseño premium)
+- [x] Tab bar con estilo iOS nativo (blur background, 49pt height)
+- [x] Settings con agrupación estilo iOS (ya tiene agrupación)
+- [x] Modales con blur background (BlurView en tab bar)
+
+### Animaciones y Feedback
+- [x] Transiciones suaves entre pantallas (IOSTimings en use-premium-animation.ts)
+- [x] Feedback háptico refinado en interacciones (haptic-tab.tsx mejorado)
+- [x] Animaciones de entrada sutiles (useFadeIn, useSlideAnimation hooks)

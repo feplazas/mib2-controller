@@ -1,16 +1,18 @@
 import { Tabs } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Platform } from "react-native";
+import { Platform, View } from "react-native";
+import { BlurView } from "expo-blur";
 
 import { HapticTab } from "@/components/haptic-tab";
 import { AnimatedTabIcon } from "@/components/ui/animated-tab-icon";
 import { useColors } from "@/hooks/use-colors";
 import { useTranslation } from "@/lib/language-context";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 
 /**
- * Tab Layout - Ultra Premium Apple HIG Inspired
+ * Tab Layout - Ultra Premium Apple iOS 18 Style
  * 
- * Clean, minimal navigation with 5 main tabs following iOS design patterns:
+ * Clean, minimal navigation with 5 main tabs following iOS HIG:
  * - Home: Dashboard and connection status
  * - USB: USB adapter management and spoofing
  * - Tools: Telnet commands, macros, and utilities
@@ -18,23 +20,25 @@ import { useTranslation } from "@/lib/language-context";
  * - Settings: App configuration
  * 
  * Features:
- * - Animated tab icons with glow/pulse effect on active tab
+ * - iOS 18 style tab bar with subtle blur
+ * - Animated tab icons with glow/pulse effect
+ * - Premium 49pt height matching iOS standards
  * - Smooth transitions between tabs
- * - iOS-style tab bar dimensions
  */
 export default function TabLayout() {
   const colors = useColors();
   const t = useTranslation();
   const insets = useSafeAreaInsets();
+  const colorScheme = useColorScheme();
   
-  // iOS-style tab bar dimensions (49pt standard height)
-  const bottomPadding = Platform.OS === "web" ? 20 : Math.max(insets.bottom, 16);
+  // iOS standard tab bar height (49pt) + safe area
+  const bottomPadding = Platform.OS === "web" ? 24 : Math.max(insets.bottom, 20);
   const tabBarHeight = 49 + bottomPadding;
 
   return (
     <Tabs
       screenOptions={{
-        // Animaciones de transición ultra premium
+        // Ultra smooth transitions
         animation: 'shift',
         tabBarHideOnKeyboard: true,
         tabBarActiveTintColor: colors.primary,
@@ -42,13 +46,15 @@ export default function TabLayout() {
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarStyle: {
-          paddingTop: 10,
+          paddingTop: 8,
           paddingBottom: bottomPadding,
           height: tabBarHeight,
-          backgroundColor: colors.background,
+          backgroundColor: Platform.OS === 'web' 
+            ? colors.background 
+            : 'transparent',
           borderTopColor: colors.border,
           borderTopWidth: 0.5,
-          // iOS-style positioning
+          // iOS-style absolute positioning
           ...(Platform.OS === 'web' ? {} : {
             position: 'absolute',
             bottom: 0,
@@ -56,16 +62,43 @@ export default function TabLayout() {
             right: 0,
           }),
         },
+        // iOS-style blur background for tab bar
+        tabBarBackground: () => (
+          Platform.OS !== 'web' ? (
+            <BlurView
+              intensity={80}
+              tint={colorScheme === 'dark' ? 'dark' : 'light'}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+              }}
+            />
+          ) : (
+            <View 
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: colors.background,
+              }}
+            />
+          )
+        ),
         tabBarLabelStyle: {
           fontSize: 10,
           fontWeight: '500',
-          letterSpacing: -0.1,
-          marginTop: 4,
+          letterSpacing: -0.2,
+          marginTop: 2,
         },
         tabBarIconStyle: {
-          marginTop: 4,
+          marginTop: 2,
         },
-        // Transiciones suaves estilo iOS
+        // Performance optimizations
         lazy: true,
         freezeOnBlur: true,
       }}
