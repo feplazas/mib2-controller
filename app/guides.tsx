@@ -6,6 +6,7 @@ import { router } from "expo-router";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { IOSSectionHeader } from "@/components/ui/ios-section";
+import { SkeletonCard } from "@/components/ui/skeleton-loader";
 import { useTranslation, useLanguage } from "@/lib/language-context";
 import { useColors } from "@/hooks/use-colors";
 import { offlineGuidesService, type OfflineGuide, type OfflineStatus, type GuidePhase, type GuideStep } from "@/lib/offline-guides-service";
@@ -370,9 +371,15 @@ export default function GuidesScreen() {
   if (loading) {
     return (
       <ScreenContainer>
-        <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color={colors.primary} />
-          <Text className="text-muted mt-4">{t('common.loading') || 'Cargando...'}</Text>
+        <View className="flex-1 px-4 pt-4">
+          <View className="mb-4">
+            <View className="h-8 w-48 bg-surface rounded-lg mb-2" />
+            <View className="h-4 w-64 bg-surface rounded-lg" />
+          </View>
+          <SkeletonCard showIcon={true} showTitle={true} showSubtitle={true} showContent={false} style={{ marginBottom: 12 }} />
+          <SkeletonCard showIcon={true} showTitle={true} showSubtitle={true} showContent={false} style={{ marginBottom: 12 }} />
+          <SkeletonCard showIcon={true} showTitle={true} showSubtitle={true} showContent={false} style={{ marginBottom: 12 }} />
+          <SkeletonCard showIcon={true} showTitle={true} showSubtitle={true} showContent={false} />
         </View>
       </ScreenContainer>
     );

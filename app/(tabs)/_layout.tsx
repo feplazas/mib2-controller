@@ -38,9 +38,13 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        // Ultra smooth transitions
+        // Ultra smooth transitions - iOS style
         animation: 'shift',
         tabBarHideOnKeyboard: true,
+        // Transiciones suaves entre pantallas
+        sceneStyle: {
+          backgroundColor: colors.background,
+        },
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.muted,
         headerShown: false,

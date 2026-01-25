@@ -5,6 +5,7 @@ import * as MailComposer from "expo-mail-composer";
 import { router } from "expo-router";
 
 import { ScreenContainer } from "@/components/screen-container";
+import { AnimatedCheckmark, AnimatedError } from "@/components/ui/animated-checkmark";
 import { useTranslation } from "@/lib/language-context";
 import { useColors } from "@/hooks/use-colors";
 
@@ -39,6 +40,11 @@ export default function FeedbackScreen() {
   // Feature suggestion state
   const [featureDescription, setFeatureDescription] = useState("");
   const [featureUseCase, setFeatureUseCase] = useState("");
+  
+  // Animation states
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   const DEVELOPER_EMAIL = "mib2controller@proton.me";
   const GITHUB_ISSUES_URL = "https://github.com/mib2-controller/issues";
@@ -77,15 +83,9 @@ ${deviceInfo}`;
           body: body,
         });
         
-        if (Platform.OS !== 'web') {
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        }
-        
-        Alert.alert(t('feedback.report_sent'), t('feedback.report_sent_message'));
-        setMode('menu');
-        setBugDescription("");
-        setBugSteps("");
-        setBugExpected("");
+        // Mostrar animación de éxito
+        setSuccessMessage(t('feedback.report_sent'));
+        setShowSuccess(true);
       } else {
         // Fallback: open mailto link
         const mailtoUrl = `mailto:${DEVELOPER_EMAIL}?subject=${encodeURIComponent(t('feedback.email_subject_bug'))}&body=${encodeURIComponent(body)}`;
@@ -121,14 +121,9 @@ ${t('feedback.version')}: 1.0.0 (Build 28)
           body: body,
         });
         
-        if (Platform.OS !== 'web') {
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        }
-        
-        Alert.alert(t('feedback.suggestion_sent'), t('feedback.suggestion_sent_message'));
-        setMode('menu');
-        setFeatureDescription("");
-        setFeatureUseCase("");
+        // Mostrar animación de éxito
+        setSuccessMessage(t('feedback.suggestion_sent'));
+        setShowSuccess(true);
       } else {
         const mailtoUrl = `mailto:${DEVELOPER_EMAIL}?subject=${encodeURIComponent(t('feedback.email_subject_feature'))}&body=${encodeURIComponent(body)}`;
         await Linking.openURL(mailtoUrl);
@@ -527,6 +522,32 @@ ${t('feedback.version')}: 1.0.0 (Build 28)
           </Text>
         </View>
       </ScrollView>
+      
+      {/* Animación de éxito */}
+      <AnimatedCheckmark
+        visible={showSuccess}
+        message={successMessage}
+        onComplete={() => {
+          setShowSuccess(false);
+          setMode('menu');
+          setBugDescription("");
+          setBugSteps("");
+          setBugExpected("");
+          setFeatureDescription("");
+          setFeatureUseCase("");
+        }}
+        autoHide={true}
+        autoHideDelay={2500}
+      />
+      
+      {/* Animación de error */}
+      <AnimatedError
+        visible={showError}
+        message={t('common.error')}
+        onComplete={() => setShowError(false)}
+        autoHide={true}
+        autoHideDelay={2000}
+      />
     </ScreenContainer>
   );
 }

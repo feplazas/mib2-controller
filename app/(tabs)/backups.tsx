@@ -3,6 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, Alert, RefreshControl, StyleS
 import * as Haptics from 'expo-haptics';
 import { ScreenContainer } from '@/components/screen-container';
 import { AnimatedFadeIn } from '@/components/ui/animated-fade-in';
+import { SkeletonList, SkeletonCard } from '@/components/ui/skeleton-loader';
 import { backupService, type EEPROMBackup, type IntegrityStatus, type IntegrityCheckResult } from '@/lib/backup-service';
 import { useUsbStatus } from '@/lib/usb-status-context';
 import { useTranslation } from '@/lib/language-context';
@@ -448,9 +449,10 @@ export default function BackupsScreen() {
 
         {/* Lista de backups */}
         {isLoading ? (
-          <View style={styles.emptyState}>
-            <ActivityIndicator size="large" color="#0a7ea4" />
-            <Text style={styles.emptyText}>{t('backups.loading')}</Text>
+          <View style={styles.loadingState}>
+            <SkeletonCard showIcon={true} showTitle={true} showSubtitle={true} showContent={true} contentLines={2} style={{ marginBottom: 16 }} />
+            <SkeletonCard showIcon={true} showTitle={true} showSubtitle={true} showContent={true} contentLines={2} style={{ marginBottom: 16 }} />
+            <SkeletonCard showIcon={true} showTitle={true} showSubtitle={false} showContent={false} />
           </View>
         ) : backups.length === 0 ? (
           <View style={styles.emptyState}>
@@ -712,6 +714,9 @@ const styles = StyleSheet.create({
     color: '#FBBF24',
     fontSize: 12,
     textAlign: 'center',
+  },
+  loadingState: {
+    paddingVertical: 20,
   },
   emptyState: {
     flex: 1,

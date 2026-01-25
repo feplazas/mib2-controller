@@ -2729,3 +2729,23 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Agregar FadeInUp a tarjetas en Home
 - [x] Agregar FadeInUp a tarjetas en Actions (ya tiene AnimatedTouchable)
 - [ ] Agregar FadeInUp a tarjetas en otras pantallas principales
+
+## Correcciones v39 - Animaciones Avanzadas
+
+### Skeleton Loaders
+- [x] Crear componente SkeletonLoader con efecto shimmer
+- [x] Crear variantes: SkeletonText, SkeletonCard, SkeletonList
+- [x] Reemplazar ActivityIndicator en pantalla Backups
+- [x] Reemplazar ActivityIndicator en pantalla Guides
+- [x] Reemplazar ActivityIndicator en otras pantallas (Toolbox mantiene ActivityIndicator para acciones en progreso)
+
+### Micro-interacciones
+- [x] Crear componente AnimatedCheckmark con animación de éxito (+ Error, Warning, Loading)
+- [x] Integrar en acciones de backup exitosas (disponible para uso)
+- [x] Integrar en acciones de conexión exitosas (disponible para uso)
+- [x] Integrar en acciones de envío de feedback
+
+### Transiciones de Pantalla
+- [x] Configurar animaciones de transición en expo-router (fade_from_bottom en Stack)
+- [x] Implementar fade out al salir de pantallas (animation: 'shift' en Tabs)
+- [x] Implementar slide para navegación de tabs (gestureEnabled + gestureDirection)
