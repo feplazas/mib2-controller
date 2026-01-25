@@ -346,6 +346,7 @@ export default function BackupsScreen() {
             style={[styles.verifyButton, isCurrentlyVerifying && styles.buttonDisabled]}
             onPress={() => handleVerifyIntegrity(backup)}
             disabled={isCurrentlyVerifying}
+            activeOpacity={0.8}
           >
             {isCurrentlyVerifying ? (
               <ActivityIndicator size="small" color="#0a7ea4" />
@@ -364,6 +365,7 @@ export default function BackupsScreen() {
             ]}
             onPress={() => handleRestoreVidPid(backup)}
             disabled={!canRestore || isCurrentlyRestoring}
+            activeOpacity={0.8}
           >
             <Text style={styles.restoreButtonText}>
               {isCurrentlyRestoring ? t('backups.restoring') : t('backups.restore_vidpid')}
@@ -375,6 +377,7 @@ export default function BackupsScreen() {
             style={[styles.shareButton, isCurrentlySharing && styles.buttonDisabled]}
             onPress={() => handleShare(backup)}
             disabled={isCurrentlySharing}
+            activeOpacity={0.8}
           >
             <Text style={styles.shareButtonText}>
               {isCurrentlySharing ? '...' : t('backups.share')}
@@ -389,6 +392,7 @@ export default function BackupsScreen() {
             ]}
             onPress={() => handleDelete(backup)}
             disabled={isCurrentlyDeleting}
+            activeOpacity={0.8}
           >
             <Text style={styles.deleteButtonText}>
               {isCurrentlyDeleting ? '...' : t('backups.delete')}

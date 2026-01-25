@@ -509,10 +509,11 @@ export default function UsbStatusScreen() {
                 await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
               }}
               disabled={isScanning}
+              activeOpacity={0.8}
               className={`rounded-xl p-3 items-center border ${
                 isScanning 
                   ? 'bg-muted/20 border-muted opacity-50' 
-                  : 'bg-background border-primary active:opacity-80'
+                  : 'bg-background border-primary'
               }`}
             >
               <View className="flex-row items-center gap-2">
@@ -532,10 +533,11 @@ export default function UsbStatusScreen() {
               <TouchableOpacity
                 onPress={handleConnect}
                 disabled={isConnecting}
+                activeOpacity={0.8}
                 className={`rounded-xl p-4 items-center border-2 ${
                   isConnecting 
                     ? 'bg-muted/20 border-muted opacity-50' 
-                    : 'bg-primary border-primary active:opacity-80'
+                    : 'bg-primary border-primary'
                 }`}
               >
                 <View className="flex-row items-center gap-2">
@@ -557,10 +559,11 @@ export default function UsbStatusScreen() {
               <TouchableOpacity
                 onPress={handleTestEEPROM}
                 disabled={isTestingEEPROM}
+                activeOpacity={0.8}
                 className={`rounded-xl p-4 items-center border-2 ${
                   isTestingEEPROM 
                     ? 'bg-muted/20 border-muted opacity-50' 
-                    : 'bg-green-500 border-green-500 active:opacity-80'
+                    : 'bg-green-500 border-green-500'
                 }`}
               >
                 <View className="flex-row items-center gap-2">
@@ -577,7 +580,8 @@ export default function UsbStatusScreen() {
               {/* Botón Desconectar */}
               <TouchableOpacity
                 onPress={handleDisconnect}
-                className="rounded-xl p-4 items-center border-2 bg-background border-error active:opacity-80"
+                activeOpacity={0.8}
+                className="rounded-xl p-4 items-center border-2 bg-background border-error"
               >
                 <View className="flex-row items-center gap-2">
                   <Text className="text-xl">❌</Text>
@@ -612,7 +616,8 @@ export default function UsbStatusScreen() {
                         const router = require('expo-router').router;
                         router.push('/(tabs)/auto-spoof');
                       }}
-                      className="bg-primary rounded-xl p-4 items-center active:opacity-80"
+                      activeOpacity={0.8}
+                      className="bg-primary rounded-xl p-4 items-center"
                     >
                       <View className="flex-row items-center gap-2">
                         <Text className="text-xl">⚡</Text>
@@ -636,10 +641,11 @@ export default function UsbStatusScreen() {
               <TouchableOpacity
                 onPress={handleCreateBackup}
                 disabled={isCreatingBackup}
+                activeOpacity={0.8}
                 className={`rounded-xl p-4 items-center border-2 ${
                   isCreatingBackup 
                     ? 'bg-muted/20 border-muted opacity-50' 
-                    : 'bg-background border-primary active:opacity-80'
+                    : 'bg-background border-primary'
                 }`}
               >
                 <View className="flex-row items-center gap-2">
@@ -659,10 +665,11 @@ export default function UsbStatusScreen() {
               <TouchableOpacity
                 onPress={handleEmergencyRestore}
                 disabled={isEmergencyRestoring}
+                activeOpacity={0.8}
                 className={`rounded-xl p-4 items-center border-2 ${
                   isEmergencyRestoring 
                     ? 'bg-muted/20 border-muted opacity-50' 
-                    : 'bg-error/10 border-error active:opacity-80'
+                    : 'bg-error/10 border-error'
                 }`}
               >
                 <View className="flex-row items-center gap-2">
@@ -703,7 +710,8 @@ export default function UsbStatusScreen() {
                   <TouchableOpacity
                     onPress={handleClearSavedValues}
                     disabled={isClearingValues}
-                    className="mt-3 rounded-lg py-2 px-4 bg-muted/20 active:opacity-80"
+                    activeOpacity={0.8}
+                    className="mt-3 rounded-lg py-2 px-4 bg-muted/20"
                   >
                     <Text className="text-sm text-muted text-center">
                       {isClearingValues ? t('common.loading') : t('usb.clear_saved_values')}
@@ -734,7 +742,8 @@ export default function UsbStatusScreen() {
                   const router = require('expo-router').router;
                   router.push('/(tabs)/backups');
                 }}
-                className="rounded-xl p-4 items-center border-2 bg-background border-success active:opacity-80"
+                activeOpacity={0.8}
+                className="rounded-xl p-4 items-center border-2 bg-background border-success"
               >
                 <View className="flex-row items-center gap-2">
                   <Text className="text-xl">📦</Text>
@@ -919,6 +928,7 @@ export default function UsbStatusScreen() {
               </Text>
               <TouchableOpacity
                 onPress={onRefresh}
+                activeOpacity={0.8}
                 className="bg-primary px-6 py-3 rounded-full"
                 disabled={isScanning}
               >

@@ -460,7 +460,8 @@ export default function ToolboxScreen() {
                 <TouchableOpacity
                   key={step.step}
                   onPress={() => handleSelectStep(step)}
-                  className="bg-surface rounded-xl p-4 border active:opacity-80"
+                  activeOpacity={0.8}
+                  className="bg-surface rounded-xl p-4 border"
                   style={{ borderColor: colors.border }}
                 >
                   <View className="flex-row items-center gap-3 mb-2">
@@ -489,6 +490,7 @@ export default function ToolboxScreen() {
             <View className="gap-4">
               <TouchableOpacity
                 onPress={() => setSelectedStep(null)}
+                activeOpacity={0.8}
                 className="flex-row items-center gap-2"
               >
                 <Text className="text-lg" style={{ color: colors.primary }}>
@@ -540,7 +542,8 @@ export default function ToolboxScreen() {
                   <TouchableOpacity
                     onPress={() => handleExecuteStep(selectedStep)}
                     disabled={!allReady || executing}
-                    className="bg-primary px-6 py-3 rounded-xl active:opacity-80"
+                    activeOpacity={0.8}
+                    className="bg-primary px-6 py-3 rounded-xl"
                     style={{
                       backgroundColor: !allReady || executing ? colors.muted : colors.primary,
                       opacity: !allReady || executing ? 0.5 : 1,
@@ -568,6 +571,7 @@ export default function ToolboxScreen() {
             <View className="gap-4">
               <TouchableOpacity
                 onPress={() => setShowEmmcInfo(false)}
+                activeOpacity={0.8}
                 className="flex-row items-center gap-2"
               >
                 <Text className="text-lg" style={{ color: colors.primary }}>
@@ -610,6 +614,7 @@ export default function ToolboxScreen() {
             <View className="gap-4">
               <TouchableOpacity
                 onPress={() => setShowDiagnostics(false)}
+                activeOpacity={0.8}
                 className="flex-row items-center gap-2"
               >
                 <Text className="text-lg" style={{ color: colors.primary }}>

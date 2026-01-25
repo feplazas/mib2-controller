@@ -136,7 +136,8 @@ export default function DiagScreen() {
         <View className="flex-row gap-2 mb-4">
           <TouchableOpacity
             onPress={handleClearLogs}
-            className="flex-1 bg-red-500/10 border border-red-500/30 rounded-xl p-3 active:opacity-80"
+            activeOpacity={0.8}
+            className="flex-1 bg-red-500/10 border border-red-500/30 rounded-xl p-3"
           >
             <Text className="text-sm font-semibold text-red-400 text-center">
               🗑️ {t('diag.clear')}
@@ -145,7 +146,8 @@ export default function DiagScreen() {
 
           <TouchableOpacity
             onPress={handleExportLogs}
-            className="flex-1 bg-primary/10 border border-primary/30 rounded-xl p-3 active:opacity-80"
+            activeOpacity={0.8}
+            className="flex-1 bg-primary/10 border border-primary/30 rounded-xl p-3"
           >
             <Text className="text-sm font-semibold text-primary text-center">
               📤 {t('diag.export')}
@@ -157,7 +159,8 @@ export default function DiagScreen() {
               await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               setAutoScroll(!autoScroll);
             }}
-            className={`flex-1 ${autoScroll ? 'bg-green-500/10 border-green-500/30' : 'bg-surface border-border'} border rounded-xl p-3 active:opacity-80`}
+            activeOpacity={0.8}
+            className={`flex-1 ${autoScroll ? 'bg-green-500/10 border-green-500/30' : 'bg-surface border-border'} border rounded-xl p-3`}
           >
             <Text className={`text-sm font-semibold ${autoScroll ? 'text-green-400' : 'text-muted'} text-center`}>
               {autoScroll ? `📜 ${t('diag.auto')}` : `⏸️ ${t('diag.manual')}`}
@@ -176,7 +179,8 @@ export default function DiagScreen() {
                 await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                 setFilter(level);
               }}
-              className={`px-3 py-2 rounded-lg ${filter === level ? 'bg-primary' : 'bg-surface'} active:opacity-80`}
+              activeOpacity={0.8}
+              className={`px-3 py-2 rounded-lg ${filter === level ? 'bg-primary' : 'bg-surface'}`}
             >
               <Text className={`text-xs font-semibold ${filter === level ? 'text-background' : 'text-muted'}`}>
                 {level === 'all' ? t('diag.all') : t(`diag.${level}`)}

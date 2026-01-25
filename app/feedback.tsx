@@ -204,7 +204,8 @@ ${t('feedback.version')}: 1.0.0 (Build 28)
         }
         option.action();
       }}
-      className={`bg-surface rounded-2xl p-4 border border-border active:opacity-80 ${fullWidth ? 'flex-1' : ''}`}
+      activeOpacity={0.8}
+      className={`bg-surface rounded-2xl p-4 border border-border ${fullWidth ? 'flex-1' : ''}`}
       style={{ minHeight: 100 }}
     >
       <View 
@@ -230,6 +231,7 @@ ${t('feedback.version')}: 1.0.0 (Build 28)
           {/* Header with back button */}
           <TouchableOpacity
             onPress={() => setMode('menu')}
+            activeOpacity={0.8}
             className="flex-row items-center mb-4"
           >
             <Text className="text-lg" style={{ color: colors.primary }}>←</Text>
@@ -342,7 +344,8 @@ ${t('feedback.version')}: 1.0.0 (Build 28)
           {/* Send Button */}
           <TouchableOpacity
             onPress={handleSendBugReport}
-            className="bg-primary px-6 py-4 rounded-2xl active:opacity-80"
+            activeOpacity={0.8}
+            className="bg-primary px-6 py-4 rounded-2xl"
           >
             <Text className="text-center font-semibold text-base" style={{ color: colors.background }}>
               📤 {t('feedback.send_report')}
@@ -361,6 +364,7 @@ ${t('feedback.version')}: 1.0.0 (Build 28)
           {/* Header with back button */}
           <TouchableOpacity
             onPress={() => setMode('menu')}
+            activeOpacity={0.8}
             className="flex-row items-center mb-4"
           >
             <Text className="text-lg" style={{ color: colors.primary }}>←</Text>
@@ -427,7 +431,8 @@ ${t('feedback.version')}: 1.0.0 (Build 28)
           {/* Send Button */}
           <TouchableOpacity
             onPress={handleSendFeatureSuggestion}
-            className="bg-primary px-6 py-4 rounded-2xl active:opacity-80"
+            activeOpacity={0.8}
+            className="bg-primary px-6 py-4 rounded-2xl"
           >
             <Text className="text-center font-semibold text-base" style={{ color: colors.background }}>
               📤 {t('feedback.send_suggestion')}
@@ -445,6 +450,7 @@ ${t('feedback.version')}: 1.0.0 (Build 28)
         {/* Header with back button */}
         <TouchableOpacity
           onPress={() => router.back()}
+          activeOpacity={0.8}
           className="flex-row items-center mb-4"
         >
           <Text className="text-lg" style={{ color: colors.primary }}>←</Text>
@@ -489,7 +495,8 @@ ${t('feedback.version')}: 1.0.0 (Build 28)
                 }
                 option.action();
               }}
-              className={`flex-row items-center px-4 py-4 active:bg-primary/5 ${
+              activeOpacity={0.8}
+              className={`flex-row items-center px-4 py-4 ${
                 index < communityOptions.length - 1 ? 'border-b border-border' : ''
               }`}
             >

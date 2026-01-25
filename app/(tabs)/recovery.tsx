@@ -205,7 +205,8 @@ export default function RecoveryScreen() {
                     ]
                   );
                 }}
-                className="bg-primary/10 px-3 py-2 rounded-lg active:opacity-80"
+                activeOpacity={0.8}
+                className="bg-primary/10 px-3 py-2 rounded-lg"
               >
                 <Text className="text-xs text-primary font-semibold">
                   📂 {t('recovery.view_location')}
@@ -267,10 +268,11 @@ export default function RecoveryScreen() {
                       <TouchableOpacity
                         onPress={() => handleRestore(backup)}
                         disabled={status !== 'connected' || isRestoring}
+                        activeOpacity={0.8}
                         className={`flex-1 rounded-xl p-3 ${
                           status !== 'connected' || isRestoring
                             ? 'bg-muted/20'
-                            : 'bg-primary active:opacity-80'
+                            : 'bg-primary'
                         }`}
                       >
                         <Text
@@ -287,10 +289,11 @@ export default function RecoveryScreen() {
                       <TouchableOpacity
                         onPress={() => handleForceRestore(backup)}
                         disabled={status !== 'connected' || isRestoring}
+                        activeOpacity={0.8}
                         className={`flex-1 rounded-xl p-3 border ${
                           status !== 'connected' || isRestoring
                             ? 'bg-muted/20 border-muted'
-                            : 'bg-error/10 border-error active:opacity-80'
+                            : 'bg-error/10 border-error'
                         }`}
                       >
                         <Text
@@ -342,10 +345,11 @@ export default function RecoveryScreen() {
                         }
                       }}
                       disabled={isRestoring}
+                      activeOpacity={0.8}
                       className={`w-full rounded-xl p-3 border ${
                         isRestoring
                           ? 'bg-muted/20 border-muted'
-                          : 'bg-green-500/10 border-green-500/30 active:opacity-80'
+                          : 'bg-green-500/10 border-green-500/30'
                       }`}
                     >
                       <Text

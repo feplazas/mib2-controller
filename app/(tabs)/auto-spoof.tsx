@@ -978,6 +978,7 @@ export default function AutoSpoofScreen() {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             }}
             disabled={state.isExecuting}
+            activeOpacity={0.8}
             className={`flex-row items-center gap-3 p-3 rounded-xl ${
               state.skipVerification ? 'bg-yellow-500/15' : 'bg-surface'
             }`}
@@ -1002,6 +1003,7 @@ export default function AutoSpoofScreen() {
             {UI_CONFIG.showDryRun && <TouchableOpacity
               onPress={handleDryRun}
               disabled={state.isDryRunning || !device}
+              activeOpacity={0.8}
               className={`rounded-xl p-4 items-center border-2 ${
                 state.dryRunResult?.wouldSucceed
                   ? 'bg-green-500/10 border-green-500'
@@ -1009,7 +1011,7 @@ export default function AutoSpoofScreen() {
                   ? 'bg-yellow-500/10 border-yellow-500'
                   : state.isDryRunning
                   ? 'bg-muted/20 border-muted opacity-50'
-                  : 'bg-cyan-500/10 border-cyan-500 active:opacity-80'
+                  : 'bg-cyan-500/10 border-cyan-500'
               }`}
             >
               <View className="flex-row items-center gap-2">
@@ -1073,6 +1075,7 @@ export default function AutoSpoofScreen() {
             {UI_CONFIG.showChecksum && <TouchableOpacity
               onPress={handleVerifyChecksum}
               disabled={state.isVerifyingChecksum || !device}
+              activeOpacity={0.8}
               className={`rounded-xl p-4 items-center border-2 ${
                 state.checksumResult?.valid
                   ? 'bg-green-500/10 border-green-500'
@@ -1080,7 +1083,7 @@ export default function AutoSpoofScreen() {
                   ? 'bg-red-500/10 border-red-500'
                   : state.isVerifyingChecksum
                   ? 'bg-muted/20 border-muted opacity-50'
-                  : 'bg-purple-500/10 border-purple-500 active:opacity-80'
+                  : 'bg-purple-500/10 border-purple-500'
               }`}
             >
               <View className="flex-row items-center gap-2">
@@ -1129,7 +1132,15 @@ export default function AutoSpoofScreen() {
                   }`}>
                     {state.checksumResult.valid ? t('auto_spoof.checksum_valid') : t('auto_spoof.checksum_invalid')}
                   </Text>
-                  <Text className="text-xs text-muted mt-1 italic">
+                  {/* Explicación detallada cuando el checksum es inválido */}
+                  {!state.checksumResult.valid && (
+                    <View className="mt-3 p-3 bg-blue-500/10 rounded-lg border border-blue-500/30">
+                      <Text className="text-xs text-blue-400 leading-relaxed">
+                        {t('auto_spoof.checksum_invalid_explanation')}
+                      </Text>
+                    </View>
+                  )}
+                  <Text className="text-xs text-muted mt-2 italic">
                     {t('auto_spoof.checksum_not_affects_vidpid')}
                   </Text>
                 </View>
@@ -1140,6 +1151,7 @@ export default function AutoSpoofScreen() {
             <TouchableOpacity
               onPress={handleSafeTest}
               disabled={state.isSafeTestRunning || !device}
+              activeOpacity={0.8}
               className={`rounded-xl p-4 ${
                 state.safeTestResult?.wouldSucceedInRealMode
                   ? 'bg-success/10'
@@ -1147,7 +1159,7 @@ export default function AutoSpoofScreen() {
                   ? 'bg-warning/10'
                   : state.isSafeTestRunning
                   ? 'bg-surface opacity-50'
-                  : 'bg-surface active:opacity-70'
+                  : 'bg-surface'
               }`}
             >
               <View className="flex-row items-center gap-3">
@@ -1213,7 +1225,8 @@ export default function AutoSpoofScreen() {
                       setToastMessage(t('guides.command_copied') || 'Copiado al portapapeles');
                       setToastVisible(true);
                     }}
-                    className="bg-primary/20 px-3 py-1.5 rounded-lg active:opacity-70"
+                    activeOpacity={0.8}
+                    className="bg-primary/20 px-3 py-1.5 rounded-lg"
                   >
                     <Text className="text-xs text-primary font-medium">{t('guides.copy_command') || 'Copiar'}</Text>
                   </TouchableOpacity>
@@ -1298,6 +1311,7 @@ export default function AutoSpoofScreen() {
             {UI_CONFIG.showTestSpoofing && <TouchableOpacity
               onPress={handleTestSpoofing}
               disabled={state.isTesting}
+              activeOpacity={0.8}
               className={`rounded-xl p-4 items-center border-2 ${
                 state.testResult === 'success'
                   ? 'bg-green-500/10 border-green-500'
@@ -1305,7 +1319,7 @@ export default function AutoSpoofScreen() {
                   ? 'bg-red-500/10 border-red-500'
                   : state.isTesting
                   ? 'bg-muted/20 border-muted opacity-50'
-                  : 'bg-blue-500/10 border-blue-500 active:opacity-80'
+                  : 'bg-blue-500/10 border-blue-500'
               }`}
             >
               <View className="flex-row items-center gap-2">
@@ -1333,9 +1347,10 @@ export default function AutoSpoofScreen() {
             {UI_CONFIG.showQuickSpoof && <TouchableOpacity
               onPress={handleQuickSpoof}
               disabled={!canExecute || state.isExecuting}
+              activeOpacity={0.8}
               className={`rounded-xl p-4 items-center border-2 ${
                 canExecute && !state.isExecuting
-                  ? 'bg-orange-500/10 border-orange-500 active:opacity-80'
+                  ? 'bg-orange-500/10 border-orange-500'
                   : 'bg-muted/20 border-muted opacity-50'
               }`}
             >
@@ -1357,9 +1372,10 @@ export default function AutoSpoofScreen() {
           <TouchableOpacity
             onPress={executeAutoSpoof}
             disabled={!canExecute || state.isExecuting}
+            activeOpacity={0.8}
             className={`rounded-xl py-4 items-center ${
               canExecute && !state.isExecuting
-                ? 'bg-primary active:opacity-80'
+                ? 'bg-primary'
                 : 'bg-muted/30'
             }`}
           >

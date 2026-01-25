@@ -487,7 +487,8 @@ export default function HomeScreen() {
                 {!toolboxInfo && !detectingToolbox && (
                   <TouchableOpacity
                     onPress={handleDetectToolbox}
-                    className="bg-primary/20 border border-primary px-4 py-2 rounded-lg active:opacity-80"
+                    activeOpacity={0.8}
+                    className="bg-primary/20 border border-primary px-4 py-2 rounded-lg"
                   >
                     <Text className="text-primary font-semibold text-center text-sm">
                       {t('home.detect_toolbox')}

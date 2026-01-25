@@ -295,6 +295,7 @@ export default function GuidesScreen() {
                     {item.code && (
                       <TouchableOpacity
                         onPress={() => copyToClipboard(item.code!)}
+                        activeOpacity={0.8}
                         className="bg-success/10 rounded-lg p-2 mt-2 border border-success flex-row items-center justify-between"
                       >
                         <Text className="text-xs text-success font-mono">{item.code}</Text>
@@ -400,13 +401,15 @@ export default function GuidesScreen() {
           <View className="flex-row items-center justify-between">
             <TouchableOpacity
               onPress={() => router.back()}
-              className="p-2 -ml-2 active:opacity-70"
+              activeOpacity={0.8}
+              className="p-2 -ml-2"
             >
               <Text className="text-primary text-lg">← {t('common.back') || 'Atrás'}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={handleRefresh}
-              className="p-2 active:opacity-70"
+              activeOpacity={0.8}
+              className="p-2"
             >
               <Text className="text-primary text-lg">🔄</Text>
             </TouchableOpacity>
@@ -495,7 +498,8 @@ export default function GuidesScreen() {
             </Text>
             <TouchableOpacity
               onPress={handleRefresh}
-              className="bg-primary px-6 py-3 rounded-xl mt-4 active:opacity-80"
+              activeOpacity={0.8}
+              className="bg-primary px-6 py-3 rounded-xl mt-4"
             >
               <Text className="text-white font-semibold">{t('settings.refresh_guides') || 'Actualizar Guías'}</Text>
             </TouchableOpacity>

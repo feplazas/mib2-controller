@@ -1064,6 +1064,7 @@
     "data_range": "Rango de Datos",
     "checksum_valid": "Checksum válido - EEPROM íntegra",
     "checksum_invalid": "Checksum inválido - Posible corrupción",
+    "checksum_invalid_explanation": "ℹ️ Esto es normal en adaptadores genéricos. El fabricante no calculó correctamente el checksum de fábrica o el adaptador fue modificado previamente. El checksum usa bytes 0x07-0x0E y NO incluye VID/PID, por lo que el spoofing funciona correctamente.",
     "checksum_not_affects_vidpid": "El checksum NO incluye VID/PID, por lo que modificarlos no afecta la integridad",
     "safe_test_mode": "Modo Prueba Seguro",
     "safe_test_running": "Ejecutando prueba segura...",

@@ -30,7 +30,8 @@ export default function TermsOfUseScreen() {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                 router.back();
               }}
-              className="bg-surface border border-border rounded-xl px-4 py-2 active:opacity-80"
+              activeOpacity={0.8}
+              className="bg-surface border border-border rounded-xl px-4 py-2"
             >
               <Text className="text-foreground font-semibold">
                 {lang === 'es' ? 'Volver' : lang === 'de' ? 'Zurück' : 'Back'}

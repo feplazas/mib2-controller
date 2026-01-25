@@ -2807,3 +2807,10 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 ### Guías Offline - Pantalla Oscurecida
 - [x] Identificar causa del efecto de oscurecimiento al presionar (TouchableOpacity sin activeOpacity)
 - [x] Corregir el comportamiento visual (agregado activeOpacity={0.8} a tarjetas y botones)
+
+
+## Mejoras UX (25 Ene 2026)
+
+- [x] Agregar indicador visual explicativo para checksum inválido (tooltip informativo con razones comunes)
+- [x] Revisar y asegurar consistencia de activeOpacity={0.8} en todos los TouchableOpacity de la aplicación
+- [x] Eliminar clases active:opacity-XX de CSS y usar activeOpacity prop consistentemente

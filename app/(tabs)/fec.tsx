@@ -299,7 +299,8 @@ export default function FECScreen() {
               <TouchableOpacity
                 key={fec.code}
                 onPress={() => handleToggleCode(fec.code)}
-                className="bg-surface rounded-xl p-4 border active:opacity-80"
+                activeOpacity={0.8}
+                className="bg-surface rounded-xl p-4 border"
                 style={{
                   borderColor: selectedCodes.includes(fec.code) ? colors.primary : colors.border,
                   borderWidth: selectedCodes.includes(fec.code) ? 2 : 1,
@@ -351,7 +352,8 @@ export default function FECScreen() {
             />
             <TouchableOpacity
               onPress={handleAddCustomCode}
-              className="bg-primary px-4 py-3 rounded-xl active:opacity-80"
+              activeOpacity={0.8}
+              className="bg-primary px-4 py-3 rounded-xl"
             >
               <Text className="text-center font-semibold" style={{ color: colors.background }}>
                 {t('fec.add_code')}
@@ -372,6 +374,7 @@ export default function FECScreen() {
                   </Text>
                   <TouchableOpacity
                     onPress={() => handleToggleCode(code)}
+                    activeOpacity={0.8}
                     className="px-2 py-1 rounded"
                     style={{ backgroundColor: "#EF4444" }}
                   >

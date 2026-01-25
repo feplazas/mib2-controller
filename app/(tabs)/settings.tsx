@@ -236,7 +236,8 @@ export default function SettingsScreen() {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               setShowLanguageSelector(!showLanguageSelector);
             }}
-            className="flex-row items-center px-4 py-3.5 border-b border-separator active:bg-primary/5"
+            activeOpacity={0.8}
+            className="flex-row items-center px-4 py-3.5 border-b border-separator"
           >
             <Text className="text-xl mr-3">🌐</Text>
             <Text className="flex-1 text-base text-foreground">{t('settings.language')}</Text>
@@ -250,7 +251,8 @@ export default function SettingsScreen() {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               setShowThemeSelector(!showThemeSelector);
             }}
-            className="flex-row items-center px-4 py-3.5 border-b border-separator active:bg-primary/5"
+            activeOpacity={0.8}
+            className="flex-row items-center px-4 py-3.5 border-b border-separator"
           >
             <Text className="text-xl mr-3">🎨</Text>
             <Text className="flex-1 text-base text-foreground">{t('settings.theme') || 'Tema'}</Text>
@@ -264,7 +266,8 @@ export default function SettingsScreen() {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               router.push('/guides');
             }}
-            className="flex-row items-center px-4 py-3.5 active:bg-primary/5"
+            activeOpacity={0.8}
+            className="flex-row items-center px-4 py-3.5"
           >
             <Text className="text-xl mr-3">📚</Text>
             <Text className="flex-1 text-base text-foreground">{t('settings.offline_guides') || 'Guías Offline'}</Text>
@@ -295,9 +298,10 @@ export default function SettingsScreen() {
                   // Haptic de éxito después de cambiar idioma
                   setTimeout(() => haptics.success(), 200);
                 }}
+                activeOpacity={0.8}
                 className={`flex-row items-center p-3 rounded-xl mb-2 ${
                   selectedLanguage === option.value ? 'bg-primary' : 'bg-background'
-                } active:opacity-80`}
+                }`}
               >
                 <Text className="text-xl mr-3">{option.flag}</Text>
                 <Text className={`flex-1 font-medium ${selectedLanguage === option.value ? 'text-white' : 'text-foreground'}`}>
@@ -327,9 +331,10 @@ export default function SettingsScreen() {
                   // Haptic de éxito después de cambiar tema
                   setTimeout(() => haptics.success(), 200);
                 }}
+                activeOpacity={0.8}
                 className={`flex-row items-center p-3 rounded-xl mb-2 ${
                   themeMode === option.value ? 'bg-primary' : 'bg-background'
-                } active:opacity-80`}
+                }`}
               >
                 <Text className="text-xl mr-3">{option.icon}</Text>
                 <Text className={`flex-1 font-medium ${themeMode === option.value ? 'text-white' : 'text-foreground'}`}>
@@ -402,13 +407,15 @@ export default function SettingsScreen() {
         <View className="flex-row gap-3 mx-4 mt-3">
           <TouchableOpacity
             onPress={handleResetDefaults}
-            className="flex-1 bg-surface border border-border px-4 py-3 rounded-xl active:opacity-80"
+            activeOpacity={0.8}
+            className="flex-1 bg-surface border border-border px-4 py-3 rounded-xl"
           >
             <Text className="text-foreground font-semibold text-center">{t('settings.reset')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={handleSaveSettings}
-            className="flex-1 bg-primary px-4 py-3 rounded-xl active:opacity-80"
+            activeOpacity={0.8}
+            className="flex-1 bg-primary px-4 py-3 rounded-xl"
           >
             <Text className="text-white font-semibold text-center">{t('settings.save')}</Text>
           </TouchableOpacity>
@@ -425,6 +432,7 @@ export default function SettingsScreen() {
                 haptics.selection();
                 setExpandedFaq(expandedFaq === faq.id ? null : faq.id);
               }}
+              activeOpacity={0.8}
               className={`${index < faqItems.length - 1 ? 'border-b border-separator' : ''}`}
             >
               <View className="flex-row items-center px-4 py-3.5">
@@ -450,7 +458,8 @@ export default function SettingsScreen() {
         <View className="bg-surface mx-4 rounded-2xl overflow-hidden border border-border">
           <TouchableOpacity
             onPress={handleClearHistory}
-            className="flex-row items-center px-4 py-3.5 border-b border-separator active:bg-error/5"
+            activeOpacity={0.8}
+            className="flex-row items-center px-4 py-3.5 border-b border-separator"
           >
             <Text className="text-xl mr-3">🗑️</Text>
             <Text className="flex-1 text-base text-error">{t('settings.clear_command_history')}</Text>
@@ -458,7 +467,8 @@ export default function SettingsScreen() {
           
           <TouchableOpacity
             onPress={handleClearOfflineData}
-            className="flex-row items-center px-4 py-3.5 active:bg-error/5"
+            activeOpacity={0.8}
+            className="flex-row items-center px-4 py-3.5"
           >
             <Text className="text-xl mr-3">📴</Text>
             <Text className="flex-1 text-base text-error">{t('settings.clear_offline_data')}</Text>
@@ -508,7 +518,8 @@ export default function SettingsScreen() {
 
           <TouchableOpacity
             onPress={handleCopyDebugInfo}
-            className="flex-row items-center px-4 py-3.5 active:bg-primary/5"
+            activeOpacity={0.8}
+            className="flex-row items-center px-4 py-3.5"
           >
             <Text className="text-xl mr-3">📋</Text>
             <Text className="flex-1 text-base text-primary font-medium">{t('settings.copy_debug_info')}</Text>
@@ -541,7 +552,8 @@ export default function SettingsScreen() {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               router.push('/terms-of-use');
             }}
-            className="flex-row items-center px-4 py-3.5 border-b border-separator active:bg-primary/5"
+            activeOpacity={0.8}
+            className="flex-row items-center px-4 py-3.5 border-b border-separator"
           >
             <Text className="text-xl mr-3">📄</Text>
             <Text className="flex-1 text-base text-primary">{t('settings.view_terms')}</Text>
@@ -552,7 +564,8 @@ export default function SettingsScreen() {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               router.push('/feedback');
             }}
-            className="flex-row items-center px-4 py-3.5 border-b border-separator active:bg-primary/5"
+            activeOpacity={0.8}
+            className="flex-row items-center px-4 py-3.5 border-b border-separator"
           >
             <Text className="text-xl mr-3">💬</Text>
             <Text className="flex-1 text-base text-primary">{t('feedback.title')}</Text>
@@ -563,7 +576,8 @@ export default function SettingsScreen() {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               router.push('/rating');
             }}
-            className="flex-row items-center px-4 py-3.5 active:bg-primary/5"
+            activeOpacity={0.8}
+            className="flex-row items-center px-4 py-3.5"
           >
             <Text className="text-xl mr-3">⭐</Text>
             <Text className="flex-1 text-base text-primary">{t('rating.title')}</Text>
