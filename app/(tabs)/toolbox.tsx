@@ -8,6 +8,8 @@ import { ScreenContainer } from "@/components/screen-container";
 import { AnimatedButton } from "@/components/ui/animated-button";
 import { AnimatedTouchable } from "@/components/ui/animated-touchable";
 import { FDroidCard } from "@/components/ui/fdroid-card";
+import { AnimatedCheckmark, AnimatedError, AnimatedWarning } from "@/components/ui/animated-checkmark";
+import { haptics } from "@/lib/haptics-service";
 import { useColors } from "@/hooks/use-colors";
 import { useTelnet } from "@/lib/telnet-provider";
 import { useUsbStatus } from "@/lib/usb-status-context";
@@ -38,6 +40,12 @@ export default function ToolboxScreen() {
   const [backups, setBackups] = useState<BackupInfo[]>([]);
   const [loadingBackups, setLoadingBackups] = useState(false);
   const [showBackups, setShowBackups] = useState(false);
+  
+  // Estados para animaciones
+  const [showRestoreSuccess, setShowRestoreSuccess] = useState(false);
+  const [showRestoreError, setShowRestoreError] = useState(false);
+  const [showActionSuccess, setShowActionSuccess] = useState(false);
+  const [animationMessage, setAnimationMessage] = useState('');
 
   const handleSelectStep = (step: InstallationStep) => {
     if (Platform.OS !== "web") {
@@ -117,15 +125,13 @@ export default function ToolboxScreen() {
               );
 
               if (result.success) {
-                showAlert('alerts.éxito', 'alerts.backup_restaurado_correctamente');
-                if (Platform.OS !== "web") {
-                  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-                }
+                setAnimationMessage(t('toolbox.restore_success') || 'Backup restaurado');
+                setShowRestoreSuccess(true);
+                haptics.restore();
               } else {
-                Alert.alert(t('common.error'), result.error || t('toolbox.restore_error'));
-                if (Platform.OS !== "web") {
-                  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-                }
+                setAnimationMessage(result.error || t('toolbox.restore_error') || 'Error al restaurar');
+                setShowRestoreError(true);
+                haptics.error();
               }
             } catch (error) {
               showAlert('alerts.error', 'alerts.error_inesperado_al_restaurar_backup');
@@ -724,6 +730,33 @@ export default function ToolboxScreen() {
           )}
         </View>
       </ScrollView>
+      
+      {/* Animación de restauración exitosa */}
+      <AnimatedCheckmark
+        visible={showRestoreSuccess}
+        message={animationMessage}
+        onComplete={() => setShowRestoreSuccess(false)}
+        autoHide={true}
+        autoHideDelay={2500}
+      />
+      
+      {/* Animación de error en restauración */}
+      <AnimatedError
+        visible={showRestoreError}
+        message={animationMessage}
+        onComplete={() => setShowRestoreError(false)}
+        autoHide={true}
+        autoHideDelay={3000}
+      />
+      
+      {/* Animación de acción exitosa */}
+      <AnimatedCheckmark
+        visible={showActionSuccess}
+        message={animationMessage}
+        onComplete={() => setShowActionSuccess(false)}
+        autoHide={true}
+        autoHideDelay={2000}
+      />
     </ScreenContainer>
   );
 }

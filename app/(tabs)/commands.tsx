@@ -7,6 +7,8 @@ import { ScreenContainer } from "@/components/screen-container";
 import { AnimatedTouchable } from "@/components/ui/animated-touchable";
 import { AnimatedButton } from "@/components/ui/animated-button";
 import { FDroidCard } from "@/components/ui/fdroid-card";
+import { AnimatedCheckmark, AnimatedError, AnimatedWarning } from "@/components/ui/animated-checkmark";
+import { haptics } from "@/lib/haptics-service";
 import { useTelnet } from "@/lib/telnet-provider";
 import { MIB2_COMMANDS } from "@/lib/telnet-client";
 import { useColors } from "@/hooks/use-colors";
@@ -65,6 +67,12 @@ export default function CommandsScreen() {
   // Estado del sistema MIB2
   const [mib2State, setMib2State] = useState<MIB2SystemState>(getMIB2State());
   const [isVerifyingState, setIsVerifyingState] = useState(false);
+  
+  // Estados para animaciones de backup
+  const [showBackupSuccess, setShowBackupSuccess] = useState(false);
+  const [showBackupError, setShowBackupError] = useState(false);
+  const [showScriptSuccess, setShowScriptSuccess] = useState(false);
+  const [animationMessage, setAnimationMessage] = useState('');
   
   const scrollViewRef = useRef<ScrollView>(null);
   const inputRef = useRef<TextInput>(null);
@@ -146,8 +154,16 @@ export default function CommandsScreen() {
         }
         
         // Detectar fin del backup
-        if (msg.text.includes('BACKUP COMPLETADO') || msg.text.includes('ERROR: Backup')) {
+        if (msg.text.includes('BACKUP COMPLETADO')) {
           setDdProgress(null);
+          setAnimationMessage(t('commands.backup_completed') || 'Backup completado');
+          setShowBackupSuccess(true);
+          haptics.backup();
+        } else if (msg.text.includes('ERROR: Backup')) {
+          setDdProgress(null);
+          setAnimationMessage(t('commands.backup_error') || 'Error en backup');
+          setShowBackupError(true);
+          haptics.error();
         }
       }
     }
@@ -1067,6 +1083,33 @@ export default function CommandsScreen() {
           <InstallationGuide />
         </View>
       </Modal>
+      
+      {/* Animación de backup exitoso */}
+      <AnimatedCheckmark
+        visible={showBackupSuccess}
+        message={animationMessage}
+        onComplete={() => setShowBackupSuccess(false)}
+        autoHide={true}
+        autoHideDelay={3000}
+      />
+      
+      {/* Animación de error en backup */}
+      <AnimatedError
+        visible={showBackupError}
+        message={animationMessage}
+        onComplete={() => setShowBackupError(false)}
+        autoHide={true}
+        autoHideDelay={3000}
+      />
+      
+      {/* Animación de script exitoso */}
+      <AnimatedCheckmark
+        visible={showScriptSuccess}
+        message={animationMessage}
+        onComplete={() => setShowScriptSuccess(false)}
+        autoHide={true}
+        autoHideDelay={2000}
+      />
     </ScreenContainer>
   );
 }

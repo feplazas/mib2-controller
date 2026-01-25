@@ -2749,3 +2749,20 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Configurar animaciones de transición en expo-router (fade_from_bottom en Stack)
 - [x] Implementar fade out al salir de pantallas (animation: 'shift' en Tabs)
 - [x] Implementar slide para navegación de tabs (gestureEnabled + gestureDirection)
+
+## Correcciones v40 - Haptics y AnimatedCheckmark
+
+### Haptic Patterns Personalizados
+- [x] Crear servicio haptics-service.ts con patrones personalizados
+- [x] Implementar patrón success (suave)
+- [x] Implementar patrón error (fuerte)
+- [x] Implementar patrón warning (media)
+- [x] Implementar patrón connection (doble pulso)
+- [x] Implementar patrón backup (progreso completado)
+- [x] Implementar patrón restore (recuperación)
+
+### Integrar AnimatedCheckmark
+- [x] Conexión USB exitosa (Home screen)
+- [x] Backup completado (Commands screen)
+- [x] Restauración de valores exitosa (Toolbox screen)
+- [x] Desconexión USB (Home screen) - disponible para uso

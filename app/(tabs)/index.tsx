@@ -7,7 +7,9 @@ import { AnimatedTouchable } from "@/components/ui/animated-touchable";
 import { FDroidCard } from "@/components/ui/fdroid-card";
 import { AnimatedButton } from "@/components/ui/animated-button";
 import { AnimatedFadeIn } from "@/components/ui/animated-fade-in";
+import { AnimatedCheckmark, AnimatedError } from "@/components/ui/animated-checkmark";
 import { UsbStatusIndicator } from "@/components/usb-status-indicator";
+import { haptics } from "@/lib/haptics-service";
 import { useUsbStatus } from "@/lib/usb-status-context";
 import { useTelnet } from "@/lib/telnet-provider";
 
@@ -33,6 +35,11 @@ export default function HomeScreen() {
   const [detectedSubnet, setDetectedSubnet] = useState<string>('192.168.1');
   const [mib2Compatibility, setMib2Compatibility] = useState<CompatibilityStatus>('not_connected');
   const [mib2UnitInfo, setMib2UnitInfo] = useState<MIB2UnitInfo | null>(null);
+  
+  // Estados para animaciones de conexión
+  const [showConnectionSuccess, setShowConnectionSuccess] = useState(false);
+  const [showConnectionError, setShowConnectionError] = useState(false);
+  const [connectionMessage, setConnectionMessage] = useState('');
 
   // Detectar adaptador de red automáticamente cuando USB se conecta
   useEffect(() => {
@@ -66,11 +73,11 @@ export default function HomeScreen() {
         t('home.adapter_required_message'),
         [{ text: t('home.understood') }]
       );
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      haptics.error();
       return;
     }
 
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    haptics.tap();
     
     // Update config before connecting
     await updateConfig({
@@ -80,11 +87,16 @@ export default function HomeScreen() {
 
     try {
       await connect();
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      // Mostrar animación de conexión exitosa
+      setConnectionMessage(t('home.connection_success') || 'Conectado');
+      setShowConnectionSuccess(true);
+      haptics.connection();
       // Auto-detect toolbox
       setTimeout(() => handleDetectToolbox(), 1000);
     } catch (error) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      setConnectionMessage(t('home.connection_error') || 'Error de conexión');
+      setShowConnectionError(true);
+      haptics.error();
     }
   };
 
@@ -665,6 +677,24 @@ export default function HomeScreen() {
           </View>
         </View>
       </ScrollView>
+      
+      {/* Animación de conexión exitosa */}
+      <AnimatedCheckmark
+        visible={showConnectionSuccess}
+        message={connectionMessage}
+        onComplete={() => setShowConnectionSuccess(false)}
+        autoHide={true}
+        autoHideDelay={2000}
+      />
+      
+      {/* Animación de error de conexión */}
+      <AnimatedError
+        visible={showConnectionError}
+        message={connectionMessage}
+        onComplete={() => setShowConnectionError(false)}
+        autoHide={true}
+        autoHideDelay={2500}
+      />
     </ScreenContainer>
   );
 }
