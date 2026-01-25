@@ -1,5 +1,6 @@
 {
   "common": {
+    "disconnected": "Desconectado",
     "cancel": "Cancelar",
     "confirm": "Confirmar",
     "continue": "Continuar",

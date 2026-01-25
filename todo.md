@@ -2667,3 +2667,9 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Corregir secciones duplicadas de offline_guides en de.json
 - [x] Agregar descripciones completas para todas las guías (installation_desc, troubleshooting_desc, commands_desc, fec_desc)
 - [x] Verificar que guides.tsx use correctamente las traducciones
+
+### Traducción common.disconnected
+- [x] Agregar clave common.disconnected a es.json
+- [x] Agregar clave common.disconnected a en.json
+- [x] Agregar clave common.disconnected a de.json
+- [x] Verificar que TypeScript compila sin errores
