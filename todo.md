@@ -2893,3 +2893,17 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Preparar descripción larga (4000 caracteres) con análisis legal incluido
 - [x] Generar AAB (Android App Bundle) para producción (build: 4cb7a7ae-b106-4741-9d62-2151c8d35b97)
 - [x] Crear documento con instrucciones de subida a Play Console
+
+
+## GitHub Pages - Política de Privacidad (25 Ene 2026)
+
+- [x] Crear repositorio en GitHub: https://github.com/feplazas/mib2-privacy
+- [x] Configurar GitHub Pages
+- [x] URL pública: https://feplazas.github.io/mib2-privacy/
+
+
+## Bug Fix - Tema Automático (25 Ene 2026)
+
+- [x] Corregir detección de tema del sistema cuando se selecciona "automático" (Appearance.addChangeListener)
+- [x] Verificar assets faltantes para Play Console (todo listo: iconos, feature graphic, política de privacidad, store listing)
+- [ ] Generar AAB final

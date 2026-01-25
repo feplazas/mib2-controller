@@ -71,6 +71,21 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
   }, [applyScheme, colorScheme, isLoaded]);
 
+  // Listen to system theme changes when in 'system' mode
+  useEffect(() => {
+    if (themeMode !== 'system') return;
+
+    const subscription = Appearance.addChangeListener(({ colorScheme: newScheme }) => {
+      // Force re-render by updating a dummy state or directly applying
+      // The systemScheme from useSystemColorScheme() will update automatically
+      if (newScheme) {
+        applyScheme(newScheme as ColorScheme);
+      }
+    });
+
+    return () => subscription.remove();
+  }, [themeMode, applyScheme]);
+
   // Set theme mode and persist
   const setThemeMode = useCallback(async (mode: ThemeMode) => {
     setThemeModeState(mode);

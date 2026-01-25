@@ -66,17 +66,14 @@
 1. Ve a **Política > Contenido de la app > Política de privacidad**
 2. Tienes dos opciones:
    
-   **Opción A: Hospedar en GitHub Pages**
-   - Crea un repositorio público en GitHub
-   - Sube el archivo PRIVACY_POLICY.md
-   - Activa GitHub Pages
-   - Usa la URL generada (ej: `https://tuusuario.github.io/mib2-privacy/`)
+   **URL de la Política de Privacidad (ya lista):**
+   ```
+   https://feplazas.github.io/mib2-privacy/
+   ```
    
-   **Opción B: Usar un servicio gratuito**
-   - [Termly](https://termly.io/) - Genera y hospeda políticas gratis
-   - [PrivacyPolicies.com](https://www.privacypolicies.com/) - Similar
+   Esta URL ya está hospedada en GitHub Pages y lista para usar.
 
-3. Ingresa la URL de tu política de privacidad
+3. Ingresa la URL: `https://feplazas.github.io/mib2-privacy/`
 
 ---
 
