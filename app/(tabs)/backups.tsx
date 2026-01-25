@@ -455,13 +455,7 @@ export default function BackupsScreen() {
         </View>
         </AnimatedFadeIn>
 
-        {/* Información de integridad */}
-        <AnimatedFadeIn direction="up" index={1} staggerDelay={80}>
-        <View style={styles.integrityInfoBox}>
-          <Text style={styles.integrityInfoTitle}>{t('backups.integrity_system')}</Text>
-          <Text style={styles.integrityInfoText}>{t('backups.integrity_system_desc')}</Text>
-        </View>
-        </AnimatedFadeIn>
+
 
         {/* Estado de conexión */}
         {status !== 'connected' && (
