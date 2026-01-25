@@ -1153,7 +1153,12 @@
     "title": "Settings",
     "language": "Language",
     "theme": "Theme",
-
+    "general": "General",
+    "offline_guides": "Offline Guides",
+    "select_theme": "Select Theme",
+    "theme_system": "Automatic (System)",
+    "theme_light": "Light",
+    "theme_dark": "Dark",
     "notifications": "Notifications",
     "enable_notifications": "Enable notifications",
     "about": "About",
@@ -1239,6 +1244,33 @@
     "offline_guides_refreshed": "Guides refreshed",
     "connection_online": "Online",
     "connection_offline": "Offline"
+  },
+  "guides": {
+    "subtitle": "Documentation available offline",
+    "all_guides": "All Guides",
+    "guides_available": "guides available",
+    "sections": "sections",
+    "steps": "steps",
+    "no_guides": "No guides available",
+    "no_content": "No content available",
+    "refresh_to_load": "Press the refresh button to load the guides",
+    "tip_title": "Tip",
+    "tip_text": "Guides are automatically saved for offline access. You can consult them anytime, even without internet.",
+    "copy_command": "Copy",
+    "command_copied": "Command copied to clipboard",
+    "commands_to_execute": "Commands to execute:",
+    "troubleshooting": "Troubleshooting",
+    "resources": "Resources"
+  },
+  "offline_guides": {
+    "installation_title": "Installation Guide",
+    "installation_desc": "Complete MIB2 Toolbox installation process",
+    "troubleshooting_title": "Troubleshooting",
+    "troubleshooting_desc": "Solutions to common problems",
+    "commands_title": "Common Commands",
+    "commands_desc": "Most used commands in MIB2",
+    "fec_title": "FEC Codes",
+    "fec_desc": "Codes to activate premium features"
   },
   "errors": {
     "no_adapter": "No USB adapter detected",

@@ -1153,7 +1153,12 @@
     "title": "Einstellungen",
     "language": "Sprache",
     "theme": "Thema",
-
+    "general": "Allgemein",
+    "offline_guides": "Offline-Anleitungen",
+    "select_theme": "Thema auswählen",
+    "theme_system": "Automatisch (System)",
+    "theme_light": "Hell",
+    "theme_dark": "Dunkel",
     "notifications": "Benachrichtigungen",
     "enable_notifications": "Benachrichtigungen aktivieren",
     "about": "Über",
@@ -1239,6 +1244,33 @@
     "offline_guides_refreshed": "Anleitungen aktualisiert",
     "connection_online": "Online",
     "connection_offline": "Offline"
+  },
+  "guides": {
+    "subtitle": "Dokumentation offline verfügbar",
+    "all_guides": "Alle Anleitungen",
+    "guides_available": "Anleitungen verfügbar",
+    "sections": "Abschnitte",
+    "steps": "Schritte",
+    "no_guides": "Keine Anleitungen verfügbar",
+    "no_content": "Kein Inhalt verfügbar",
+    "refresh_to_load": "Drücken Sie die Aktualisieren-Taste, um die Anleitungen zu laden",
+    "tip_title": "Tipp",
+    "tip_text": "Anleitungen werden automatisch für den Offline-Zugriff gespeichert. Sie können sie jederzeit abrufen, auch ohne Internet.",
+    "copy_command": "Kopieren",
+    "command_copied": "Befehl in Zwischenablage kopiert",
+    "commands_to_execute": "Auszuführende Befehle:",
+    "troubleshooting": "Fehlerbehebung",
+    "resources": "Ressourcen"
+  },
+  "offline_guides": {
+    "installation_title": "Installationsanleitung",
+    "installation_desc": "Vollständiger MIB2 Toolbox Installationsprozess",
+    "troubleshooting_title": "Fehlerbehebung",
+    "troubleshooting_desc": "Lösungen für häufige Probleme",
+    "commands_title": "Häufige Befehle",
+    "commands_desc": "Am häufigsten verwendete Befehle in MIB2",
+    "fec_title": "FEC-Codes",
+    "fec_desc": "Codes zur Aktivierung von Premium-Funktionen"
   },
   "errors": {
     "no_adapter": "Kein USB-Adapter erkannt",

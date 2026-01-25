@@ -1153,7 +1153,12 @@
     "title": "Configuración",
     "language": "Idioma",
     "theme": "Tema",
-
+    "general": "General",
+    "offline_guides": "Guías Offline",
+    "select_theme": "Seleccionar Tema",
+    "theme_system": "Automático (Sistema)",
+    "theme_light": "Claro",
+    "theme_dark": "Oscuro",
     "notifications": "Notificaciones",
     "enable_notifications": "Habilitar notificaciones",
     "about": "Acerca de",
@@ -1239,6 +1244,33 @@
     "offline_guides_refreshed": "Guías actualizadas",
     "connection_online": "Conectado",
     "connection_offline": "Sin conexión"
+  },
+  "guides": {
+    "subtitle": "Documentación disponible sin conexión",
+    "all_guides": "Todas las Guías",
+    "guides_available": "guías disponibles",
+    "sections": "secciones",
+    "steps": "pasos",
+    "no_guides": "No hay guías disponibles",
+    "no_content": "No hay contenido disponible",
+    "refresh_to_load": "Presiona el botón de actualizar para cargar las guías",
+    "tip_title": "Consejo",
+    "tip_text": "Las guías se guardan automáticamente para acceso sin conexión. Puedes consultarlas en cualquier momento, incluso sin internet.",
+    "copy_command": "Copiar",
+    "command_copied": "Comando copiado al portapapeles",
+    "commands_to_execute": "Comandos a ejecutar:",
+    "troubleshooting": "Solución de Problemas",
+    "resources": "Recursos"
+  },
+  "offline_guides": {
+    "installation_title": "Guía de Instalación",
+    "installation_desc": "Proceso completo de instalación de MIB2 Toolbox",
+    "troubleshooting_title": "Solución de Problemas",
+    "troubleshooting_desc": "Soluciones a problemas comunes",
+    "commands_title": "Comandos Frecuentes",
+    "commands_desc": "Comandos más utilizados en MIB2",
+    "fec_title": "Códigos FEC",
+    "fec_desc": "Códigos para activar funciones premium"
   },
   "errors": {
     "no_adapter": "No se detectó ningún adaptador USB",

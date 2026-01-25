@@ -1,13 +1,14 @@
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useState, useEffect } from "react";
 import * as Haptics from "expo-haptics";
+import * as Clipboard from "expo-clipboard";
 import { router } from "expo-router";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { IOSSectionHeader } from "@/components/ui/ios-section";
 import { useTranslation, useLanguage } from "@/lib/language-context";
 import { useColors } from "@/hooks/use-colors";
-import { offlineGuidesService, type OfflineGuide, type OfflineStatus } from "@/lib/offline-guides-service";
+import { offlineGuidesService, type OfflineGuide, type OfflineStatus, type GuidePhase, type GuideStep } from "@/lib/offline-guides-service";
 
 /**
  * Offline Guides Viewer - Ultra Premium iOS Style
@@ -27,17 +28,17 @@ export default function GuidesScreen() {
   const [offlineStatus, setOfflineStatus] = useState<OfflineStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [expandedGuide, setExpandedGuide] = useState<string | null>(null);
-  const [expandedSection, setExpandedSection] = useState<string | null>(null);
+  const [expandedPhase, setExpandedPhase] = useState<string | null>(null);
+  const [copiedCommand, setCopiedCommand] = useState<string | null>(null);
 
   useEffect(() => {
     loadGuides();
-  }, []);
+  }, [currentLanguage]);
 
   const loadGuides = async () => {
     setLoading(true);
     try {
       await offlineGuidesService.initialize();
-      // Obtener idioma actual del sistema
       const lang = currentLanguage || 'es';
       const allGuides = await offlineGuidesService.getGuidesForLanguage(lang);
       const status = await offlineGuidesService.getStatus();
@@ -57,8 +58,27 @@ export default function GuidesScreen() {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   };
 
+  const copyToClipboard = async (text: string) => {
+    await Clipboard.setStringAsync(text);
+    setCopiedCommand(text);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    setTimeout(() => setCopiedCommand(null), 2000);
+  };
+
+  // Mapeo de IDs de guías guardadas a IDs amigables
+  const getGuideDisplayId = (guideId: string): string => {
+    const idMap: Record<string, string> = {
+      'installation_guide': 'installation',
+      'troubleshooting_guide': 'troubleshooting',
+      'commands_guide': 'commands',
+      'fec_guide': 'fec',
+    };
+    return idMap[guideId] || guideId;
+  };
+
   const getGuideIcon = (guideId: string): string => {
-    switch (guideId) {
+    const displayId = getGuideDisplayId(guideId);
+    switch (displayId) {
       case 'installation': return '📦';
       case 'troubleshooting': return '🔧';
       case 'commands': return '⌨️';
@@ -68,7 +88,8 @@ export default function GuidesScreen() {
   };
 
   const getGuideTitle = (guideId: string): string => {
-    switch (guideId) {
+    const displayId = getGuideDisplayId(guideId);
+    switch (displayId) {
       case 'installation': return t('offline_guides.installation_title') || 'Guía de Instalación';
       case 'troubleshooting': return t('offline_guides.troubleshooting_title') || 'Solución de Problemas';
       case 'commands': return t('offline_guides.commands_title') || 'Comandos Frecuentes';
@@ -78,90 +99,272 @@ export default function GuidesScreen() {
   };
 
   const getGuideDescription = (guideId: string): string => {
-    switch (guideId) {
+    const displayId = getGuideDisplayId(guideId);
+    switch (displayId) {
       case 'installation': return t('offline_guides.installation_desc') || 'Proceso completo de instalación de MIB2 Toolbox';
       case 'troubleshooting': return t('offline_guides.troubleshooting_desc') || 'Soluciones a problemas comunes';
       case 'commands': return t('offline_guides.commands_desc') || 'Comandos más utilizados en MIB2';
-      case 'fec': return t('offline_guides.fec_desc') || 'Códigos para activar funciones';
+      case 'fec': return t('offline_guides.fec_desc') || 'Códigos para activar funciones premium';
       default: return '';
     }
   };
 
-  const renderGuideContent = (guide: OfflineGuide) => {
-    if (!guide.content) return null;
+  // Traducir claves de título de fase
+  const translatePhaseTitle = (titleKey: string): string => {
+    const translated = t(titleKey);
+    if (translated && translated !== titleKey) return translated;
+    
+    // Fallbacks para títulos comunes
+    const fallbacks: Record<string, string> = {
+      'installation_guide.phase1_title': 'Fase 1: Verificar Conexión',
+      'installation_guide.phase2_title': 'Fase 2: Crear Backups',
+      'installation_guide.phase3_title': 'Fase 3: Instalar Toolbox',
+      'installation_guide.phase4_title': 'Fase 4: Verificar Instalación',
+      'installation_guide.phase5_title': 'Fase 5: Restauración (si es necesario)',
+      'offline_guides.troubleshooting.connection_title': 'Problemas de Conexión',
+      'offline_guides.troubleshooting.sd_title': 'Problemas con Tarjeta SD',
+      'offline_guides.troubleshooting.toolbox_title': 'Problemas con Toolbox',
+      'offline_guides.commands.info_title': 'Comandos de Información',
+      'offline_guides.commands.diagnostic_title': 'Comandos de Diagnóstico',
+      'offline_guides.commands.filesystem_title': 'Comandos de Sistema de Archivos',
+      'offline_guides.commands.advanced_title': 'Comandos Avanzados',
+      'offline_guides.fec.intro_title': 'Introducción a FEC',
+      'offline_guides.fec.connectivity_title': 'Códigos de Conectividad',
+      'offline_guides.fec.performance_title': 'Códigos de Rendimiento',
+      'offline_guides.fec.injection_title': 'Proceso de Inyección',
+    };
+    return fallbacks[titleKey] || titleKey.split('.').pop()?.replace(/_/g, ' ') || titleKey;
+  };
+
+  // Traducir claves de título de paso
+  const translateStepTitle = (titleKey: string): string => {
+    const translated = t(titleKey);
+    if (translated && translated !== titleKey) return translated;
+    
+    // Extraer nombre legible del key
+    const lastPart = titleKey.split('.').pop() || titleKey;
+    return lastPart.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  };
+
+  const renderCommand = (command: string, index: number) => (
+    <TouchableOpacity
+      key={index}
+      onPress={() => copyToClipboard(command)}
+      className="bg-background rounded-lg p-3 mt-2 border border-border active:bg-primary/10 flex-row items-center justify-between"
+    >
+      <Text className="text-sm text-primary font-mono flex-1 mr-2" numberOfLines={2}>
+        {command}
+      </Text>
+      <View className={`px-2 py-1 rounded ${copiedCommand === command ? 'bg-success' : 'bg-primary/20'}`}>
+        <Text className={`text-xs font-medium ${copiedCommand === command ? 'text-white' : 'text-primary'}`}>
+          {copiedCommand === command ? '✓' : t('guides.copy_command') || 'Copiar'}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
+
+  const renderStep = (step: GuideStep, phaseId: string) => (
+    <View key={`${phaseId}-step-${step.number}`} className="mb-4 bg-background rounded-xl p-4 border border-border">
+      <View className="flex-row items-start">
+        <View className="w-8 h-8 bg-primary rounded-full items-center justify-center mr-3">
+          <Text className="text-white font-bold text-sm">{step.number}</Text>
+        </View>
+        <View className="flex-1">
+          <Text className="text-base font-semibold text-foreground">
+            {translateStepTitle(step.titleKey)}
+          </Text>
+          {step.descriptionKey && (
+            <Text className="text-sm text-muted mt-1">
+              {t(step.descriptionKey) || step.descriptionKey.split('.').pop()?.replace(/_/g, ' ')}
+            </Text>
+          )}
+          {step.warningKey && (
+            <View className="bg-warning/10 rounded-lg p-2 mt-2">
+              <Text className="text-xs text-warning">
+                ⚠️ {t(step.warningKey) || step.warningKey.split('.').pop()?.replace(/_/g, ' ')}
+              </Text>
+            </View>
+          )}
+          {step.successKey && (
+            <View className="bg-success/10 rounded-lg p-2 mt-2">
+              <Text className="text-xs text-success">
+                ✓ {t(step.successKey) || step.successKey.split('.').pop()?.replace(/_/g, ' ')}
+              </Text>
+            </View>
+          )}
+          {step.commands && step.commands.length > 0 && (
+            <View className="mt-2">
+              <Text className="text-xs text-muted mb-1">{t('guides.commands_to_execute') || 'Comandos a ejecutar:'}</Text>
+              {step.commands.map((cmd, idx) => renderCommand(cmd, idx))}
+            </View>
+          )}
+        </View>
+      </View>
+    </View>
+  );
+
+  const renderPhase = (phase: GuidePhase, guideId: string) => {
+    const phaseKey = `${guideId}-${phase.id}`;
+    const isExpanded = expandedPhase === phaseKey;
 
     return (
-      <View className="px-4 pb-4">
-        {guide.content.sections?.map((section, sectionIndex) => (
-          <View key={sectionIndex} className="mb-3">
-            <TouchableOpacity
-              onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                const sectionKey = `${guide.id}-${sectionIndex}`;
-                setExpandedSection(expandedSection === sectionKey ? null : sectionKey);
-              }}
-              className="bg-background rounded-xl p-4 border border-border active:opacity-80"
-            >
-              <View className="flex-row items-center justify-between">
-                <Text className="text-base font-semibold text-foreground flex-1 mr-2">
-                  {section.title}
-                </Text>
-                <Text className="text-muted">
-                  {expandedSection === `${guide.id}-${sectionIndex}` ? '▼' : '›'}
-                </Text>
-              </View>
-              
-              {expandedSection === `${guide.id}-${sectionIndex}` && (
-                <View className="mt-3 pt-3 border-t border-separator">
-                  {section.steps?.map((step, stepIndex) => (
-                    <View key={stepIndex} className="flex-row mb-2">
-                      <Text className="text-primary font-bold mr-2 w-6">{stepIndex + 1}.</Text>
-                      <Text className="text-sm text-muted flex-1 leading-5">{step}</Text>
-                    </View>
-                  ))}
-                  
-                  {section.items?.map((item, itemIndex) => (
-                    <View key={itemIndex} className="mb-3 bg-primary/5 rounded-lg p-3">
-                      <Text className="text-sm font-semibold text-foreground">{item.name || item.title}</Text>
-                      {item.description && (
-                        <Text className="text-xs text-muted mt-1">{item.description}</Text>
-                      )}
-                      {item.command && (
-                        <View className="bg-background rounded-lg p-2 mt-2 border border-border">
-                          <Text className="text-xs text-primary font-mono">{item.command}</Text>
-                        </View>
-                      )}
-                      {item.code && (
-                        <View className="bg-success/10 rounded-lg p-2 mt-2 border border-success">
-                          <Text className="text-xs text-success font-mono">{item.code}</Text>
-                        </View>
-                      )}
-                      {item.solution && (
-                        <View className="bg-warning/10 rounded-lg p-2 mt-2">
-                          <Text className="text-xs text-warning">{item.solution}</Text>
-                        </View>
-                      )}
-                    </View>
-                  ))}
-                  
-                  {section.note && (
-                    <View className="bg-warning/10 rounded-lg p-3 mt-2">
-                      <Text className="text-xs text-warning">⚠️ {section.note}</Text>
-                    </View>
-                  )}
-                  
-                  {section.warning && (
-                    <View className="bg-error/10 rounded-lg p-3 mt-2">
-                      <Text className="text-xs text-error">🚨 {section.warning}</Text>
-                    </View>
-                  )}
-                </View>
-              )}
-            </TouchableOpacity>
+      <View key={phaseKey} className="mb-3">
+        <TouchableOpacity
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            setExpandedPhase(isExpanded ? null : phaseKey);
+          }}
+          className={`bg-surface rounded-xl p-4 border ${isExpanded ? 'border-primary' : 'border-border'} active:opacity-80`}
+        >
+          <View className="flex-row items-center justify-between">
+            <View className="flex-1 mr-2">
+              <Text className="text-base font-semibold text-foreground">
+                {translatePhaseTitle(phase.titleKey)}
+              </Text>
+              <Text className="text-xs text-muted mt-1">
+                {phase.steps?.length || 0} {t('guides.steps') || 'pasos'}
+              </Text>
+            </View>
+            <Text className="text-xl text-muted">
+              {isExpanded ? '▼' : '›'}
+            </Text>
           </View>
-        ))}
+        </TouchableOpacity>
+
+        {isExpanded && (
+          <View className="mt-3 pl-2">
+            {phase.warnings && phase.warnings.length > 0 && (
+              <View className="bg-error/10 rounded-xl p-3 mb-3 border border-error/30">
+                {phase.warnings.map((warning, idx) => (
+                  <Text key={idx} className="text-sm text-error">
+                    🚨 {t(warning) || warning.split('.').pop()?.replace(/_/g, ' ')}
+                  </Text>
+                ))}
+              </View>
+            )}
+            {phase.steps?.map((step) => renderStep(step, phase.id))}
+          </View>
+        )}
       </View>
     );
+  };
+
+  const renderGuideContent = (guide: OfflineGuide) => {
+    if (!guide.content) {
+      return (
+        <View className="px-4 pb-4">
+          <Text className="text-muted text-center py-4">
+            {t('guides.no_content') || 'No hay contenido disponible'}
+          </Text>
+        </View>
+      );
+    }
+
+    const { phases, sections, troubleshooting, resources } = guide.content;
+
+    return (
+      <View className="px-4 pb-4 pt-2">
+        {/* Renderizar Phases (estructura principal de las guías) */}
+        {phases && phases.length > 0 && (
+          <View>
+            {phases.map((phase) => renderPhase(phase, guide.id))}
+          </View>
+        )}
+
+        {/* Renderizar Sections (estructura alternativa) */}
+        {sections && sections.length > 0 && (
+          <View>
+            {sections.map((section, idx) => (
+              <View key={idx} className="mb-3 bg-surface rounded-xl p-4 border border-border">
+                <Text className="text-base font-semibold text-foreground mb-2">{section.title}</Text>
+                {section.steps?.map((step, stepIdx) => (
+                  <View key={stepIdx} className="flex-row mb-2">
+                    <Text className="text-primary font-bold mr-2 w-6">{stepIdx + 1}.</Text>
+                    <Text className="text-sm text-muted flex-1">{step}</Text>
+                  </View>
+                ))}
+                {section.items?.map((item, itemIdx) => (
+                  <View key={itemIdx} className="mb-2 bg-background rounded-lg p-3">
+                    <Text className="text-sm font-semibold text-foreground">{item.name || item.title}</Text>
+                    {item.description && <Text className="text-xs text-muted mt-1">{item.description}</Text>}
+                    {item.command && renderCommand(item.command, itemIdx)}
+                    {item.code && (
+                      <TouchableOpacity
+                        onPress={() => copyToClipboard(item.code!)}
+                        className="bg-success/10 rounded-lg p-2 mt-2 border border-success flex-row items-center justify-between"
+                      >
+                        <Text className="text-xs text-success font-mono">{item.code}</Text>
+                        <Text className="text-xs text-success ml-2">
+                          {copiedCommand === item.code ? '✓' : 'Copiar'}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                ))}
+                {section.note && (
+                  <View className="bg-warning/10 rounded-lg p-3 mt-2">
+                    <Text className="text-xs text-warning">⚠️ {section.note}</Text>
+                  </View>
+                )}
+                {section.warning && (
+                  <View className="bg-error/10 rounded-lg p-3 mt-2">
+                    <Text className="text-xs text-error">🚨 {section.warning}</Text>
+                  </View>
+                )}
+              </View>
+            ))}
+          </View>
+        )}
+
+        {/* Renderizar Troubleshooting */}
+        {troubleshooting && troubleshooting.length > 0 && (
+          <View className="mt-4">
+            <Text className="text-lg font-semibold text-foreground mb-3">
+              {t('guides.troubleshooting') || 'Solución de Problemas'}
+            </Text>
+            {troubleshooting.map((item, idx) => (
+              <View key={idx} className="mb-3 bg-warning/5 rounded-xl p-4 border border-warning/30">
+                <Text className="text-sm font-semibold text-warning mb-2">
+                  ❓ {t(item.problemKey) || item.problemKey.split('.').pop()?.replace(/_/g, ' ')}
+                </Text>
+                {item.solutions.map((solution, solIdx) => (
+                  <View key={solIdx} className="flex-row mb-1">
+                    <Text className="text-success mr-2">•</Text>
+                    <Text className="text-xs text-muted flex-1">
+                      {t(solution) || solution.split('.').pop()?.replace(/_/g, ' ')}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            ))}
+          </View>
+        )}
+
+        {/* Renderizar Resources */}
+        {resources && resources.length > 0 && (
+          <View className="mt-4">
+            <Text className="text-lg font-semibold text-foreground mb-3">
+              {t('guides.resources') || 'Recursos'}
+            </Text>
+            {resources.map((resource, idx) => (
+              <View key={idx} className="mb-2 bg-primary/5 rounded-xl p-3">
+                <Text className="text-sm font-medium text-primary">
+                  {t(resource.titleKey) || resource.titleKey.split('.').pop()?.replace(/_/g, ' ')}
+                </Text>
+                <Text className="text-xs text-muted mt-1">
+                  {t(resource.descriptionKey) || resource.descriptionKey.split('.').pop()?.replace(/_/g, ' ')}
+                </Text>
+              </View>
+            ))}
+          </View>
+        )}
+      </View>
+    );
+  };
+
+  const getPhaseCount = (guide: OfflineGuide): number => {
+    if (!guide.content) return 0;
+    return (guide.content.phases?.length || 0) + (guide.content.sections?.length || 0);
   };
 
   if (loading) {
@@ -189,7 +392,7 @@ export default function GuidesScreen() {
               onPress={() => router.back()}
               className="p-2 -ml-2 active:opacity-70"
             >
-              <Text className="text-primary text-lg">← {t('common.back') || 'Volver'}</Text>
+              <Text className="text-primary text-lg">← {t('common.back') || 'Atrás'}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={handleRefresh}
@@ -235,7 +438,7 @@ export default function GuidesScreen() {
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                 setExpandedGuide(expandedGuide === guide.id ? null : guide.id);
-                setExpandedSection(null);
+                setExpandedPhase(null);
               }}
               className={`bg-surface rounded-2xl border overflow-hidden ${
                 expandedGuide === guide.id ? 'border-primary' : 'border-border'
@@ -252,11 +455,9 @@ export default function GuidesScreen() {
                   <Text className="text-sm text-muted mt-0.5">
                     {getGuideDescription(guide.id)}
                   </Text>
-                  {guide.content?.sections && (
-                    <Text className="text-xs text-primary mt-1">
-                      {guide.content.sections.length} {t('guides.sections') || 'secciones'}
-                    </Text>
-                  )}
+                  <Text className="text-xs text-primary mt-1">
+                    {getPhaseCount(guide)} {t('guides.sections') || 'secciones'}
+                  </Text>
                 </View>
                 <Text className="text-2xl text-muted">
                   {expandedGuide === guide.id ? '▼' : '›'}

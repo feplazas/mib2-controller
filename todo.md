@@ -2569,3 +2569,42 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Mostrar las 4 guías embebidas (Instalación, Troubleshooting, Comandos, FEC)
 - [x] Agregar navegación desde Settings (botón Guías Offline)
 - [x] Diseño iOS premium con acordeones expandibles
+
+
+## Correcciones v29 - Traducciones y UX
+
+### Traducciones faltantes
+- [ ] Corregir `settings.offline_guides` en Settings
+- [ ] Corregir `settings.theme_system` en Settings  
+- [ ] Corregir `guides.subtitle`, `guides.tip_title`, `guides.tip_text`, `guides.guides_available`, `guides.all_guides`
+- [ ] Corregir nombres de guías (`installation_guide` → "Guía de Instalación")
+- [ ] Corregir claves de safe_test en auto-spoof
+
+### Botón copiar
+- [ ] Agregar botón copiar en resultados de prueba segura
+- [ ] Agregar botón copiar en comandos de guías
+- [ ] Agregar botón copiar en información de debug
+
+### Redundancias
+- [ ] Revisar y eliminar funciones duplicadas entre módulos
+- [ ] Consolidar lógica de guías offline
+
+
+## Correcciones v29 - Traducciones y UX (COMPLETADO)
+
+### Traducciones faltantes
+- [x] Agregar sección "guides" en en.json y de.json
+- [x] Agregar sección "offline_guides" en en.json y de.json
+- [x] Agregar claves faltantes de settings (general, offline_guides, theme_system, etc.)
+- [x] Agregar fallbacks legibles para safe_test en auto-spoof.tsx
+
+### Guías Offline
+- [x] Corregir mapeo de IDs de guías (installation_guide -> installation)
+- [x] Agregar títulos y descripciones amigables para cada guía
+- [x] Renderizar contenido de phases y sections correctamente
+- [x] Agregar botón de copiar en comandos
+
+### Safe Test
+- [x] Agregar fallbacks legibles para todas las claves de safe_test
+- [x] Agregar botón "Copiar" en resultado de Safe Test
+- [x] Generar reporte formateado para copiar

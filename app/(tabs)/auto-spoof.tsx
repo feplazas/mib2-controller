@@ -11,6 +11,7 @@ import { SuccessResultModal } from '@/components/success-result-modal';
 import { EepromProgressIndicator } from '@/components/eeprom-progress-indicator';
 import * as Haptics from 'expo-haptics';
 import * as Sharing from 'expo-sharing';
+import * as Clipboard from 'expo-clipboard';
 import { spoofReducer, initialSpoofState, getStepIcon } from '@/lib/spoof-reducer';
 import { useTranslation } from "@/lib/language-context";
 import { usbLogger } from '@/lib/usb-logger';
@@ -34,6 +35,33 @@ export default function AutoSpoofScreen() {
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
 
+  // Fallbacks legibles para claves de safe_test
+  const SAFE_TEST_FALLBACKS: Record<string, string> = {
+    // Steps
+    'safe_test.step.device_validation': 'Validación de dispositivo',
+    'safe_test.step.eeprom_detection': 'Detección de EEPROM',
+    'safe_test.step.vidpid_read': 'Lectura de VID/PID',
+    'safe_test.step.status_check': 'Verificación de estado',
+    'safe_test.step.checksum_verify': 'Verificación de checksum',
+    'safe_test.step.backup_simulation': 'Simulación de backup',
+    'safe_test.step.vid_write_simulation': 'Simulación escritura VID',
+    'safe_test.step.pid_write_simulation': 'Simulación escritura PID',
+    'safe_test.step.verify_simulation': 'Simulación verificación',
+    // Details
+    'safe_test.detail.already_spoofed': 'El adaptador ya tiene el VID/PID objetivo - No se requieren cambios',
+    'safe_test.detail.checksum_invalid_no_affect': 'Checksum inválido pero no afecta VID/PID',
+    'safe_test.detail.device_compatible': 'Dispositivo compatible',
+    'safe_test.detail.external_eeprom_writable': 'EEPROM externa detectada - Escritura posible',
+    'safe_test.detail.current_vidpid': 'VID actual: {{0}}, PID actual: {{1}}',
+    'safe_test.detail.checksum_valid': 'Checksum válido: {{0}}',
+    'safe_test.detail.backup_simulated': 'Backup simulado: VID={{0}}, PID={{1}}',
+    'safe_test.detail.would_write': 'Escribiría: offset {{0}} = {{1}} ({{2}})',
+    'safe_test.detail.would_verify': 'Verificaría que VID/PID = {{0}}',
+    // Warnings
+    'safe_test.warning.already_configured': 'El adaptador ya está configurado con el VID/PID de D-Link',
+    'safe_test.warning.device_may_not_be_compatible': 'El dispositivo puede no ser compatible con MIB2',
+  };
+
   // Helper para traducir claves de safe_test con parámetros
   const translateSafeTestKey = (key: string, t: (key: string) => string): string => {
     // Si la clave contiene '|', tiene parámetros
@@ -42,12 +70,19 @@ export default function AutoSpoofScreen() {
       const translationKey = parts[0];
       const params = parts.slice(1);
       
-      // Obtener la traducción base
+      // Obtener la traducción base (primero intentar t(), luego fallback)
       let translated = t(translationKey);
-      
-      // Si no se encontró traducción, devolver la clave original
       if (translated === translationKey) {
-        return key.replace(/\|/g, ' ');
+        translated = SAFE_TEST_FALLBACKS[translationKey] || translationKey;
+      }
+      
+      // Si aún es la clave, crear texto legible
+      if (translated === translationKey) {
+        // Convertir safe_test.detail.current_vidpid a "VID actual: param1, PID actual: param2"
+        const lastPart = translationKey.split('.').pop() || '';
+        translated = lastPart.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        // Agregar parámetros al final
+        return `${translated}: ${params.join(', ')}`;
       }
       
       // Reemplazar {{0}}, {{1}}, etc. con los parámetros
@@ -61,11 +96,42 @@ export default function AutoSpoofScreen() {
     // Si la clave empieza con 'safe_test.', intentar traducir
     if (key.startsWith('safe_test.')) {
       const translated = t(key);
-      return translated !== key ? translated : key;
+      if (translated !== key) return translated;
+      
+      // Usar fallback si existe
+      if (SAFE_TEST_FALLBACKS[key]) return SAFE_TEST_FALLBACKS[key];
+      
+      // Crear texto legible de la clave
+      const lastPart = key.split('.').pop() || '';
+      return lastPart.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     }
     
     // Devolver la clave original si no es una clave de traducción
     return key;
+  };
+
+  // Generar reporte de Safe Test para copiar
+  const generateSafeTestReport = (): string => {
+    if (!state.safeTestResult) return '';
+    const r = state.safeTestResult;
+    let report = `=== Resultado de Prueba Segura ===\n`;
+    report += `VID/PID Actual: ${r.summary.currentVID}:${r.summary.currentPID}\n`;
+    report += `VID/PID Objetivo: ${r.summary.targetVID}:${r.summary.targetPID}\n`;
+    report += `Tipo EEPROM: ${r.summary.eepromType}\n`;
+    report += `Escribible: ${r.summary.isWritable ? 'Sí' : 'No'}\n`;
+    report += `Tiempo estimado: ${(r.summary.estimatedRealTime / 1000).toFixed(1)}s\n\n`;
+    report += `Pasos ejecutados:\n`;
+    r.steps.forEach((step, i) => {
+      const icon = step.status === 'passed' ? '✓' : step.status === 'failed' ? '✗' : step.status === 'warning' ? '!' : '-';
+      report += `[${icon}] ${translateSafeTestKey(step.name, t)}\n`;
+      report += `    ${translateSafeTestKey(step.details, t)}\n`;
+    });
+    if (r.warnings.length > 0) {
+      report += `\nAdvertencias:\n`;
+      r.warnings.forEach(w => report += `! ${translateSafeTestKey(w, t)}\n`);
+    }
+    report += `\nResultado: ${r.wouldSucceedInRealMode ? 'El spoofing real FUNCIONARÍA correctamente' : 'El spoofing podría tener problemas'}\n`;
+    return report;
   };
 
   // Helper para obtener texto de paso traducido
@@ -1132,11 +1198,25 @@ export default function AutoSpoofScreen() {
               <View className={`rounded-xl p-4 border ${
                 state.safeTestResult.wouldSucceedInRealMode ? 'bg-green-500/5 border-green-500/30' : 'bg-yellow-500/5 border-yellow-500/30'
               }`}>
-                <Text className={`text-sm font-semibold mb-3 ${
-                  state.safeTestResult.wouldSucceedInRealMode ? 'text-green-500' : 'text-yellow-500'
-                }`}>
-                  {t('auto_spoof.safe_test_result')}
-                </Text>
+                <View className="flex-row justify-between items-center mb-3">
+                  <Text className={`text-sm font-semibold ${
+                    state.safeTestResult.wouldSucceedInRealMode ? 'text-green-500' : 'text-yellow-500'
+                  }`}>
+                    {t('auto_spoof.safe_test_result')}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={async () => {
+                      const report = generateSafeTestReport();
+                      await Clipboard.setStringAsync(report);
+                      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                      setToastMessage(t('guides.command_copied') || 'Copiado al portapapeles');
+                      setToastVisible(true);
+                    }}
+                    className="bg-primary/20 px-3 py-1.5 rounded-lg active:opacity-70"
+                  >
+                    <Text className="text-xs text-primary font-medium">{t('guides.copy_command') || 'Copiar'}</Text>
+                  </TouchableOpacity>
+                </View>
                 
                 {/* Resumen */}
                 <View className="gap-1 mb-3">
