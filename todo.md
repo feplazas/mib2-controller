@@ -2818,3 +2818,11 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Crear componente ExpandableInfo para información expandible/colapsable
 - [x] Convertir texto informativo del checksum en componente expandible/colapsable
 - [x] Aplicar AnimatedTouchable a botones importantes (Execute, Safe Test, Connect, Go to Auto Spoof, Detect Toolbox)
+
+## Mejoras UX Avanzadas (25 Ene 2026)
+
+- [x] Crear componente AnimatedSpinner para indicador de carga en botones (3 variantes: circular, dots, pulse)
+- [x] Implementar transiciones suaves entre pantallas con AnimatedScreenTransition
+- [x] Crear animaciones de feedback éxito/error con AnimatedFeedback (inline y modal)
+- [x] Integrar spinner en botones: Execute, Safe Test, Connect USB, Scan Progress, Restore Backup, Verify Integrity
+- [x] Crear componentes AnimatedListItem y AnimatedCard para transiciones escalonadas

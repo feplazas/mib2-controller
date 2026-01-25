@@ -8,6 +8,7 @@ import { ScreenContainer } from "@/components/screen-container";
 import { IOSSection, IOSSectionHeader, IOSRow } from "@/components/ui/ios-section";
 import { AnimatedTouchable } from "@/components/ui/animated-touchable";
 import { AnimatedFadeIn } from "@/components/ui/animated-fade-in";
+import { AnimatedSpinner } from "@/components/ui/animated-spinner";
 import { useTelnet } from "@/lib/telnet-provider";
 import { useUsbStatus } from "@/lib/usb-status-context";
 import * as Clipboard from 'expo-clipboard';

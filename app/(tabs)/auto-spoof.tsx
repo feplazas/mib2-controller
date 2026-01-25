@@ -11,6 +11,8 @@ import { SuccessResultModal } from '@/components/success-result-modal';
 import { EepromProgressIndicator } from '@/components/eeprom-progress-indicator';
 import { ExpandableInfo } from '@/components/ui/expandable-info';
 import { AnimatedTouchable } from '@/components/ui/animated-touchable';
+import { AnimatedSpinner } from '@/components/ui/animated-spinner';
+import { AnimatedFeedback } from '@/components/ui/animated-feedback';
 import * as Haptics from 'expo-haptics';
 import * as Sharing from 'expo-sharing';
 import * as Clipboard from 'expo-clipboard';
@@ -1171,9 +1173,15 @@ export default function AutoSpoofScreen() {
               }`}
             >
               <View className="flex-row items-center gap-3">
-                <Text className="text-2xl">
-                  {state.isSafeTestRunning ? '⏳' : state.safeTestResult?.wouldSucceedInRealMode ? '✅' : state.safeTestResult ? '⚠️' : '🛡️'}
-                </Text>
+                {state.isSafeTestRunning ? (
+                  <View className="w-8 h-8 items-center justify-center">
+                    <AnimatedSpinner size={24} color="#6366F1" strokeWidth={2.5} />
+                  </View>
+                ) : (
+                  <Text className="text-2xl">
+                    {state.safeTestResult?.wouldSucceedInRealMode ? '✅' : state.safeTestResult ? '⚠️' : '🛡️'}
+                  </Text>
+                )}
                 <View className="flex-1">
                   <Text className={`text-base font-semibold ${
                     state.safeTestResult?.wouldSucceedInRealMode
@@ -1376,7 +1384,7 @@ export default function AutoSpoofScreen() {
             </TouchableOpacity>}
           </View>
 
-          {/* Botón de Ejecución Principal - Con animación de escala y haptics */}
+          {/* Botón de Ejecución Principal - Con animación de escala, haptics y spinner */}
           <AnimatedTouchable
             onPress={executeAutoSpoof}
             disabled={!canExecute || state.isExecuting}
@@ -1388,11 +1396,16 @@ export default function AutoSpoofScreen() {
                 : 'bg-muted/30'
             }`}
           >
-            <Text className={`text-base font-semibold ${
-              canExecute && !state.isExecuting ? 'text-white' : 'text-muted'
-            }`}>
-              {state.isExecuting ? t('auto_spoof.executing') : t('auto_spoof.execute_auto_spoof')}
-            </Text>
+            <View className="flex-row items-center gap-2">
+              {state.isExecuting && (
+                <AnimatedSpinner size={18} color="#FFFFFF" strokeWidth={2} />
+              )}
+              <Text className={`text-base font-semibold ${
+                canExecute && !state.isExecuting ? 'text-white' : 'text-muted'
+              }`}>
+                {state.isExecuting ? t('auto_spoof.executing') : t('auto_spoof.execute_auto_spoof')}
+              </Text>
+            </View>
           </AnimatedTouchable>
         </View>
       </ScrollView>

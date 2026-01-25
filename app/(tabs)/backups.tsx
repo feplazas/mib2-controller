@@ -4,6 +4,7 @@ import * as Haptics from 'expo-haptics';
 import { ScreenContainer } from '@/components/screen-container';
 import { AnimatedFadeIn } from '@/components/ui/animated-fade-in';
 import { SkeletonList, SkeletonCard } from '@/components/ui/skeleton-loader';
+import { AnimatedSpinner } from '@/components/ui/animated-spinner';
 import { backupService, type EEPROMBackup, type IntegrityStatus, type IntegrityCheckResult } from '@/lib/backup-service';
 import { useUsbStatus } from '@/lib/usb-status-context';
 import { useTranslation } from '@/lib/language-context';
@@ -349,7 +350,7 @@ export default function BackupsScreen() {
             activeOpacity={0.8}
           >
             {isCurrentlyVerifying ? (
-              <ActivityIndicator size="small" color="#0a7ea4" />
+              <AnimatedSpinner size={16} color="#0a7ea4" strokeWidth={2} />
             ) : (
               <Text style={styles.verifyButtonText}>{t('backups.verify_integrity')}</Text>
             )}
@@ -367,9 +368,14 @@ export default function BackupsScreen() {
             disabled={!canRestore || isCurrentlyRestoring}
             activeOpacity={0.8}
           >
-            <Text style={styles.restoreButtonText}>
-              {isCurrentlyRestoring ? t('backups.restoring') : t('backups.restore_vidpid')}
-            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              {isCurrentlyRestoring && (
+                <AnimatedSpinner size={14} color="#FFFFFF" strokeWidth={2} />
+              )}
+              <Text style={styles.restoreButtonText}>
+                {isCurrentlyRestoring ? t('backups.restoring') : t('backups.restore_vidpid')}
+              </Text>
+            </View>
           </TouchableOpacity>
 
           {/* Botón Compartir */}

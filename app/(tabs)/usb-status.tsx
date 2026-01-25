@@ -12,6 +12,7 @@ import { getChipsetCompatibility, canAttemptSpoofing } from '@/lib/chipset-compa
 import { ScanningIndicator } from '@/components/scanning-indicator';
 import { CompatibilityCheckLoader } from '@/components/compatibility-check-loader';
 import { AnimatedTouchable } from '@/components/ui/animated-touchable';
+import { AnimatedSpinner } from '@/components/ui/animated-spinner';
 
 import { showAlert } from '@/lib/translated-alert';
 import { useTranslation } from "@/lib/language-context";
@@ -543,7 +544,11 @@ export default function UsbStatusScreen() {
                 }`}
               >
                 <View className="flex-row items-center gap-2">
-                  <Text className="text-xl">🔌</Text>
+                  {isConnecting ? (
+                    <AnimatedSpinner size={20} color="#FFFFFF" strokeWidth={2} />
+                  ) : (
+                    <Text className="text-xl">🔌</Text>
+                  )}
                   <Text className="text-base font-bold text-background">
                     {isConnecting ? t('usb.connecting') : t('usb.connect')}
                   </Text>

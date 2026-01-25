@@ -8,6 +8,7 @@ import { FDroidCard } from "@/components/ui/fdroid-card";
 import { AnimatedButton } from "@/components/ui/animated-button";
 import { AnimatedFadeIn } from "@/components/ui/animated-fade-in";
 import { AnimatedCheckmark, AnimatedError } from "@/components/ui/animated-checkmark";
+import { AnimatedSpinner } from "@/components/ui/animated-spinner";
 import { UsbStatusIndicator } from "@/components/usb-status-indicator";
 import { haptics } from "@/lib/haptics-service";
 import { useUsbStatus } from "@/lib/usb-status-context";
@@ -533,9 +534,12 @@ export default function HomeScreen() {
           {scanning && scanProgress && (
             <View className="bg-primary/10 border border-primary rounded-xl p-4">
               <View className="flex-row items-center justify-between mb-2">
-                <Text className="text-sm font-semibold text-primary">
-                  {t('home.scanning_network')}
-                </Text>
+                <View className="flex-row items-center gap-2">
+                  <AnimatedSpinner size={16} color="#0a7ea4" strokeWidth={2} />
+                  <Text className="text-sm font-semibold text-primary">
+                    {t('home.scanning_network')}
+                  </Text>
+                </View>
                 <Text className="text-sm text-primary font-mono">
                   {scanProgress.percentage}%
                 </Text>
