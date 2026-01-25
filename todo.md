@@ -2693,3 +2693,22 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Crear traducciones para feedback en ES/EN/DE
 - [x] Crear componente FeedbackScreen con estilo F-Droid
 - [x] Integrar módulo en navegación (Settings)
+
+## Correcciones v37 - Estilo F-Droid Global y Animaciones
+
+### Componentes Reutilizables
+- [x] Crear AnimatedCard con estilo F-Droid y animación de escala
+- [x] Crear AnimatedButton con feedback táctil animado
+- [x] Crear StarRating component para calificación
+
+### Sistema de Calificación
+- [x] Agregar traducciones para rating en ES/EN/DE
+- [x] Implementar pantalla/modal de calificación con estrellas
+- [x] Guardar calificación en AsyncStorage
+
+### Aplicar Estilo F-Droid
+- [x] Actualizar pantalla Home con nuevo estilo
+- [x] Actualizar pantalla Commands con nuevo estilo
+- [x] Actualizar pantalla FEC con nuevo estilo
+- [x] Actualizar pantalla Toolbox con nuevo estilo
+- [x] Actualizar pantalla Actions con nuevo estilo

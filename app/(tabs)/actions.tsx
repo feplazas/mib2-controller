@@ -5,6 +5,7 @@ import * as Haptics from 'expo-haptics';
 
 import { ScreenContainer } from '@/components/screen-container';
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import { AnimatedTouchable } from '@/components/ui/animated-touchable';
 import { useColors } from '@/hooks/use-colors';
 import { useTranslation } from '@/lib/language-context';
 
@@ -118,18 +119,14 @@ export default function ActionsScreen() {
       <View style={[styles.sectionContent, { backgroundColor: colors.surface, borderColor: colors.border }]}>
         {items.map((item, index) => (
           <React.Fragment key={item.id}>
-            <Pressable
+            <AnimatedTouchable
               onPress={() => handlePress(item.route)}
-              style={({ pressed }) => [
-                styles.row,
-                { 
-                  backgroundColor: pressed ? colors.border + '30' : 'transparent',
-                },
-              ]}
+              style={styles.row}
+              hapticFeedback="light"
             >
-              {/* Icon Container */}
-              <View style={[styles.iconContainer, { backgroundColor: item.color + '15' }]}>
-                <IconSymbol name={item.icon as any} size={22} color={item.color} />
+              {/* Icon Container - F-Droid Style */}
+              <View style={[styles.iconContainer, { backgroundColor: item.color }]}>
+                <IconSymbol name={item.icon as any} size={22} color="#FFFFFF" />
               </View>
               
               {/* Text Content */}
@@ -144,7 +141,7 @@ export default function ActionsScreen() {
               
               {/* Chevron */}
               <IconSymbol name="chevron.right" size={14} color={colors.muted} />
-            </Pressable>
+            </AnimatedTouchable>
             {index < items.length - 1 && (
               <View style={[styles.separator, { backgroundColor: colors.border }]} />
             )}

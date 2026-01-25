@@ -2179,5 +2179,24 @@
     "forum_vw": "VW Vortex",
     "forum_github": "GitHub Issues",
     "cancel": "Cancel"
+  },
+  "rating": {
+    "title": "Rate the App",
+    "subtitle": "Your opinion helps us improve",
+    "question": "How would you rate your experience with MIB2 Controller?",
+    "tap_to_rate": "Tap the stars to rate",
+    "thanks_title": "Thank you for your rating!",
+    "thanks_message": "Your feedback helps us improve the app.",
+    "rate_later": "Later",
+    "rate_never": "Don't ask again",
+    "submit": "Submit Rating",
+    "feedback_placeholder": "What can we improve? (optional)",
+    "label_1": "Very bad",
+    "label_2": "Bad",
+    "label_3": "Average",
+    "label_4": "Good",
+    "label_5": "Excellent",
+    "already_rated": "You have already rated the app",
+    "change_rating": "Change rating"
   }
 }

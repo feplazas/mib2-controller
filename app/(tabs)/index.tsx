@@ -3,6 +3,9 @@ import { useState, useEffect } from "react";
 import * as Haptics from "expo-haptics";
 
 import { ScreenContainer } from "@/components/screen-container";
+import { AnimatedTouchable } from "@/components/ui/animated-touchable";
+import { FDroidCard } from "@/components/ui/fdroid-card";
+import { AnimatedButton } from "@/components/ui/animated-button";
 import { UsbStatusIndicator } from "@/components/usb-status-indicator";
 import { useUsbStatus } from "@/lib/usb-status-context";
 import { useTelnet } from "@/lib/telnet-provider";
@@ -484,22 +487,22 @@ export default function HomeScreen() {
           {/* Scan Buttons */}
           {!isConnected && !scanning && (
             <View className="flex-row gap-3">
-              <TouchableOpacity
+              <AnimatedButton
+                title={t('home.quick_search')}
+                icon="🔍"
+                variant="outline"
                 onPress={handleQuickScan}
-                className="flex-1 bg-primary/20 border border-primary px-4 py-3 rounded-xl active:opacity-80"
-              >
-                <Text className="text-primary font-semibold text-center text-sm">
-                  {t('home.quick_search')}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
+                fullWidth
+                style={{ flex: 1 }}
+              />
+              <AnimatedButton
+                title={t('home.full_scan_btn')}
+                icon="🌐"
+                variant="secondary"
                 onPress={handleFullScan}
-                className="flex-1 bg-muted/20 border border-border px-4 py-3 rounded-xl active:opacity-80"
-              >
-                <Text className="text-foreground font-semibold text-center text-sm">
-                  {t('home.full_scan_btn')}
-                </Text>
-              </TouchableOpacity>
+                fullWidth
+                style={{ flex: 1 }}
+              />
             </View>
           )}
 
@@ -528,16 +531,20 @@ export default function HomeScreen() {
 
           {/* Found Devices */}
           {foundDevices.length > 0 && !isConnected && (
-            <View className="bg-success/10 border border-success rounded-xl p-4">
-              <Text className="text-sm font-semibold text-success mb-3">
-                {t('home.devices_found')} ({foundDevices.length})
-              </Text>
-              <View className="gap-2">
+            <FDroidCard
+              icon="📱"
+              iconBgColor="#22C55E20"
+              title={t('home.devices_found')}
+              badge={`${foundDevices.length}`}
+              badgeColor="success"
+              variant="success"
+            >
+              <View className="gap-2 mt-3">
                 {foundDevices.map((device) => (
-                  <TouchableOpacity
+                  <AnimatedTouchable
                     key={device.host}
                     onPress={() => handleSelectDevice(device)}
-                    className="bg-background rounded-lg p-3 border border-border active:opacity-70"
+                    className="bg-background rounded-lg p-3 border border-border"
                   >
                     <View className="flex-row items-center justify-between">
                       <View>
@@ -556,10 +563,10 @@ export default function HomeScreen() {
                         </Text>
                       )}
                     </View>
-                  </TouchableOpacity>
+                  </AnimatedTouchable>
                 ))}
               </View>
-            </View>
+            </FDroidCard>
           )}
 
           {/* Connection Form */}
@@ -594,29 +601,25 @@ export default function HomeScreen() {
           {/* Action Button */}
           <View className="items-center">
             {isConnected ? (
-              <TouchableOpacity
+              <AnimatedButton
+                title={t('home.disconnect_btn')}
+                icon="🔌"
+                variant="danger"
+                size="lg"
                 onPress={handleDisconnect}
-                className="bg-error px-8 py-4 rounded-full active:opacity-80 min-w-[200px]"
-              >
-                <Text className="text-white font-semibold text-center text-base">
-                  {t('home.disconnect_btn')}
-                </Text>
-              </TouchableOpacity>
+                style={{ minWidth: 200, borderRadius: 50 }}
+              />
             ) : (
-              <TouchableOpacity
+              <AnimatedButton
+                title={isConnecting ? undefined : t('home.connect_to_mib2')}
+                icon={isConnecting ? undefined : "🚀"}
+                variant="primary"
+                size="lg"
                 onPress={handleConnect}
                 disabled={isConnecting}
-                className="bg-primary px-8 py-4 rounded-full active:opacity-80 min-w-[200px]"
-                style={{ opacity: isConnecting ? 0.6 : 1 }}
-              >
-                {isConnecting ? (
-                  <ActivityIndicator color="white" />
-                ) : (
-                  <Text className="text-white font-semibold text-center text-base">
-                    {t('home.connect_to_mib2')}
-                  </Text>
-                )}
-              </TouchableOpacity>
+                loading={isConnecting}
+                style={{ minWidth: 200, borderRadius: 50 }}
+              />
             )}
           </View>
 

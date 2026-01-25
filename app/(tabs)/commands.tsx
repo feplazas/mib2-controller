@@ -4,6 +4,9 @@ import * as Haptics from "expo-haptics";
 import * as Clipboard from "expo-clipboard";
 
 import { ScreenContainer } from "@/components/screen-container";
+import { AnimatedTouchable } from "@/components/ui/animated-touchable";
+import { AnimatedButton } from "@/components/ui/animated-button";
+import { FDroidCard } from "@/components/ui/fdroid-card";
 import { useTelnet } from "@/lib/telnet-provider";
 import { MIB2_COMMANDS } from "@/lib/telnet-client";
 import { useColors } from "@/hooks/use-colors";
@@ -700,20 +703,22 @@ export default function CommandsScreen() {
 
         {/* Scripts Buttons */}
         <View style={styles.scriptsButtonsRow}>
-          <Pressable
+          <AnimatedTouchable
             onPress={() => setShowScriptsModal(true)}
             style={styles.scriptsButton}
+            hapticFeedback="medium"
           >
             <Text style={styles.scriptsButtonIcon}>📜</Text>
             <Text style={styles.scriptsButtonText}>{t('telnet_scripts.scripts_library')}</Text>
-          </Pressable>
-          <Pressable
+          </AnimatedTouchable>
+          <AnimatedTouchable
             onPress={() => setShowInstallationGuide(true)}
             style={styles.guideButton}
+            hapticFeedback="medium"
           >
             <Text style={styles.scriptsButtonIcon}>📖</Text>
             <Text style={styles.guideButtonText}>{t('installation_guide.title')}</Text>
-          </Pressable>
+          </AnimatedTouchable>
         </View>
 
         {/* Barra de Progreso dd */}
@@ -758,12 +763,15 @@ export default function CommandsScreen() {
             </Text>
             
             {/* Botón de Cancelación */}
-            <Pressable
+            <AnimatedButton
+              title={t('telnet_scripts.cancel_backup')}
+              icon="❌"
+              variant="danger"
+              size="sm"
               onPress={handleCancelBackup}
-              style={styles.ddCancelButton}
-            >
-              <Text style={styles.ddCancelButtonText}>❌ {t('telnet_scripts.cancel_backup')}</Text>
-            </Pressable>
+              fullWidth
+              style={{ marginTop: 8 }}
+            />
           </View>
         )}
 

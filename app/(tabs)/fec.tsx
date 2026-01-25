@@ -6,6 +6,9 @@ import * as Sharing from "expo-sharing";
 import * as FileSystem from "expo-file-system/legacy";
 
 import { ScreenContainer } from "@/components/screen-container";
+import { AnimatedButton } from "@/components/ui/animated-button";
+import { AnimatedTouchable } from "@/components/ui/animated-touchable";
+import { FDroidCard } from "@/components/ui/fdroid-card";
 import { useColors } from "@/hooks/use-colors";
 import { useTelnet } from "@/lib/telnet-provider";
 import { showAlert } from '@/lib/translated-alert';
@@ -179,24 +182,23 @@ export default function FECScreen() {
           </View>
 
           {/* Generator Button */}
-          <TouchableOpacity
+          <AnimatedButton
+            title={t('fec.open_generator')}
+            icon="🌐"
+            variant="primary"
+            size="lg"
+            fullWidth
             onPress={handleOpenGenerator}
-            className="bg-primary px-4 py-3 rounded-xl active:opacity-80"
-          >
-            <Text className="text-center font-semibold text-base" style={{ color: colors.background }}>
-              🌐 {t('fec.open_generator')}
-            </Text>
-          </TouchableOpacity>
+          />
 
           {/* Info Button */}
-          <TouchableOpacity
+          <AnimatedButton
+            title={`${showInfo ? t('fec.hide') : t('fec.show')} ${t('fec.process_info')}`}
+            icon={showInfo ? "👁️" : "ℹ️"}
+            variant="outline"
+            fullWidth
             onPress={handleShowInfo}
-            className="bg-primary/10 px-4 py-3 rounded-xl active:opacity-80"
-          >
-            <Text className="text-center font-semibold" style={{ color: colors.primary }}>
-              {showInfo ? t('fec.hide') : t('fec.show')} {t('fec.process_info')}
-            </Text>
-          </TouchableOpacity>
+          />
 
           {/* Info Panel */}
           {showInfo && (
@@ -385,38 +387,30 @@ export default function FECScreen() {
           {/* Action Buttons */}
           {selectedCodes.length > 0 && (
             <View className="gap-3">
-              <TouchableOpacity
+              <AnimatedButton
+                title={t('fec.generate_exception_list')}
+                icon="📄"
+                variant="primary"
+                fullWidth
                 onPress={handleGenerateExceptionList}
-                className="bg-primary px-4 py-3 rounded-xl active:opacity-80"
-              >
-                <Text className="text-center font-semibold" style={{ color: colors.background }}>
-                  {t('fec.generate_exception_list')}
-                </Text>
-              </TouchableOpacity>
+              />
 
-              <TouchableOpacity
+              <AnimatedButton
+                title={t('fec.view_injection_command')}
+                icon="💻"
+                variant="secondary"
+                fullWidth
                 onPress={handleGenerateInjectionCommand}
-                className="bg-surface px-4 py-3 rounded-xl border active:opacity-80"
-                style={{ borderColor: colors.border }}
-              >
-                <Text className="text-center font-semibold" style={{ color: colors.foreground }}>
-                  {t('fec.view_injection_command')}
-                </Text>
-              </TouchableOpacity>
+              />
 
-              <TouchableOpacity
-                onPress={handleInjectViaTelnet}
-                className="px-4 py-3 rounded-xl active:opacity-80"
-                style={{ backgroundColor: isConnected ? '#22C55E' : colors.muted + '33' }}
+              <AnimatedButton
+                title={isConnected ? t('fec.inject_via_telnet') : t('fec.connect_telnet_first')}
+                icon={isConnected ? "⚡" : "🔌"}
+                variant={isConnected ? "success" : "secondary"}
+                fullWidth
                 disabled={!isConnected}
-              >
-                <Text
-                  className="text-center font-semibold text-base"
-                  style={{ color: isConnected ? colors.background : colors.muted }}
-                >
-                  {isConnected ? `⚡ ${t('fec.inject_via_telnet')}` : `🔌 ${t('fec.connect_telnet_first')}`}
-                </Text>
-              </TouchableOpacity>
+                onPress={handleInjectViaTelnet}
+              />
             </View>
           )}
         </View>

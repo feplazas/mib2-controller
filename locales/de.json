@@ -2178,5 +2178,24 @@
     "forum_vw": "VW Vortex",
     "forum_github": "GitHub Issues",
     "cancel": "Abbrechen"
+  },
+  "rating": {
+    "title": "App bewerten",
+    "subtitle": "Ihre Meinung hilft uns, uns zu verbessern",
+    "question": "Wie würden Sie Ihre Erfahrung mit MIB2 Controller bewerten?",
+    "tap_to_rate": "Tippen Sie auf die Sterne zum Bewerten",
+    "thanks_title": "Vielen Dank für Ihre Bewertung!",
+    "thanks_message": "Ihr Feedback hilft uns, die App zu verbessern.",
+    "rate_later": "Später",
+    "rate_never": "Nicht mehr fragen",
+    "submit": "Bewertung absenden",
+    "feedback_placeholder": "Was können wir verbessern? (optional)",
+    "label_1": "Sehr schlecht",
+    "label_2": "Schlecht",
+    "label_3": "Durchschnittlich",
+    "label_4": "Gut",
+    "label_5": "Ausgezeichnet",
+    "already_rated": "Sie haben die App bereits bewertet",
+    "change_rating": "Bewertung ändern"
   }
 }

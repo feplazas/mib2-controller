@@ -5,6 +5,9 @@ import * as Sharing from "expo-sharing";
 import * as FileSystem from "expo-file-system/legacy";
 
 import { ScreenContainer } from "@/components/screen-container";
+import { AnimatedButton } from "@/components/ui/animated-button";
+import { AnimatedTouchable } from "@/components/ui/animated-touchable";
+import { FDroidCard } from "@/components/ui/fdroid-card";
 import { useColors } from "@/hooks/use-colors";
 import { useTelnet } from "@/lib/telnet-provider";
 import { useUsbStatus } from "@/lib/usb-status-context";
@@ -416,30 +419,30 @@ export default function ToolboxScreen() {
           </View>
 
           <View className="flex-row gap-3">
-            <TouchableOpacity
+            <AnimatedButton
+              title={t('toolbox.diagnostics')}
+              icon="🔍"
+              variant="outline"
+              size="sm"
               onPress={handleShowDiagnostics}
-              className="flex-1 bg-primary/10 px-4 py-3 rounded-xl active:opacity-80"
-            >
-              <Text className="text-center font-semibold text-xs" style={{ color: colors.primary }}>
-                🔍 {t('toolbox.diagnostics')}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
+              style={{ flex: 1 }}
+            />
+            <AnimatedButton
+              title={t('toolbox.backups')}
+              icon="💾"
+              variant="success"
+              size="sm"
               onPress={handleShowBackups}
-              className="flex-1 bg-success/10 px-4 py-3 rounded-xl active:opacity-80"
-            >
-              <Text className="text-center font-semibold text-xs" style={{ color: "#22C55E" }}>
-                💾 {t('toolbox.backups')}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
+              style={{ flex: 1 }}
+            />
+            <AnimatedButton
+              title={t('toolbox.emmc_method')}
+              icon="⚙️"
+              variant="warning"
+              size="sm"
               onPress={handleShowEmmcInfo}
-              className="flex-1 bg-warning/10 px-4 py-3 rounded-xl active:opacity-80"
-            >
-              <Text className="text-center font-semibold text-xs" style={{ color: "#F59E0B" }}>
-                ⚙️ {t('toolbox.emmc_method')}
-              </Text>
-            </TouchableOpacity>
+              style={{ flex: 1 }}
+            />
           </View>
 
           {!selectedStep && !showEmmcInfo && !showDiagnostics && !showBackups && (
