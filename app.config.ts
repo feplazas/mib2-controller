@@ -22,18 +22,20 @@ const env = {
 const config: ExpoConfig = {
   name: env.appName,
   slug: env.appSlug,
-  version: "1.0.0",
+  version: "1.1.0",
   orientation: "portrait",
   icon: "./assets/images/icon.png",
   scheme: env.scheme,
   userInterfaceStyle: "automatic",
   newArchEnabled: true,
+  // Metadatos del desarrollador para Google Play
+  owner: "feplazas",
   ios: {
     supportsTablet: true,
     bundleIdentifier: env.iosBundleId,
   },
   android: {
-    versionCode: 41,
+    versionCode: 42,
     adaptiveIcon: {
       backgroundColor: "#0a1929",
       foregroundImage: "./assets/images/android-icon-foreground.png",

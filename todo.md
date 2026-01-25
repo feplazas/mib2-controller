@@ -2878,4 +2878,18 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Ocultar tooltip automáticamente cuando hay un modal abierto (ModalContext)
 - [x] Auto-dismiss después de 6 segundos sin interacción (autoDismissTimeout)
 - [x] Posicionamiento adaptativo para evitar cortes en bordes de pantalla (calculateAdaptivePosition)
-- [ ] Generar APK con EAS Build
+- [x] Generar APK con EAS Build (build: ef51766d-7f26-4f4d-ae96-24959e77ec4c)
+
+
+## Preparación Google Play Console (25 Ene 2026)
+
+- [x] Configurar app.config.ts con metadatos requeridos (version 1.1.0, versionCode 42, owner feplazas)
+- [x] Package name ya configurado como com.feplazas.mib2controller (sin referencias a Manus)
+- [x] Preparar icono de app en todas las resoluciones requeridas (512, 192, 144, 96, 72, 48)
+- [x] Crear feature graphic (1024x500) con diseño premium
+- [x] Screenshots: usar capturas reales de la app instalada en dispositivo
+- [x] Crear política de privacidad (GDPR, CCPA compliant)
+- [x] Preparar descripción corta (80 caracteres) en EN/ES/DE
+- [x] Preparar descripción larga (4000 caracteres) con análisis legal incluido
+- [x] Generar AAB (Android App Bundle) para producción (build: 4cb7a7ae-b106-4741-9d62-2151c8d35b97)
+- [x] Crear documento con instrucciones de subida a Play Console
