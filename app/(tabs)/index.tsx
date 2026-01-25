@@ -6,6 +6,7 @@ import { ScreenContainer } from "@/components/screen-container";
 import { AnimatedTouchable } from "@/components/ui/animated-touchable";
 import { FDroidCard } from "@/components/ui/fdroid-card";
 import { AnimatedButton } from "@/components/ui/animated-button";
+import { AnimatedFadeIn } from "@/components/ui/animated-fade-in";
 import { UsbStatusIndicator } from "@/components/usb-status-indicator";
 import { useUsbStatus } from "@/lib/usb-status-context";
 import { useTelnet } from "@/lib/telnet-provider";
@@ -297,31 +298,36 @@ export default function HomeScreen() {
       <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}>
         <View className="flex-1 gap-6">
           {/* Header - Premium Design */}
-          <View className="items-center gap-3 mb-2">
-            <View className="bg-primary/10 px-4 py-1 rounded-full">
-              <Text className="text-xs font-semibold text-primary uppercase tracking-wider">
-                MIB2 STD2 Technisat Preh
+          <AnimatedFadeIn direction="fade" delay={0}>
+            <View className="items-center gap-3 mb-2">
+              <View className="bg-primary/10 px-4 py-1 rounded-full">
+                <Text className="text-xs font-semibold text-primary uppercase tracking-wider">
+                  MIB2 STD2 Technisat Preh
+                </Text>
+              </View>
+              <Text className="text-3xl font-bold text-foreground tracking-tight">MIB2 Controller</Text>
+              <Text className="text-sm text-muted text-center px-4">
+                {t('home.subtitle')}
               </Text>
+              <View className="bg-warning/10 px-3 py-1.5 rounded-lg mt-1">
+                <Text className="text-xs text-warning text-center font-medium">
+                  {t('home.compatibility_notice')}
+                </Text>
+              </View>
             </View>
-            <Text className="text-3xl font-bold text-foreground tracking-tight">MIB2 Controller</Text>
-            <Text className="text-sm text-muted text-center px-4">
-              {t('home.subtitle')}
-            </Text>
-            <View className="bg-warning/10 px-3 py-1.5 rounded-lg mt-1">
-              <Text className="text-xs text-warning text-center font-medium">
-                {t('home.compatibility_notice')}
-              </Text>
-            </View>
-          </View>
+          </AnimatedFadeIn>
 
           {/* USB Status Indicator - REAL TIME */}
+          <AnimatedFadeIn direction="up" index={0} staggerDelay={80}>
           <UsbStatusIndicator 
             status={usbStatus} 
             deviceName={usbDevice?.product || usbDevice?.deviceName}
           />
+          </AnimatedFadeIn>
 
           {/* Network Adapter Info - Premium Design */}
           {networkAdapter && (
+            <AnimatedFadeIn direction="up" index={1} staggerDelay={80}>
             <View className="bg-surface rounded-2xl p-4 border border-success/20 shadow-sm">
               <View className="flex-row items-center gap-2 mb-2">
                 <View className="w-3 h-3 rounded-full bg-success" />
@@ -342,9 +348,11 @@ export default function HomeScreen() {
                 </View>
               </View>
             </View>
+            </AnimatedFadeIn>
           )}
 
           {/* Connection Status Card - Premium Design */}
+          <AnimatedFadeIn direction="up" index={2} staggerDelay={80}>
           <View className="bg-surface rounded-2xl p-6 border border-border shadow-sm">
             <View className="flex-row items-center gap-3 mb-4">
               <View className={`w-4 h-4 rounded-full ${getStatusColor()}`} />
@@ -483,6 +491,7 @@ export default function HomeScreen() {
               </View>
             )}
           </View>
+          </AnimatedFadeIn>
 
           {/* Scan Buttons */}
           {!isConnected && !scanning && (

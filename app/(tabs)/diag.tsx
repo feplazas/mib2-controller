@@ -4,6 +4,8 @@ import * as Haptics from 'expo-haptics';
 import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system/legacy';
 import { ScreenContainer } from '@/components/screen-container';
+import { AnimatedFadeIn } from '@/components/ui/animated-fade-in';
+import { AnimatedButton } from '@/components/ui/animated-button';
 import { usbLogger, type UsbLogEntry, type LogLevel } from '@/lib/usb-logger';
 import { useTranslation } from "@/lib/language-context";
 import { showAlert } from '@/lib/translated-alert';
@@ -118,16 +120,19 @@ export default function DiagScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
-        <View className="mb-6">
-          <Text className="text-3xl font-bold text-foreground mb-2">
-            {t('diag.title')}
-          </Text>
-          <Text className="text-sm text-muted">
-            {t('diag.subtitle')}
-          </Text>
-        </View>
+        <AnimatedFadeIn direction="fade" delay={0}>
+          <View className="mb-6">
+            <Text className="text-3xl font-bold text-foreground mb-2">
+              {t('diag.title')}
+            </Text>
+            <Text className="text-sm text-muted">
+              {t('diag.subtitle')}
+            </Text>
+          </View>
+        </AnimatedFadeIn>
 
         {/* Controls */}
+        <AnimatedFadeIn direction="up" index={0} staggerDelay={80}>
         <View className="flex-row gap-2 mb-4">
           <TouchableOpacity
             onPress={handleClearLogs}
@@ -159,8 +164,10 @@ export default function DiagScreen() {
             </Text>
           </TouchableOpacity>
         </View>
+        </AnimatedFadeIn>
 
         {/* Filters */}
+        <AnimatedFadeIn direction="up" index={1} staggerDelay={80}>
         <View className="flex-row gap-2 mb-4">
           {(['all', 'info', 'warning', 'error', 'success'] as const).map((level) => (
             <TouchableOpacity
@@ -177,8 +184,10 @@ export default function DiagScreen() {
             </TouchableOpacity>
           ))}
         </View>
+        </AnimatedFadeIn>
 
         {/* Stats */}
+        <AnimatedFadeIn direction="up" index={2} staggerDelay={80}>
         <View className="bg-surface rounded-xl p-4 mb-4 border border-border">
           <View className="flex-row justify-between">
             <View className="items-center flex-1">
@@ -205,8 +214,10 @@ export default function DiagScreen() {
             </View>
           </View>
         </View>
+        </AnimatedFadeIn>
 
         {/* Logs */}
+        <AnimatedFadeIn direction="up" index={3} staggerDelay={80}>
         <View className="bg-surface rounded-xl p-4 border border-border">
           <Text className="text-sm font-semibold text-foreground mb-3">
             📋 Logs ({filteredLogs.length})
@@ -262,6 +273,7 @@ export default function DiagScreen() {
             </ScrollView>
           )}
         </View>
+        </AnimatedFadeIn>
       </ScrollView>
     </ScreenContainer>
   );

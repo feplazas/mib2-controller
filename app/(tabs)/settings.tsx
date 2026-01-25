@@ -5,6 +5,8 @@ import { router } from "expo-router";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { IOSSection, IOSSectionHeader, IOSRow } from "@/components/ui/ios-section";
+import { AnimatedTouchable } from "@/components/ui/animated-touchable";
+import { AnimatedFadeIn } from "@/components/ui/animated-fade-in";
 import { useTelnet } from "@/lib/telnet-provider";
 import { useUsbStatus } from "@/lib/usb-status-context";
 import * as Clipboard from 'expo-clipboard';
@@ -216,13 +218,16 @@ export default function SettingsScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
-        <View className="px-4 pt-4 pb-2">
-          <Text className="text-3xl font-bold text-foreground">{t('settings.title')}</Text>
-          <Text className="text-base text-muted mt-1">{t('settings.subtitle')}</Text>
-        </View>
+        <AnimatedFadeIn direction="fade" delay={0}>
+          <View className="px-4 pt-4 pb-2">
+            <Text className="text-3xl font-bold text-foreground">{t('settings.title')}</Text>
+            <Text className="text-base text-muted mt-1">{t('settings.subtitle')}</Text>
+          </View>
+        </AnimatedFadeIn>
 
         {/* GENERAL Section */}
-        <IOSSectionHeader title={t('settings.general') || 'General'} />
+        <AnimatedFadeIn direction="up" index={0} staggerDelay={60}>
+          <IOSSectionHeader title={t('settings.general') || 'General'} />
         <View className="bg-surface mx-4 rounded-2xl overflow-hidden border border-border">
           {/* Language */}
           <TouchableOpacity
@@ -268,6 +273,7 @@ export default function SettingsScreen() {
             </View>
           </TouchableOpacity>
         </View>
+        </AnimatedFadeIn>
 
         {/* Language Selector Modal */}
         {showLanguageSelector && (
@@ -403,8 +409,9 @@ export default function SettingsScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* HELP Section */}
-        <IOSSectionHeader title={t('settings.help_title')} subtitle={t('settings.help_description')} />
+       {/* HELP Section */}
+        <AnimatedFadeIn direction="up" index={2} staggerDelay={60}>
+          <IOSSectionHeader title={t('settings.help_title')} subtitle={t('settings.help_description')} />
         <View className="bg-surface mx-4 rounded-2xl overflow-hidden border border-border">
           {faqItems.map((faq, index) => (
             <TouchableOpacity
@@ -430,8 +437,10 @@ export default function SettingsScreen() {
             </TouchableOpacity>
           ))}
         </View>
+        </AnimatedFadeIn>
 
         {/* DATA Section */}
+        <AnimatedFadeIn direction="up" index={3} staggerDelay={60}>
         <IOSSectionHeader title={t('settings.data_management')} />
         <View className="bg-surface mx-4 rounded-2xl overflow-hidden border border-border">
           <TouchableOpacity
@@ -450,8 +459,10 @@ export default function SettingsScreen() {
             <Text className="flex-1 text-base text-error">{t('settings.clear_offline_data')}</Text>
           </TouchableOpacity>
         </View>
+        </AnimatedFadeIn>
 
         {/* DEBUG Section */}
+        <AnimatedFadeIn direction="up" index={4} staggerDelay={60}>
         <IOSSectionHeader title={t('settings.usb_debug_mode')} />
         <View className="bg-surface mx-4 rounded-2xl overflow-hidden border border-border">
           <View className="flex-row items-center px-4 py-3.5 border-b border-separator">
@@ -498,8 +509,10 @@ export default function SettingsScreen() {
             <Text className="flex-1 text-base text-primary font-medium">{t('settings.copy_debug_info')}</Text>
           </TouchableOpacity>
         </View>
+        </AnimatedFadeIn>
 
         {/* ABOUT Section */}
+        <AnimatedFadeIn direction="up" index={5} staggerDelay={60}>
         <IOSSectionHeader title={t('settings.app_info')} />
         <View className="bg-surface mx-4 rounded-2xl overflow-hidden border border-border">
           <View className="flex-row items-center px-4 py-3.5 border-b border-separator">
@@ -552,8 +565,10 @@ export default function SettingsScreen() {
             <Text className="text-muted">›</Text>
           </TouchableOpacity>
         </View>
+        </AnimatedFadeIn>
 
         {/* Warning */}
+        <AnimatedFadeIn direction="up" index={6} staggerDelay={60}>
         <View className="mx-4 mt-6 bg-error/10 border border-error rounded-2xl p-4">
           <Text className="text-sm text-error font-medium mb-1">⚠️ {t('settings.security_warning')}</Text>
           <Text className="text-xs text-muted leading-relaxed">{t('settings.security_warning_text')}</Text>
@@ -565,6 +580,7 @@ export default function SettingsScreen() {
           <Text className="text-xs text-muted mt-1">{t('settings.created_by')}</Text>
           <Text className="text-xs text-muted mt-1">{t('settings.for_mib2_units')}</Text>
         </View>
+        </AnimatedFadeIn>
       </ScrollView>
     </ScreenContainer>
   );

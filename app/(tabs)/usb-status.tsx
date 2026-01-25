@@ -2,6 +2,8 @@ import { ScrollView, Text, View, TouchableOpacity, RefreshControl, Alert } from 
 import { useState, useEffect } from 'react';
 import * as Haptics from 'expo-haptics';
 import { ScreenContainer } from '@/components/screen-container';
+import { AnimatedFadeIn } from '@/components/ui/animated-fade-in';
+import { AnimatedButton } from '@/components/ui/animated-button';
 import { useUsbStatus } from '@/lib/usb-status-context';
 import { usbService } from '@/lib/usb-service';
 import { backupService } from '@/lib/backup-service';
@@ -402,17 +404,20 @@ export default function UsbStatusScreen() {
           {/* Indicador de Escaneo */}
           <ScanningIndicator isScanning={isScanning} text={t('usb.scanning')} />
           {/* Header */}
-          <View className="items-center mb-4">
-            <Text className="text-3xl font-bold text-foreground mb-2">
-              {t('usb.connection_status')}
-            </Text>
-            <Text className="text-sm text-muted text-center">
-              {t('usb.realtime_info')}
-            </Text>
-          </View>
+          <AnimatedFadeIn direction="fade" delay={0}>
+            <View className="items-center mb-4">
+              <Text className="text-3xl font-bold text-foreground mb-2">
+                {t('usb.connection_status')}
+              </Text>
+              <Text className="text-sm text-muted text-center">
+                {t('usb.realtime_info')}
+              </Text>
+            </View>
+          </AnimatedFadeIn>
 
           {/* Estado Principal */}
-          <View className="bg-surface rounded-2xl p-6 border border-border">
+          <AnimatedFadeIn direction="up" index={0} staggerDelay={80}>
+            <View className="bg-surface rounded-2xl p-6 border border-border">
             <View className="items-center gap-4">
               <View className={`w-24 h-24 rounded-full ${getStatusColor()} items-center justify-center`}>
                 <Text className="text-5xl">{getStatusIcon()}</Text>
@@ -429,9 +434,11 @@ export default function UsbStatusScreen() {
               </View>
             </View>
           </View>
+          </AnimatedFadeIn>
 
           {/* Información del Dispositivo Conectado */}
           {status === 'connected' && device && (
+            <AnimatedFadeIn direction="up" index={1} staggerDelay={80}>
             <View className="bg-surface rounded-2xl p-6 border border-border">
               <Text className="text-lg font-bold text-foreground mb-4">
                 {t('usb.device_info')}
@@ -490,6 +497,7 @@ export default function UsbStatusScreen() {
 
               </View>
             </View>
+            </AnimatedFadeIn>
           )}
 
               {/* Botón Refrescar (siempre visible) */}

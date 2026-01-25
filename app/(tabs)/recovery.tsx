@@ -4,6 +4,7 @@ import * as Haptics from 'expo-haptics';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import { ScreenContainer } from '@/components/screen-container';
+import { AnimatedFadeIn } from '@/components/ui/animated-fade-in';
 import { useUsbStatus } from '@/lib/usb-status-context';
 import { backupService, type EEPROMBackup } from '@/lib/backup-service';
 import { usbService } from '@/lib/usb-service';
@@ -122,14 +123,17 @@ export default function RecoveryScreen() {
       >
         <View className="gap-6">
           {/* Header */}
-          <View>
-            <Text className="text-3xl font-bold text-foreground">{t('recovery.title')}</Text>
-            <Text className="text-base text-muted mt-2">
-              {t('recovery.subtitle')}
-            </Text>
-          </View>
+          <AnimatedFadeIn direction="fade" delay={0}>
+            <View>
+              <Text className="text-3xl font-bold text-foreground">{t('recovery.title')}</Text>
+              <Text className="text-base text-muted mt-2">
+                {t('recovery.subtitle')}
+              </Text>
+            </View>
+          </AnimatedFadeIn>
 
           {/* Estado del Dispositivo */}
+          <AnimatedFadeIn direction="up" index={0} staggerDelay={80}>
           <View className={`rounded-2xl p-6 border ${
             status === 'connected' && brickedStatus ? 'bg-error/10 border-error' :
             status === 'connected' ? 'bg-success/10 border-success' :
@@ -180,8 +184,10 @@ export default function RecoveryScreen() {
               </View>
             )}
           </View>
+          </AnimatedFadeIn>
 
           {/* Backups Disponibles */}
+          <AnimatedFadeIn direction="up" index={1} staggerDelay={80}>
           <View className="bg-surface rounded-2xl p-6 border border-border">
             <View className="flex-row justify-between items-center mb-4">
               <Text className="text-lg font-semibold text-foreground">
@@ -355,16 +361,19 @@ export default function RecoveryScreen() {
               </View>
             )}
           </View>
+          </AnimatedFadeIn>
 
           {/* Instrucciones */}
-          <View className="bg-warning/10 border border-warning rounded-2xl p-4">
-            <Text className="text-sm text-warning font-semibold mb-2">
-              💡 {t('recovery.instructions_title')}
-            </Text>
-            <Text className="text-xs text-muted leading-relaxed">
-              {t('recovery.instructions_text')}
-            </Text>
-          </View>
+          <AnimatedFadeIn direction="up" index={2} staggerDelay={80}>
+            <View className="bg-warning/10 border border-warning rounded-2xl p-4">
+              <Text className="text-sm text-warning font-semibold mb-2">
+                💡 {t('recovery.instructions_title')}
+              </Text>
+              <Text className="text-xs text-muted leading-relaxed">
+                {t('recovery.instructions_text')}
+              </Text>
+            </View>
+          </AnimatedFadeIn>
         </View>
       </ScrollView>
     </ScreenContainer>

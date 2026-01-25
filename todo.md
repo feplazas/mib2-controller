@@ -2712,3 +2712,20 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Actualizar pantalla FEC con nuevo estilo
 - [x] Actualizar pantalla Toolbox con nuevo estilo
 - [x] Actualizar pantalla Actions con nuevo estilo
+
+## Correcciones v38 - Animaciones y Consistencia Visual
+
+### Componente AnimatedFadeIn
+- [x] Crear componente AnimatedFadeIn con FadeInUp de Reanimated
+
+### Actualizar Pantallas Restantes
+- [x] Actualizar pantalla Settings con componentes animados
+- [x] Actualizar pantalla USB Status con componentes animados
+- [x] Actualizar pantalla Diag con componentes animados
+- [x] Actualizar pantalla Recovery con componentes animados
+- [x] Actualizar pantalla Backups con componentes animados
+
+### Animaciones de Entrada
+- [x] Agregar FadeInUp a tarjetas en Home
+- [x] Agregar FadeInUp a tarjetas en Actions (ya tiene AnimatedTouchable)
+- [ ] Agregar FadeInUp a tarjetas en otras pantallas principales

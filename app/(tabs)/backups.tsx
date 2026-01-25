@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert, RefreshControl, StyleSheet, ActivityIndicator } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { ScreenContainer } from '@/components/screen-container';
+import { AnimatedFadeIn } from '@/components/ui/animated-fade-in';
 import { backupService, type EEPROMBackup, type IntegrityStatus, type IntegrityCheckResult } from '@/lib/backup-service';
 import { useUsbStatus } from '@/lib/usb-status-context';
 import { useTranslation } from '@/lib/language-context';
@@ -415,22 +416,28 @@ export default function BackupsScreen() {
         }
       >
         {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.title}>{t('backups.title')}</Text>
-          <Text style={styles.subtitle}>{t('backups.subtitle')}</Text>
-        </View>
+        <AnimatedFadeIn direction="fade" delay={0}>
+          <View style={styles.header}>
+            <Text style={styles.title}>{t('backups.title')}</Text>
+            <Text style={styles.subtitle}>{t('backups.subtitle')}</Text>
+          </View>
+        </AnimatedFadeIn>
 
         {/* Advertencia de seguridad */}
+        <AnimatedFadeIn direction="up" index={0} staggerDelay={80}>
         <View style={styles.securityWarning}>
           <Text style={styles.securityWarningTitle}>{t('backups.security_notice')}</Text>
           <Text style={styles.securityWarningText}>{t('backups.security_notice_text')}</Text>
         </View>
+        </AnimatedFadeIn>
 
         {/* Información de integridad */}
+        <AnimatedFadeIn direction="up" index={1} staggerDelay={80}>
         <View style={styles.integrityInfoBox}>
           <Text style={styles.integrityInfoTitle}>{t('backups.integrity_system')}</Text>
           <Text style={styles.integrityInfoText}>{t('backups.integrity_system_desc')}</Text>
         </View>
+        </AnimatedFadeIn>
 
         {/* Estado de conexión */}
         {status !== 'connected' && (
