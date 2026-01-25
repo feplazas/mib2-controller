@@ -2797,3 +2797,13 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 ### Vibración de Progreso
 - [x] Implementar vibración durante backup EEPROM usando haptics.backup()
 - [x] Implementar vibración durante restauración VID/PID usando haptics.restore()
+
+## Correcciones v43 - Bugs reportados
+
+### Checksum Inválido
+- [x] Investigar por qué el checksum muestra inválido (comportamiento normal - checksum de fábrica incorrecto o adaptador modificado)
+- [x] Documentar: checksum usa bytes 0x07-0x0E, NO incluye VID/PID (0x88-0x8B), spoofing no afectado
+
+### Guías Offline - Pantalla Oscurecida
+- [x] Identificar causa del efecto de oscurecimiento al presionar (TouchableOpacity sin activeOpacity)
+- [x] Corregir el comportamiento visual (agregado activeOpacity={0.8} a tarjetas y botones)

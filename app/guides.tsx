@@ -152,7 +152,8 @@ export default function GuidesScreen() {
     <TouchableOpacity
       key={index}
       onPress={() => copyToClipboard(command)}
-      className="bg-background rounded-lg p-3 mt-2 border border-border active:bg-primary/10 flex-row items-center justify-between"
+      activeOpacity={0.8}
+      className="bg-background rounded-lg p-3 mt-2 border border-border flex-row items-center justify-between"
     >
       <Text className="text-sm text-primary font-mono flex-1 mr-2" numberOfLines={2}>
         {command}
@@ -216,7 +217,8 @@ export default function GuidesScreen() {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             setExpandedPhase(isExpanded ? null : phaseKey);
           }}
-          className={`bg-surface rounded-xl p-4 border ${isExpanded ? 'border-primary' : 'border-border'} active:opacity-80`}
+          activeOpacity={0.8}
+          className={`bg-surface rounded-xl p-4 border ${isExpanded ? 'border-primary' : 'border-border'}`}
         >
           <View className="flex-row items-center justify-between">
             <View className="flex-1 mr-2">
@@ -448,6 +450,7 @@ export default function GuidesScreen() {
                 setExpandedGuide(expandedGuide === guide.id ? null : guide.id);
                 setExpandedPhase(null);
               }}
+              activeOpacity={0.8}
               className={`bg-surface rounded-2xl border overflow-hidden ${
                 expandedGuide === guide.id ? 'border-primary' : 'border-border'
               }`}
