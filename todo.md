@@ -2856,3 +2856,9 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 ## Bug Fix - Tabs sin texto (25 Ene 2026)
 
 - [x] Corregir tabs del modal Scripts que no muestran texto visible (minHeight: 44, fontSize: 14, color: #ECEDEE)
+
+
+## Mejoras Tabs Scripts (25 Ene 2026)
+
+- [x] Implementar indicador de tab activa con glow animado y subrayado (FadeIn, shadowColor, elevation)
+- [x] Implementar scroll snap para alineación automática de tabs (snapToInterval: 130, decelerationRate: fast)

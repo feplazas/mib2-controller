@@ -1,4 +1,5 @@
 import { View, Text, TextInput, ScrollView, Pressable, Modal, Alert, StyleSheet, ActivityIndicator } from "react-native";
+import Animated, { useSharedValue, useAnimatedStyle, withSpring, withTiming, interpolateColor, FadeIn, Layout } from "react-native-reanimated";
 import { useState, useRef, useEffect, useCallback } from "react";
 import * as Haptics from "expo-haptics";
 import * as Clipboard from "expo-clipboard";
@@ -944,28 +945,56 @@ export default function CommandsScreen() {
               </Text>
             </View>
 
-            {/* Category Tabs */}
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryTabs}>
-              {SCRIPT_CATEGORIES.map(cat => {
+            {/* Category Tabs - Con animación y scroll snap */}
+            <ScrollView 
+              horizontal 
+              showsHorizontalScrollIndicator={false} 
+              style={styles.categoryTabs}
+              contentContainerStyle={styles.categoryTabsContent}
+              snapToInterval={130}
+              decelerationRate="fast"
+              snapToAlignment="start"
+            >
+              {SCRIPT_CATEGORIES.map((cat, index) => {
                 const categoryAvailable = availableCategories[cat.id as keyof typeof availableCategories];
+                const isActive = selectedCategory === cat.id;
                 return (
                   <Pressable
                     key={cat.id}
-                    onPress={() => setSelectedCategory(cat.id)}
-                    style={[
+                    onPress={() => {
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      setSelectedCategory(cat.id);
+                    }}
+                    style={({ pressed }) => [
                       styles.categoryTab,
-                      selectedCategory === cat.id && styles.categoryTabActive,
-                      !categoryAvailable && styles.categoryTabDisabled
+                      isActive && styles.categoryTabActive,
+                      !categoryAvailable && styles.categoryTabDisabled,
+                      pressed && { opacity: 0.8, transform: [{ scale: 0.97 }] }
                     ]}
                   >
+                    {/* Glow effect para tab activa */}
+                    {isActive && (
+                      <Animated.View 
+                        entering={FadeIn.duration(200)}
+                        style={styles.categoryTabGlow} 
+                      />
+                    )}
                     <Text style={styles.categoryIcon}>{cat.icon}</Text>
                     <Text style={[
                       styles.categoryText,
-                      selectedCategory === cat.id && styles.categoryTextActive,
+                      isActive && styles.categoryTextActive,
                       !categoryAvailable && styles.categoryTextDisabled
                     ]}>
                       {t(cat.nameKey)}
                     </Text>
+                    {/* Indicador de subrayado animado */}
+                    {isActive && (
+                      <Animated.View 
+                        entering={FadeIn.duration(150)}
+                        layout={Layout.springify()}
+                        style={styles.categoryTabUnderline} 
+                      />
+                    )}
                   </Pressable>
                 );
               })}
@@ -1359,6 +1388,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
   },
+  categoryTabsContent: {
+    paddingRight: 16,
+    alignItems: 'center',
+  },
   categoryTab: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -1380,6 +1413,29 @@ const styles = StyleSheet.create({
   },
   categoryTabDisabled: {
     opacity: 0.5,
+  },
+  categoryTabGlow: {
+    position: 'absolute',
+    top: -2,
+    left: -2,
+    right: -2,
+    bottom: -2,
+    borderRadius: 24,
+    backgroundColor: 'rgba(10, 126, 164, 0.15)',
+    shadowColor: '#0a7ea4',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  categoryTabUnderline: {
+    position: 'absolute',
+    bottom: 4,
+    left: '20%',
+    right: '20%',
+    height: 3,
+    borderRadius: 1.5,
+    backgroundColor: '#0a7ea4',
   },
   categoryIcon: {
     fontSize: 18,
