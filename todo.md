@@ -2826,3 +2826,12 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Crear animaciones de feedback éxito/error con AnimatedFeedback (inline y modal)
 - [x] Integrar spinner en botones: Execute, Safe Test, Connect USB, Scan Progress, Restore Backup, Verify Integrity
 - [x] Crear componentes AnimatedListItem y AnimatedCard para transiciones escalonadas
+
+
+## Mejoras UX Finales (25 Ene 2026)
+
+- [x] Crear skeleton loaders personalizados para tarjetas de backup (SkeletonBackupCard, SkeletonBackupList)
+- [x] Crear skeleton loaders para lista de dispositivos USB (SkeletonDeviceCard, SkeletonDeviceList)
+- [x] Implementar AnimatedToggle, AnimatedCheckbox, AnimatedRadio con micro-interacciones iOS-style
+- [x] Integrar skeletons en backups.tsx y toggles en auto-spoof.tsx
+- [ ] Generar APK con EAS Build

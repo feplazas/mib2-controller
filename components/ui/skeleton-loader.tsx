@@ -257,6 +257,251 @@ export function SkeletonAvatar({
   );
 }
 
+/**
+ * SkeletonBackupCard - Skeleton personalizado para tarjetas de backup EEPROM
+ * Muestra la estructura exacta de una tarjeta de backup mientras carga
+ */
+export function SkeletonBackupCard({
+  style,
+}: {
+  style?: ViewStyle;
+}) {
+  return (
+    <View style={[styles.backupCard, style]}>
+      {/* Header con icono y fecha */}
+      <View style={styles.backupHeader}>
+        <View style={styles.backupHeaderLeft}>
+          <SkeletonLoader
+            width={40}
+            height={40}
+            borderRadius={10}
+            style={{ marginRight: 12 }}
+          />
+          <View>
+            <SkeletonLoader
+              width={120}
+              height={16}
+              borderRadius={4}
+              style={{ marginBottom: 6 }}
+            />
+            <SkeletonLoader
+              width={80}
+              height={12}
+              borderRadius={4}
+            />
+          </View>
+        </View>
+        {/* Badge de estado */}
+        <SkeletonLoader
+          width={60}
+          height={24}
+          borderRadius={12}
+        />
+      </View>
+
+      {/* Info del dispositivo */}
+      <View style={styles.backupInfo}>
+        <View style={styles.backupInfoRow}>
+          <SkeletonLoader width={70} height={12} borderRadius={4} />
+          <SkeletonLoader width={100} height={12} borderRadius={4} />
+        </View>
+        <View style={styles.backupInfoRow}>
+          <SkeletonLoader width={50} height={12} borderRadius={4} />
+          <SkeletonLoader width={80} height={12} borderRadius={4} />
+        </View>
+        <View style={styles.backupInfoRow}>
+          <SkeletonLoader width={60} height={12} borderRadius={4} />
+          <SkeletonLoader width={90} height={12} borderRadius={4} />
+        </View>
+      </View>
+
+      {/* Botones de acción */}
+      <View style={styles.backupActions}>
+        <SkeletonLoader width="30%" height={36} borderRadius={8} />
+        <SkeletonLoader width="30%" height={36} borderRadius={8} />
+        <SkeletonLoader width="30%" height={36} borderRadius={8} />
+      </View>
+    </View>
+  );
+}
+
+/**
+ * SkeletonBackupList - Lista de skeletons de backup
+ */
+export function SkeletonBackupList({
+  items = 3,
+  style,
+}: {
+  items?: number;
+  style?: ViewStyle;
+}) {
+  return (
+    <View style={style}>
+      {Array.from({ length: items }).map((_, index) => (
+        <SkeletonBackupCard
+          key={index}
+          style={{ marginBottom: index < items - 1 ? 12 : 0 }}
+        />
+      ))}
+    </View>
+  );
+}
+
+/**
+ * SkeletonDeviceCard - Skeleton personalizado para tarjetas de dispositivo USB
+ * Muestra la estructura de un dispositivo detectado mientras carga
+ */
+export function SkeletonDeviceCard({
+  style,
+}: {
+  style?: ViewStyle;
+}) {
+  return (
+    <View style={[styles.deviceCard, style]}>
+      {/* Icono y nombre */}
+      <View style={styles.deviceHeader}>
+        <SkeletonLoader
+          width={48}
+          height={48}
+          borderRadius={12}
+          style={{ marginRight: 12 }}
+        />
+        <View style={{ flex: 1 }}>
+          <SkeletonLoader
+            width="70%"
+            height={18}
+            borderRadius={4}
+            style={{ marginBottom: 6 }}
+          />
+          <SkeletonLoader
+            width="50%"
+            height={14}
+            borderRadius={4}
+          />
+        </View>
+        {/* Indicador de estado */}
+        <SkeletonLoader
+          width={12}
+          height={12}
+          borderRadius={6}
+        />
+      </View>
+
+      {/* Detalles del dispositivo */}
+      <View style={styles.deviceDetails}>
+        <View style={styles.deviceDetailRow}>
+          <SkeletonLoader width={60} height={11} borderRadius={3} />
+          <SkeletonLoader width={100} height={11} borderRadius={3} />
+        </View>
+        <View style={styles.deviceDetailRow}>
+          <SkeletonLoader width={70} height={11} borderRadius={3} />
+          <SkeletonLoader width={80} height={11} borderRadius={3} />
+        </View>
+      </View>
+
+      {/* Botón de conexión */}
+      <SkeletonLoader
+        width="100%"
+        height={44}
+        borderRadius={10}
+        style={{ marginTop: 12 }}
+      />
+    </View>
+  );
+}
+
+/**
+ * SkeletonDeviceList - Lista de skeletons de dispositivos
+ */
+export function SkeletonDeviceList({
+  items = 2,
+  style,
+}: {
+  items?: number;
+  style?: ViewStyle;
+}) {
+  return (
+    <View style={style}>
+      {Array.from({ length: items }).map((_, index) => (
+        <SkeletonDeviceCard
+          key={index}
+          style={{ marginBottom: index < items - 1 ? 12 : 0 }}
+        />
+      ))}
+    </View>
+  );
+}
+
+/**
+ * SkeletonSettingsRow - Skeleton para filas de configuración iOS-style
+ */
+export function SkeletonSettingsRow({
+  showToggle = false,
+  showChevron = true,
+  style,
+}: {
+  showToggle?: boolean;
+  showChevron?: boolean;
+  style?: ViewStyle;
+}) {
+  return (
+    <View style={[styles.settingsRow, style]}>
+      <View style={styles.settingsRowLeft}>
+        <SkeletonLoader
+          width={28}
+          height={28}
+          borderRadius={6}
+          style={{ marginRight: 12 }}
+        />
+        <SkeletonLoader width={120} height={16} borderRadius={4} />
+      </View>
+      {showToggle ? (
+        <SkeletonLoader width={51} height={31} borderRadius={16} />
+      ) : showChevron ? (
+        <SkeletonLoader width={8} height={14} borderRadius={2} />
+      ) : null}
+    </View>
+  );
+}
+
+/**
+ * SkeletonSettingsSection - Sección completa de configuración
+ */
+export function SkeletonSettingsSection({
+  rows = 3,
+  showHeader = true,
+  style,
+}: {
+  rows?: number;
+  showHeader?: boolean;
+  style?: ViewStyle;
+}) {
+  return (
+    <View style={style}>
+      {showHeader && (
+        <SkeletonLoader
+          width={100}
+          height={12}
+          borderRadius={4}
+          style={{ marginBottom: 8, marginLeft: 16 }}
+        />
+      )}
+      <View style={styles.settingsSection}>
+        {Array.from({ length: rows }).map((_, index) => (
+          <SkeletonSettingsRow
+            key={index}
+            showToggle={index === 0}
+            style={{
+              borderBottomWidth: index < rows - 1 ? 0.5 : 0,
+              borderBottomColor: 'rgba(51, 65, 85, 0.3)',
+            }}
+          />
+        ))}
+      </View>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'rgba(155, 161, 166, 0.2)',
@@ -302,5 +547,76 @@ const styles = StyleSheet.create({
   },
   listItemContent: {
     flex: 1,
+  },
+  // Estilos para SkeletonBackupCard
+  backupCard: {
+    backgroundColor: 'rgba(30, 32, 34, 0.8)',
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(51, 65, 85, 0.5)',
+  },
+  backupHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  backupHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  backupInfo: {
+    marginTop: 16,
+    gap: 8,
+  },
+  backupInfoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  backupActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 16,
+    gap: 8,
+  },
+  // Estilos para SkeletonDeviceCard
+  deviceCard: {
+    backgroundColor: 'rgba(30, 32, 34, 0.8)',
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(51, 65, 85, 0.5)',
+  },
+  deviceHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  deviceDetails: {
+    marginTop: 12,
+    gap: 6,
+  },
+  deviceDetailRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  // Estilos para SkeletonSettingsRow
+  settingsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: 'rgba(30, 32, 34, 0.8)',
+  },
+  settingsRowLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  settingsSection: {
+    backgroundColor: 'rgba(30, 32, 34, 0.8)',
+    borderRadius: 12,
+    overflow: 'hidden',
   },
 });

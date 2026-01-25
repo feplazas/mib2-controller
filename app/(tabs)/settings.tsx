@@ -9,6 +9,7 @@ import { IOSSection, IOSSectionHeader, IOSRow } from "@/components/ui/ios-sectio
 import { AnimatedTouchable } from "@/components/ui/animated-touchable";
 import { AnimatedFadeIn } from "@/components/ui/animated-fade-in";
 import { AnimatedSpinner } from "@/components/ui/animated-spinner";
+import { AnimatedToggle } from "@/components/ui/animated-toggle";
 import { useTelnet } from "@/lib/telnet-provider";
 import { useUsbStatus } from "@/lib/usb-status-context";
 import * as Clipboard from 'expo-clipboard';

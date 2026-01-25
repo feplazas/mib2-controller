@@ -13,6 +13,7 @@ import { ScanningIndicator } from '@/components/scanning-indicator';
 import { CompatibilityCheckLoader } from '@/components/compatibility-check-loader';
 import { AnimatedTouchable } from '@/components/ui/animated-touchable';
 import { AnimatedSpinner } from '@/components/ui/animated-spinner';
+import { SkeletonDeviceCard } from '@/components/ui/skeleton-loader';
 
 import { showAlert } from '@/lib/translated-alert';
 import { useTranslation } from "@/lib/language-context";

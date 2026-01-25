@@ -13,6 +13,7 @@ import { ExpandableInfo } from '@/components/ui/expandable-info';
 import { AnimatedTouchable } from '@/components/ui/animated-touchable';
 import { AnimatedSpinner } from '@/components/ui/animated-spinner';
 import { AnimatedFeedback } from '@/components/ui/animated-feedback';
+import { AnimatedCheckbox } from '@/components/ui/animated-toggle';
 import * as Haptics from 'expo-haptics';
 import * as Sharing from 'expo-sharing';
 import * as Clipboard from 'expo-clipboard';
@@ -975,11 +976,10 @@ export default function AutoSpoofScreen() {
             </View>
           </View>
 
-          {/* Checkbox Forzar sin Verificación - Opción avanzada discreta */}
+          {/* Checkbox Forzar sin Verificación - Con animación premium */}
           <TouchableOpacity
             onPress={() => {
               dispatch({ type: 'TOGGLE_SKIP_VERIFICATION' });
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             }}
             disabled={state.isExecuting}
             activeOpacity={0.8}
@@ -987,11 +987,15 @@ export default function AutoSpoofScreen() {
               state.skipVerification ? 'bg-yellow-500/15' : 'bg-surface'
             }`}
           >
-            <View className={`w-5 h-5 rounded-md items-center justify-center ${
-              state.skipVerification ? 'bg-yellow-500' : 'bg-muted/30'
-            }`}>
-              {state.skipVerification && <Text className="text-background text-xs font-bold">✓</Text>}
-            </View>
+            <AnimatedCheckbox
+              value={state.skipVerification}
+              onValueChange={() => dispatch({ type: 'TOGGLE_SKIP_VERIFICATION' })}
+              disabled={state.isExecuting}
+              size={22}
+              activeColor="#EAB308"
+              inactiveColor="rgba(120, 120, 128, 0.2)"
+              checkColor="#000000"
+            />
             <View className="flex-1">
               <Text className={`text-sm font-medium ${
                 state.skipVerification ? 'text-yellow-500' : 'text-muted'
