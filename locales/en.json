@@ -358,6 +358,8 @@
     "advanced_tools_desc": "Utilities for expert users",
     "backups": "Backups",
     "backups_desc": "Manage EEPROM backup copies",
+    "guides": "Offline Guides",
+    "guides_desc": "Documentation available without connection",
     "footer_info": "These tools are for advanced users. Use with caution."
   },
   "home": {

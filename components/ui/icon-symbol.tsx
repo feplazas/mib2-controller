@@ -96,6 +96,10 @@ const MAPPING = {
   "person.2.fill": "people",
   "person.circle.fill": "account-circle",
   
+  // Documentation
+  "book.fill": "menu-book",
+  "book.closed.fill": "book",
+  
   // Misc
   "bandage.fill": "healing",
   "sparkles": "auto-awesome",

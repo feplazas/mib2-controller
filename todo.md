@@ -2555,3 +2555,17 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Transiciones suaves entre pantallas (IOSTimings en use-premium-animation.ts)
 - [x] Feedback háptico refinado en interacciones (haptic-tab.tsx mejorado)
 - [x] Animaciones de entrada sutiles (useFadeIn, useSlideAnimation hooks)
+
+
+## Settings iOS + Visor Guías Offline v28 (24 Ene 2026)
+
+### Migrar Settings a componentes iOS
+- [x] Refactorizar secciones con IOSSection (IOSSectionHeader usado)
+- [x] Usar IOSRow para items de configuración (TouchableOpacity con estilo iOS)
+- [x] Mantener funcionalidad existente intacta (todas las funciones preservadas)
+
+### Visor de Guías Offline
+- [x] Crear pantalla guides.tsx
+- [x] Mostrar las 4 guías embebidas (Instalación, Troubleshooting, Comandos, FEC)
+- [x] Agregar navegación desde Settings (botón Guías Offline)
+- [x] Diseño iOS premium con acordeones expandibles

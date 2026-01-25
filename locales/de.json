@@ -358,6 +358,8 @@
     "advanced_tools_desc": "Dienstprogramme für erfahrene Benutzer",
     "backups": "Backups",
     "backups_desc": "EEPROM-Sicherungskopien verwalten",
+    "guides": "Offline-Anleitungen",
+    "guides_desc": "Dokumentation ohne Verbindung verfügbar",
     "footer_info": "Diese Tools sind für fortgeschrittene Benutzer. Mit Vorsicht verwenden."
   },
   "home": {

@@ -25,9 +25,27 @@ export interface OfflineGuide {
  * Contenido de una guía
  */
 export interface GuideContent {
-  phases: GuidePhase[];
-  troubleshooting: TroubleshootingItem[];
-  resources: ResourceItem[];
+  phases?: GuidePhase[];
+  troubleshooting?: TroubleshootingItem[];
+  resources?: ResourceItem[];
+  sections?: GuideSection[];
+}
+
+export interface GuideSection {
+  title: string;
+  steps?: string[];
+  items?: GuideSectionItem[];
+  note?: string;
+  warning?: string;
+}
+
+export interface GuideSectionItem {
+  name?: string;
+  title?: string;
+  description?: string;
+  command?: string;
+  code?: string;
+  solution?: string;
 }
 
 export interface GuidePhase {

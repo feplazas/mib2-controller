@@ -83,6 +83,14 @@ export default function DiagnosticsScreen() {
       route: '/(tabs)/backups',
       color: '#5856D6', // iOS Indigo
     },
+    {
+      id: 'guides',
+      icon: 'book.fill',
+      titleKey: 'actions.guides',
+      descriptionKey: 'actions.guides_desc',
+      route: '/guides',
+      color: '#00C7BE', // iOS Teal
+    },
   ];
 
   const handlePress = (route: string) => {
