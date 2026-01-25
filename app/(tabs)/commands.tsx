@@ -1000,6 +1000,22 @@ export default function CommandsScreen() {
               })}
             </ScrollView>
 
+            {/* Indicadores de puntos para posición de scroll */}
+            <View style={styles.tabDotsContainer}>
+              {SCRIPT_CATEGORIES.map((cat, index) => {
+                const isActive = selectedCategory === cat.id;
+                return (
+                  <Animated.View
+                    key={cat.id}
+                    style={[
+                      styles.tabDot,
+                      isActive && styles.tabDotActive
+                    ]}
+                  />
+                );
+              })}
+            </View>
+
             {/* Scripts List - Con animación de transición */}
             <Animated.ScrollView 
               key={selectedCategory} 
@@ -1447,6 +1463,30 @@ const styles = StyleSheet.create({
     height: 3,
     borderRadius: 1.5,
     backgroundColor: '#0a7ea4',
+  },
+  tabDotsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 8,
+    gap: 6,
+  },
+  tabDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: 'rgba(155, 161, 166, 0.4)',
+  },
+  tabDotActive: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#0a7ea4',
+    shadowColor: '#0a7ea4',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.6,
+    shadowRadius: 4,
+    elevation: 2,
   },
   categoryIcon: {
     fontSize: 18,

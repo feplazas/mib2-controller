@@ -2864,3 +2864,5 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Implementar scroll snap para alineación automática de tabs (snapToInterval: 130, decelerationRate: fast)
 
 - [x] Implementar animación fade/slide en la lista de scripts al cambiar categoría (FadeIn con delay escalonado)
+
+- [x] Agregar indicadores de puntos debajo de tabs para mostrar posición de scroll (dots con glow activo)
