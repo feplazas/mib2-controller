@@ -436,14 +436,7 @@ export default function BackupsScreen() {
           <View style={styles.header}>
             <Text style={styles.title}>{t('backups.title')}</Text>
             <Text style={styles.subtitle}>{t('backups.subtitle')}</Text>
-            <OnboardingTooltip
-              id="backups_intro"
-              title={t('onboarding.backups_title') || 'Backups de EEPROM'}
-              description={t('onboarding.backups_desc') || 'Aquí se guardan las copias de seguridad de tu adaptador. Siempre crea un backup antes de hacer spoofing para poder restaurar si algo sale mal.'}
-              position={{ top: 60, left: 16, right: 16 }}
-              arrowPosition="top"
-              delay={800}
-            />
+
           </View>
         </AnimatedFadeIn>
 

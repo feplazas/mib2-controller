@@ -2915,4 +2915,4 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Bug: Iconos duplicados en botones Quick Search y Full Scan (dos figuras en cada botón)
 - [x] Bug: Tema automático no detecta modo oscuro del sistema correctamente
 
-- [x] Quitar mensaje informativo de EEPROM Backups que afecta legibilidad
+- [x] Quitar mensaje informativo (tooltip flotante) de EEPROM Backups que afecta legibilidad
