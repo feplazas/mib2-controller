@@ -9,32 +9,35 @@ import { useColors } from '@/hooks/use-colors';
 import { useTranslation } from '@/lib/language-context';
 
 /**
- * Diagnostics Screen - Apple HIG Inspired
+ * Acciones - Diagnóstico y Gestión
  * 
- * Hub for all diagnostic and advanced tools:
- * - USB Status & Device Info
- * - Recovery Tools
- * - System Diagnostics
- * - FEC Code Generator
- * - Advanced Tools
- * - Backup Management
+ * Esta pantalla agrupa todas las herramientas de DIAGNÓSTICO y GESTIÓN:
+ * - USB Status: Ver estado del adaptador conectado
+ * - System Diagnostics: Logs y diagnóstico del sistema
+ * - Recovery: Herramientas de recuperación
+ * - Backups: Gestión de backups de EEPROM
+ * - Guías Offline: Documentación y guías
+ * 
+ * NO incluye herramientas de modificación (esas están en Herramientas)
  */
 
-interface DiagnosticItem {
+interface ActionItem {
   id: string;
   icon: string;
   titleKey: string;
   descriptionKey: string;
   route: string;
   color: string;
+  category: 'diagnostic' | 'management' | 'help';
 }
 
-export default function DiagnosticsScreen() {
+export default function ActionsScreen() {
   const t = useTranslation();
   const colors = useColors();
   const router = useRouter();
 
-  const diagnosticItems: DiagnosticItem[] = [
+  const actionItems: ActionItem[] = [
+    // Diagnóstico
     {
       id: 'usb-status',
       icon: 'cable.connector',
@@ -42,14 +45,7 @@ export default function DiagnosticsScreen() {
       descriptionKey: 'actions.usb_status_desc',
       route: '/(tabs)/usb-status',
       color: '#007AFF', // iOS Blue
-    },
-    {
-      id: 'recovery',
-      icon: 'arrow.counterclockwise',
-      titleKey: 'actions.recovery',
-      descriptionKey: 'actions.recovery_desc',
-      route: '/(tabs)/recovery',
-      color: '#FF9500', // iOS Orange
+      category: 'diagnostic',
     },
     {
       id: 'diag',
@@ -58,22 +54,17 @@ export default function DiagnosticsScreen() {
       descriptionKey: 'actions.system_diag_desc',
       route: '/(tabs)/diag',
       color: '#34C759', // iOS Green
+      category: 'diagnostic',
     },
+    // Gestión
     {
-      id: 'fec',
-      icon: 'qrcode',
-      titleKey: 'actions.fec_generator',
-      descriptionKey: 'actions.fec_generator_desc',
-      route: '/(tabs)/fec',
-      color: '#AF52DE', // iOS Purple
-    },
-    {
-      id: 'tools',
-      icon: 'hammer.fill',
-      titleKey: 'actions.advanced_tools',
-      descriptionKey: 'actions.advanced_tools_desc',
-      route: '/(tabs)/tools',
-      color: '#FF3B30', // iOS Red
+      id: 'recovery',
+      icon: 'arrow.counterclockwise',
+      titleKey: 'actions.recovery',
+      descriptionKey: 'actions.recovery_desc',
+      route: '/(tabs)/recovery',
+      color: '#FF9500', // iOS Orange
+      category: 'management',
     },
     {
       id: 'backups',
@@ -82,7 +73,9 @@ export default function DiagnosticsScreen() {
       descriptionKey: 'actions.backups_desc',
       route: '/(tabs)/backups',
       color: '#5856D6', // iOS Indigo
+      category: 'management',
     },
+    // Ayuda
     {
       id: 'guides',
       icon: 'book.fill',
@@ -90,6 +83,7 @@ export default function DiagnosticsScreen() {
       descriptionKey: 'actions.guides_desc',
       route: '/guides',
       color: '#00C7BE', // iOS Teal
+      category: 'help',
     },
   ];
 
@@ -97,6 +91,68 @@ export default function DiagnosticsScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     router.push(route as any);
   };
+
+  const getCategoryLabel = (category: string) => {
+    switch (category) {
+      case 'diagnostic':
+        return t('actions.category_diagnostic');
+      case 'management':
+        return t('actions.category_management');
+      case 'help':
+        return t('actions.category_help');
+      default:
+        return '';
+    }
+  };
+
+  // Agrupar items por categoría
+  const diagnosticItems = actionItems.filter(item => item.category === 'diagnostic');
+  const managementItems = actionItems.filter(item => item.category === 'management');
+  const helpItems = actionItems.filter(item => item.category === 'help');
+
+  const renderSection = (items: ActionItem[], categoryKey: string) => (
+    <View style={styles.section}>
+      <Text style={[styles.sectionTitle, { color: colors.muted }]}>
+        {getCategoryLabel(categoryKey)}
+      </Text>
+      <View style={[styles.sectionContent, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+        {items.map((item, index) => (
+          <React.Fragment key={item.id}>
+            <Pressable
+              onPress={() => handlePress(item.route)}
+              style={({ pressed }) => [
+                styles.row,
+                { 
+                  backgroundColor: pressed ? colors.border + '30' : 'transparent',
+                },
+              ]}
+            >
+              {/* Icon Container */}
+              <View style={[styles.iconContainer, { backgroundColor: item.color + '15' }]}>
+                <IconSymbol name={item.icon as any} size={22} color={item.color} />
+              </View>
+              
+              {/* Text Content */}
+              <View style={styles.rowContent}>
+                <Text style={[styles.rowTitle, { color: colors.foreground }]}>
+                  {t(item.titleKey)}
+                </Text>
+                <Text style={[styles.rowDescription, { color: colors.muted }]} numberOfLines={1}>
+                  {t(item.descriptionKey)}
+                </Text>
+              </View>
+              
+              {/* Chevron */}
+              <IconSymbol name="chevron.right" size={14} color={colors.muted} />
+            </Pressable>
+            {index < items.length - 1 && (
+              <View style={[styles.separator, { backgroundColor: colors.border }]} />
+            )}
+          </React.Fragment>
+        ))}
+      </View>
+    </View>
+  );
 
   return (
     <ScreenContainer>
@@ -115,46 +171,14 @@ export default function DiagnosticsScreen() {
           </Text>
         </View>
 
-        {/* Diagnostic Cards Grid */}
-        <View style={styles.grid}>
-          {diagnosticItems.map((item) => (
-            <Pressable
-              key={item.id}
-              onPress={() => handlePress(item.route)}
-              style={({ pressed }) => [
-                styles.card,
-                { 
-                  backgroundColor: colors.surface,
-                  borderColor: colors.border,
-                  transform: [{ scale: pressed ? 0.98 : 1 }],
-                  opacity: pressed ? 0.9 : 1,
-                },
-              ]}
-            >
-              {/* Icon Container */}
-              <View style={[styles.iconContainer, { backgroundColor: item.color + '15' }]}>
-                <IconSymbol name={item.icon as any} size={28} color={item.color} />
-              </View>
-              
-              {/* Text Content */}
-              <View style={styles.cardContent}>
-                <Text style={[styles.cardTitle, { color: colors.foreground }]}>
-                  {t(item.titleKey)}
-                </Text>
-                <Text style={[styles.cardDescription, { color: colors.muted }]} numberOfLines={2}>
-                  {t(item.descriptionKey)}
-                </Text>
-              </View>
-              
-              {/* Chevron */}
-              <IconSymbol name="chevron.right" size={16} color={colors.muted} />
-            </Pressable>
-          ))}
-        </View>
+        {/* Sections */}
+        {renderSection(diagnosticItems, 'diagnostic')}
+        {renderSection(managementItems, 'management')}
+        {renderSection(helpItems, 'help')}
 
         {/* Footer Info */}
         <View style={[styles.footer, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <IconSymbol name="info.circle" size={18} color={colors.muted} />
+          <IconSymbol name="info.circle" size={18} color={colors.primary} />
           <Text style={[styles.footerText, { color: colors.muted }]}>
             {t('actions.footer_info')}
           </Text>
@@ -186,37 +210,51 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     lineHeight: 22,
   },
-  grid: {
-    gap: 12,
+  section: {
+    marginBottom: 24,
   },
-  card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
+  sectionTitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 8,
+    marginLeft: 16,
+  },
+  sectionContent: {
     borderRadius: 16,
     borderWidth: 0.5,
-    gap: 14,
+    overflow: 'hidden',
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 14,
+    gap: 12,
   },
   iconContainer: {
-    width: 52,
-    height: 52,
-    borderRadius: 12,
+    width: 36,
+    height: 36,
+    borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  cardContent: {
+  rowContent: {
     flex: 1,
-    gap: 4,
+    gap: 2,
   },
-  cardTitle: {
-    fontSize: 17,
-    fontWeight: '600',
+  rowTitle: {
+    fontSize: 16,
+    fontWeight: '500',
     letterSpacing: -0.2,
   },
-  cardDescription: {
-    fontSize: 14,
+  rowDescription: {
+    fontSize: 13,
     fontWeight: '400',
-    lineHeight: 18,
+  },
+  separator: {
+    height: 0.5,
+    marginLeft: 62,
   },
   footer: {
     flexDirection: 'row',
@@ -224,7 +262,6 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     borderWidth: 0.5,
-    marginTop: 24,
     gap: 12,
   },
   footerText: {

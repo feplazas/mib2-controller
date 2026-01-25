@@ -2608,3 +2608,15 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Agregar fallbacks legibles para todas las claves de safe_test
 - [x] Agregar botón "Copiar" en resultado de Safe Test
 - [x] Generar reporte formateado para copiar
+
+
+## Consolidación Herramientas/Acciones v30
+
+### Análisis
+- [x] Revisar funciones en pantalla Herramientas
+- [x] Revisar funciones en pantalla Acciones
+- [x] Identificar duplicados (USB Status, FEC Generator, enlace circular a Herramientas)
+
+### Consolidación
+- [x] Eliminar funciones redundantes (removidos FEC y Advanced Tools de Acciones)
+- [x] Reorganizar funciones según propósito (Herramientas=modificación, Acciones=diagnóstico/gestión)
