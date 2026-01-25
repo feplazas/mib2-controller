@@ -2871,3 +2871,11 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 ## Bug Fix - Tooltip superpuesto (25 Ene 2026)
 
 - [x] Corregir tooltip de onboarding que se superpone al modal de EEPROM Backups (zIndex reducido a 50)
+
+
+## Mejoras OnboardingTooltip (25 Ene 2026)
+
+- [x] Ocultar tooltip automáticamente cuando hay un modal abierto (ModalContext)
+- [x] Auto-dismiss después de 6 segundos sin interacción (autoDismissTimeout)
+- [x] Posicionamiento adaptativo para evitar cortes en bordes de pantalla (calculateAdaptivePosition)
+- [ ] Generar APK con EAS Build

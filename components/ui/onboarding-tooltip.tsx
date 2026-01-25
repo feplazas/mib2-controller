@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, Dimensions, Platform } from 'react-native';
+import React, { useEffect, useState, useCallback, createContext, useContext } from 'react';
+import { View, Text, StyleSheet, Pressable, Dimensions, Platform, LayoutChangeEvent } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -14,7 +14,11 @@ import * as Haptics from 'expo-haptics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useColors } from '@/hooks/use-colors';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+
+// Márgenes de seguridad para evitar cortes en bordes
+const SAFE_MARGIN = 16;
+const AUTO_DISMISS_TIMEOUT = 6000; // 6 segundos
 
 interface TooltipPosition {
   top?: number;
@@ -34,13 +38,51 @@ interface OnboardingTooltipProps {
   delay?: number; // Delay before showing in ms
   showOnce?: boolean; // If true, only show once per user
   children?: React.ReactNode;
+  autoDismiss?: boolean; // If true, auto-dismiss after timeout
+  autoDismissTimeout?: number; // Custom timeout in ms
 }
 
 const STORAGE_KEY = '@onboarding_tooltips_seen';
 
+// Context para detectar si hay un modal abierto
+interface ModalContextType {
+  isModalOpen: boolean;
+  setModalOpen: (open: boolean) => void;
+}
+
+const ModalContext = createContext<ModalContextType>({
+  isModalOpen: false,
+  setModalOpen: () => {},
+});
+
+/**
+ * Provider para gestionar el estado de modales abiertos
+ * Envuelve la app para que los tooltips sepan cuándo ocultarse
+ */
+export function ModalStateProvider({ children }: { children: React.ReactNode }) {
+  const [isModalOpen, setModalOpen] = useState(false);
+  
+  return (
+    <ModalContext.Provider value={{ isModalOpen, setModalOpen }}>
+      {children}
+    </ModalContext.Provider>
+  );
+}
+
+/**
+ * Hook para notificar cuando un modal se abre/cierra
+ */
+export function useModalState() {
+  return useContext(ModalContext);
+}
+
 /**
  * Animated onboarding tooltip with iOS-style design
  * Shows helpful hints for first-time users
+ * Features:
+ * - Auto-dismiss after 6 seconds
+ * - Hides when modal is open
+ * - Adaptive positioning to avoid screen edges
  */
 export function OnboardingTooltip({
   id,
@@ -53,10 +95,15 @@ export function OnboardingTooltip({
   delay = 500,
   showOnce = true,
   children,
+  autoDismiss = true,
+  autoDismissTimeout = AUTO_DISMISS_TIMEOUT,
 }: OnboardingTooltipProps) {
   const colors = useColors();
+  const { isModalOpen } = useContext(ModalContext);
   const [isVisible, setIsVisible] = useState(false);
   const [hasBeenSeen, setHasBeenSeen] = useState(true); // Default to true to prevent flash
+  const [adaptedPosition, setAdaptedPosition] = useState<TooltipPosition>(position);
+  const [tooltipSize, setTooltipSize] = useState({ width: 0, height: 0 });
   
   const opacity = useSharedValue(0);
   const scale = useSharedValue(0.8);
@@ -84,9 +131,62 @@ export function OnboardingTooltip({
     }
   }, [id, showOnce]);
 
+  // Calcular posición adaptativa para evitar cortes en bordes
+  const calculateAdaptivePosition = useCallback((layout: { width: number; height: number }) => {
+    const newPosition = { ...position };
+    
+    // Ajustar posición horizontal
+    if (position.left !== undefined) {
+      const rightEdge = position.left + layout.width;
+      if (rightEdge > SCREEN_WIDTH - SAFE_MARGIN) {
+        // Se sale por la derecha, ajustar
+        newPosition.left = Math.max(SAFE_MARGIN, SCREEN_WIDTH - layout.width - SAFE_MARGIN);
+      }
+      if (position.left < SAFE_MARGIN) {
+        newPosition.left = SAFE_MARGIN;
+      }
+    }
+    
+    if (position.right !== undefined) {
+      const leftEdge = SCREEN_WIDTH - position.right - layout.width;
+      if (leftEdge < SAFE_MARGIN) {
+        newPosition.right = Math.max(SAFE_MARGIN, SCREEN_WIDTH - layout.width - SAFE_MARGIN);
+      }
+    }
+    
+    // Ajustar posición vertical
+    if (position.top !== undefined) {
+      const bottomEdge = position.top + layout.height;
+      if (bottomEdge > SCREEN_HEIGHT - SAFE_MARGIN - 100) { // 100 para tab bar
+        newPosition.top = Math.max(SAFE_MARGIN, SCREEN_HEIGHT - layout.height - SAFE_MARGIN - 100);
+      }
+      if (position.top < SAFE_MARGIN) {
+        newPosition.top = SAFE_MARGIN;
+      }
+    }
+    
+    if (position.bottom !== undefined) {
+      const topEdge = SCREEN_HEIGHT - position.bottom - layout.height;
+      if (topEdge < SAFE_MARGIN) {
+        newPosition.bottom = Math.max(SAFE_MARGIN, SCREEN_HEIGHT - layout.height - SAFE_MARGIN);
+      }
+    }
+    
+    setAdaptedPosition(newPosition);
+  }, [position]);
+
+  // Manejar medición del tooltip para posicionamiento adaptativo
+  const handleLayout = useCallback((event: LayoutChangeEvent) => {
+    const { width, height } = event.nativeEvent.layout;
+    if (width !== tooltipSize.width || height !== tooltipSize.height) {
+      setTooltipSize({ width, height });
+      calculateAdaptivePosition({ width, height });
+    }
+  }, [tooltipSize, calculateAdaptivePosition]);
+
   // Show tooltip with animation
   useEffect(() => {
-    if (hasBeenSeen) return;
+    if (hasBeenSeen || isModalOpen) return;
 
     const timer = setTimeout(() => {
       setIsVisible(true);
@@ -112,7 +212,29 @@ export function OnboardingTooltip({
     }, delay);
 
     return () => clearTimeout(timer);
-  }, [hasBeenSeen, delay]);
+  }, [hasBeenSeen, delay, isModalOpen]);
+
+  // Auto-dismiss después de timeout
+  useEffect(() => {
+    if (!isVisible || !autoDismiss || hasBeenSeen) return;
+    
+    const autoDismissTimer = setTimeout(() => {
+      handleDismiss();
+    }, autoDismissTimeout);
+    
+    return () => clearTimeout(autoDismissTimer);
+  }, [isVisible, autoDismiss, autoDismissTimeout, hasBeenSeen]);
+
+  // Ocultar cuando se abre un modal
+  useEffect(() => {
+    if (isModalOpen && isVisible) {
+      // Ocultar temporalmente sin marcar como visto
+      opacity.value = withTiming(0, { duration: 150 });
+    } else if (!isModalOpen && isVisible && !hasBeenSeen) {
+      // Mostrar de nuevo cuando se cierra el modal
+      opacity.value = withTiming(1, { duration: 200 });
+    }
+  }, [isModalOpen, isVisible, hasBeenSeen]);
 
   const handleDismiss = async () => {
     // Exit animation
@@ -227,7 +349,10 @@ export function OnboardingTooltip({
   return (
     <>
       {children}
-      <Animated.View style={[styles.container, position, containerStyle]}>
+      <Animated.View 
+        style={[styles.container, adaptedPosition, containerStyle]}
+        onLayout={handleLayout}
+      >
         {/* Arrow */}
         <View style={getArrowStyle() as any} />
         
@@ -240,6 +365,13 @@ export function OnboardingTooltip({
             </Pressable>
           </View>
           <Text style={styles.description}>{description}</Text>
+          
+          {/* Progress indicator for auto-dismiss */}
+          {autoDismiss && (
+            <View style={styles.progressContainer}>
+              <Animated.View style={styles.progressBar} />
+            </View>
+          )}
           
           {/* Got it button */}
           <Pressable 
@@ -340,6 +472,18 @@ const styles = StyleSheet.create({
     color: '#ECEDEE',
     lineHeight: 20,
     marginBottom: 12,
+  },
+  progressContainer: {
+    height: 2,
+    backgroundColor: 'rgba(155, 161, 166, 0.2)',
+    borderRadius: 1,
+    marginBottom: 12,
+    overflow: 'hidden',
+  },
+  progressBar: {
+    height: '100%',
+    backgroundColor: '#0a7ea4',
+    width: '100%',
   },
   gotItButton: {
     backgroundColor: 'rgba(10, 126, 164, 0.2)',
