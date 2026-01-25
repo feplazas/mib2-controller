@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import * as Haptics from "expo-haptics";
 import * as Clipboard from "expo-clipboard";
 import { router } from "expo-router";
+import { haptics } from "@/lib/haptics-service";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { IOSSectionHeader } from "@/components/ui/ios-section";
@@ -62,7 +63,7 @@ export default function GuidesScreen() {
   const copyToClipboard = async (text: string) => {
     await Clipboard.setStringAsync(text);
     setCopiedCommand(text);
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    haptics.success();
     setTimeout(() => setCopiedCommand(null), 2000);
   };
 

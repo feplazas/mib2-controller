@@ -2782,3 +2782,18 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Cambio de idioma (Settings screen)
 - [x] Cambio de tema (Settings screen)
 - [x] Guardado de configuración (Settings screen)
+
+## Correcciones v42 - Versión y Haptics adicionales
+
+### Actualizar Versión
+- [x] Actualizar app.config.ts a Build 41
+- [x] Actualizar Settings screen a Build 41
+
+### Haptics Adicionales
+- [x] Copiar al portapapeles (Commands, Settings, Guides, Auto-Spoof)
+- [x] Expandir/colapsar secciones FAQ
+- [x] Toggle de switches (no hay switches activos en la app actualmente)
+
+### Vibración de Progreso
+- [x] Implementar vibración durante backup EEPROM usando haptics.backup()
+- [x] Implementar vibración durante restauración VID/PID usando haptics.restore()

@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import { usbService } from './usb-service';
+import { haptics } from './haptics-service';
 import type { UsbDevice } from './usb-service';
 import CryptoJS from 'crypto-js';
 import { usbLogger } from './usb-logger';
@@ -191,6 +192,9 @@ class BackupService {
       console.log('[BackupService] Creating EEPROM backup...');
       usbLogger.info('BACKUP', 'Creando backup de EEPROM...');
       
+      // Iniciar vibración de progreso
+      haptics.backup();
+      
       // Volcar EEPROM completa (256 bytes)
       const dump = await usbService.dumpEEPROM();
       
@@ -218,6 +222,9 @@ class BackupService {
       // Guardar backup
       await this.saveBackup(backup);
       
+      // Vibración de éxito al completar
+      haptics.success();
+      
       console.log(`[BackupService] Backup created successfully: ${backup.id}`);
       console.log(`[BackupService] MD5: ${md5}`);
       console.log(`[BackupService] SHA256: ${sha256}`);
@@ -226,6 +233,7 @@ class BackupService {
     } catch (error) {
       console.error('[BackupService] Error creating backup:', error);
       usbLogger.error('BACKUP', `Error al crear backup: ${error}`, error);
+      haptics.error();
       throw new Error(`backup_creation_failed: ${error}`);
     }
   }
@@ -387,6 +395,9 @@ class BackupService {
       console.log(`[BackupService] Restoring VID/PID from backup: ${backupId}`);
       usbLogger.info('RESTORE', `Restaurando VID/PID desde backup: ${backupId}`);
       
+      // Vibración de inicio de restauración
+      haptics.restore();
+      
       // Cargar backup
       const backup = await this.getBackup(backupId);
       if (!backup) {
@@ -436,10 +447,15 @@ class BackupService {
       }
       
       usbLogger.success('RESTORE', `VID/PID restaurado: ${vid.toString(16).toUpperCase()}:${pid.toString(16).toUpperCase()}`);
+      
+      // Vibración de éxito
+      haptics.success();
+      
       return { success: true, vid, pid };
     } catch (error) {
       console.error('[BackupService] Error restoring VID/PID:', error);
       usbLogger.error('RESTORE', `Error al restaurar VID/PID: ${error}`, error);
+      haptics.error();
       throw new Error(`vidpid_restore_failed: ${error}`);
     }
   }

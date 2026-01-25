@@ -12,6 +12,7 @@ import { EepromProgressIndicator } from '@/components/eeprom-progress-indicator'
 import * as Haptics from 'expo-haptics';
 import * as Sharing from 'expo-sharing';
 import * as Clipboard from 'expo-clipboard';
+import { haptics } from '@/lib/haptics-service';
 import { spoofReducer, initialSpoofState, getStepIcon } from '@/lib/spoof-reducer';
 import { useTranslation } from "@/lib/language-context";
 import { usbLogger } from '@/lib/usb-logger';
@@ -1208,7 +1209,7 @@ export default function AutoSpoofScreen() {
                     onPress={async () => {
                       const report = generateSafeTestReport();
                       await Clipboard.setStringAsync(report);
-                      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                      haptics.success();
                       setToastMessage(t('guides.command_copied') || 'Copiado al portapapeles');
                       setToastVisible(true);
                     }}

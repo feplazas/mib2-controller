@@ -180,7 +180,7 @@ export default function SettingsScreen() {
       `PID Offset: 0x8A`;
     
     await Clipboard.setStringAsync(debugInfo);
-    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    haptics.success();
     showAlert('alerts.copiado', 'alerts.información_de_debug_copiada_al_portapapeles');
   };
 
@@ -422,7 +422,7 @@ export default function SettingsScreen() {
             <TouchableOpacity
               key={faq.id}
               onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                haptics.selection();
                 setExpandedFaq(expandedFaq === faq.id ? null : faq.id);
               }}
               className={`${index < faqItems.length - 1 ? 'border-b border-separator' : ''}`}
@@ -522,7 +522,7 @@ export default function SettingsScreen() {
         <View className="bg-surface mx-4 rounded-2xl overflow-hidden border border-border">
           <View className="flex-row items-center px-4 py-3.5 border-b border-separator">
             <Text className="flex-1 text-base text-foreground">{t('settings.version')}</Text>
-            <Text className="text-sm text-muted">1.0.0 (Build 28)</Text>
+            <Text className="text-sm text-muted">1.0.0 (Build 41)</Text>
           </View>
           <View className="flex-row items-center px-4 py-3.5 border-b border-separator">
             <Text className="flex-1 text-base text-foreground">{t('settings.created_by_label')}</Text>

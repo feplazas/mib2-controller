@@ -310,11 +310,11 @@ export default function CommandsScreen() {
 
   const handleCopyMessage = async (text: string) => {
     await Clipboard.setStringAsync(text);
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    haptics.success();
   };
 
   const handleClearTerminal = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    haptics.warning();
     clearMessages();
   };
 
