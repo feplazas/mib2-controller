@@ -293,14 +293,16 @@ export default function CommandsScreen() {
       return;
     }
 
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    haptics.tap();
     sendCommand(commandInput);
+    // Haptic de éxito después de enviar
+    setTimeout(() => haptics.success(), 300);
     setCommandInput('');
     setShowSuggestions(false);
   };
 
   const handleSelectSuggestion = (command: string) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    haptics.selection();
     setCommandInput(command);
     setShowSuggestions(false);
     inputRef.current?.focus();

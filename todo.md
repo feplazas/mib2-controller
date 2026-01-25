@@ -2766,3 +2766,19 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Backup completado (Commands screen)
 - [x] Restauración de valores exitosa (Toolbox screen)
 - [x] Desconexión USB (Home screen) - disponible para uso
+
+## Correcciones v41 - Traducciones y Haptics extendidos
+
+### Traducciones Faltantes
+- [x] commands.backup_completed (ES/EN/DE)
+- [x] commands.backup_error (ES/EN/DE)
+- [x] commands.command_success (ES/EN/DE)
+- [x] toolbox.restore_success (ES/EN/DE)
+- [x] home.connection_success (ES/EN/DE)
+- [x] home.connection_error (ES/EN/DE)
+
+### Extender Haptics
+- [x] Envío de comandos exitoso (Commands screen)
+- [x] Cambio de idioma (Settings screen)
+- [x] Cambio de tema (Settings screen)
+- [x] Guardado de configuración (Settings screen)

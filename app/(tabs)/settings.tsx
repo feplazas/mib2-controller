@@ -2,6 +2,7 @@ import { View, Text, ScrollView, TouchableOpacity, TextInput, Alert, Switch } fr
 import { useState, useEffect } from "react";
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
+import { haptics } from "@/lib/haptics-service";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { IOSSection, IOSSectionHeader, IOSRow } from "@/components/ui/ios-section";
@@ -72,10 +73,10 @@ export default function SettingsScreen() {
         username,
         password,
       });
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      haptics.success();
       showAlert('alerts.éxito', 'alerts.configuración_guardada_correctamente');
     } catch (error) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      haptics.error();
       showAlert('alerts.error', 'alerts.no_se_pudo_guardar_la_configuración');
     }
   };
@@ -288,9 +289,11 @@ export default function SettingsScreen() {
               <TouchableOpacity
                 key={option.value}
                 onPress={async () => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                  haptics.selection();
                   await setAppLanguage(option.value);
                   setShowLanguageSelector(false);
+                  // Haptic de éxito después de cambiar idioma
+                  setTimeout(() => haptics.success(), 200);
                 }}
                 className={`flex-row items-center p-3 rounded-xl mb-2 ${
                   selectedLanguage === option.value ? 'bg-primary' : 'bg-background'
@@ -318,9 +321,11 @@ export default function SettingsScreen() {
               <TouchableOpacity
                 key={option.value}
                 onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                  haptics.selection();
                   setThemeMode(option.value);
                   setShowThemeSelector(false);
+                  // Haptic de éxito después de cambiar tema
+                  setTimeout(() => haptics.success(), 200);
                 }}
                 className={`flex-row items-center p-3 rounded-xl mb-2 ${
                   themeMode === option.value ? 'bg-primary' : 'bg-background'
