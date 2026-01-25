@@ -2906,4 +2906,12 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 
 - [x] Corregir detección de tema del sistema cuando se selecciona "automático" (Appearance.addChangeListener)
 - [x] Verificar assets faltantes para Play Console (todo listo: iconos, feature graphic, política de privacidad, store listing)
-- [ ] Generar AAB final
+- [x] Generar AAB final (build: ac321955-7eeb-4773-9454-a4125b1c26e4)
+
+- [x] Generar APK firmado release con corrección de tema automático (build: 8aeff4f1-59e2-4f53-a5b7-c30825c80211)
+
+## Bugs Críticos (25 Ene 2026)
+
+- [x] Bug: Iconos duplicados en botones Quick Search y Full Scan (dos figuras en cada botón)
+- [x] Bug: Tema automático no detecta modo oscuro del sistema correctamente
+
