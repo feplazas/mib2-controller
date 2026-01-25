@@ -2517,3 +2517,15 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Detectar estado de conexión (NetInfo listener en offline-guides-service.ts)
 - [x] Cargar automáticamente desde cache si no hay conexión (guías embebidas siempre disponibles)
 - [x] Mostrar indicador visual de modo offline (indicador en installation-guide.tsx y settings.tsx)
+
+
+## Guías Offline Adicionales v26 (24 Ene 2026)
+
+### Contenido a agregar
+- [x] Guía de Troubleshooting offline (EMBEDDED_TROUBLESHOOTING_GUIDE)
+- [x] Guía de Comandos Frecuentes offline (EMBEDDED_COMMANDS_GUIDE)
+- [x] Guía de Códigos FEC offline (EMBEDDED_FEC_GUIDE)
+
+### Implementación
+- [x] Agregar contenido embebido en offline-guides-service.ts (4 guías totales)
+- [x] Agregar traducciones ES/EN/DE para nuevas guías (offline_guides section)

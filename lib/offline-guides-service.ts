@@ -7,7 +7,7 @@ const OFFLINE_GUIDES_VERSION_KEY = '@mib2_offline_guides_version';
 const OFFLINE_GUIDES_TIMESTAMP_KEY = '@mib2_offline_guides_timestamp';
 
 // Versión actual de las guías (incrementar cuando se actualicen)
-export const GUIDES_VERSION = '1.0.0';
+export const GUIDES_VERSION = '2.0.0';
 
 /**
  * Estructura de una guía offline
@@ -266,6 +266,275 @@ const EMBEDDED_INSTALLATION_GUIDE: GuideContent = {
 };
 
 /**
+ * Guía de Troubleshooting embebida
+ */
+const EMBEDDED_TROUBLESHOOTING_GUIDE: GuideContent = {
+  phases: [
+    {
+      id: 'connection_issues',
+      titleKey: 'offline_guides.troubleshooting.connection_title',
+      steps: [
+        {
+          number: 1,
+          titleKey: 'offline_guides.troubleshooting.check_adapter',
+          descriptionKey: 'offline_guides.troubleshooting.check_adapter_desc',
+          commands: ['ping 192.168.1.4'],
+        },
+        {
+          number: 2,
+          titleKey: 'offline_guides.troubleshooting.check_cable',
+          descriptionKey: 'offline_guides.troubleshooting.check_cable_desc',
+        },
+        {
+          number: 3,
+          titleKey: 'offline_guides.troubleshooting.restart_mib2',
+          descriptionKey: 'offline_guides.troubleshooting.restart_mib2_desc',
+        },
+      ],
+    },
+    {
+      id: 'sd_issues',
+      titleKey: 'offline_guides.troubleshooting.sd_title',
+      steps: [
+        {
+          number: 4,
+          titleKey: 'offline_guides.troubleshooting.mount_sd',
+          commands: [
+            'mount -t qnx6 /dev/mmcblk0p1 /mnt/sd',
+            'mount -t qnx6 /dev/mmc0t01 /mnt/sd',
+            'mount -t qnx6 /dev/sd0 /mnt/sd',
+          ],
+        },
+        {
+          number: 5,
+          titleKey: 'offline_guides.troubleshooting.check_sd_space',
+          commands: ['df -h /mnt/sd'],
+        },
+      ],
+    },
+    {
+      id: 'toolbox_issues',
+      titleKey: 'offline_guides.troubleshooting.toolbox_title',
+      steps: [
+        {
+          number: 6,
+          titleKey: 'offline_guides.troubleshooting.verify_toolbox',
+          commands: ['ls -la /eso/bin', '/eso/bin/gem.sh --help'],
+        },
+        {
+          number: 7,
+          titleKey: 'offline_guides.troubleshooting.reinstall_toolbox',
+          descriptionKey: 'offline_guides.troubleshooting.reinstall_toolbox_desc',
+        },
+      ],
+    },
+  ],
+  troubleshooting: [],
+  resources: [],
+};
+
+/**
+ * Guía de Comandos Frecuentes embebida
+ */
+const EMBEDDED_COMMANDS_GUIDE: GuideContent = {
+  phases: [
+    {
+      id: 'info_commands',
+      titleKey: 'offline_guides.commands.info_title',
+      steps: [
+        {
+          number: 1,
+          titleKey: 'offline_guides.commands.firmware_version',
+          commands: ['cat /net/rcc/mnt/efs-persist/FW/version.txt'],
+        },
+        {
+          number: 2,
+          titleKey: 'offline_guides.commands.system_info',
+          commands: ['uname -a'],
+        },
+        {
+          number: 3,
+          titleKey: 'offline_guides.commands.serial_number',
+          commands: ['cat /net/rcc/mnt/efs-persist/serialnumber'],
+        },
+        {
+          number: 4,
+          titleKey: 'offline_guides.commands.hardware_version',
+          commands: ['cat /net/rcc/mnt/efs-persist/HWVersion'],
+        },
+      ],
+    },
+    {
+      id: 'diagnostic_commands',
+      titleKey: 'offline_guides.commands.diagnostic_title',
+      steps: [
+        {
+          number: 5,
+          titleKey: 'offline_guides.commands.memory_info',
+          commands: ['free'],
+        },
+        {
+          number: 6,
+          titleKey: 'offline_guides.commands.disk_usage',
+          commands: ['df -h'],
+        },
+        {
+          number: 7,
+          titleKey: 'offline_guides.commands.network_interfaces',
+          commands: ['ifconfig'],
+        },
+        {
+          number: 8,
+          titleKey: 'offline_guides.commands.running_processes',
+          commands: ['ps aux'],
+        },
+      ],
+    },
+    {
+      id: 'filesystem_commands',
+      titleKey: 'offline_guides.commands.filesystem_title',
+      steps: [
+        {
+          number: 9,
+          titleKey: 'offline_guides.commands.mount_sd',
+          commands: ['mount -t qnx6 /dev/mmcblk0p1 /mnt/sd'],
+        },
+        {
+          number: 10,
+          titleKey: 'offline_guides.commands.list_root',
+          commands: ['ls -la /'],
+        },
+        {
+          number: 11,
+          titleKey: 'offline_guides.commands.list_eso',
+          commands: ['ls -la /eso/bin'],
+        },
+      ],
+    },
+    {
+      id: 'advanced_commands',
+      titleKey: 'offline_guides.commands.advanced_title',
+      warnings: ['offline_guides.commands.advanced_warning'],
+      steps: [
+        {
+          number: 12,
+          titleKey: 'offline_guides.commands.reboot',
+          commands: ['reboot'],
+          warningKey: 'offline_guides.commands.reboot_warning',
+        },
+        {
+          number: 13,
+          titleKey: 'offline_guides.commands.remount_rw',
+          commands: ['mount -uw /net/rcc/dev/shmem'],
+          warningKey: 'offline_guides.commands.remount_warning',
+        },
+      ],
+    },
+  ],
+  troubleshooting: [],
+  resources: [],
+};
+
+/**
+ * Guía de Códigos FEC embebida
+ */
+const EMBEDDED_FEC_GUIDE: GuideContent = {
+  phases: [
+    {
+      id: 'fec_intro',
+      titleKey: 'offline_guides.fec.intro_title',
+      steps: [
+        {
+          number: 1,
+          titleKey: 'offline_guides.fec.what_is_fec',
+          descriptionKey: 'offline_guides.fec.what_is_fec_desc',
+        },
+      ],
+    },
+    {
+      id: 'fec_connectivity',
+      titleKey: 'offline_guides.fec.connectivity_title',
+      steps: [
+        {
+          number: 2,
+          titleKey: 'offline_guides.fec.carplay',
+          descriptionKey: 'offline_guides.fec.carplay_desc',
+          commands: ['# Código: 00010001'],
+        },
+        {
+          number: 3,
+          titleKey: 'offline_guides.fec.android_auto',
+          descriptionKey: 'offline_guides.fec.android_auto_desc',
+          commands: ['# Código: 00010002'],
+        },
+        {
+          number: 4,
+          titleKey: 'offline_guides.fec.mirrorlink',
+          descriptionKey: 'offline_guides.fec.mirrorlink_desc',
+          commands: ['# Código: 00010004'],
+        },
+        {
+          number: 5,
+          titleKey: 'offline_guides.fec.appconnect',
+          descriptionKey: 'offline_guides.fec.appconnect_desc',
+          commands: ['# Código: 00010008'],
+        },
+      ],
+    },
+    {
+      id: 'fec_performance',
+      titleKey: 'offline_guides.fec.performance_title',
+      steps: [
+        {
+          number: 6,
+          titleKey: 'offline_guides.fec.perf_monitor',
+          descriptionKey: 'offline_guides.fec.perf_monitor_desc',
+          commands: ['# Código: 00060001'],
+        },
+      ],
+    },
+    {
+      id: 'fec_injection',
+      titleKey: 'offline_guides.fec.injection_title',
+      warnings: ['offline_guides.fec.injection_warning'],
+      steps: [
+        {
+          number: 7,
+          titleKey: 'offline_guides.fec.injection_step1',
+          commands: ['mount -uw /net/rcc/dev/shmem'],
+        },
+        {
+          number: 8,
+          titleKey: 'offline_guides.fec.injection_step2',
+          commands: ['echo "00010001" >> /net/rcc/dev/shmem/addfec.txt'],
+        },
+        {
+          number: 9,
+          titleKey: 'offline_guides.fec.injection_step3',
+          commands: ['reboot'],
+        },
+      ],
+    },
+  ],
+  troubleshooting: [
+    {
+      problemKey: 'offline_guides.fec.problem_not_working',
+      solutions: [
+        'offline_guides.fec.solution_check_toolbox',
+        'offline_guides.fec.solution_check_firmware',
+        'offline_guides.fec.solution_reboot',
+      ],
+    },
+  ],
+  resources: [
+    {
+      titleKey: 'offline_guides.fec.resource_generator',
+      descriptionKey: 'offline_guides.fec.resource_generator_desc',
+    },
+  ],
+};
+
+/**
  * Servicio de guías offline
  */
 class OfflineGuidesService {
@@ -395,6 +664,30 @@ class OfflineGuidesService {
           id: 'installation_guide',
           titleKey: 'installation_guide.title',
           content: EMBEDDED_INSTALLATION_GUIDE,
+          version: GUIDES_VERSION,
+          savedAt: now,
+          language: lang,
+        },
+        {
+          id: 'troubleshooting_guide',
+          titleKey: 'offline_guides.troubleshooting.title',
+          content: EMBEDDED_TROUBLESHOOTING_GUIDE,
+          version: GUIDES_VERSION,
+          savedAt: now,
+          language: lang,
+        },
+        {
+          id: 'commands_guide',
+          titleKey: 'offline_guides.commands.title',
+          content: EMBEDDED_COMMANDS_GUIDE,
+          version: GUIDES_VERSION,
+          savedAt: now,
+          language: lang,
+        },
+        {
+          id: 'fec_guide',
+          titleKey: 'offline_guides.fec.title',
+          content: EMBEDDED_FEC_GUIDE,
           version: GUIDES_VERSION,
           savedAt: now,
           language: lang,
