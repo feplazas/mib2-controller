@@ -2842,3 +2842,12 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Corregir tamaño inconsistente de tabs en modal de Scripts (minWidth: 100, fontSize: 14, padding consistente)
 - [x] Implementar pull-to-refresh animado con haptics en backups y usb-status (colores personalizados #0a7ea4)
 - [x] Implementar onboarding interactivo con tooltips animados (Safe Test, Execute, Backups)
+
+
+## Mejoras EEPROM y Offline (25 Ene 2026 - Sesión 3)
+
+- [x] Crear componente EEPROMProgressBar con animación de bytes procesados (barra animada, stripes, haptics en milestones)
+- [x] Crear componente OfflineCacheIndicator con estado de conexión y caché animado
+- [x] Integrar EEPROMProgressBar en auto-spoof.tsx reemplazando el indicador anterior
+- [x] Integrar OfflineCacheIndicator en guides.tsx y settings.tsx
+- [ ] Generar APK con EAS Build

@@ -10,6 +10,7 @@ import { AnimatedTouchable } from "@/components/ui/animated-touchable";
 import { AnimatedFadeIn } from "@/components/ui/animated-fade-in";
 import { AnimatedSpinner } from "@/components/ui/animated-spinner";
 import { AnimatedToggle } from "@/components/ui/animated-toggle";
+import { OfflineCacheIndicator } from "@/components/ui/offline-cache-indicator";
 import { useTelnet } from "@/lib/telnet-provider";
 import { useUsbStatus } from "@/lib/usb-status-context";
 import * as Clipboard from 'expo-clipboard';
@@ -262,7 +263,7 @@ export default function SettingsScreen() {
             <Text className="text-muted">›</Text>
           </TouchableOpacity>
 
-          {/* Offline Guides */}
+          {/* Offline Guides - Con indicador de caché mejorado */}
           <TouchableOpacity
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -272,11 +273,11 @@ export default function SettingsScreen() {
             className="flex-row items-center px-4 py-3.5"
           >
             <Text className="text-xl mr-3">📚</Text>
-            <Text className="flex-1 text-base text-foreground">{t('settings.offline_guides') || 'Guías Offline'}</Text>
-            <View className="flex-row items-center">
-              <View className={`w-2 h-2 rounded-full mr-2 ${offlineStatus?.guidesAvailableOffline ? 'bg-success' : 'bg-muted'}`} />
-              <Text className="text-muted">›</Text>
+            <View className="flex-1">
+              <Text className="text-base text-foreground">{t('settings.offline_guides') || 'Guías Offline'}</Text>
+              <OfflineCacheIndicator compact={true} />
             </View>
+            <Text className="text-muted">›</Text>
           </TouchableOpacity>
         </View>
         </AnimatedFadeIn>

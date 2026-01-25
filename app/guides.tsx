@@ -8,6 +8,7 @@ import { haptics } from "@/lib/haptics-service";
 import { ScreenContainer } from "@/components/screen-container";
 import { IOSSectionHeader } from "@/components/ui/ios-section";
 import { SkeletonCard } from "@/components/ui/skeleton-loader";
+import { OfflineCacheIndicator } from "@/components/ui/offline-cache-indicator";
 import { useTranslation, useLanguage } from "@/lib/language-context";
 import { useColors } from "@/hooks/use-colors";
 import { offlineGuidesService, type OfflineGuide, type OfflineStatus, type GuidePhase, type GuideStep } from "@/lib/offline-guides-service";
@@ -422,23 +423,11 @@ export default function GuidesScreen() {
           </Text>
         </View>
 
-        {/* Status Card */}
-        <View className="mx-4 mt-4 bg-surface rounded-2xl p-4 border border-border">
-          <View className="flex-row items-center justify-between">
-            <View className="flex-row items-center">
-              <View className={`w-3 h-3 rounded-full mr-3 ${offlineStatus?.isOnline ? 'bg-success' : 'bg-warning'}`} />
-              <Text className="text-base text-foreground font-medium">
-                {offlineStatus?.isOnline 
-                  ? (t('settings.connection_online') || 'Conectado')
-                  : (t('settings.connection_offline') || 'Sin conexión')}
-              </Text>
-            </View>
-            <Text className="text-sm text-muted">
-              v{offlineStatus?.guidesVersion || '2.0.0'}
-            </Text>
-          </View>
-          <Text className="text-xs text-muted mt-2">
-            {guides.length} {t('guides.guides_available') || 'guías disponibles'} • {offlineStatus?.languages.join(', ').toUpperCase() || 'ES, EN, DE'}
+        {/* Status Card - Componente animado mejorado */}
+        <View className="mx-4 mt-4">
+          <OfflineCacheIndicator showDetails={true} />
+          <Text className="text-xs text-muted mt-2 text-center">
+            {guides.length} {t('guides.guides_available') || 'guías disponibles'}
           </Text>
         </View>
 

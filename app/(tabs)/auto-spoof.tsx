@@ -9,6 +9,7 @@ import { ChipsetStatusBadge } from '@/components/chipset-status-badge';
 import { getChipsetCompatibility, canAttemptSpoofing, getCompatibilityMessageKey } from '@/lib/chipset-compatibility';
 import { SuccessResultModal } from '@/components/success-result-modal';
 import { EepromProgressIndicator } from '@/components/eeprom-progress-indicator';
+import { EEPROMProgressBar } from '@/components/ui/eeprom-progress-bar';
 import { ExpandableInfo } from '@/components/ui/expandable-info';
 import { AnimatedTouchable } from '@/components/ui/animated-touchable';
 import { AnimatedSpinner } from '@/components/ui/animated-spinner';
@@ -917,18 +918,19 @@ export default function AutoSpoofScreen() {
             </View>
           )}
 
-          {/* Indicador de Progreso EEPROM */}
+          {/* Indicador de Progreso EEPROM - Nuevo componente animado */}
           {state.isExecuting && state.eepromProgress.totalBytes > 0 && (
-            <EepromProgressIndicator
-              progress={state.eepromProgress.progress}
-              bytesProcessed={state.eepromProgress.bytesProcessed}
+            <EEPROMProgressBar
+              currentBytes={state.eepromProgress.bytesProcessed}
               totalBytes={state.eepromProgress.totalBytes}
               operation={state.eepromProgress.operation}
+              isActive={state.isExecuting}
               estimatedTimeRemaining={
                 state.eepromProgress.progress > 0 && state.eepromProgress.progress < 100
                   ? Math.round(((100 - state.eepromProgress.progress) / state.eepromProgress.progress) * 2)
                   : undefined
               }
+              showDetails={true}
             />
           )}
 
