@@ -2850,4 +2850,9 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Crear componente OfflineCacheIndicator con estado de conexión y caché animado
 - [x] Integrar EEPROMProgressBar en auto-spoof.tsx reemplazando el indicador anterior
 - [x] Integrar OfflineCacheIndicator en guides.tsx y settings.tsx
-- [ ] Generar APK con EAS Build
+- [x] Generar APK con EAS Build (build: 8c27204f-65b8-4e88-9425-54734eb0a9e5)
+
+
+## Bug Fix - Tabs sin texto (25 Ene 2026)
+
+- [x] Corregir tabs del modal Scripts que no muestran texto visible (minHeight: 44, fontSize: 14, color: #ECEDEE)
