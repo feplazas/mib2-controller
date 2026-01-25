@@ -619,7 +619,8 @@
     "visit_forums": "Besuchen Sie spezialisierte Foren, um die neueste Version der Toolbox zu erhalten.",
     "telnet_not_active": "Telnet ist nicht aktiv. Aktivieren Sie es über die Toolbox, um diese App zu nutzen.",
     "ftp_not_active": "FTP ist nicht aktiv. Erwägen Sie die Aktivierung für Dateitransfers.",
-    "old_version": "Alte Toolbox-Version erkannt. Erwägen Sie ein Update."
+    "old_version": "Alte Toolbox-Version erkannt. Erwägen Sie ein Update.",
+    "diagnostics": "Diagnose"
   },
   "fec": {
     "title": "FEC-Code-Generator",
@@ -1514,7 +1515,8 @@
     "clear_saved_values_confirm": "Dies löscht die gespeicherten Original-VID/PID-Werte.\n\nEmergency Restore verwendet stattdessen die ASIX-Standardwerte (0x0B95:0x772B).",
     "clear_saved_values_success": "Gespeicherte Werte erfolgreich gelöscht",
     "no_saved_values": "Keine gespeicherten Originalwerte",
-    "no_saved_values_desc": "Originalwerte werden automatisch vor Ihrer ersten Spoofing-Operation gespeichert."
+    "no_saved_values_desc": "Originalwerte werden automatisch vor Ihrer ersten Spoofing-Operation gespeichert.",
+    "device_ready": "Gerät bereit"
   },
   "onboarding": {
     "step1_title": "USB-Adapter verbinden",
@@ -2048,6 +2050,7 @@
     "resource_commands": "'Befehle'-Bildschirm: Interaktives Telnet-Terminal",
     "resource_backups": "'Backups'-Bildschirm: EEPROM-Backup-Verwaltung",
     "resource_actions": "'Aktionen'-Bildschirm: Netzwerk- und System-Tools",
+    "resource_diagnostics": "'Einstellungen'-Bildschirm: Diagnose und Systemprotokolle",
     "final_tip": "Abschließender Tipp: Bewahren Sie diese Anleitung und Backups an einem sicheren Ort auf. Man weiß nie, wann man sie braucht."
   },
   "offline_guides": {

@@ -2673,3 +2673,11 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Agregar clave common.disconnected a en.json
 - [x] Agregar clave common.disconnected a de.json
 - [x] Verificar que TypeScript compila sin errores
+
+
+## Correcciones v35 - Traducciones Faltantes Adicionales
+
+### Claves de traducción faltantes identificadas
+- [x] installation_guide.resource_diagnostics (Guía de Instalación)
+- [x] toolbox.diagnostics (Pantalla Toolbox)
+- [x] usb.device_ready (Indicador USB)

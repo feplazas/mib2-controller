@@ -619,7 +619,8 @@
     "visit_forums": "Visit specialized forums to get the latest version of Toolbox.",
     "telnet_not_active": "Telnet is not active. Enable it from the Toolbox to use this app.",
     "ftp_not_active": "FTP is not active. Consider enabling it for file transfer.",
-    "old_version": "Old Toolbox version detected. Consider updating."
+    "old_version": "Old Toolbox version detected. Consider updating.",
+    "diagnostics": "Diagnostics"
   },
   "fec": {
     "title": "FEC Code Generator",
@@ -1515,7 +1516,8 @@
     "clear_saved_values_confirm": "This will delete the saved original VID/PID values.\n\nEmergency Restore will use ASIX default values (0x0B95:0x772B) instead.",
     "clear_saved_values_success": "Saved values cleared successfully",
     "no_saved_values": "No Saved Original Values",
-    "no_saved_values_desc": "Original values will be saved automatically before your first spoofing operation."
+    "no_saved_values_desc": "Original values will be saved automatically before your first spoofing operation.",
+    "device_ready": "Device ready"
   },
   "onboarding": {
     "step1_title": "Connect USB Adapter",
@@ -2049,6 +2051,7 @@
     "resource_commands": "'Commands' screen: Interactive Telnet terminal",
     "resource_backups": "'Backups' screen: EEPROM backup management",
     "resource_actions": "'Actions' screen: Network and system tools",
+    "resource_diagnostics": "'Settings' screen: Diagnostics and system logs",
     "final_tip": "Final tip: Save this guide and backups in a safe place. You never know when you'll need them."
   },
   "offline_guides": {

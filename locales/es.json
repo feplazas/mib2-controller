@@ -619,7 +619,8 @@
     "visit_forums": "Visita foros especializados para obtener la última versión del Toolbox.",
     "telnet_not_active": "Telnet no está activo. Habilítalo desde el Toolbox para usar esta app.",
     "ftp_not_active": "FTP no está activo. Considéralo para transferencia de archivos.",
-    "old_version": "Versión antigua del Toolbox detectada. Considera actualizar."
+    "old_version": "Versión antigua del Toolbox detectada. Considera actualizar.",
+    "diagnostics": "Diagnósticos"
   },
   "fec": {
     "title": "Generador de Códigos FEC",
@@ -1514,7 +1515,8 @@
     "clear_saved_values_confirm": "Esto eliminará los valores VID/PID originales guardados.\n\nEmergency Restore usará los valores ASIX por defecto (0x0B95:0x772B) en su lugar.",
     "clear_saved_values_success": "Valores guardados eliminados correctamente",
     "no_saved_values": "Sin Valores Originales Guardados",
-    "no_saved_values_desc": "Los valores originales se guardarán automáticamente antes de tu primera operación de spoofing."
+    "no_saved_values_desc": "Los valores originales se guardarán automáticamente antes de tu primera operación de spoofing.",
+    "device_ready": "Dispositivo listo"
   },
   "onboarding": {
     "step1_title": "Conectar Adaptador USB",
@@ -2048,6 +2050,7 @@
     "resource_commands": "Pantalla 'Comandos': Terminal Telnet interactiva",
     "resource_backups": "Pantalla 'Backups': Gestión de backups de EEPROM",
     "resource_actions": "Pantalla 'Acciones': Herramientas de red y sistema",
+    "resource_diagnostics": "Pantalla 'Config': Diagnósticos y logs del sistema",
     "final_tip": "Consejo final: Guarda esta guía y los backups en un lugar seguro. Nunca se sabe cuándo los necesitarás."
   },
   "offline_guides": {
