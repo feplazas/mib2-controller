@@ -2814,3 +2814,7 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Agregar indicador visual explicativo para checksum inválido (tooltip informativo con razones comunes)
 - [x] Revisar y asegurar consistencia de activeOpacity={0.8} en todos los TouchableOpacity de la aplicación
 - [x] Eliminar clases active:opacity-XX de CSS y usar activeOpacity prop consistentemente
+
+- [x] Crear componente ExpandableInfo para información expandible/colapsable
+- [x] Convertir texto informativo del checksum en componente expandible/colapsable
+- [x] Aplicar AnimatedTouchable a botones importantes (Execute, Safe Test, Connect, Go to Auto Spoof, Detect Toolbox)

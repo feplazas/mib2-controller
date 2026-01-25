@@ -9,6 +9,8 @@ import { ChipsetStatusBadge } from '@/components/chipset-status-badge';
 import { getChipsetCompatibility, canAttemptSpoofing, getCompatibilityMessageKey } from '@/lib/chipset-compatibility';
 import { SuccessResultModal } from '@/components/success-result-modal';
 import { EepromProgressIndicator } from '@/components/eeprom-progress-indicator';
+import { ExpandableInfo } from '@/components/ui/expandable-info';
+import { AnimatedTouchable } from '@/components/ui/animated-touchable';
 import * as Haptics from 'expo-haptics';
 import * as Sharing from 'expo-sharing';
 import * as Clipboard from 'expo-clipboard';
@@ -1132,13 +1134,18 @@ export default function AutoSpoofScreen() {
                   }`}>
                     {state.checksumResult.valid ? t('auto_spoof.checksum_valid') : t('auto_spoof.checksum_invalid')}
                   </Text>
-                  {/* Explicación detallada cuando el checksum es inválido */}
+                  {/* Explicación detallada cuando el checksum es inválido - Expandible */}
                   {!state.checksumResult.valid && (
-                    <View className="mt-3 p-3 bg-blue-500/10 rounded-lg border border-blue-500/30">
+                    <ExpandableInfo
+                      toggleLabel={t('auto_spoof.checksum_why_invalid')}
+                      color="#60A5FA"
+                      className="mt-2"
+                      contentClassName="p-3 bg-blue-500/10 rounded-lg border border-blue-500/30"
+                    >
                       <Text className="text-xs text-blue-400 leading-relaxed">
                         {t('auto_spoof.checksum_invalid_explanation')}
                       </Text>
-                    </View>
+                    </ExpandableInfo>
                   )}
                   <Text className="text-xs text-muted mt-2 italic">
                     {t('auto_spoof.checksum_not_affects_vidpid')}
@@ -1147,11 +1154,12 @@ export default function AutoSpoofScreen() {
               </View>
             )}
 
-            {/* Botón Safe Test Mode - Simulación Completa */}
-            <TouchableOpacity
+            {/* Botón Safe Test Mode - Simulación Completa con animación */}
+            <AnimatedTouchable
               onPress={handleSafeTest}
               disabled={state.isSafeTestRunning || !device}
-              activeOpacity={0.8}
+              hapticFeedback="light"
+              scaleAmount={0.97}
               className={`rounded-xl p-4 ${
                 state.safeTestResult?.wouldSucceedInRealMode
                   ? 'bg-success/10'
@@ -1181,7 +1189,7 @@ export default function AutoSpoofScreen() {
                   </Text>
                 </View>
               </View>
-            </TouchableOpacity>
+            </AnimatedTouchable>
 
             {/* Progreso Safe Test */}
             {state.isSafeTestRunning && (
@@ -1368,11 +1376,12 @@ export default function AutoSpoofScreen() {
             </TouchableOpacity>}
           </View>
 
-          {/* Botón de Ejecución Principal */}
-          <TouchableOpacity
+          {/* Botón de Ejecución Principal - Con animación de escala y haptics */}
+          <AnimatedTouchable
             onPress={executeAutoSpoof}
             disabled={!canExecute || state.isExecuting}
-            activeOpacity={0.8}
+            hapticFeedback="medium"
+            scaleAmount={0.97}
             className={`rounded-xl py-4 items-center ${
               canExecute && !state.isExecuting
                 ? 'bg-primary'
@@ -1384,7 +1393,7 @@ export default function AutoSpoofScreen() {
             }`}>
               {state.isExecuting ? t('auto_spoof.executing') : t('auto_spoof.execute_auto_spoof')}
             </Text>
-          </TouchableOpacity>
+          </AnimatedTouchable>
         </View>
       </ScrollView>
       

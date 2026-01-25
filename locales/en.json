@@ -1065,6 +1065,7 @@
     "checksum_valid": "Checksum valid - EEPROM integrity OK",
     "checksum_invalid": "Checksum invalid - Possible corruption",
     "checksum_invalid_explanation": "ℹ️ This is normal for generic adapters. The manufacturer did not correctly calculate the factory checksum or the adapter was previously modified. Checksum uses bytes 0x07-0x0E and does NOT include VID/PID, so spoofing works correctly.",
+    "checksum_why_invalid": "Why might it be invalid?",
     "checksum_not_affects_vidpid": "Checksum does NOT include VID/PID, so modifying them does not affect integrity",
     "safe_test_mode": "Safe Test Mode",
     "safe_test_running": "Running safe test...",

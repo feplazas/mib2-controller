@@ -11,6 +11,7 @@ import { ChipsetStatusBadge } from '@/components/chipset-status-badge';
 import { getChipsetCompatibility, canAttemptSpoofing } from '@/lib/chipset-compatibility';
 import { ScanningIndicator } from '@/components/scanning-indicator';
 import { CompatibilityCheckLoader } from '@/components/compatibility-check-loader';
+import { AnimatedTouchable } from '@/components/ui/animated-touchable';
 
 import { showAlert } from '@/lib/translated-alert';
 import { useTranslation } from "@/lib/language-context";
@@ -530,10 +531,11 @@ export default function UsbStatusScreen() {
           {/* Botones de Acción */}
           {status === 'detected' && devices.length > 0 && (
             <View className="mt-3">
-              <TouchableOpacity
+              <AnimatedTouchable
                 onPress={handleConnect}
                 disabled={isConnecting}
-                activeOpacity={0.8}
+                hapticFeedback="medium"
+                scaleAmount={0.97}
                 className={`rounded-xl p-4 items-center border-2 ${
                   isConnecting 
                     ? 'bg-muted/20 border-muted opacity-50' 
@@ -549,7 +551,7 @@ export default function UsbStatusScreen() {
                 <Text className="text-xs text-background/80 mt-1">
                   {t('usb.request_permissions')}
                 </Text>
-              </TouchableOpacity>
+              </AnimatedTouchable>
             </View>
           )}
 
@@ -605,18 +607,18 @@ export default function UsbStatusScreen() {
                 animated={true}
               />
               
-              {/* Botón de Acceso Rápido a Auto Spoof */}
+              {/* Botón de Acceso Rápido a Auto Spoof - Con animación */}
               {(() => {
                 const compat = getChipsetCompatibility(device.chipset);
                 if (canAttemptSpoofing(compat)) {
                   return (
-                    <TouchableOpacity
+                    <AnimatedTouchable
                       onPress={() => {
-                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                         const router = require('expo-router').router;
                         router.push('/(tabs)/auto-spoof');
                       }}
-                      activeOpacity={0.8}
+                      hapticFeedback="medium"
+                      scaleAmount={0.97}
                       className="bg-primary rounded-xl p-4 items-center"
                     >
                       <View className="flex-row items-center gap-2">
@@ -631,7 +633,7 @@ export default function UsbStatusScreen() {
                           ? t('usb.chipset_confirmed') 
                           : t('usb.chipset_experimental')}
                       </Text>
-                    </TouchableOpacity>
+                    </AnimatedTouchable>
                   );
                 }
                 return null;
