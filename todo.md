@@ -2494,3 +2494,26 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Auditar protección para adaptadores Ethernet (7 capas verificadas: Magic Value, Enable/Disable Write Mode, Verificación 3x, Detección EEPROM/eFuse, Restauración automática, Rollback en fallo, Dual location writes)
 - [x] Auditar protección para MIB2 Technisat Preh (1 SD slot) - La app NO modifica el MIB2, solo el adaptador USB
 - [x] Verificar que todas las operaciones críticas tienen rollback (performSpoof tiene rollback automático si verificación falla)
+
+
+## Modo Offline para Guías v25 (24 Ene 2026)
+
+### Análisis de estructura
+- [ ] Identificar todas las guías y su contenido
+- [ ] Determinar formato de almacenamiento offline
+
+### Servicio de almacenamiento offline
+- [x] Crear servicio offline-guides-service.ts
+- [x] Implementar guardado de guías en AsyncStorage
+- [x] Implementar carga de guías desde cache
+- [x] Implementar verificación de versión de guías
+
+### UI para gestión offline
+- [x] Agregar botón "Descargar para offline" en guías (Refresh Guides en Settings)
+- [x] Mostrar indicador de contenido disponible offline (indicador verde/amarillo)
+- [x] Agregar opción en Settings para gestionar contenido offline (sección Offline Mode)
+
+### Integración
+- [x] Detectar estado de conexión (NetInfo listener en offline-guides-service.ts)
+- [x] Cargar automáticamente desde cache si no hay conexión (guías embebidas siempre disponibles)
+- [x] Mostrar indicador visual de modo offline (indicador en installation-guide.tsx y settings.tsx)

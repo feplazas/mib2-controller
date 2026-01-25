@@ -1,7 +1,9 @@
 import { ScrollView, Text, View, StyleSheet } from 'react-native';
+import { useState, useEffect } from 'react';
 import { useColors } from '@/hooks/use-colors';
 import { useTranslation } from '@/lib/language-context';
 import { CopyableCodeBlock } from './copyable-code-block';
+import { offlineGuidesService, type OfflineStatus } from '@/lib/offline-guides-service';
 
 /**
  * Guía completa de instalación y configuración del MIB2 Toolbox
@@ -11,6 +13,26 @@ import { CopyableCodeBlock } from './copyable-code-block';
 export function InstallationGuide() {
   const colors = useColors();
   const t = useTranslation();
+  const [offlineStatus, setOfflineStatus] = useState<OfflineStatus | null>(null);
+
+  useEffect(() => {
+    const loadStatus = async () => {
+      try {
+        await offlineGuidesService.initialize();
+        const status = await offlineGuidesService.getStatus();
+        setOfflineStatus(status);
+      } catch (error) {
+        console.error('[InstallationGuide] Error loading offline status:', error);
+      }
+    };
+    loadStatus();
+
+    const unsubscribe = offlineGuidesService.addListener((status) => {
+      setOfflineStatus(status);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const styles = StyleSheet.create({
     container: {
@@ -122,6 +144,37 @@ export function InstallationGuide() {
         <Text style={styles.copyHint}>
           💡 {t('installation_guide.tap_to_copy') || 'Tap code blocks to copy to clipboard'}
         </Text>
+
+        {/* Indicador de modo offline */}
+        {offlineStatus && (
+          <View style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            backgroundColor: offlineStatus.isOnline ? colors.success + '20' : colors.warning + '20',
+            borderRadius: 8,
+            padding: 8,
+            marginBottom: 12,
+          }}>
+            <View style={{
+              width: 8,
+              height: 8,
+              borderRadius: 4,
+              backgroundColor: offlineStatus.isOnline ? colors.success : colors.warning,
+              marginRight: 8,
+            }} />
+            <Text style={{
+              fontSize: 12,
+              color: offlineStatus.isOnline ? colors.success : colors.warning,
+              fontWeight: '500',
+            }}>
+              {offlineStatus.isOnline 
+                ? (t('settings.connection_online') || 'Online')
+                : (t('settings.connection_offline') || 'Offline')}
+              {offlineStatus.guidesAvailableOffline && !offlineStatus.isOnline && 
+                ` - ${t('settings.offline_available') || 'Available offline'}`}
+            </Text>
+          </View>
+        )}
 
         <View style={styles.danger}>
           <Text style={styles.dangerText}>

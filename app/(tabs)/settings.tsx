@@ -16,6 +16,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect } from "react";
 
 import { showAlert } from '@/lib/translated-alert';
+import { offlineGuidesService, type OfflineStatus } from '@/lib/offline-guides-service';
 export default function SettingsScreen() {
   const t = useTranslation();
   const { config, updateConfig, clearMessages } = useTelnet();
@@ -31,6 +32,9 @@ export default function SettingsScreen() {
   const [showDebugInfo, setShowDebugInfo] = useState(false);
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
   const [showThemeSelector, setShowThemeSelector] = useState(false);
+  const [showOfflineSection, setShowOfflineSection] = useState(false);
+  const [offlineStatus, setOfflineStatus] = useState<OfflineStatus | null>(null);
+  const [isRefreshingGuides, setIsRefreshingGuides] = useState(false);
   const { selectedLanguage, setLanguage: setAppLanguage } = useLanguage();
   const { themeMode, setThemeMode } = useThemeContext();
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
@@ -73,6 +77,81 @@ export default function SettingsScreen() {
         },
       ]
     );
+  };
+
+  // Cargar estado offline al montar
+  useEffect(() => {
+    const loadOfflineStatus = async () => {
+      try {
+        await offlineGuidesService.initialize();
+        const status = await offlineGuidesService.getStatus();
+        setOfflineStatus(status);
+      } catch (error) {
+        console.error('[Settings] Error loading offline status:', error);
+      }
+    };
+    loadOfflineStatus();
+
+    // Suscribirse a cambios de estado
+    const unsubscribe = offlineGuidesService.addListener((status) => {
+      setOfflineStatus(status);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleRefreshGuides = async () => {
+    setIsRefreshingGuides(true);
+    try {
+      await offlineGuidesService.refreshGuides();
+      const status = await offlineGuidesService.getStatus();
+      setOfflineStatus(status);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      showAlert('alerts.éxito', 'settings.offline_guides_refreshed');
+    } catch (error) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      showAlert('alerts.error', 'alerts.error');
+    } finally {
+      setIsRefreshingGuides(false);
+    }
+  };
+
+  const handleClearOfflineData = () => {
+    Alert.alert(
+      t('settings.clear_offline_data'),
+      t('settings.clear_offline_confirm'),
+      [
+        { text: t('common.cancel'), style: 'cancel' },
+        {
+          text: t('settings.clear'),
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await offlineGuidesService.clearGuides();
+              const status = await offlineGuidesService.getStatus();
+              setOfflineStatus(status);
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+              showAlert('alerts.éxito', 'settings.offline_guides_cleared');
+            } catch (error) {
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const formatBytes = (bytes: number): string => {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+  };
+
+  const formatDate = (timestamp: number | null): string => {
+    if (!timestamp) return '-';
+    return new Date(timestamp).toLocaleDateString();
   };
 
 
@@ -392,6 +471,99 @@ export default function SettingsScreen() {
                 {t('settings.clear_command_history')}
               </Text>
             </TouchableOpacity>
+          </View>
+
+          {/* Offline Mode Section */}
+          <View className="bg-surface rounded-2xl p-6 border border-border">
+            <TouchableOpacity
+              onPress={() => {
+                setShowOfflineSection(!showOfflineSection);
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              }}
+              className="flex-row justify-between items-center mb-4"
+            >
+              <View className="flex-1 mr-4">
+                <Text className="text-lg font-semibold text-foreground">
+                  📶 {t('settings.offline_mode')}
+                </Text>
+                <Text className="text-xs text-muted mt-1">
+                  {t('settings.offline_mode_description')}
+                </Text>
+              </View>
+              <View className="flex-row items-center">
+                <View className={`w-2 h-2 rounded-full mr-2 ${offlineStatus?.isOnline ? 'bg-success' : 'bg-warning'}`} />
+                <Text className="text-2xl text-muted">
+                  {showOfflineSection ? '▼' : '▶'}
+                </Text>
+              </View>
+            </TouchableOpacity>
+
+            {showOfflineSection && offlineStatus && (
+              <View className="gap-4">
+                {/* Estado de Conexión */}
+                <View className="bg-background rounded-xl p-4">
+                  <Text className="text-sm font-semibold text-foreground mb-3">
+                    🌐 {t('settings.offline_status')}
+                  </Text>
+                  <View className="gap-2">
+                    <View className="flex-row justify-between items-center">
+                      <Text className="text-xs text-muted">{t('settings.status')}:</Text>
+                      <View className="flex-row items-center">
+                        <View className={`w-2 h-2 rounded-full mr-2 ${offlineStatus.isOnline ? 'bg-success' : 'bg-warning'}`} />
+                        <Text className={`text-xs font-medium ${offlineStatus.isOnline ? 'text-success' : 'text-warning'}`}>
+                          {offlineStatus.isOnline ? t('settings.connection_online') : t('settings.connection_offline')}
+                        </Text>
+                      </View>
+                    </View>
+                    <View className="flex-row justify-between">
+                      <Text className="text-xs text-muted">{t('settings.guides_saved')}:</Text>
+                      <Text className={`text-xs font-medium ${offlineStatus.guidesAvailableOffline ? 'text-success' : 'text-muted'}`}>
+                        {offlineStatus.guidesAvailableOffline ? t('settings.offline_available') : t('settings.offline_not_available')}
+                      </Text>
+                    </View>
+                    {offlineStatus.guidesVersion && (
+                      <View className="flex-row justify-between">
+                        <Text className="text-xs text-muted">{t('settings.guides_version')}:</Text>
+                        <Text className="text-xs text-foreground font-mono">{offlineStatus.guidesVersion}</Text>
+                      </View>
+                    )}
+                    {offlineStatus.guidesSavedAt && (
+                      <View className="flex-row justify-between">
+                        <Text className="text-xs text-muted">{t('settings.last_updated')}:</Text>
+                        <Text className="text-xs text-foreground">{formatDate(offlineStatus.guidesSavedAt)}</Text>
+                      </View>
+                    )}
+                    <View className="flex-row justify-between">
+                      <Text className="text-xs text-muted">{t('settings.language')}:</Text>
+                      <Text className="text-xs text-foreground">
+                        {offlineStatus.languages.length > 0 ? offlineStatus.languages.join(', ').toUpperCase() : '-'}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+
+                {/* Botones de acción */}
+                <View className="flex-row gap-3">
+                  <TouchableOpacity
+                    onPress={handleRefreshGuides}
+                    disabled={isRefreshingGuides}
+                    className={`flex-1 bg-primary px-4 py-3 rounded-xl active:opacity-80 ${isRefreshingGuides ? 'opacity-50' : ''}`}
+                  >
+                    <Text className="text-white font-semibold text-center">
+                      {isRefreshingGuides ? t('common.loading') : t('settings.refresh_guides')}
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={handleClearOfflineData}
+                    className="flex-1 bg-error/10 border border-error px-4 py-3 rounded-xl active:opacity-80"
+                  >
+                    <Text className="text-error font-semibold text-center">
+                      {t('settings.clear_offline_data')}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
           </View>
 
           {/* USB Debug Mode */}
