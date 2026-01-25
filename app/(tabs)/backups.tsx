@@ -5,6 +5,8 @@ import { ScreenContainer } from '@/components/screen-container';
 import { AnimatedFadeIn } from '@/components/ui/animated-fade-in';
 import { SkeletonBackupList } from '@/components/ui/skeleton-loader';
 import { AnimatedSpinner } from '@/components/ui/animated-spinner';
+import { useAnimatedRefresh, AnimatedRefreshControl } from '@/components/ui/animated-refresh-control';
+import { OnboardingTooltip } from '@/components/ui/onboarding-tooltip';
 import { backupService, type EEPROMBackup, type IntegrityStatus, type IntegrityCheckResult } from '@/lib/backup-service';
 import { useUsbStatus } from '@/lib/usb-status-context';
 import { useTranslation } from '@/lib/language-context';
@@ -15,7 +17,10 @@ export default function BackupsScreen() {
   const { status, device } = useUsbStatus();
   const [backups, setBackups] = useState<EEPROMBackup[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
+  // Pull-to-refresh con animación personalizada
+  const { refreshing, onRefresh } = useAnimatedRefresh(async () => {
+    await loadBackups();
+  });
   const [isRestoring, setIsRestoring] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const [isSharing, setIsSharing] = useState<string | null>(null);
@@ -40,12 +45,6 @@ export default function BackupsScreen() {
   useEffect(() => {
     loadBackups();
   }, [loadBackups]);
-
-  const onRefresh = async () => {
-    setRefreshing(true);
-    await loadBackups();
-    setRefreshing(false);
-  };
 
   const formatDate = (timestamp: number): string => {
     const date = new Date(timestamp);
@@ -423,7 +422,13 @@ export default function BackupsScreen() {
       <ScrollView
         contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl 
+            refreshing={refreshing} 
+            onRefresh={onRefresh}
+            tintColor="#0a7ea4"
+            colors={['#0a7ea4']}
+            progressBackgroundColor="#1e2022"
+          />
         }
       >
         {/* Header */}
@@ -431,6 +436,14 @@ export default function BackupsScreen() {
           <View style={styles.header}>
             <Text style={styles.title}>{t('backups.title')}</Text>
             <Text style={styles.subtitle}>{t('backups.subtitle')}</Text>
+            <OnboardingTooltip
+              id="backups_intro"
+              title={t('onboarding.backups_title') || 'Backups de EEPROM'}
+              description={t('onboarding.backups_desc') || 'Aquí se guardan las copias de seguridad de tu adaptador. Siempre crea un backup antes de hacer spoofing para poder restaurar si algo sale mal.'}
+              position={{ top: 60, left: 16, right: 16 }}
+              arrowPosition="top"
+              delay={800}
+            />
           </View>
         </AnimatedFadeIn>
 

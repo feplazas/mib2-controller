@@ -1558,7 +1558,15 @@
     "start": "¡Comenzar!",
     "next": "Siguiente",
     "previous": "Anterior",
-    "skip": "Saltar Tutorial"
+    "skip": "Saltar Tutorial",
+    "safe_test_title": "Prueba Segura",
+    "safe_test_desc": "Ejecuta una simulación completa sin modificar tu adaptador. Ideal para verificar compatibilidad antes del spoofing real.",
+    "execute_title": "Ejecutar Spoofing",
+    "execute_desc": "Este botón modifica permanentemente el VID/PID de tu adaptador USB. Asegúrate de haber ejecutado Safe Test primero.",
+    "backups_title": "Backups de EEPROM",
+    "backups_desc": "Aquí se guardan las copias de seguridad de tu adaptador. Siempre crea un backup antes de hacer spoofing para poder restaurar si algo sale mal.",
+    "got_it": "Entendido",
+    "why_invalid": "¿Por qué puede ser inválido?"
   },
   "eeprom_progress": {
     "reading": "Leyendo EEPROM",
@@ -2205,5 +2213,6 @@
     "label_5": "Excelente",
     "already_rated": "Ya has calificado la app",
     "change_rating": "Cambiar calificación"
+
   }
 }

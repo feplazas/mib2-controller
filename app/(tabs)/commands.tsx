@@ -1362,8 +1362,10 @@ const styles = StyleSheet.create({
   categoryTab: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    justifyContent: 'center',
+    minWidth: 100,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
     marginRight: 8,
     borderRadius: 20,
     backgroundColor: 'rgba(30, 32, 34, 0.8)',
@@ -1371,23 +1373,25 @@ const styles = StyleSheet.create({
     borderColor: '#334155',
   },
   categoryTabActive: {
-    backgroundColor: 'rgba(10, 126, 164, 0.2)',
+    backgroundColor: 'rgba(10, 126, 164, 0.25)',
     borderColor: '#0a7ea4',
+    borderWidth: 1.5,
   },
   categoryTabDisabled: {
     opacity: 0.5,
   },
   categoryIcon: {
-    fontSize: 14,
+    fontSize: 16,
     marginRight: 6,
   },
   categoryText: {
     color: '#9BA1A6',
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '500',
   },
   categoryTextActive: {
     color: '#0a7ea4',
+    fontWeight: '600',
   },
   categoryTextDisabled: {
     color: '#555',

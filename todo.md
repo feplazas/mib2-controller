@@ -2834,4 +2834,11 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Crear skeleton loaders para lista de dispositivos USB (SkeletonDeviceCard, SkeletonDeviceList)
 - [x] Implementar AnimatedToggle, AnimatedCheckbox, AnimatedRadio con micro-interacciones iOS-style
 - [x] Integrar skeletons en backups.tsx y toggles en auto-spoof.tsx
-- [ ] Generar APK con EAS Build
+- [x] Generar APK con EAS Build (build iniciado: 99a95089-a73f-44ca-8605-47cc2b9c2575)
+
+
+## Correcciones y Mejoras UX (25 Ene 2026 - Sesión 2)
+
+- [x] Corregir tamaño inconsistente de tabs en modal de Scripts (minWidth: 100, fontSize: 14, padding consistente)
+- [x] Implementar pull-to-refresh animado con haptics en backups y usb-status (colores personalizados #0a7ea4)
+- [x] Implementar onboarding interactivo con tooltips animados (Safe Test, Execute, Backups)

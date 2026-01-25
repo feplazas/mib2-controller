@@ -1558,7 +1558,15 @@
     "start": "Starten!",
     "next": "Weiter",
     "previous": "Zurück",
-    "skip": "Tutorial überspringen"
+    "skip": "Tutorial überspringen",
+    "safe_test_title": "Sicherer Test",
+    "safe_test_desc": "Führt eine vollständige Simulation durch, ohne Ihren Adapter zu ändern. Ideal zur Überprüfung der Kompatibilität vor dem echten Spoofing.",
+    "execute_title": "Spoofing ausführen",
+    "execute_desc": "Diese Schaltfläche ändert dauerhaft die VID/PID Ihres USB-Adapters. Stellen Sie sicher, dass Sie zuerst den Sicheren Test ausgeführt haben.",
+    "backups_title": "EEPROM-Backups",
+    "backups_desc": "Hier werden die Sicherungskopien Ihres Adapters gespeichert. Erstellen Sie immer ein Backup vor dem Spoofing, damit Sie bei Problemen wiederherstellen können.",
+    "got_it": "Verstanden",
+    "why_invalid": "Warum könnte es ungültig sein?"
   },
   "eeprom_progress": {
     "reading": "EEPROM lesen",

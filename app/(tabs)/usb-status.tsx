@@ -14,6 +14,7 @@ import { CompatibilityCheckLoader } from '@/components/compatibility-check-loade
 import { AnimatedTouchable } from '@/components/ui/animated-touchable';
 import { AnimatedSpinner } from '@/components/ui/animated-spinner';
 import { SkeletonDeviceCard } from '@/components/ui/skeleton-loader';
+import { useAnimatedRefresh } from '@/components/ui/animated-refresh-control';
 
 import { showAlert } from '@/lib/translated-alert';
 import { useTranslation } from "@/lib/language-context";
@@ -21,7 +22,10 @@ import { useTranslation } from "@/lib/language-context";
 export default function UsbStatusScreen() {
   const t = useTranslation();
   const { status, device, devices, isScanning, scanDevices, connectToDevice, disconnectDevice, detectedProfile, recommendedProfile } = useUsbStatus();
-  const [refreshing, setRefreshing] = useState(false);
+  // Pull-to-refresh con animación y haptics
+  const { refreshing, onRefresh } = useAnimatedRefresh(async () => {
+    await scanDevices();
+  });
   const [connectionTime, setConnectionTime] = useState<Date | null>(null);
   const [uptime, setUptime] = useState('00:00:00');
   const [isCreatingBackup, setIsCreatingBackup] = useState(false);
@@ -86,12 +90,6 @@ export default function UsbStatusScreen() {
 
     return () => clearInterval(interval);
   }, [connectionTime]);
-
-  const onRefresh = async () => {
-    setRefreshing(true);
-    await scanDevices();
-    setRefreshing(false);
-  };
 
   const handleCreateBackup = async () => {
     if (!device) {
@@ -400,7 +398,13 @@ export default function UsbStatusScreen() {
       <ScrollView
         contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl 
+            refreshing={refreshing} 
+            onRefresh={onRefresh}
+            tintColor="#0a7ea4"
+            colors={['#0a7ea4']}
+            progressBackgroundColor="#1e2022"
+          />
         }
       >
         <View className="gap-4">

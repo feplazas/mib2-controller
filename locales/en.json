@@ -1559,7 +1559,15 @@
     "start": "Start!",
     "next": "Next",
     "previous": "Previous",
-    "skip": "Skip Tutorial"
+    "skip": "Skip Tutorial",
+    "safe_test_title": "Safe Test",
+    "safe_test_desc": "Run a complete simulation without modifying your adapter. Ideal for verifying compatibility before real spoofing.",
+    "execute_title": "Execute Spoofing",
+    "execute_desc": "This button permanently modifies the VID/PID of your USB adapter. Make sure to run Safe Test first.",
+    "backups_title": "EEPROM Backups",
+    "backups_desc": "This is where your adapter backups are stored. Always create a backup before spoofing so you can restore if something goes wrong.",
+    "got_it": "Got it",
+    "why_invalid": "Why might it be invalid?"
   },
   "eeprom_progress": {
     "reading": "Reading EEPROM",

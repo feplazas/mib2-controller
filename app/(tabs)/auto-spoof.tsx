@@ -14,6 +14,7 @@ import { AnimatedTouchable } from '@/components/ui/animated-touchable';
 import { AnimatedSpinner } from '@/components/ui/animated-spinner';
 import { AnimatedFeedback } from '@/components/ui/animated-feedback';
 import { AnimatedCheckbox } from '@/components/ui/animated-toggle';
+import { OnboardingTooltip } from '@/components/ui/onboarding-tooltip';
 import * as Haptics from 'expo-haptics';
 import * as Sharing from 'expo-sharing';
 import * as Clipboard from 'expo-clipboard';
@@ -1161,6 +1162,14 @@ export default function AutoSpoofScreen() {
             )}
 
             {/* Botón Safe Test Mode - Simulación Completa con animación */}
+            <OnboardingTooltip
+              id="safe_test_intro"
+              title={t('onboarding.safe_test_title') || 'Prueba Segura'}
+              description={t('onboarding.safe_test_desc') || 'Ejecuta una simulación completa sin modificar tu adaptador. Ideal para verificar compatibilidad antes del spoofing real.'}
+              position={{ top: -90, left: 16, right: 16 }}
+              arrowPosition="bottom"
+              delay={1000}
+            />
             <AnimatedTouchable
               onPress={handleSafeTest}
               disabled={state.isSafeTestRunning || !device}
@@ -1389,6 +1398,14 @@ export default function AutoSpoofScreen() {
           </View>
 
           {/* Botón de Ejecución Principal - Con animación de escala, haptics y spinner */}
+          <OnboardingTooltip
+            id="execute_spoofing_intro"
+            title={t('onboarding.execute_title') || 'Ejecutar Spoofing'}
+            description={t('onboarding.execute_desc') || 'Este botón modifica permanentemente el VID/PID de tu adaptador USB. Asegúrate de haber ejecutado Safe Test primero.'}
+            position={{ bottom: 80, left: 16, right: 16 }}
+            arrowPosition="bottom"
+            delay={2000}
+          />
           <AnimatedTouchable
             onPress={executeAutoSpoof}
             disabled={!canExecute || state.isExecuting}
