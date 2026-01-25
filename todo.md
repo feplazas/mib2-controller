@@ -2866,3 +2866,8 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Implementar animación fade/slide en la lista de scripts al cambiar categoría (FadeIn con delay escalonado)
 
 - [x] Agregar indicadores de puntos debajo de tabs para mostrar posición de scroll (dots con glow activo)
+
+
+## Bug Fix - Tooltip superpuesto (25 Ene 2026)
+
+- [x] Corregir tooltip de onboarding que se superpone al modal de EEPROM Backups (zIndex reducido a 50)

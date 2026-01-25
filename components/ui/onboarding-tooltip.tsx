@@ -297,7 +297,7 @@ export function useOnboarding() {
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    zIndex: 1000,
+    zIndex: 50, // Reducido para no superponerse a modales (que usan zIndex > 100)
     maxWidth: SCREEN_WIDTH - 32,
     minWidth: 200,
   },
