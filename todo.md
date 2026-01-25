@@ -2681,3 +2681,15 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] installation_guide.resource_diagnostics (Guía de Instalación)
 - [x] toolbox.diagnostics (Pantalla Toolbox)
 - [x] usb.device_ready (Indicador USB)
+
+## Correcciones v36 - Textos Hardcodeados y Módulo de Feedback
+
+### Análisis de pantallas
+- [x] Revisar FEC Generator para textos hardcodeados (sin textos hardcodeados)
+- [x] Revisar Toolbox Installation para textos hardcodeados (1 encontrado)
+- [x] Corregir textos hardcodeados encontrados ("Restaurar" -> t('toolbox.restore'))
+
+### Módulo de Retroalimentación
+- [x] Crear traducciones para feedback en ES/EN/DE
+- [x] Crear componente FeedbackScreen con estilo F-Droid
+- [x] Integrar módulo en navegación (Settings)

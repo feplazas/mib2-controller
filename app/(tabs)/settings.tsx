@@ -523,10 +523,21 @@ export default function SettingsScreen() {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               router.push('/terms-of-use');
             }}
-            className="flex-row items-center px-4 py-3.5 active:bg-primary/5"
+            className="flex-row items-center px-4 py-3.5 border-b border-separator active:bg-primary/5"
           >
             <Text className="text-xl mr-3">📄</Text>
             <Text className="flex-1 text-base text-primary">{t('settings.view_terms')}</Text>
+            <Text className="text-muted">›</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              router.push('/feedback');
+            }}
+            className="flex-row items-center px-4 py-3.5 active:bg-primary/5"
+          >
+            <Text className="text-xl mr-3">💬</Text>
+            <Text className="flex-1 text-base text-primary">{t('feedback.title')}</Text>
             <Text className="text-muted">›</Text>
           </TouchableOpacity>
         </View>

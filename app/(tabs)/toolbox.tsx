@@ -700,7 +700,7 @@ export default function ToolboxScreen() {
                             className="flex-1 bg-success/10 px-3 py-2 rounded-lg active:opacity-80"
                           >
                             <Text className="text-center text-xs font-semibold" style={{ color: "#22C55E" }}>
-                              ↻ Restaurar
+                              ↻ {t('toolbox.restore')}
                             </Text>
                           </TouchableOpacity>
                           <TouchableOpacity
