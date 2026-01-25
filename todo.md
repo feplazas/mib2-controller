@@ -2862,3 +2862,5 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 
 - [x] Implementar indicador de tab activa con glow animado y subrayado (FadeIn, shadowColor, elevation)
 - [x] Implementar scroll snap para alineación automática de tabs (snapToInterval: 130, decelerationRate: fast)
+
+- [x] Implementar animación fade/slide en la lista de scripts al cambiar categoría (FadeIn con delay escalonado)

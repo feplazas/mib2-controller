@@ -1000,10 +1000,21 @@ export default function CommandsScreen() {
               })}
             </ScrollView>
 
-            {/* Scripts List */}
-            <ScrollView style={styles.scriptsList}>
-              {getScriptsByCategory(selectedCategory).map(renderScriptItem)}
-            </ScrollView>
+            {/* Scripts List - Con animación de transición */}
+            <Animated.ScrollView 
+              key={selectedCategory} 
+              style={styles.scriptsList}
+              entering={FadeIn.duration(200).delay(50)}
+            >
+              {getScriptsByCategory(selectedCategory).map((script, index) => (
+                <Animated.View
+                  key={script.id}
+                  entering={FadeIn.duration(250).delay(index * 50)}
+                >
+                  {renderScriptItem(script)}
+                </Animated.View>
+              ))}
+            </Animated.ScrollView>
           </View>
         </View>
       </Modal>
