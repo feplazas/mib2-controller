@@ -2960,3 +2960,4 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Actualizar store-listing.md con requisito de acceso USB
 - [x] Restaurar pantalla FEC Codes en módulo Actions
 - [x] Agregar animación de carga al generar códigos FEC
+- [ ] Agregar vibración háptica al completar operaciones FEC exitosamente
