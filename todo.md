@@ -2945,3 +2945,4 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Checklist final para review
 - [ ] Actualizar política de privacidad en GitHub
 - [x] Crear política de privacidad en inglés con justificación jurídica completa
+- [ ] Crear Feature Graphic (1024x500px) para Play Store y subir a GitHub
