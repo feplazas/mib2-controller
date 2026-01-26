@@ -2931,3 +2931,4 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Preparar descripciones y metadatos (store-listing.md actualizado)
 - [x] Generar AAB de producción (en progreso en EAS)
 - [x] Documentar requisitos de Play Console (PLAY_CONSOLE_GUIDE.md)
+- [x] Crear video promocional corto para Play Store
