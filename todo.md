@@ -2921,3 +2921,4 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Quitar opción Automatic del selector de tema (dejar solo Light y Dark, Dark por defecto)
 - [x] Unificar Recovery y EEPROM Backups en una sola pantalla lógica
 - [x] Quitar tooltips de la pantalla Auto Spoof
+- [x] Optimizar tamaño del APK eliminando dependencias no usadas
