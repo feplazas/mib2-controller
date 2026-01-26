@@ -2956,3 +2956,4 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Mejorar metadatos del proyecto (nombre/versión/descripción)
 - [x] Crear pantalla de Términos de Servicio obligatoria en primer inicio
 - [x] BUG CRÍTICO: USB Host no reconoce dispositivos después de cambios en filtro
+- [x] BUG CRÍTICO: Revertir filtro USB al método original que funcionaba
