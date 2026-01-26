@@ -2924,3 +2924,10 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Optimizar tamaño del APK eliminando dependencias no usadas
 - [x] Crear .easignore para reducir tamaño de upload (ya existe)
 - [x] Configurar ProGuard/R8 para optimización de código
+
+## Preparación para Google Play Console
+- [x] Limpieza del proyecto
+- [x] Verificar política de privacidad (actualizada v3.0)
+- [x] Preparar descripciones y metadatos (store-listing.md actualizado)
+- [x] Generar AAB de producción (en progreso en EAS)
+- [x] Documentar requisitos de Play Console (PLAY_CONSOLE_GUIDE.md)
