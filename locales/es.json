@@ -502,7 +502,11 @@
     "tip_3": "Verifica que Ethernet esté habilitado en GEM",
     "tip_4": "Configura IP estática en Android: 192.168.1.10",
     "logs": "Logs",
-    "no_logs": "Sin actividad reciente"
+    "no_logs": "Sin actividad reciente",
+    "arp_scan": "Escaneo ARP",
+    "auto_detect": "Auto-Detectar",
+    "arp_results": "Dispositivos Detectados (ARP)",
+    "scanning": "Escaneando..."
   },
   "scanner": {
     "title": "Escáner de Red",

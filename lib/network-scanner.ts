@@ -41,6 +41,27 @@ export interface MIB2FindResult {
   responseTime: number;
 }
 
+export interface ArpEntry {
+  ip: string;
+  mac: string;
+  device?: string;
+  hwType?: string;
+  flags?: string;
+  isComplete?: boolean;
+}
+
+export interface ArpScanResult {
+  ip: string;
+  mac: string;
+  reachable: boolean;
+  inArpTable: boolean;
+  isMIB2Candidate: boolean;
+  responseTime?: number;
+  hasTelnet?: boolean;
+  hasAltTelnet?: boolean;
+  isMIB2Likely?: boolean;
+}
+
 export interface ScanProgress {
   current: number;
   total: number;
@@ -523,4 +544,116 @@ export async function combinedPing(host: string, timeoutMs: number = 3000): Prom
   // Si ambos fallan, intentar TCP en puerto 123
   const tcp123Result = await nativeTcpPing(host, 123, timeoutMs);
   return tcp123Result;
+}
+
+// ============================================
+// FUNCIONES DE ESCANEO ARP (Android)
+// ============================================
+
+/**
+ * Obtener la tabla ARP del sistema
+ * Funciona incluso cuando los puertos están cerrados
+ */
+export async function getArpTable(): Promise<ArpEntry[]> {
+  if (Platform.OS !== 'android' || !NetworkInfoModule?.getArpTable) {
+    console.warn('ARP table not available on this platform');
+    return [];
+  }
+
+  try {
+    const results = await NetworkInfoModule.getArpTable();
+    return results.map((r: any) => ({
+      ip: r.ip,
+      mac: r.mac,
+      device: r.device,
+      hwType: r.hwType,
+      flags: r.flags,
+      isComplete: r.isComplete,
+    }));
+  } catch (error) {
+    console.error('Error getting ARP table:', error);
+    return [];
+  }
+}
+
+/**
+ * Escaneo ARP activo - Hace ping a un rango de IPs y lee la tabla ARP
+ * Descubre dispositivos incluso si los puertos están cerrados
+ */
+export async function arpScan(
+  baseIp: string,
+  startHost: number = 1,
+  endHost: number = 254,
+  timeoutMs: number = 2000
+): Promise<ArpScanResult[]> {
+  if (Platform.OS !== 'android' || !NetworkInfoModule?.arpScan) {
+    console.warn('ARP scan not available on this platform');
+    return [];
+  }
+
+  try {
+    const results = await NetworkInfoModule.arpScan(baseIp, startHost, endHost, timeoutMs);
+    return results.map((r: any) => ({
+      ip: r.ip,
+      mac: r.mac,
+      reachable: r.reachable,
+      inArpTable: r.inArpTable,
+      isMIB2Candidate: r.isMIB2Candidate,
+    }));
+  } catch (error) {
+    console.error('Error during ARP scan:', error);
+    return [];
+  }
+}
+
+/**
+ * Escaneo ARP rápido - Escanea solo IPs comunes de MIB2
+ * Más rápido que el escaneo completo
+ */
+export async function quickArpScan(timeoutMs: number = 3000): Promise<ArpScanResult[]> {
+  if (Platform.OS !== 'android' || !NetworkInfoModule?.quickArpScan) {
+    // Fallback: usar método antiguo
+    console.warn('Quick ARP scan not available, using fallback');
+    return [];
+  }
+
+  try {
+    const results = await NetworkInfoModule.quickArpScan(timeoutMs);
+    return results.map((r: any) => ({
+      ip: r.ip,
+      mac: r.mac,
+      reachable: r.reachable,
+      inArpTable: true,
+      isMIB2Candidate: r.isMIB2Candidate,
+      responseTime: r.responseTime,
+      hasTelnet: r.hasTelnet,
+      hasAltTelnet: r.hasAltTelnet,
+      isMIB2Likely: r.isMIB2Likely,
+    }));
+  } catch (error) {
+    console.error('Error during quick ARP scan:', error);
+    return [];
+  }
+}
+
+/**
+ * Detectar MIB2 usando combinación de ARP y puertos
+ * Método más completo para encontrar MIB2
+ */
+export async function detectMIB2WithArp(timeoutMs: number = 3000): Promise<ArpScanResult | null> {
+  // Primero intentar escaneo ARP rápido
+  const arpResults = await quickArpScan(timeoutMs);
+  
+  // Buscar dispositivos que probablemente sean MIB2
+  const mib2Candidates = arpResults.filter(r => r.isMIB2Likely || r.isMIB2Candidate);
+  
+  if (mib2Candidates.length > 0) {
+    // Retornar el más probable (con Telnet abierto)
+    const withTelnet = mib2Candidates.find(r => r.hasTelnet || r.hasAltTelnet);
+    return withTelnet || mib2Candidates[0];
+  }
+  
+  // Si no hay candidatos claros, retornar cualquier dispositivo alcanzable
+  const reachable = arpResults.filter(r => r.reachable);
+  return reachable.length > 0 ? reachable[0] : null;
 }

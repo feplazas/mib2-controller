@@ -13,6 +13,9 @@ import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Socket
 import kotlinx.coroutines.*
+import java.io.BufferedReader
+import java.io.FileReader
+import java.io.InputStreamReader
 
 class NetworkInfoModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
 
@@ -167,6 +170,288 @@ class NetworkInfoModule(reactContext: ReactApplicationContext) : ReactContextBas
             } catch (e: Exception) {
                 promise.reject("SCAN_ERROR", "Error scanning ports: ${e.message}", e)
             }
+        }
+    }
+
+    /**
+     * Escaneo ARP - Lee la tabla ARP del sistema para descubrir dispositivos
+     * Funciona incluso cuando los puertos están cerrados
+     */
+    @ReactMethod
+    fun getArpTable(promise: Promise) {
+        GlobalScope.launch(Dispatchers.IO) {
+            try {
+                val results = Arguments.createArray()
+                
+                // Leer /proc/net/arp que contiene la tabla ARP del kernel
+                val arpFile = FileReader("/proc/net/arp")
+                val reader = BufferedReader(arpFile)
+                
+                var line: String?
+                var isFirstLine = true
+                
+                while (reader.readLine().also { line = it } != null) {
+                    // Saltar la primera línea (header)
+                    if (isFirstLine) {
+                        isFirstLine = false
+                        continue
+                    }
+                    
+                    // Formato: IP address  HW type  Flags  HW address  Mask  Device
+                    val parts = line!!.trim().split("\\s+".toRegex())
+                    if (parts.size >= 6) {
+                        val ip = parts[0]
+                        val hwType = parts[1]
+                        val flags = parts[2]
+                        val mac = parts[3]
+                        val device = parts[5]
+                        
+                        // Solo incluir entradas válidas (flags != 0x0)
+                        if (flags != "0x0" && mac != "00:00:00:00:00:00") {
+                            val entry = Arguments.createMap()
+                            entry.putString("ip", ip)
+                            entry.putString("mac", mac)
+                            entry.putString("device", device)
+                            entry.putString("hwType", hwType)
+                            entry.putString("flags", flags)
+                            entry.putBoolean("isComplete", flags == "0x2")
+                            results.pushMap(entry)
+                        }
+                    }
+                }
+                
+                reader.close()
+                promise.resolve(results)
+            } catch (e: Exception) {
+                promise.reject("ARP_ERROR", "Error reading ARP table: ${e.message}", e)
+            }
+        }
+    }
+
+    /**
+     * Escaneo ARP activo - Hace ping a un rango de IPs para poblar la tabla ARP
+     * y luego lee la tabla ARP para descubrir dispositivos
+     */
+    @ReactMethod
+    fun arpScan(baseIp: String, startHost: Int, endHost: Int, timeoutMs: Int, promise: Promise) {
+        GlobalScope.launch(Dispatchers.IO) {
+            try {
+                val results = Arguments.createArray()
+                
+                // Extraer los primeros 3 octetos de la IP base
+                val ipParts = baseIp.split(".")
+                if (ipParts.size < 3) {
+                    promise.reject("INVALID_IP", "Invalid base IP format")
+                    return@launch
+                }
+                val subnet = "${ipParts[0]}.${ipParts[1]}.${ipParts[2]}"
+                
+                // Hacer ping a cada IP en el rango para poblar la tabla ARP
+                val jobs = mutableListOf<Deferred<Pair<String, Boolean>>>()
+                
+                for (host in startHost..endHost) {
+                    val ip = "$subnet.$host"
+                    jobs.add(async {
+                        try {
+                            val inetAddress = InetAddress.getByName(ip)
+                            val isReachable = inetAddress.isReachable(timeoutMs)
+                            Pair(ip, isReachable)
+                        } catch (e: Exception) {
+                            Pair(ip, false)
+                        }
+                    })
+                }
+                
+                // Esperar a que todos los pings terminen
+                val pingResults = jobs.awaitAll()
+                
+                // Ahora leer la tabla ARP actualizada
+                delay(100) // Pequeño delay para que el kernel actualice la tabla
+                
+                val arpEntries = mutableMapOf<String, String>()
+                try {
+                    val arpFile = FileReader("/proc/net/arp")
+                    val reader = BufferedReader(arpFile)
+                    
+                    var line: String?
+                    var isFirstLine = true
+                    
+                    while (reader.readLine().also { line = it } != null) {
+                        if (isFirstLine) {
+                            isFirstLine = false
+                            continue
+                        }
+                        
+                        val parts = line!!.trim().split("\\s+".toRegex())
+                        if (parts.size >= 6) {
+                            val ip = parts[0]
+                            val mac = parts[3]
+                            val flags = parts[2]
+                            
+                            if (flags != "0x0" && mac != "00:00:00:00:00:00") {
+                                arpEntries[ip] = mac
+                            }
+                        }
+                    }
+                    reader.close()
+                } catch (e: Exception) {
+                    // Continuar sin tabla ARP si falla
+                }
+                
+                // Combinar resultados de ping con entradas ARP
+                for ((ip, reachable) in pingResults) {
+                    val mac = arpEntries[ip]
+                    if (reachable || mac != null) {
+                        val entry = Arguments.createMap()
+                        entry.putString("ip", ip)
+                        entry.putString("mac", mac ?: "unknown")
+                        entry.putBoolean("reachable", reachable)
+                        entry.putBoolean("inArpTable", mac != null)
+                        
+                        // Detectar si podría ser MIB2 basado en el vendor MAC
+                        val isMIB2Candidate = mac?.let { isMIB2MacVendor(it) } ?: false
+                        entry.putBoolean("isMIB2Candidate", isMIB2Candidate)
+                        
+                        results.pushMap(entry)
+                    }
+                }
+                
+                promise.resolve(results)
+            } catch (e: Exception) {
+                promise.reject("ARP_SCAN_ERROR", "Error during ARP scan: ${e.message}", e)
+            }
+        }
+    }
+
+    /**
+     * Verifica si una dirección MAC pertenece a un vendor conocido de MIB2
+     * (Technisat, Preh, etc.)
+     */
+    private fun isMIB2MacVendor(mac: String): Boolean {
+        // Prefijos MAC conocidos de fabricantes de MIB2
+        val mib2Vendors = listOf(
+            "00:1e:42",  // Technisat
+            "00:17:ca",  // Preh
+            "00:0e:8e",  // Preh (alternativo)
+            "00:1a:37",  // Harman
+            "00:26:7e",  // Harman (alternativo)
+            "00:0d:f0",  // Continental
+            "00:1c:26",  // Continental (alternativo)
+            "00:25:ca",  // Bosch
+            "00:0e:6a",  // Bosch (alternativo)
+            "b8:27:eb",  // Raspberry Pi (para testing)
+            "dc:a6:32"   // Raspberry Pi (alternativo)
+        )
+        
+        val macLower = mac.lowercase()
+        return mib2Vendors.any { macLower.startsWith(it) }
+    }
+
+    /**
+     * Escaneo rápido de red usando ARP - Escanea IPs comunes de MIB2
+     */
+    @ReactMethod
+    fun quickArpScan(timeoutMs: Int, promise: Promise) {
+        GlobalScope.launch(Dispatchers.IO) {
+            try {
+                val results = Arguments.createArray()
+                
+                // IPs comunes donde se encuentra MIB2
+                val targetIPs = listOf(
+                    "192.168.1.1",
+                    "192.168.1.4",
+                    "192.168.1.10",
+                    "192.168.1.100",
+                    "192.168.0.1",
+                    "192.168.0.4",
+                    "10.200.1.1",
+                    "10.0.0.1"
+                )
+                
+                // Hacer ping a todas las IPs en paralelo
+                val jobs = targetIPs.map { ip ->
+                    async {
+                        try {
+                            val startTime = System.currentTimeMillis()
+                            val inetAddress = InetAddress.getByName(ip)
+                            val isReachable = inetAddress.isReachable(timeoutMs)
+                            val responseTime = System.currentTimeMillis() - startTime
+                            Triple(ip, isReachable, responseTime)
+                        } catch (e: Exception) {
+                            Triple(ip, false, -1L)
+                        }
+                    }
+                }
+                
+                val pingResults = jobs.awaitAll()
+                
+                // Leer tabla ARP
+                delay(50)
+                val arpEntries = mutableMapOf<String, String>()
+                try {
+                    val reader = BufferedReader(FileReader("/proc/net/arp"))
+                    var line: String?
+                    var isFirstLine = true
+                    
+                    while (reader.readLine().also { line = it } != null) {
+                        if (isFirstLine) {
+                            isFirstLine = false
+                            continue
+                        }
+                        val parts = line!!.trim().split("\\s+".toRegex())
+                        if (parts.size >= 6 && parts[2] != "0x0" && parts[3] != "00:00:00:00:00:00") {
+                            arpEntries[parts[0]] = parts[3]
+                        }
+                    }
+                    reader.close()
+                } catch (e: Exception) { }
+                
+                // Construir resultados
+                for ((ip, reachable, responseTime) in pingResults) {
+                    val mac = arpEntries[ip]
+                    if (reachable || mac != null) {
+                        val entry = Arguments.createMap()
+                        entry.putString("ip", ip)
+                        entry.putString("mac", mac ?: "unknown")
+                        entry.putBoolean("reachable", reachable)
+                        entry.putDouble("responseTime", responseTime.toDouble())
+                        entry.putBoolean("isMIB2Candidate", mac?.let { isMIB2MacVendor(it) } ?: false)
+                        
+                        // Verificar si tiene puertos MIB2 abiertos
+                        if (reachable) {
+                            val hasTelnet = checkPort(ip, 23, 1000)
+                            val hasAltTelnet = checkPort(ip, 123, 1000)
+                            entry.putBoolean("hasTelnet", hasTelnet)
+                            entry.putBoolean("hasAltTelnet", hasAltTelnet)
+                            entry.putBoolean("isMIB2Likely", hasTelnet || hasAltTelnet)
+                        } else {
+                            entry.putBoolean("hasTelnet", false)
+                            entry.putBoolean("hasAltTelnet", false)
+                            entry.putBoolean("isMIB2Likely", false)
+                        }
+                        
+                        results.pushMap(entry)
+                    }
+                }
+                
+                promise.resolve(results)
+            } catch (e: Exception) {
+                promise.reject("QUICK_ARP_ERROR", "Error during quick ARP scan: ${e.message}", e)
+            }
+        }
+    }
+
+    /**
+     * Verifica si un puerto está abierto
+     */
+    private fun checkPort(host: String, port: Int, timeoutMs: Int): Boolean {
+        return try {
+            val socket = Socket()
+            socket.connect(InetSocketAddress(host, port), timeoutMs)
+            socket.close()
+            true
+        } catch (e: Exception) {
+            false
         }
     }
 

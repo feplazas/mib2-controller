@@ -11,9 +11,14 @@ import {
   nativeScanPorts, 
   nativeFindMIB2,
   combinedPing,
+  quickArpScan,
+  getArpTable,
+  detectMIB2WithArp,
   type PingResult as NativePingResult,
   type PortScanResult,
-  type MIB2FindResult 
+  type MIB2FindResult,
+  type ArpScanResult,
+  type ArpEntry
 } from "@/lib/network-scanner";
 
 interface ScanResult {
@@ -40,7 +45,9 @@ export default function NetworkScannerScreen() {
   const [targetIp, setTargetIp] = useState('192.168.1.4');
   const [isScanning, setIsScanning] = useState(false);
   const [isPinging, setIsPinging] = useState(false);
+  const [isArpScanning, setIsArpScanning] = useState(false);
   const [scanResults, setScanResults] = useState<ScanResult[]>([]);
+  const [arpResults, setArpResults] = useState<ArpScanResult[]>([]);
   const [pingResult, setPingResult] = useState<PingResult | null>(null);
   const [scanProgress, setScanProgress] = useState(0);
   const [logs, setLogs] = useState<string[]>([]);
@@ -361,6 +368,112 @@ export default function NetworkScannerScreen() {
     setIsScanning(false);
   };
 
+  // Escaneo ARP - Descubre dispositivos incluso con puertos cerrados
+  const handleArpScan = async () => {
+    if (isArpScanning || isScanning) return;
+    
+    setIsArpScanning(true);
+    setArpResults([]);
+    setScanProgress(0);
+    
+    if (Platform.OS !== 'web') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    }
+    
+    addLog(`🔍 Iniciando escaneo ARP (descubre dispositivos sin puertos abiertos)...`);
+    
+    try {
+      // Usar escaneo ARP rápido nativo
+      const results = await quickArpScan(3000);
+      
+      setArpResults(results);
+      setScanProgress(100);
+      
+      // Log resultados
+      for (const result of results) {
+        const status = result.isMIB2Likely ? '🌟 MIB2 DETECTADO' : 
+                       result.isMIB2Candidate ? '🟡 Posible MIB2' : '🟢 Dispositivo';
+        const telnetInfo = result.hasTelnet ? ' (Telnet:23)' : 
+                          result.hasAltTelnet ? ' (Telnet:123)' : '';
+        addLog(`${status}: ${result.ip} - MAC: ${result.mac}${telnetInfo}`);
+        
+        // Si encontramos MIB2, actualizar IP de destino
+        if (result.isMIB2Likely || result.isMIB2Candidate) {
+          setTargetIp(result.ip);
+        }
+      }
+      
+      const mib2Found = results.filter(r => r.isMIB2Likely || r.isMIB2Candidate);
+      if (mib2Found.length > 0) {
+        addLog(`✅ Escaneo ARP completado: ${mib2Found.length} posible(s) MIB2 encontrado(s)`);
+        if (Platform.OS !== 'web') {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        }
+      } else if (results.length > 0) {
+        addLog(`⚠️ Escaneo ARP completado: ${results.length} dispositivo(s), ninguno parece MIB2`);
+        if (Platform.OS !== 'web') {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+        }
+      } else {
+        addLog(`❌ Escaneo ARP completado: No se encontraron dispositivos`);
+        if (Platform.OS !== 'web') {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        }
+      }
+    } catch (error) {
+      addLog(`❌ Error en escaneo ARP: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+      if (Platform.OS !== 'web') {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      }
+    }
+    
+    setIsArpScanning(false);
+  };
+
+  // Auto-detectar MIB2 usando ARP + puertos
+  const handleAutoDetect = async () => {
+    if (isArpScanning || isScanning) return;
+    
+    setIsArpScanning(true);
+    setArpResults([]);
+    
+    if (Platform.OS !== 'web') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    }
+    
+    addLog(`🚀 Auto-detección de MIB2 iniciada...`);
+    
+    try {
+      const mib2 = await detectMIB2WithArp(4000);
+      
+      if (mib2) {
+        setArpResults([mib2]);
+        setTargetIp(mib2.ip);
+        
+        const telnetInfo = mib2.hasTelnet ? 'Telnet:23' : 
+                          mib2.hasAltTelnet ? 'Telnet:123' : 'Sin Telnet';
+        addLog(`🎉 ¡MIB2 encontrado! IP: ${mib2.ip}, MAC: ${mib2.mac}, ${telnetInfo}`);
+        
+        if (Platform.OS !== 'web') {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        }
+      } else {
+        addLog(`❌ No se pudo detectar MIB2 automáticamente`);
+        addLog(`💡 Sugerencia: Verifica que Ethernet esté habilitado en GEM`);
+        if (Platform.OS !== 'web') {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        }
+      }
+    } catch (error) {
+      addLog(`❌ Error en auto-detección: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+      if (Platform.OS !== 'web') {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      }
+    }
+    
+    setIsArpScanning(false);
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'open': return '#34C759';
@@ -466,13 +579,13 @@ export default function NetworkScannerScreen() {
           {/* Find MIB2 Button */}
           <Pressable
             onPress={handleScanNetwork}
-            disabled={isPinging || isScanning}
+            disabled={isPinging || isScanning || isArpScanning}
             style={({ pressed }) => [
               styles.actionButton,
               styles.fullWidthButton,
               { 
                 backgroundColor: '#FF9500',
-                opacity: (isPinging || isScanning) ? 0.5 : pressed ? 0.8 : 1,
+                opacity: (isPinging || isScanning || isArpScanning) ? 0.5 : pressed ? 0.8 : 1,
               },
             ]}
           >
@@ -485,7 +598,120 @@ export default function NetworkScannerScreen() {
               {isScanning ? `${Math.round(scanProgress)}%` : (t('network_scanner.find_mib2') || 'Buscar MIB2 en Red')}
             </Text>
           </Pressable>
+
+          {/* ARP Scan Button */}
+          <Pressable
+            onPress={handleArpScan}
+            disabled={isPinging || isScanning || isArpScanning}
+            style={({ pressed }) => [
+              styles.actionButton,
+              { 
+                backgroundColor: '#5856D6',
+                opacity: (isPinging || isScanning || isArpScanning) ? 0.5 : pressed ? 0.8 : 1,
+              },
+            ]}
+          >
+            {isArpScanning ? (
+              <ActivityIndicator color="#FFFFFF" size="small" />
+            ) : (
+              <IconSymbol name="network" size={24} color="#FFFFFF" />
+            )}
+            <Text style={styles.buttonText}>
+              {isArpScanning ? (t('network_scanner.scanning') || 'Escaneando...') : (t('network_scanner.arp_scan') || 'ARP Scan')}
+            </Text>
+          </Pressable>
+
+          {/* Auto-Detect MIB2 Button */}
+          <Pressable
+            onPress={handleAutoDetect}
+            disabled={isPinging || isScanning || isArpScanning}
+            style={({ pressed }) => [
+              styles.actionButton,
+              { 
+                backgroundColor: '#FF2D55',
+                opacity: (isPinging || isScanning || isArpScanning) ? 0.5 : pressed ? 0.8 : 1,
+              },
+            ]}
+          >
+            {isArpScanning ? (
+              <ActivityIndicator color="#FFFFFF" size="small" />
+            ) : (
+              <IconSymbol name="sparkles" size={24} color="#FFFFFF" />
+            )}
+            <Text style={styles.buttonText}>
+              {t('network_scanner.auto_detect') || 'Auto-Detectar'}
+            </Text>
+          </Pressable>
         </View>
+
+        {/* ARP Results */}
+        {arpResults.length > 0 && (
+          <View style={[styles.section, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <Text style={[styles.sectionTitle, { color: colors.foreground }]}>
+              {t('network_scanner.arp_results') || 'Dispositivos Detectados (ARP)'}
+            </Text>
+            {arpResults.map((result, index) => (
+              <Pressable
+                key={index}
+                onPress={() => {
+                  setTargetIp(result.ip);
+                  addLog(`📌 IP seleccionada: ${result.ip}`);
+                  if (Platform.OS !== 'web') {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  }
+                }}
+                style={({ pressed }) => [
+                  styles.arpResultItem,
+                  { 
+                    backgroundColor: result.isMIB2Likely ? '#34C75915' : 
+                                    result.isMIB2Candidate ? '#FF950015' : colors.background,
+                    borderColor: result.isMIB2Likely ? '#34C759' : 
+                                result.isMIB2Candidate ? '#FF9500' : colors.border,
+                    opacity: pressed ? 0.7 : 1,
+                  },
+                ]}
+              >
+                <View style={styles.arpResultHeader}>
+                  <View style={styles.arpResultInfo}>
+                    <Text style={[styles.arpResultIp, { color: colors.foreground }]}>
+                      {result.ip}
+                    </Text>
+                    <Text style={[styles.arpResultMac, { color: colors.muted }]}>
+                      MAC: {result.mac}
+                    </Text>
+                  </View>
+                  <View style={styles.arpResultBadges}>
+                    {result.isMIB2Likely && (
+                      <View style={[styles.badge, { backgroundColor: '#34C759' }]}>
+                        <Text style={styles.badgeText}>MIB2</Text>
+                      </View>
+                    )}
+                    {result.isMIB2Candidate && !result.isMIB2Likely && (
+                      <View style={[styles.badge, { backgroundColor: '#FF9500' }]}>
+                        <Text style={styles.badgeText}>Posible</Text>
+                      </View>
+                    )}
+                    {result.hasTelnet && (
+                      <View style={[styles.badge, { backgroundColor: '#007AFF' }]}>
+                        <Text style={styles.badgeText}>:23</Text>
+                      </View>
+                    )}
+                    {result.hasAltTelnet && (
+                      <View style={[styles.badge, { backgroundColor: '#5856D6' }]}>
+                        <Text style={styles.badgeText}>:123</Text>
+                      </View>
+                    )}
+                  </View>
+                </View>
+                {result.responseTime && result.responseTime > 0 && (
+                  <Text style={[styles.arpResultTime, { color: colors.muted }]}>
+                    {result.responseTime}ms
+                  </Text>
+                )}
+              </Pressable>
+            ))}
+          </View>
+        )}
 
         {/* Ping Result */}
         {pingResult && (
@@ -778,5 +1004,57 @@ const styles = StyleSheet.create({
     fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
     lineHeight: 20,
     marginBottom: 4,
+  },
+  // ARP Scan Styles
+  section: {
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+  },
+  arpResultItem: {
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 8,
+    borderWidth: 1,
+  },
+  arpResultHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  arpResultInfo: {
+    flex: 1,
+  },
+  arpResultIp: {
+    fontSize: 17,
+    fontWeight: '600',
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+  },
+  arpResultMac: {
+    fontSize: 13,
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+    marginTop: 2,
+  },
+  arpResultBadges: {
+    flexDirection: 'row',
+    gap: 4,
+    flexWrap: 'wrap',
+    maxWidth: 120,
+    justifyContent: 'flex-end',
+  },
+  badge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  badgeText: {
+    color: '#FFFFFF',
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  arpResultTime: {
+    fontSize: 12,
+    marginTop: 6,
   },
 });

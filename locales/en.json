@@ -504,7 +504,11 @@
     "tip_3": "Verify Ethernet is enabled in GEM",
     "tip_4": "Configure static IP on Android: 192.168.1.10",
     "logs": "Logs",
-    "no_logs": "No recent activity"
+    "no_logs": "No recent activity",
+    "arp_scan": "ARP Scan",
+    "auto_detect": "Auto-Detect",
+    "arp_results": "Detected Devices (ARP)",
+    "scanning": "Scanning..."
   },
   "scanner": {
     "title": "Network Scanner",

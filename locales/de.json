@@ -502,7 +502,11 @@
     "tip_3": "Prüfen Sie, ob Ethernet in GEM aktiviert ist",
     "tip_4": "Konfigurieren Sie statische IP auf Android: 192.168.1.10",
     "logs": "Logs",
-    "no_logs": "Keine aktuelle Aktivität"
+    "no_logs": "Keine aktuelle Aktivität",
+    "arp_scan": "ARP-Scan",
+    "auto_detect": "Auto-Erkennung",
+    "arp_results": "Erkannte Geräte (ARP)",
+    "scanning": "Scanne..."
   },
   "scanner": {
     "title": "Netzwerk-Scanner",
