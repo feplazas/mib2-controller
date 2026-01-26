@@ -133,65 +133,79 @@ const withUsbHost = (config) => {
       }
 
       // Contenido del device_filter.xml - FILTROS ESPECÍFICOS PARA ADAPTADORES MIB2
-      // Solo se declaran los adaptadores USB-Ethernet compatibles con MIB2 STD2 Technisat Preh
+      // IMPORTANTE: Android requiere valores en DECIMAL, no hexadecimal
+      // 
+      // Conversiones:
+      // ASIX: 0x0B95 = 2965 (decimal)
+      // Realtek: 0x0BDA = 3034 (decimal)
+      // 
+      // Product IDs ASIX:
+      // 0x7720 = 30496, 0x772A = 30506, 0x772B = 30507
+      // 0x1780 = 6016, 0x1790 = 6032
+      //
+      // Product IDs Realtek:
+      // 0x8152 = 33106, 0x8153 = 33107
       const deviceFilterContent = `<?xml version="1.0" encoding="utf-8"?>
 <!--
   MIB2 Controller - USB Device Filter
   
-  This filter declares ONLY the USB-Ethernet adapters that are compatible with
-  MIB2 STD2 Technisat Preh infotainment systems. The app requires these specific
-  adapters to communicate with the vehicle's head unit via Telnet protocol.
+  This filter declares USB-Ethernet adapters compatible with MIB2 STD2 Technisat Preh.
   
-  LEGAL BASIS: This app operates under the Right to Repair doctrine and DMCA
-  exemptions for vehicle diagnostic and repair purposes. See PRIVACY.md for
-  full legal analysis.
+  IMPORTANT: Android requires DECIMAL values, not hexadecimal!
   
-  SUPPORTED CHIPSETS:
-  - ASIX AX88772/AX88772A/AX88772B: Primary chipset for MIB2 compatibility
-  - ASIX AX88178: High-speed variant
-  - ASIX AX88179: USB 3.0 variant
-  - Realtek RTL8152/RTL8153: Common alternative chipsets
-  
-  These are the ONLY devices the app can interact with. The app does NOT
-  capture or access any other USB devices.
+  LEGAL BASIS: This app operates under the Right to Repair doctrine.
+  See PRIVACY.md for full legal analysis.
 -->
 <resources>
     <!-- ASIX AX88772/AX88772A/AX88772B - Primary MIB2 compatible chipset -->
-    <usb-device vendor-id="0x0B95" product-id="0x7720" />
-    <usb-device vendor-id="0x0B95" product-id="0x772A" />
-    <usb-device vendor-id="0x0B95" product-id="0x772B" />
+    <!-- vendor-id: 0x0B95 = 2965, product-id: 0x7720 = 30496 -->
+    <usb-device vendor-id="2965" product-id="30496" />
+    <!-- vendor-id: 0x0B95 = 2965, product-id: 0x772A = 30506 -->
+    <usb-device vendor-id="2965" product-id="30506" />
+    <!-- vendor-id: 0x0B95 = 2965, product-id: 0x772B = 30507 (TARGET FOR SPOOFED ADAPTERS) -->
+    <usb-device vendor-id="2965" product-id="30507" />
     
     <!-- ASIX AX88178 - High-speed USB 2.0 variant -->
-    <usb-device vendor-id="0x0B95" product-id="0x1780" />
+    <!-- vendor-id: 0x0B95 = 2965, product-id: 0x1780 = 6016 -->
+    <usb-device vendor-id="2965" product-id="6016" />
     
     <!-- ASIX AX88179 - USB 3.0 Gigabit variant -->
-    <usb-device vendor-id="0x0B95" product-id="0x1790" />
+    <!-- vendor-id: 0x0B95 = 2965, product-id: 0x1790 = 6032 -->
+    <usb-device vendor-id="2965" product-id="6032" />
     
     <!-- Realtek RTL8152 - USB 2.0 Fast Ethernet -->
-    <usb-device vendor-id="0x0BDA" product-id="0x8152" />
+    <!-- vendor-id: 0x0BDA = 3034, product-id: 0x8152 = 33106 -->
+    <usb-device vendor-id="3034" product-id="33106" />
     
     <!-- Realtek RTL8153 - USB 3.0 Gigabit Ethernet -->
-    <usb-device vendor-id="0x0BDA" product-id="0x8153" />
+    <!-- vendor-id: 0x0BDA = 3034, product-id: 0x8153 = 33107 -->
+    <usb-device vendor-id="3034" product-id="33107" />
     
     <!-- Generic ASIX-based adapters (common rebrands) -->
-    <!-- D-Link DUB-E100 -->
-    <usb-device vendor-id="0x2001" product-id="0x1A00" />
-    <!-- Linksys USB200M -->
-    <usb-device vendor-id="0x13B1" product-id="0x0018" />
-    <!-- Apple USB Ethernet Adapter (ASIX based) -->
-    <usb-device vendor-id="0x05AC" product-id="0x1402" />
+    <!-- D-Link DUB-E100: vendor-id: 0x2001 = 8193, product-id: 0x1A00 = 6656 -->
+    <usb-device vendor-id="8193" product-id="6656" />
+    <!-- Linksys USB200M: vendor-id: 0x13B1 = 5041, product-id: 0x0018 = 24 -->
+    <usb-device vendor-id="5041" product-id="24" />
+    <!-- Apple USB Ethernet Adapter: vendor-id: 0x05AC = 1452, product-id: 0x1402 = 5122 -->
+    <usb-device vendor-id="1452" product-id="5122" />
     
     <!-- Additional known MIB2-compatible adapters -->
-    <!-- Belkin F5D5055 -->
-    <usb-device vendor-id="0x050D" product-id="0x5055" />
-    <!-- Netgear FA120 -->
-    <usb-device vendor-id="0x0846" product-id="0x1040" />
+    <!-- Belkin F5D5055: vendor-id: 0x050D = 1293, product-id: 0x5055 = 20565 -->
+    <usb-device vendor-id="1293" product-id="20565" />
+    <!-- Netgear FA120: vendor-id: 0x0846 = 2118, product-id: 0x1040 = 4160 -->
+    <usb-device vendor-id="2118" product-id="4160" />
+    
+    <!-- Fallback: Accept any ASIX device (vendor-id only) -->
+    <usb-device vendor-id="2965" />
+    
+    <!-- Fallback: Accept any Realtek USB Ethernet device (vendor-id only) -->
+    <usb-device vendor-id="3034" />
 </resources>
 `;
 
       // Escribir archivo
       fs.writeFileSync(deviceFilterPath, deviceFilterContent, 'utf-8');
-      console.log('✅ Created device_filter.xml with specific MIB2-compatible adapters at:', deviceFilterPath);
+      console.log('✅ Created device_filter.xml with DECIMAL values at:', deviceFilterPath);
 
       return config;
     },
