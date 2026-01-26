@@ -75,6 +75,7 @@ export default function GuidesScreen() {
       'troubleshooting_guide': 'troubleshooting',
       'commands_guide': 'commands',
       'fec_guide': 'fec',
+      'connection_guide': 'connection',
     };
     return idMap[guideId] || guideId;
   };
@@ -86,6 +87,7 @@ export default function GuidesScreen() {
       case 'troubleshooting': return '🔧';
       case 'commands': return '⌨️';
       case 'fec': return '🔑';
+      case 'connection': return '🔌';
       default: return '📄';
     }
   };
@@ -97,6 +99,7 @@ export default function GuidesScreen() {
       case 'troubleshooting': return t('offline_guides.troubleshooting_title') || 'Solución de Problemas';
       case 'commands': return t('offline_guides.commands_title') || 'Comandos Frecuentes';
       case 'fec': return t('offline_guides.fec_title') || 'Códigos FEC';
+      case 'connection': return t('offline_guides.connection_title') || 'Conexión USB-Ethernet';
       default: return guideId;
     }
   };
@@ -108,6 +111,7 @@ export default function GuidesScreen() {
       case 'troubleshooting': return t('offline_guides.troubleshooting_desc') || 'Soluciones a problemas comunes';
       case 'commands': return t('offline_guides.commands_desc') || 'Comandos más utilizados en MIB2';
       case 'fec': return t('offline_guides.fec_desc') || 'Códigos para activar funciones premium';
+      case 'connection': return t('offline_guides.connection_desc') || 'Cómo conectar Android a MIB2 vía USB-Ethernet';
       default: return '';
     }
   };
@@ -135,6 +139,12 @@ export default function GuidesScreen() {
       'offline_guides.fec.connectivity_title': 'Códigos de Conectividad',
       'offline_guides.fec.performance_title': 'Códigos de Rendimiento',
       'offline_guides.fec.injection_title': 'Proceso de Inyección',
+      // Guía de Conexión USB-Ethernet
+      'offline_guides.connection.prerequisites_title': 'Requisitos Previos',
+      'offline_guides.connection.mib2_config_title': 'Configuración de MIB2',
+      'offline_guides.connection.android_config_title': 'Configuración de Android',
+      'offline_guides.connection.physical_connection_title': 'Conexión Física',
+      'offline_guides.connection.verify_connection_title': 'Verificar Conexión',
     };
     return fallbacks[titleKey] || titleKey.split('.').pop()?.replace(/_/g, ' ') || titleKey;
   };

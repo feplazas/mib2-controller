@@ -2961,3 +2961,4 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Restaurar pantalla FEC Codes en módulo Actions
 - [x] Agregar animación de carga al generar códigos FEC
 - [ ] Agregar vibración háptica al completar operaciones FEC exitosamente
+- [ ] Integrar guía completa de conexión USB-Ethernet en instructivo de la app

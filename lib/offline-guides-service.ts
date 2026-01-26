@@ -7,7 +7,7 @@ const OFFLINE_GUIDES_VERSION_KEY = '@mib2_offline_guides_version';
 const OFFLINE_GUIDES_TIMESTAMP_KEY = '@mib2_offline_guides_timestamp';
 
 // Versión actual de las guías (incrementar cuando se actualicen)
-export const GUIDES_VERSION = '2.0.0';
+export const GUIDES_VERSION = '3.0.0';
 
 /**
  * Estructura de una guía offline
@@ -456,6 +456,180 @@ const EMBEDDED_COMMANDS_GUIDE: GuideContent = {
 /**
  * Guía de Códigos FEC embebida
  */
+/**
+ * Guía de Conexión USB-Ethernet embebida (NUEVA)
+ * Documentación completa para conectar Android a MIB2 vía USB-Ethernet
+ */
+const EMBEDDED_CONNECTION_GUIDE: GuideContent = {
+  phases: [
+    {
+      id: 'prerequisites',
+      titleKey: 'offline_guides.connection.prerequisites_title',
+      steps: [
+        {
+          number: 1,
+          titleKey: 'offline_guides.connection.hardware_required',
+          descriptionKey: 'offline_guides.connection.hardware_required_desc',
+        },
+        {
+          number: 2,
+          titleKey: 'offline_guides.connection.adapter_spoofed',
+          descriptionKey: 'offline_guides.connection.adapter_spoofed_desc',
+        },
+        {
+          number: 3,
+          titleKey: 'offline_guides.connection.adapter_android',
+          descriptionKey: 'offline_guides.connection.adapter_android_desc',
+        },
+      ],
+    },
+    {
+      id: 'mib2_config',
+      titleKey: 'offline_guides.connection.mib2_config_title',
+      warnings: ['offline_guides.connection.developer_mode_required'],
+      steps: [
+        {
+          number: 4,
+          titleKey: 'offline_guides.connection.enable_developer_mode',
+          descriptionKey: 'offline_guides.connection.enable_developer_mode_desc',
+        },
+        {
+          number: 5,
+          titleKey: 'offline_guides.connection.access_gem',
+          descriptionKey: 'offline_guides.connection.access_gem_desc',
+        },
+        {
+          number: 6,
+          titleKey: 'offline_guides.connection.enable_ethernet',
+          descriptionKey: 'offline_guides.connection.enable_ethernet_desc',
+          warningKey: 'offline_guides.connection.enable_ethernet_critical',
+        },
+        {
+          number: 7,
+          titleKey: 'offline_guides.connection.reboot_mib2',
+          descriptionKey: 'offline_guides.connection.reboot_mib2_desc',
+        },
+        {
+          number: 8,
+          titleKey: 'offline_guides.connection.verify_ip',
+          descriptionKey: 'offline_guides.connection.verify_ip_desc',
+        },
+      ],
+    },
+    {
+      id: 'android_config',
+      titleKey: 'offline_guides.connection.android_config_title',
+      steps: [
+        {
+          number: 9,
+          titleKey: 'offline_guides.connection.connect_adapter',
+          descriptionKey: 'offline_guides.connection.connect_adapter_desc',
+        },
+        {
+          number: 10,
+          titleKey: 'offline_guides.connection.configure_static_ip',
+          descriptionKey: 'offline_guides.connection.configure_static_ip_desc',
+        },
+        {
+          number: 11,
+          titleKey: 'offline_guides.connection.ip_settings',
+          descriptionKey: 'offline_guides.connection.ip_settings_desc',
+        },
+      ],
+    },
+    {
+      id: 'physical_connection',
+      titleKey: 'offline_guides.connection.physical_connection_title',
+      warnings: ['offline_guides.connection.ignition_required'],
+      steps: [
+        {
+          number: 12,
+          titleKey: 'offline_guides.connection.turn_ignition_on',
+          descriptionKey: 'offline_guides.connection.turn_ignition_on_desc',
+          warningKey: 'offline_guides.connection.ignition_critical',
+        },
+        {
+          number: 13,
+          titleKey: 'offline_guides.connection.connect_spoofed_adapter',
+          descriptionKey: 'offline_guides.connection.connect_spoofed_adapter_desc',
+        },
+        {
+          number: 14,
+          titleKey: 'offline_guides.connection.connect_ethernet_cable',
+          descriptionKey: 'offline_guides.connection.connect_ethernet_cable_desc',
+        },
+        {
+          number: 15,
+          titleKey: 'offline_guides.connection.connect_android_adapter',
+          descriptionKey: 'offline_guides.connection.connect_android_adapter_desc',
+        },
+      ],
+    },
+    {
+      id: 'verify_connection',
+      titleKey: 'offline_guides.connection.verify_connection_title',
+      steps: [
+        {
+          number: 16,
+          titleKey: 'offline_guides.connection.ping_test',
+          descriptionKey: 'offline_guides.connection.ping_test_desc',
+          commands: ['ping 192.168.1.4'],
+        },
+        {
+          number: 17,
+          titleKey: 'offline_guides.connection.telnet_connect',
+          descriptionKey: 'offline_guides.connection.telnet_connect_desc',
+          commands: ['telnet 192.168.1.4 23', 'telnet 192.168.1.4 123'],
+          successKey: 'offline_guides.connection.connection_success',
+        },
+      ],
+    },
+  ],
+  troubleshooting: [
+    {
+      problemKey: 'offline_guides.connection.problem_adapter_not_detected',
+      solutions: [
+        'offline_guides.connection.solution_enable_ethernet_gem',
+        'offline_guides.connection.solution_check_vidpid',
+        'offline_guides.connection.solution_reboot_mib2',
+      ],
+    },
+    {
+      problemKey: 'offline_guides.connection.problem_no_ip',
+      solutions: [
+        'offline_guides.connection.solution_configure_static_ip',
+        'offline_guides.connection.solution_check_adapter_android',
+      ],
+    },
+    {
+      problemKey: 'offline_guides.connection.problem_ping_fails',
+      solutions: [
+        'offline_guides.connection.solution_check_same_subnet',
+        'offline_guides.connection.solution_check_cable',
+        'offline_guides.connection.solution_check_ignition',
+      ],
+    },
+    {
+      problemKey: 'offline_guides.connection.problem_telnet_refused',
+      solutions: [
+        'offline_guides.connection.solution_try_port_123',
+        'offline_guides.connection.solution_check_toolbox',
+        'offline_guides.connection.solution_check_firewall',
+      ],
+    },
+  ],
+  resources: [
+    {
+      titleKey: 'offline_guides.connection.resource_network_diagram',
+      descriptionKey: 'offline_guides.connection.resource_network_diagram_desc',
+    },
+    {
+      titleKey: 'offline_guides.connection.resource_ip_table',
+      descriptionKey: 'offline_guides.connection.resource_ip_table_desc',
+    },
+  ],
+};
+
 const EMBEDDED_FEC_GUIDE: GuideContent = {
   phases: [
     {
@@ -706,6 +880,14 @@ class OfflineGuidesService {
           id: 'fec_guide',
           titleKey: 'offline_guides.fec.title',
           content: EMBEDDED_FEC_GUIDE,
+          version: GUIDES_VERSION,
+          savedAt: now,
+          language: lang,
+        },
+        {
+          id: 'connection_guide',
+          titleKey: 'offline_guides.connection.title',
+          content: EMBEDDED_CONNECTION_GUIDE,
           version: GUIDES_VERSION,
           savedAt: now,
           language: lang,
