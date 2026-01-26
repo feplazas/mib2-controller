@@ -2932,3 +2932,14 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Generar AAB de producción (en progreso en EAS)
 - [x] Documentar requisitos de Play Console (PLAY_CONSOLE_GUIDE.md)
 - [x] Crear video promocional corto para Play Store
+
+## Preparación Play Console (26 Ene 2026)
+
+- [x] Limpieza de archivos innecesarios
+- [x] Verificar política de privacidad actualizada
+- [x] Verificar store listing completo
+- [x] Preparar respuestas cuestionario de contenido
+- [x] Verificar clasificación de edad correcta
+- [x] Verificar permisos declarados correctamente
+- [x] Preparar Data Safety Form
+- [x] Checklist final para review
