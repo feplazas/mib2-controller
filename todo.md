@@ -2943,3 +2943,5 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Verificar permisos declarados correctamente
 - [x] Preparar Data Safety Form
 - [x] Checklist final para review
+- [ ] Actualizar política de privacidad en GitHub
+- [x] Crear política de privacidad en inglés con justificación jurídica completa
