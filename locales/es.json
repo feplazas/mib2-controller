@@ -2214,6 +2214,31 @@
     "label_5": "Excelente",
     "already_rated": "Ya has calificado la app",
     "change_rating": "Cambiar calificación"
-
+  },
+  "tos": {
+    "title": "Términos de Servicio",
+    "subtitle": "Por favor lee cuidadosamente antes de usar la app",
+    "warning": "Esta app modifica hardware. Debes leer y aceptar estos términos para continuar.",
+    "scroll_to_continue": "Desplázate hacia abajo para leer todos los términos",
+    "accept": "Acepto",
+    "accepting": "Aceptando...",
+    "decline": "Rechazar",
+    "agreement": "AL HACER CLIC EN \"ACEPTO\", CONFIRMAS QUE HAS LEÍDO, COMPRENDIDO Y ACEPTAS ESTAR VINCULADO POR ESTOS TÉRMINOS DE SERVICIO Y ACEPTAS TODA LA RESPONSABILIDAD POR CUALQUIER MODIFICACIÓN REALIZADA USANDO ESTA APP.",
+    "acceptance_title": "Aceptación de Términos",
+    "acceptance_content": "Al descargar, instalar o usar MIB2 Controller, aceptas estar vinculado por estos Términos de Servicio. Si no estás de acuerdo, NO uses la App.",
+    "description_title": "Descripción del Servicio",
+    "description_content": "MIB2 Controller es una herramienta de código abierto para configurar adaptadores USB-Ethernet (modificación VID/PID), conectar a unidades MIB2 vía Telnet, generar códigos FEC y crear respaldos de EEPROM.",
+    "right_to_repair_title": "Derecho a Reparar y Base Legal",
+    "right_to_repair_content": "Esta App opera bajo la doctrina del Derecho a Reparar, respaldada por la Ley Magnuson-Moss (EE.UU.), Directiva UE 2019/771 y Exenciones DMCA Sección 1201. Debes ser propietario o tener autorización para modificar cualquier hardware que uses con esta App.",
+    "risks_title": "Riesgos y Advertencias",
+    "risks_content": "Las modificaciones de EEPROM conllevan riesgos inherentes incluyendo BLOQUEO PERMANENTE (daño irreversible), pérdida de datos, problemas de garantía y compatibilidad. Debes ser mayor de 18 años y tener conocimientos técnicos. ASUMES TODA LA RESPONSABILIDAD por cualquier daño o consecuencia.",
+    "prohibited_title": "Usos Prohibidos",
+    "prohibited_content": "Aceptas NO: modificar equipos que no te pertenecen, evadir seguridad con fines ilegales, modificar sistemas críticos de seguridad (airbags, frenos), violar leyes aplicables, o redistribuir con fines de lucro.",
+    "disclaimer_title": "Descargo de Garantías",
+    "disclaimer_content": "LA APP SE PROPORCIONA \"TAL CUAL\" SIN GARANTÍAS DE NINGÚN TIPO. No garantizamos que la App funcione con tu hardware específico, que las modificaciones tengan éxito, o que tu hardware no sufra daños.",
+    "liability_title": "Limitación de Responsabilidad",
+    "liability_content": "Los desarrolladores NO SERÁN RESPONSABLES por ningún daño directo, indirecto o consecuente incluyendo daños al hardware, pérdida de datos, costos de reparación o lucro cesante. La responsabilidad máxima es CERO (la app es gratuita).",
+    "indemnification_title": "Indemnización",
+    "indemnification_content": "Aceptas INDEMNIZAR Y MANTENER INDEMNES a los desarrolladores de cualquier reclamación, daño, pérdida o gasto derivado de tu uso de la App, violación de estos Términos o modificaciones que realices."
   }
 }

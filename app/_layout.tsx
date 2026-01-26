@@ -26,6 +26,8 @@ import { initManusRuntime, subscribeSafeAreaInsets } from "@/lib/_core/manus-run
 // NotificationService se importa solo donde se necesita (operaciones de spoofing/recovery)
 import { OnboardingModal } from "@/components/onboarding-modal";
 import { useOnboarding } from "@/hooks/use-onboarding";
+import { hasTOSBeenAccepted } from "@/app/terms-of-service";
+import { router } from "expo-router";
 
 const DEFAULT_WEB_INSETS: EdgeInsets = { top: 0, right: 0, bottom: 0, left: 0 };
 const DEFAULT_WEB_FRAME: Rect = { x: 0, y: 0, width: 0, height: 0 };
@@ -59,12 +61,30 @@ function RootLayoutInner() {
   
   // Onboarding state
   const { isFirstLaunch, isLoading, completeOnboarding } = useOnboarding();
+  
+  // TOS state
+  const [tosAccepted, setTosAccepted] = useState<boolean | null>(null);
+  const [tosChecked, setTosChecked] = useState(false);
 
   // Initialize Manus runtime for cookie injection from parent container
   useEffect(() => {
     initManusRuntime();
     // Nota: Permisos de notificaciones se solicitan manualmente desde Settings
     // para evitar solicitudes intrusivas al inicio
+  }, []);
+  
+  // Check TOS acceptance on mount
+  useEffect(() => {
+    const checkTOS = async () => {
+      const accepted = await hasTOSBeenAccepted();
+      setTosAccepted(accepted);
+      setTosChecked(true);
+      if (!accepted) {
+        // Navigate to TOS screen if not accepted
+        router.replace("/terms-of-service");
+      }
+    };
+    checkTOS();
   }, []);
 
   const handleSafeAreaUpdate = useCallback((metrics: Metrics) => {

@@ -2954,3 +2954,4 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Hacer USB Host más conservador y específico (solo ASIX)
 - [x] Reforzar disclaimers en pantallas sensibles
 - [x] Mejorar metadatos del proyecto (nombre/versión/descripción)
+- [x] Crear pantalla de Términos de Servicio obligatoria en primer inicio

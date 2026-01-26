@@ -2214,5 +2214,31 @@
     "label_5": "Ausgezeichnet",
     "already_rated": "Sie haben die App bereits bewertet",
     "change_rating": "Bewertung ändern"
+  },
+  "tos": {
+    "title": "Nutzungsbedingungen",
+    "subtitle": "Bitte lesen Sie sorgfältig vor der Nutzung der App",
+    "warning": "Diese App modifiziert Hardware. Sie müssen diese Bedingungen lesen und akzeptieren, um fortzufahren.",
+    "scroll_to_continue": "Scrollen Sie nach unten, um alle Bedingungen zu lesen",
+    "accept": "Ich akzeptiere",
+    "accepting": "Akzeptiere...",
+    "decline": "Ablehnen",
+    "agreement": "DURCH KLICKEN AUF \"ICH AKZEPTIERE\" BESTÄTIGEN SIE, DASS SIE DIESE NUTZUNGSBEDINGUNGEN GELESEN UND VERSTANDEN HABEN UND DIE VOLLE VERANTWORTUNG FÜR ALLE MIT DIESER APP VORGENOMMENEN ÄNDERUNGEN ÜBERNEHMEN.",
+    "acceptance_title": "Annahme der Bedingungen",
+    "acceptance_content": "Durch das Herunterladen, Installieren oder Verwenden von MIB2 Controller stimmen Sie diesen Nutzungsbedingungen zu. Wenn Sie nicht einverstanden sind, verwenden Sie die App NICHT.",
+    "description_title": "Beschreibung des Dienstes",
+    "description_content": "MIB2 Controller ist ein Open-Source-Tool zur Konfiguration von USB-Ethernet-Adaptern (VID/PID-Modifikation), Verbindung zu MIB2-Einheiten über Telnet, Generierung von FEC-Codes und Erstellung von EEPROM-Backups.",
+    "right_to_repair_title": "Recht auf Reparatur & Rechtsgrundlage",
+    "right_to_repair_content": "Diese App operiert unter der Doktrin des Rechts auf Reparatur, unterstützt durch den Magnuson-Moss Warranty Act (USA), EU-Richtlinie 2019/771 und DMCA Section 1201 Ausnahmen. Sie müssen Eigentümer sein oder die Berechtigung haben, jede Hardware zu modifizieren, die Sie mit dieser App verwenden.",
+    "risks_title": "Risiken und Warnungen",
+    "risks_content": "EEPROM-Modifikationen bergen inhärente Risiken einschließlich BRICKING (dauerhafter Schaden), Datenverlust, Garantieprobleme und Kompatibilitätsprobleme. Sie müssen 18+ Jahre alt sein und technisches Wissen haben. SIE ÜBERNEHMEN DIE VOLLE VERANTWORTUNG für alle Schäden oder Folgen.",
+    "prohibited_title": "Verbotene Nutzungen",
+    "prohibited_content": "Sie stimmen zu, NICHT: Geräte zu modifizieren, die Ihnen nicht gehören, Sicherheit für illegale Zwecke zu umgehen, sicherheitskritische Systeme (Airbags, Bremsen) zu modifizieren, geltende Gesetze zu verletzen oder gewinnbringend weiterzuverteilen.",
+    "disclaimer_title": "Haftungsausschluss",
+    "disclaimer_content": "DIE APP WIRD \"WIE BESEHEN\" OHNE JEGLICHE GARANTIEN BEREITGESTELLT. Wir garantieren nicht, dass die App mit Ihrer spezifischen Hardware funktioniert, dass Modifikationen erfolgreich sind oder dass Ihre Hardware nicht beschädigt wird.",
+    "liability_title": "Haftungsbeschränkung",
+    "liability_content": "Die Entwickler HAFTEN NICHT für direkte, indirekte oder Folgeschäden einschließlich Hardwareschäden, Datenverlust, Reparaturkosten oder entgangenen Gewinn. Die maximale Haftung ist NULL (die App ist kostenlos).",
+    "indemnification_title": "Freistellung",
+    "indemnification_content": "Sie stimmen zu, die Entwickler von allen Ansprüchen, Schäden, Verlusten oder Kosten FREIZUSTELLEN, die sich aus Ihrer Nutzung der App, Verletzung dieser Bedingungen oder von Ihnen vorgenommenen Modifikationen ergeben."
   }
 }

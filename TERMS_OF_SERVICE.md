@@ -1,138 +1,155 @@
-# Términos de Servicio - MIB2 Controller
+# Terms of Service - MIB2 Controller
 
-**Última actualización:** 13 de enero de 2026
+**Last Updated:** January 26, 2026
+**Version:** 1.1
 
-## 1. Aceptación de los Términos
+## 1. Acceptance of Terms
 
-Al descargar, instalar o utilizar MIB2 Controller ("la Aplicación"), aceptas estar sujeto a estos Términos de Servicio. Si no estás de acuerdo con estos términos, NO utilices la Aplicación.
+By downloading, installing, or using MIB2 Controller ("the App"), you agree to be bound by these Terms of Service. If you do not agree to these terms, DO NOT use the App.
 
-## 2. Descripción del Servicio
+## 2. Description of Service
 
-MIB2 Controller es una herramienta técnica de código abierto diseñada para:
-- Conectarse a unidades de infoentretenimiento MIB2 vía Telnet
-- Detectar y gestionar MIB2 Toolbox
-- Generar códigos FEC (Feature Enabling Codes)
-- Realizar backups de archivos críticos del sistema MIB2
-- Modificar configuraciones del sistema MIB2
+MIB2 Controller is an open-source technical tool designed to:
+- Configure USB-Ethernet adapters (VID/PID modification) for MIB2 compatibility
+- Connect to MIB2 infotainment units via Telnet protocol
+- Detect and manage MIB2 Toolbox installations
+- Generate FEC codes (Feature Enabling Codes)
+- Create and restore EEPROM backups
+- Modify MIB2 system configurations
 
-## 3. Uso Bajo Riesgo Propio
+## 3. Right to Repair & Legal Basis
 
-### 3.1 Riesgo de Bricking
-La modificación del sistema MIB2 puede resultar en el **"bricking"** (inutilización permanente) de la unidad. **TÚ ASUMES TODA LA RESPONSABILIDAD** por cualquier daño causado.
+### 3.1 Right to Repair Doctrine
+This App operates under the Right to Repair doctrine, which is legally supported by:
+- **Magnuson-Moss Warranty Act (USA)**: Manufacturers cannot void warranties solely for using third-party tools
+- **EU Directive 2019/771**: Consumers have the right to repair their own goods
+- **DMCA Section 1201 Exemptions**: Circumvention for repair purposes is permitted
 
-### 3.2 Pérdida de Garantía
-El uso de esta Aplicación puede **ANULAR LA GARANTÍA** de tu vehículo Volkswagen Group.
+### 3.2 Legitimate Use Cases
+This App is designed for:
+- Diagnostic purposes on equipment you own
+- Repair and restoration of functionality
+- Configuration of aftermarket accessories
+- Educational and research purposes
 
-### 3.3 Violación de Términos del Fabricante
-La modificación no autorizada de sistemas electrónicos del vehículo puede violar los términos de servicio del fabricante.
+### 3.3 Ownership Requirement
+You represent and warrant that you own or have legal authorization to modify any hardware you use with this App.
 
-## 4. Requisitos del Usuario
+## 4. Risks and Warnings
 
-### 4.1 Conocimientos Técnicos
-Esta Aplicación está diseñada para usuarios con conocimientos técnicos avanzados. Debes comprender:
-- Protocolos de red (TCP/IP, Telnet)
-- Sistemas Linux embebidos
-- Riesgos de modificación de firmware
+### 4.1 Hardware Modification Risks
+EEPROM and system modifications carry inherent risks:
+- **Bricking**: Rendering USB adapters or MIB2 units permanently unusable
+- **Data Loss**: Loss of original configuration or user data
+- **Warranty Concerns**: Modifications may affect manufacturer warranties
+- **Compatibility Issues**: Modified hardware may not work as expected
 
-### 4.2 Edad Mínima
-Debes ser mayor de 18 años para utilizar esta Aplicación.
+### 4.2 User Requirements
+- You must be at least 18 years old
+- You must have technical knowledge of network protocols and embedded systems
+- You must understand and accept all risks before proceeding
 
-### 4.3 Cumplimiento Legal
-Eres responsable de cumplir con todas las leyes locales, estatales y nacionales aplicables a la modificación de sistemas electrónicos de vehículos.
+### 4.3 YOU ASSUME ALL RESPONSIBILITY
+You assume full responsibility for any damage, loss, or consequences resulting from your use of this App.
 
-## 5. Limitaciones de Uso
+## 5. Prohibited Uses
 
-### 5.1 Uso Personal No Comercial
-La Aplicación se proporciona para uso personal y educativo. **NO está permitido:**
-- Uso comercial sin autorización
-- Reventa o redistribución con fines de lucro
-- Ofrecer servicios de modificación de MIB2 como negocio
+You agree NOT to use this App to:
+- Modify equipment you do not own or have authorization to modify
+- Circumvent security measures for illegal purposes
+- Modify safety-critical vehicle systems (airbags, brakes, steering)
+- Engage in any activity that violates applicable laws
+- Offer commercial modification services without proper licensing
+- Redistribute the App for profit without authorization
 
-### 5.2 Prohibiciones
-NO está permitido:
-- Usar la Aplicación para actividades ilegales
-- Intentar eludir sistemas de seguridad del vehículo
-- Modificar sistemas críticos de seguridad (airbags, frenos, etc.)
+## 6. Intellectual Property
 
-## 6. Propiedad Intelectual
+### 6.1 Open Source License
+MIB2 Controller is open-source software distributed under the MIT License.
 
-### 6.1 Licencia de Código Abierto
-MIB2 Controller es software de código abierto distribuido bajo licencia MIT (o la licencia especificada en el repositorio).
+### 6.2 Trademarks
+"MIB2", "Volkswagen", "Audi", "SEAT", "Škoda", "CarPlay", "Android Auto" and other mentioned trademarks are property of their respective owners. This App is NOT affiliated with, endorsed by, or authorized by Volkswagen Group, Apple Inc., or Google LLC.
 
-### 6.2 Marcas Registradas
-"MIB2", "Volkswagen", "Audi", "SEAT", "Škoda" y otras marcas mencionadas son propiedad de sus respectivos dueños. Esta Aplicación NO está afiliada, respaldada ni autorizada por Volkswagen Group.
+### 6.3 Third-Party Components
+This App may include open-source components subject to their respective licenses.
 
-## 7. Descargo de Responsabilidad
+## 7. Disclaimer of Warranties
 
-### 7.1 "TAL CUAL"
-LA APLICACIÓN SE PROPORCIONA "TAL CUAL" Y "SEGÚN DISPONIBILIDAD", SIN GARANTÍAS DE NINGÚN TIPO, EXPRESAS O IMPLÍCITAS, INCLUYENDO PERO NO LIMITADO A:
-- Garantías de comerciabilidad
-- Idoneidad para un propósito particular
-- No infracción
-- Funcionamiento ininterrumpido o libre de errores
+THE APP IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO:
+- Warranties of merchantability
+- Fitness for a particular purpose
+- Non-infringement
+- Uninterrupted or error-free operation
 
-### 7.2 Sin Garantía de Resultados
-NO garantizamos que:
-- La Aplicación funcione con tu unidad MIB2 específica
-- Las modificaciones sean exitosas
-- Los backups sean recuperables
-- La unidad MIB2 no sufra daños
+WE DO NOT GUARANTEE THAT:
+- The App will work with your specific MIB2 unit or USB adapter
+- Modifications will be successful
+- Backups will be recoverable
+- Your hardware will not be damaged
 
-## 8. Limitación de Responsabilidad
+## 8. Limitation of Liability
 
-EN LA MÁXIMA MEDIDA PERMITIDA POR LA LEY, LOS DESARROLLADORES DE MIB2 CONTROLLER **NO SERÁN RESPONSABLES** POR:
+TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE DEVELOPERS OF MIB2 CONTROLLER SHALL NOT BE LIABLE FOR:
 
-### 8.1 Daños Directos
-- Daños a la unidad MIB2
-- Pérdida de funcionalidad del vehículo
-- Costos de reparación o reemplazo
+### 8.1 Direct Damages
+- Damage to MIB2 units or USB adapters
+- Loss of vehicle functionality
+- Repair or replacement costs
 
-### 8.2 Daños Indirectos
-- Pérdida de datos
-- Pérdida de tiempo
-- Lucro cesante
-- Daños consecuenciales o incidentales
+### 8.2 Indirect Damages
+- Data loss
+- Lost time or productivity
+- Lost profits
+- Consequential or incidental damages
 
-### 8.3 Límite Máximo
-En ningún caso la responsabilidad total excederá el monto pagado por la Aplicación (que es CERO, ya que es gratuita).
+### 8.3 Maximum Liability
+In no event shall total liability exceed the amount paid for the App (which is ZERO, as it is free).
 
-## 9. Indemnización
+## 9. Indemnification
 
-Aceptas **INDEMNIZAR Y EXIMIR** a los desarrolladores de MIB2 Controller de cualquier reclamo, daño, pérdida, responsabilidad, costo o gasto (incluyendo honorarios legales) que surja de:
-- Tu uso de la Aplicación
-- Tu violación de estos Términos
-- Tu violación de derechos de terceros
+You agree to INDEMNIFY AND HOLD HARMLESS the developers of MIB2 Controller from any claims, damages, losses, liabilities, costs, or expenses (including legal fees) arising from:
+- Your use of the App
+- Your violation of these Terms
+- Your violation of third-party rights
+- Any modifications you make using the App
 
-## 10. Modificaciones del Servicio
+## 10. Modifications to Service and Terms
 
-Nos reservamos el derecho de:
-- Modificar o discontinuar la Aplicación en cualquier momento
-- Cambiar estos Términos de Servicio sin previo aviso
-- Actualizar la Aplicación con nuevas funcionalidades o correcciones
+We reserve the right to:
+- Modify or discontinue the App at any time
+- Change these Terms of Service with notice through app updates
+- Update the App with new features or corrections
 
-## 11. Terminación
+## 11. Termination
 
-Podemos terminar o suspender tu acceso a la Aplicación inmediatamente, sin previo aviso, por cualquier motivo, incluyendo violación de estos Términos.
+We may terminate or suspend your access to the App immediately, without prior notice, for any reason, including violation of these Terms.
 
-## 12. Ley Aplicable
+## 12. Governing Law
 
-Estos Términos se rigen por las leyes de [TU_PAÍS/REGIÓN], sin consideración a conflictos de principios legales.
+These Terms shall be governed by and construed in accordance with the laws of the jurisdiction in which the developer resides, without regard to conflict of law principles.
 
-## 13. Separabilidad
+## 13. Severability
 
-Si alguna disposición de estos Términos se considera inválida o inaplicable, las disposiciones restantes permanecerán en pleno vigor y efecto.
+If any provision of these Terms is found to be invalid or unenforceable, the remaining provisions shall remain in full force and effect.
 
-## 14. Acuerdo Completo
+## 14. Entire Agreement
 
-Estos Términos constituyen el acuerdo completo entre tú y los desarrolladores de MIB2 Controller con respecto al uso de la Aplicación.
+These Terms constitute the entire agreement between you and the developers of MIB2 Controller regarding the use of the App.
 
-## 15. Contacto
+## 15. Privacy
 
-Para preguntas sobre estos Términos, contacta a:
+Your use of the App is also governed by our Privacy Policy:
+https://github.com/feplazas/mib2-controller/blob/main/PRIVACY.md
 
-**Email:** [TU_EMAIL]  
-**Proyecto:** https://github.com/[TU_USUARIO]/mib2-controller
+## 16. Contact
+
+For questions about these Terms:
+
+**Email:** feplazas@gmail.com  
+**GitHub:** https://github.com/feplazas/mib2-controller/issues
 
 ---
 
-**ADVERTENCIA FINAL:** Al usar MIB2 Controller, reconoces que comprendes los riesgos y aceptas toda la responsabilidad por cualquier consecuencia. Si no estás dispuesto a asumir estos riesgos, NO uses la Aplicación.
+**FINAL WARNING:** By using MIB2 Controller, you acknowledge that you understand the risks and accept full responsibility for any consequences. If you are not willing to assume these risks, DO NOT use the App.
+
+**BY CLICKING "I ACCEPT" OR USING THIS APP, YOU CONFIRM THAT YOU HAVE READ, UNDERSTOOD, AND AGREE TO BE BOUND BY THESE TERMS OF SERVICE.**

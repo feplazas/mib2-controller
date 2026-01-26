@@ -2215,5 +2215,31 @@
     "label_5": "Excellent",
     "already_rated": "You have already rated the app",
     "change_rating": "Change rating"
+  },
+  "tos": {
+    "title": "Terms of Service",
+    "subtitle": "Please read carefully before using the app",
+    "warning": "This app modifies hardware. You must read and accept these terms to continue.",
+    "scroll_to_continue": "Scroll down to read all terms",
+    "accept": "I Accept",
+    "accepting": "Accepting...",
+    "decline": "Decline",
+    "agreement": "BY CLICKING \"I ACCEPT\", YOU CONFIRM THAT YOU HAVE READ, UNDERSTOOD, AND AGREE TO BE BOUND BY THESE TERMS OF SERVICE AND ACCEPT FULL RESPONSIBILITY FOR ANY MODIFICATIONS MADE USING THIS APP.",
+    "acceptance_title": "Acceptance of Terms",
+    "acceptance_content": "By downloading, installing, or using MIB2 Controller, you agree to be bound by these Terms of Service. If you do not agree, DO NOT use the App.",
+    "description_title": "Description of Service",
+    "description_content": "MIB2 Controller is an open-source tool for configuring USB-Ethernet adapters (VID/PID modification), connecting to MIB2 units via Telnet, generating FEC codes, and creating EEPROM backups.",
+    "right_to_repair_title": "Right to Repair & Legal Basis",
+    "right_to_repair_content": "This App operates under the Right to Repair doctrine, supported by the Magnuson-Moss Warranty Act (USA), EU Directive 2019/771, and DMCA Section 1201 Exemptions. You must own or have authorization to modify any hardware you use with this App.",
+    "risks_title": "Risks and Warnings",
+    "risks_content": "EEPROM modifications carry inherent risks including BRICKING (permanent damage), data loss, warranty concerns, and compatibility issues. You must be 18+ years old and have technical knowledge. YOU ASSUME ALL RESPONSIBILITY for any damage or consequences.",
+    "prohibited_title": "Prohibited Uses",
+    "prohibited_content": "You agree NOT to: modify equipment you don't own, circumvent security for illegal purposes, modify safety-critical systems (airbags, brakes), violate applicable laws, or redistribute for profit.",
+    "disclaimer_title": "Disclaimer of Warranties",
+    "disclaimer_content": "THE APP IS PROVIDED \"AS IS\" WITHOUT WARRANTIES OF ANY KIND. We do not guarantee the App will work with your specific hardware, modifications will succeed, or your hardware won't be damaged.",
+    "liability_title": "Limitation of Liability",
+    "liability_content": "The developers SHALL NOT BE LIABLE for any direct, indirect, or consequential damages including hardware damage, data loss, repair costs, or lost profits. Maximum liability is ZERO (the app is free).",
+    "indemnification_title": "Indemnification",
+    "indemnification_content": "You agree to INDEMNIFY AND HOLD HARMLESS the developers from any claims, damages, losses, or expenses arising from your use of the App, violation of these Terms, or modifications you make."
   }
 }
