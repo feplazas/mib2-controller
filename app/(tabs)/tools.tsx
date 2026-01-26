@@ -33,6 +33,15 @@ export default function ToolsScreen() {
   
   const tools: ToolItem[] = [
     {
+      id: 'network-scanner',
+      icon: 'antenna.radiowaves.left.and.right',
+      titleKey: 'tools.network_scanner',
+      descriptionKey: 'tools.network_scanner_desc',
+      route: '/(tabs)/network-scanner',
+      color: '#007AFF', // iOS Blue
+      riskLevel: 'safe',
+    },
+    {
       id: 'auto-spoof',
       icon: 'bolt.fill',
       titleKey: 'tools.auto_spoof',

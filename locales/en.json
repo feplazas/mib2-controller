@@ -369,6 +369,8 @@
   "tools": {
     "title": "Tools",
     "subtitle": "Modification operations",
+    "network_scanner": "Network Scanner",
+    "network_scanner_desc": "Verify MIB2 connectivity",
     "auto_spoof": "Auto-Spoof",
     "auto_spoof_desc": "Modify USB adapter VID/PID",
     "fec_generator": "FEC Generator",
@@ -481,6 +483,28 @@
     "usb_desc": "Connected adapter information",
     "telnet_title": "Telnet Terminal",
     "telnet_desc": "Interactive MIB2 console"
+  },
+  "network_scanner": {
+    "title": "Network Scanner",
+    "subtitle": "Verify connectivity with MIB2",
+    "target_ip": "Target IP",
+    "pinging": "Pinging...",
+    "scan_ports": "Scan Ports",
+    "find_mib2": "Find MIB2 on Network",
+    "status_open": "Open",
+    "status_closed": "Closed",
+    "status_timeout": "Timeout",
+    "host_reachable": "Host Reachable",
+    "host_unreachable": "Host Unreachable",
+    "response_time": "Response time",
+    "scan_results": "Scan Results",
+    "tips_title": "Connection Tips",
+    "tip_1": "Typical MIB2 IP: 192.168.1.4",
+    "tip_2": "Telnet ports: 23 or 123",
+    "tip_3": "Verify Ethernet is enabled in GEM",
+    "tip_4": "Configure static IP on Android: 192.168.1.10",
+    "logs": "Logs",
+    "no_logs": "No recent activity"
   },
   "scanner": {
     "title": "Network Scanner",

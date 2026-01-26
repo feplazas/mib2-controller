@@ -367,6 +367,8 @@
   "tools": {
     "title": "Herramientas",
     "subtitle": "Operaciones de modificación",
+    "network_scanner": "Escáner de Red",
+    "network_scanner_desc": "Verificar conectividad con MIB2",
     "auto_spoof": "Auto-Spoof",
     "auto_spoof_desc": "Modificar VID/PID del adaptador USB",
     "fec_generator": "Generador FEC",
@@ -479,6 +481,28 @@
     "usb_desc": "Información del adaptador conectado",
     "telnet_title": "Terminal Telnet",
     "telnet_desc": "Consola interactiva MIB2"
+  },
+  "network_scanner": {
+    "title": "Escáner de Red",
+    "subtitle": "Verificar conectividad con MIB2",
+    "target_ip": "IP de destino",
+    "pinging": "Probando...",
+    "scan_ports": "Escanear Puertos",
+    "find_mib2": "Buscar MIB2 en Red",
+    "status_open": "Abierto",
+    "status_closed": "Cerrado",
+    "status_timeout": "Timeout",
+    "host_reachable": "Host Alcanzable",
+    "host_unreachable": "Host No Alcanzable",
+    "response_time": "Tiempo de respuesta",
+    "scan_results": "Resultados del Escaneo",
+    "tips_title": "Consejos de Conexión",
+    "tip_1": "IP típica de MIB2: 192.168.1.4",
+    "tip_2": "Puertos Telnet: 23 o 123",
+    "tip_3": "Verifica que Ethernet esté habilitado en GEM",
+    "tip_4": "Configura IP estática en Android: 192.168.1.10",
+    "logs": "Logs",
+    "no_logs": "Sin actividad reciente"
   },
   "scanner": {
     "title": "Escáner de Red",
