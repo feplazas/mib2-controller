@@ -5,8 +5,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { SchemeColors, type ColorScheme } from "@/constants/theme";
 
-// Theme mode: 'system' follows device, 'light'/'dark' are manual overrides
-type ThemeMode = 'system' | 'light' | 'dark';
+// Theme mode: 'light'/'dark' are manual overrides (system removed)
+type ThemeMode = 'light' | 'dark';
 
 type ThemeContextValue = {
   colorScheme: ColorScheme;
@@ -32,7 +32,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   // Use the most reliable source - prefer Appearance API as it's more direct
   const systemScheme: ColorScheme = systemSchemeFromAppearance ?? systemSchemeFromHook ?? "light";
   
-  const [themeMode, setThemeModeState] = useState<ThemeMode>('system');
+  const [themeMode, setThemeModeState] = useState<ThemeMode>('dark');
   const [isLoaded, setIsLoaded] = useState(false);
   
   // Track if we've applied the initial scheme
@@ -40,11 +40,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   // Calculate actual color scheme based on mode
   const colorScheme: ColorScheme = useMemo(() => {
-    if (themeMode === 'system') {
-      return systemScheme;
-    }
     return themeMode;
-  }, [themeMode, systemScheme]);
+  }, [themeMode]);
 
   const applyScheme = useCallback((scheme: ColorScheme) => {
     console.log('[ThemeProvider] Applying scheme:', scheme);
@@ -67,7 +64,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       try {
         const savedMode = await AsyncStorage.getItem(THEME_STORAGE_KEY);
         console.log('[ThemeProvider] Loaded saved mode:', savedMode);
-        if (savedMode && ['system', 'light', 'dark'].includes(savedMode)) {
+        if (savedMode && ['light', 'dark'].includes(savedMode)) {
           setThemeModeState(savedMode as ThemeMode);
         }
       } catch (error) {
@@ -99,11 +96,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         setSystemSchemeFromAppearance(newScheme as ColorScheme);
       }
       
-      // Only apply if we're in system mode
-      if (themeMode === 'system' && newScheme) {
-        console.log('[ThemeProvider] Applying new system scheme:', newScheme);
-        applyScheme(newScheme as ColorScheme);
-      }
+      // System mode removed - no automatic theme switching
     });
 
     return () => {
@@ -117,13 +110,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     console.log('[ThemeProvider] Setting theme mode to:', mode);
     setThemeModeState(mode);
     
-    // If switching to system mode, immediately apply the current system scheme
-    if (mode === 'system') {
-      const currentSystemScheme = Appearance.getColorScheme() as ColorScheme ?? 'light';
-      console.log('[ThemeProvider] Switching to system mode, current system scheme:', currentSystemScheme);
-      setSystemSchemeFromAppearance(currentSystemScheme);
-      applyScheme(currentSystemScheme);
-    }
+    // Apply the selected theme immediately
+    applyScheme(mode);
     
     try {
       await AsyncStorage.setItem(THEME_STORAGE_KEY, mode);

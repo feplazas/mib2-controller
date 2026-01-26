@@ -200,7 +200,6 @@ export default function SettingsScreen() {
   };
 
   const getThemeLabel = () => {
-    if (themeMode === 'system') return t('settings.theme_system');
     if (themeMode === 'light') return t('settings.theme_light');
     return t('settings.theme_dark');
   };
@@ -321,7 +320,6 @@ export default function SettingsScreen() {
           <View className="mx-4 mt-3 bg-surface rounded-2xl p-4 border border-primary">
             <Text className="text-lg font-semibold text-foreground mb-3">{t('settings.select_theme') || 'Seleccionar Tema'}</Text>
             {[
-              { value: 'system' as const, label: t('settings.theme_system'), icon: '📱' },
               { value: 'light' as const, label: t('settings.theme_light'), icon: '☀️' },
               { value: 'dark' as const, label: t('settings.theme_dark'), icon: '🌙' },
             ].map((option) => (
@@ -562,18 +560,7 @@ export default function SettingsScreen() {
             <Text className="flex-1 text-base text-primary">{t('settings.view_terms')}</Text>
             <Text className="text-muted">›</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              router.push('/feedback');
-            }}
-            activeOpacity={0.8}
-            className="flex-row items-center px-4 py-3.5 border-b border-separator"
-          >
-            <Text className="text-xl mr-3">💬</Text>
-            <Text className="flex-1 text-base text-primary">{t('feedback.title')}</Text>
-            <Text className="text-muted">›</Text>
-          </TouchableOpacity>
+
           <TouchableOpacity
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);

@@ -59,15 +59,6 @@ export default function ActionsScreen() {
     },
     // Gestión
     {
-      id: 'recovery',
-      icon: 'arrow.counterclockwise',
-      titleKey: 'actions.recovery',
-      descriptionKey: 'actions.recovery_desc',
-      route: '/(tabs)/recovery',
-      color: '#FF9500', // iOS Orange
-      category: 'management',
-    },
-    {
       id: 'backups',
       icon: 'externaldrive.fill',
       titleKey: 'actions.backups',

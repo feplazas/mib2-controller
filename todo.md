@@ -2917,3 +2917,6 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 
 - [x] Quitar mensaje informativo (tooltip flotante) de EEPROM Backups que afecta legibilidad
 - [ ] Quitar contador (count) del título Available Backups
+- [x] Eliminar sección Feedback de Settings
+- [x] Quitar opción Automatic del selector de tema (dejar solo Light y Dark, Dark por defecto)
+- [x] Unificar Recovery y EEPROM Backups en una sola pantalla lógica

@@ -189,10 +189,7 @@ export default function TabLayout() {
         name="usb-status"
         options={{ href: null }}
       />
-      <Tabs.Screen
-        name="recovery"
-        options={{ href: null }}
-      />
+
       <Tabs.Screen
         name="diag"
         options={{ href: null }}

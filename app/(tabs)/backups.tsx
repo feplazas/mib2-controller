@@ -483,6 +483,14 @@ export default function BackupsScreen() {
           </View>
         )}
 
+        {/* Instrucciones de Recuperación */}
+        <AnimatedFadeIn direction="up" index={3} staggerDelay={80}>
+        <View style={styles.recoveryInstructions}>
+          <Text style={styles.recoveryTitle}>💡 {t('recovery.instructions_title')}</Text>
+          <Text style={styles.recoveryText}>{t('recovery.instructions_text')}</Text>
+        </View>
+        </AnimatedFadeIn>
+
         {/* Estadísticas */}
         {backups.length > 0 && (
           <View style={styles.statsBox}>
@@ -779,5 +787,24 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#ECEDEE',
     fontWeight: '500',
+  },
+  recoveryInstructions: {
+    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+    borderWidth: 1,
+    borderColor: '#F59E0B',
+    borderRadius: 12,
+    padding: 16,
+    marginTop: 16,
+  },
+  recoveryTitle: {
+    color: '#F59E0B',
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 12,
+  },
+  recoveryText: {
+    color: '#9BA1A6',
+    fontSize: 13,
+    lineHeight: 22,
   },
 });
