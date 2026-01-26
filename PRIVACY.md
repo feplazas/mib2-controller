@@ -1,303 +1,483 @@
-# Política de Privacidad - MIB2 USB Controller
+# Privacy Policy - MIB2 USB Controller
 
-**Última actualización:** 14 de enero de 2026  
-**Versión:** 3.0  
-**Desarrollador:** Felipe Plazas  
-**Contacto:** feplazas@gmail.com  
-**Sitio Web:** https://github.com/feplazas/mib2-controller
-
----
-
-## 1. Introducción
-
-**MIB2 USB Controller** (en adelante, "la Aplicación") es una herramienta técnica especializada diseñada para permitir la comunicación, diagnóstico y modificación de unidades de infoentretenimiento MIB2 Standard 2 del Volkswagen Group a través de conexiones USB-Ethernet y Telnet. Esta política de privacidad describe de manera exhaustiva cómo la Aplicación maneja, procesa y protege la información del usuario.
-
-Esta política se aplica a todas las versiones de MIB2 USB Controller distribuidas a través de Google Play Store. Al instalar y utilizar la Aplicación, el usuario acepta los términos establecidos en esta política de privacidad.
-
-**Compromiso fundamental:** MIB2 USB Controller está diseñada bajo el principio de **privacidad por diseño** (privacy by design). La Aplicación **NO recopila, almacena ni transmite datos personales identificables del usuario a servidores externos**. Toda la funcionalidad opera exclusivamente en el dispositivo del usuario y en su red local.
+**Last Updated:** January 26, 2026  
+**Version:** 3.1  
+**Developer:** Felipe Plazas  
+**Contact:** feplazas@gmail.com  
+**Website:** https://github.com/feplazas/mib2-controller
 
 ---
 
-## 2. Información que NO Recopilamos
+## 1. Introduction
 
-Para garantizar la máxima transparencia, aclaramos qué tipos de información la Aplicación **NO recopila, procesa ni transmite**:
+**MIB2 USB Controller** (hereinafter, "the Application") is a specialized technical tool designed to enable communication, diagnostics, and modification of MIB2 Standard 2 infotainment units from Volkswagen Group through USB-Ethernet and Telnet connections. This privacy policy comprehensively describes how the Application handles, processes, and protects user information.
 
-| Tipo de Información | Estado |
+This policy applies to all versions of MIB2 USB Controller distributed through Google Play Store. By installing and using the Application, the user accepts the terms established in this privacy policy.
+
+**Fundamental Commitment:** MIB2 USB Controller is designed under the principle of **privacy by design**. The Application **DOES NOT collect, store, or transmit personally identifiable user data to external servers**. All functionality operates exclusively on the user's device and local network.
+
+---
+
+## 2. Information We DO NOT Collect
+
+To ensure maximum transparency, we clarify what types of information the Application **DOES NOT collect, process, or transmit**:
+
+| Type of Information | Status |
 |---------------------|--------|
-| Datos de identificación personal (nombre, DNI, etc.) | ❌ NO recopilados |
-| Información de contacto (email, teléfono, dirección) | ❌ NO recopilados |
-| Datos de ubicación (GPS, ubicación aproximada) | ❌ NO recopilados |
-| Contactos y agenda telefónica | ❌ NO accedidos |
-| Archivos multimedia personales (fotos, videos) | ❌ NO accedidos |
-| Información financiera (tarjetas, cuentas bancarias) | ❌ NO recopilados |
-| Credenciales de autenticación (contraseñas, tokens) | ❌ NO almacenados externamente |
-| Identificadores de dispositivo (IMEI, Android ID) | ❌ NO recopilados |
-| Información del vehículo (VIN, matrícula) | ❌ NO transmitidos externamente |
-| Historial de navegación web | ❌ NO recopilados |
-| Lista de aplicaciones instaladas | ❌ NO recopilados |
-| Datos biométricos | ❌ NO recopilados |
+| Personal identification data (name, ID, etc.) | ❌ NOT collected |
+| Contact information (email, phone, address) | ❌ NOT collected |
+| Location data (GPS, approximate location) | ❌ NOT collected |
+| Contacts and phone book | ❌ NOT accessed |
+| Personal multimedia files (photos, videos) | ❌ NOT accessed |
+| Financial information (cards, bank accounts) | ❌ NOT collected |
+| Authentication credentials (passwords, tokens) | ❌ NOT stored externally |
+| Device identifiers (IMEI, Android ID) | ❌ NOT collected |
+| Vehicle information (VIN, license plate) | ❌ NOT transmitted externally |
+| Web browsing history | ❌ NOT collected |
+| List of installed applications | ❌ NOT collected |
+| Biometric data | ❌ NOT collected |
 
-**Servicios de terceros NO utilizados:** La Aplicación no integra ningún servicio de análisis (Google Analytics, Firebase Analytics), publicidad (AdMob), seguimiento de comportamiento, ni redes sociales. No existen SDKs de terceros que puedan recopilar datos en segundo plano.
-
----
-
-## 3. Datos Procesados Localmente
-
-La Aplicación almacena exclusivamente datos técnicos de configuración en el almacenamiento privado del dispositivo Android del usuario. Estos datos **nunca abandonan el dispositivo**.
-
-### 3.1 Configuración de Conexión
-
-Para permitir la reconexión rápida a unidades MIB2 previamente utilizadas, la Aplicación almacena localmente:
-
-- Dirección IP de la unidad MIB2 (ejemplo: 192.168.1.100)
-- Puerto Telnet (por defecto 23)
-- Historial de conexiones recientes (últimas 10 direcciones IP)
-- Timestamp de última conexión exitosa
-
-**Propósito:** Facilitar la reconexión sin requerir que el usuario reingrese manualmente la dirección IP en cada sesión.
-
-**Ubicación:** Almacenamiento privado de la app (`/data/data/[bundle_id]/shared_prefs/`)
-
-### 3.2 Información de Hardware USB
-
-Cuando se conecta un adaptador USB-Ethernet, la Aplicación detecta y almacena localmente:
-
-- Vendor ID (VID) y Product ID (PID) del adaptador USB
-- Tipo de EEPROM detectado (EEPROM modificable vs eFuse no modificable)
-- Dirección IP y máscara de subred del adaptador
-- Resultado de verificación de compatibilidad
-
-**Propósito:** Prevenir operaciones de spoofing en adaptadores con eFuse que podrían resultar en daño permanente del hardware (bricking).
-
-**Ubicación:** Almacenamiento privado de la app
-
-### 3.3 Backups de Seguridad
-
-Antes de realizar operaciones críticas de modificación de EEPROM, la Aplicación crea copias de seguridad locales:
-
-- Contenido original del EEPROM del adaptador USB
-- Checksum MD5 para verificación de integridad
-- Metadata del backup (fecha, hora, información del dispositivo)
-- Registro de operaciones realizadas
-
-**Propósito:** Permitir la restauración del adaptador a su estado original en caso de problemas.
-
-**Ubicación:** Almacenamiento privado de la app (`/data/data/[bundle_id]/files/backups/`)
-
-**Cifrado:** Todos los backups se cifran automáticamente con AES-256 usando claves almacenadas en hardware-backed secure storage (Android Keystore) en dispositivos compatibles.
-
-**Retención:** Los backups se conservan indefinidamente hasta que el usuario los elimine manualmente o desinstale la Aplicación.
-
-### 3.4 Preferencias de Usuario
-
-La Aplicación almacena preferencias de interfaz localmente:
-
-- Tema visual (claro, oscuro, automático)
-- Idioma seleccionado (español, inglés, alemán)
-- Estado de confirmaciones de seguridad
-- PIN de modo experto (almacenado cifrado en Secure Storage)
-
-**Propósito:** Mejorar la experiencia de usuario manteniendo consistencia entre sesiones.
-
-### 3.5 Logs de Diagnóstico
-
-Para facilitar la resolución de problemas, la Aplicación mantiene logs técnicos temporales:
-
-- Logs de conexión Telnet (últimas 100 líneas)
-- Logs de operaciones USB
-- Logs de errores para debugging
-
-**Retención:** Los logs se rotan automáticamente, manteniendo solo los últimos 7 días de actividad. El usuario puede eliminarlos manualmente en cualquier momento desde la pantalla de Diagnóstico.
-
-**Importante:** Los logs NO se transmiten automáticamente. Si el usuario desea compartirlos para soporte técnico, debe exportarlos manualmente.
+**Third-party services NOT used:** The Application does not integrate any analytics services (Google Analytics, Firebase Analytics), advertising (AdMob), behavior tracking, or social networks. There are no third-party SDKs that could collect data in the background.
 
 ---
 
-## 4. Permisos de Android Requeridos
+## 3. Data Processed Locally
 
-La Aplicación solicita los siguientes permisos del sistema Android con justificación técnica específica:
+The Application stores exclusively technical configuration data in the private storage of the user's Android device. This data **never leaves the device**.
+
+### 3.1 Connection Configuration
+
+To enable quick reconnection to previously used MIB2 units, the Application stores locally:
+
+- MIB2 unit IP address (example: 192.168.1.100)
+- Telnet port (default 23)
+- Recent connection history (last 10 IP addresses)
+- Timestamp of last successful connection
+
+**Purpose:** Facilitate reconnection without requiring the user to manually re-enter the IP address in each session.
+
+**Location:** App private storage (`/data/data/[bundle_id]/shared_prefs/`)
+
+### 3.2 USB Hardware Information
+
+When a USB-Ethernet adapter is connected, the Application detects and stores locally:
+
+- Vendor ID (VID) and Product ID (PID) of the USB adapter
+- Detected EEPROM type (modifiable EEPROM vs non-modifiable eFuse)
+- IP address and subnet mask of the adapter
+- Compatibility verification result
+
+**Purpose:** Prevent spoofing operations on adapters with eFuse that could result in permanent hardware damage (bricking).
+
+**Location:** App private storage
+
+### 3.3 Security Backups
+
+Before performing critical EEPROM modification operations, the Application creates local backups:
+
+- Original EEPROM content of the USB adapter
+- MD5 and SHA256 checksums for integrity verification
+- Backup metadata (date, time, device information)
+- Log of operations performed
+
+**Purpose:** Allow restoration of the adapter to its original state in case of problems.
+
+**Location:** App private storage (`/data/data/[bundle_id]/files/backups/`)
+
+**Encryption:** All backups are automatically encrypted with AES-256 using keys stored in hardware-backed secure storage (Android Keystore) on compatible devices.
+
+**Retention:** Backups are kept indefinitely until the user manually deletes them or uninstalls the Application.
+
+### 3.4 User Preferences
+
+The Application stores interface preferences locally:
+
+- Visual theme (light, dark)
+- Selected language (Spanish, English, German)
+- Security confirmation status
+- Expert mode PIN (stored encrypted in Secure Storage)
+
+**Purpose:** Improve user experience by maintaining consistency between sessions.
+
+### 3.5 Diagnostic Logs
+
+To facilitate troubleshooting, the Application maintains temporary technical logs:
+
+- Telnet connection logs (last 100 lines)
+- USB operation logs
+- Error logs for debugging
+
+**Retention:** Logs are automatically rotated, keeping only the last 7 days of activity. The user can delete them manually at any time from the Diagnostics screen.
+
+**Important:** Logs are NOT automatically transmitted. If the user wishes to share them for technical support, they must export them manually.
+
+---
+
+## 4. Required Android Permissions
+
+The Application requests the following Android system permissions with specific technical justification:
 
 ### 4.1 USB Host (`android.hardware.usb.host`)
 
-**Tipo:** Feature requerido (dispositivo debe soportar USB OTG)
+**Type:** Required feature (device must support USB OTG)
 
-**Justificación:** Comunicación directa con adaptadores USB-Ethernet para:
-- Detección automática de adaptadores ASIX (AX88772/A/B)
-- Lectura y escritura de EEPROM mediante control transfers USB
-- Verificación de tipo de memoria (EEPROM vs eFuse)
-- Creación de backups cifrados antes de modificaciones
+**Justification:** Direct communication with USB-Ethernet adapters for:
 
-**Alcance:** Solo se accede a adaptadores USB-Ethernet específicos. NO se accede a otros dispositivos USB conectados (teclados, ratones, almacenamiento externo).
+- Automatic detection of ASIX adapters (AX88772/A/B)
+- EEPROM reading and writing via USB control transfers
+- Memory type verification (EEPROM vs eFuse)
+- Creation of encrypted backups before modifications
+
+**Scope:** Only specific USB-Ethernet adapters are accessed. Other connected USB devices (keyboards, mice, external storage) are NOT accessed.
 
 ### 4.2 Internet (`android.permission.INTERNET`)
 
-**Tipo:** Permiso normal (otorgado automáticamente)
+**Type:** Normal permission (automatically granted)
 
-**Justificación:** Comunicación Telnet con unidades MIB2 a través de red local:
-- Establecer conexiones TCP en puerto 23 con unidades MIB2
-- Enviar comandos shell para diagnóstico y configuración
-- Transferencia de archivos entre dispositivo y unidad MIB2
+**Justification:** Telnet communication with MIB2 units through local network:
 
-**Alcance:** Las conexiones se limitan exclusivamente a dispositivos en la red local del usuario (rango 192.168.x.x, 10.x.x.x, 172.16-31.x.x). NO se realizan conexiones a servidores externos.
+- Establish TCP connections on port 23 with MIB2 units
+- Send shell commands for diagnostics and configuration
+- File transfer between device and MIB2 unit
 
-**Importante:** A pesar del nombre del permiso, la Aplicación NO accede a Internet. Solo se comunica con dispositivos en la red local del usuario a través del adaptador USB-Ethernet.
+**Scope:** Connections are limited exclusively to devices on the user's local network (range 192.168.x.x, 10.x.x.x, 172.16-31.x.x). NO connections are made to external servers.
+
+**Important:** Despite the permission name, the Application DOES NOT access the Internet. It only communicates with devices on the user's local network through the USB-Ethernet adapter.
 
 ### 4.3 Network State (`android.permission.ACCESS_NETWORK_STATE`)
 
-**Tipo:** Permiso normal (otorgado automáticamente)
+**Type:** Normal permission (automatically granted)
 
-**Justificación:** Detección automática de configuración de red:
-- Detectar dirección IP y máscara de subred del adaptador USB-Ethernet
-- Calcular rango de escaneo para detectar unidades MIB2
-- Validar conectividad antes de operaciones críticas
+**Justification:** Automatic detection of network configuration:
 
-**Alcance:** Solo se consulta información de red local. NO se accede a información de redes móviles, WiFi del usuario, ni ubicación basada en red.
+- Detect IP address and subnet mask of the USB-Ethernet adapter
+- Calculate scan range to detect MIB2 units
+- Validate connectivity before critical operations
 
----
-
-## 5. Seguridad de los Datos
-
-La Aplicación implementa las siguientes medidas de seguridad:
-
-**Cifrado en reposo:** Todos los backups de EEPROM se cifran con AES-256 usando Android Keystore (hardware-backed en dispositivos compatibles).
-
-**Cifrado en tránsito:** Las comunicaciones Telnet con unidades MIB2 se realizan en red local. El usuario debe ser consciente de que el protocolo Telnet **NO está cifrado** por diseño (limitación del firmware MIB2, no de la Aplicación).
-
-**Almacenamiento privado:** Todos los datos se almacenan en el directorio privado de la Aplicación, inaccesible para otras aplicaciones sin permisos root.
-
-**Validación de entrada:** Todos los comandos y datos ingresados por el usuario se validan antes de su ejecución para prevenir inyección de comandos.
-
-**Confirmaciones de seguridad:** Las operaciones críticas (escritura de EEPROM, comandos peligrosos) requieren confirmación explícita del usuario y están protegidas con PIN en modo experto.
+**Scope:** Only local network information is queried. User's mobile network, WiFi information, or network-based location are NOT accessed.
 
 ---
 
-## 6. Derechos del Usuario
+## 5. Data Security
 
-El usuario tiene los siguientes derechos sobre sus datos:
+The Application implements the following security measures:
 
-**Derecho de acceso:** El usuario puede acceder a todos los datos almacenados por la Aplicación navegando a la pantalla de Diagnóstico → Ver Datos Almacenados.
+### 5.1 Local Encryption
 
-**Derecho de rectificación:** El usuario puede modificar cualquier configuración almacenada (direcciones IP, preferencias, etc.) en cualquier momento.
+- **EEPROM Backups:** Encrypted with AES-256-GCM
+- **Expert Mode PIN:** Stored in Android Keystore (hardware-backed on compatible devices)
+- **Sensitive Preferences:** Encrypted using EncryptedSharedPreferences
 
-**Derecho de supresión:** El usuario puede eliminar todos los datos almacenados mediante:
-1. Opción "Borrar Todos los Datos" en la pantalla de Configuración
-2. Desinstalación de la Aplicación (elimina automáticamente todos los datos)
+### 5.2 Secure Communication
 
-**Derecho de portabilidad:** El usuario puede exportar sus backups de EEPROM y logs de diagnóstico en cualquier momento mediante la función "Exportar Datos" en la pantalla de Diagnóstico.
+- **Telnet:** Communication occurs exclusively on private local network (192.168.x.x)
+- **USB:** Direct communication without intermediaries
+- **No External Servers:** No data is transmitted outside the local network
 
-**Derecho de oposición:** El usuario puede desactivar funcionalidades específicas (detección USB automática, logs de diagnóstico) en la pantalla de Configuración.
+### 5.3 Access Protection
 
----
-
-## 7. Transferencia Internacional de Datos
-
-**NO APLICABLE:** La Aplicación NO transfiere datos a servidores externos ni a terceros en ninguna jurisdicción. Todos los datos permanecen en el dispositivo del usuario.
-
----
-
-## 8. Retención de Datos
-
-Los datos almacenados localmente se conservan indefinidamente hasta que el usuario los elimine manualmente o desinstale la Aplicación. No existe retención automática en servidores externos porque no se transmiten datos.
+- **Expert Mode:** Critical operations require PIN authentication
+- **Confirmation Dialogs:** Destructive operations require explicit confirmation
+- **eFuse Protection:** Automatic detection prevents operations on non-modifiable adapters
 
 ---
 
-## 9. Uso por Menores de Edad
+## 6. User Rights
 
-La Aplicación está diseñada para uso técnico avanzado y requiere conocimientos especializados de sistemas MIB2, Linux y redes. **NO está dirigida a menores de 18 años**.
+Users have the following rights regarding their data:
 
-Los padres o tutores legales son responsables de supervisar el uso de dispositivos por parte de menores. Si un menor utiliza la Aplicación, el padre o tutor asume toda la responsabilidad.
+### 6.1 Access
 
----
+Users can view all stored data through the Application interface:
+- Connection settings in Settings
+- Backups in EEPROM Backups section
+- Logs in Diagnostics section
 
-## 10. Cambios en esta Política de Privacidad
+### 6.2 Deletion
 
-Esta política de privacidad puede actualizarse ocasionalmente para reflejar cambios en la funcionalidad de la Aplicación o en la normativa aplicable. Los cambios significativos se notificarán mediante:
+Users can delete their data at any time:
+- **Individual Backups:** Delete from EEPROM Backups section
+- **All Data:** Uninstall the Application (automatically deletes all private storage)
+- **Logs:** Clear from Diagnostics section
 
-1. Actualización del campo "Última actualización" al inicio de este documento
-2. Incremento del número de versión
-3. Notificación in-app al abrir la Aplicación después de una actualización
+### 6.3 Portability
 
-El uso continuado de la Aplicación después de la publicación de cambios constituye la aceptación de la política actualizada.
+Users can export their data:
+- **Backups:** Export to device external storage
+- **Logs:** Export for technical support
 
----
+### 6.4 Rectification
 
-## 11. Cumplimiento Normativo
-
-Esta Aplicación cumple con las siguientes normativas de protección de datos:
-
-**GDPR (Reglamento General de Protección de Datos de la UE):** Aunque la Aplicación NO procesa datos personales según la definición del GDPR, se han implementado principios de privacidad por diseño y por defecto.
-
-**CCPA (California Consumer Privacy Act):** La Aplicación NO vende datos personales ni comparte información con terceros con fines publicitarios.
-
-**LOPDGDD (Ley Orgánica de Protección de Datos y Garantía de los Derechos Digitales de España):** La Aplicación cumple con los principios de transparencia, limitación de finalidad y minimización de datos.
+Users can modify their preferences at any time through the Settings section.
 
 ---
 
-## 12. Limitación de Responsabilidad
+## 7. Children's Privacy
 
-**IMPORTANTE:** Esta Aplicación permite realizar modificaciones de bajo nivel en hardware (adaptadores USB-Ethernet) y firmware (unidades MIB2). El uso incorrecto puede resultar en:
+MIB2 USB Controller is NOT designed for use by children under 13 years of age. The Application:
 
-- Daño permanente ("bricking") de adaptadores USB-Ethernet
-- Pérdida de funcionalidad de la unidad MIB2
-- Anulación de la garantía del vehículo
-- Violación de términos de servicio del fabricante
-
-**El usuario asume toda la responsabilidad por el uso de esta herramienta.** El desarrollador NO se hace responsable de daños directos, indirectos, incidentales o consecuentes derivados del uso de la Aplicación.
-
-La Aplicación incluye múltiples advertencias de seguridad, confirmaciones dobles para operaciones críticas, y sistema de backups automáticos, pero **ninguna medida de seguridad puede prevenir completamente el error humano o problemas de hardware**.
+- Does not collect personal information from any user
+- Does not contain advertising or in-app purchases
+- Does not include social features or user-generated content
+- Is designed exclusively for adult vehicle owners
 
 ---
 
-## 13. Contacto
+## 8. Policy Changes
 
-Para preguntas, solicitudes de ejercicio de derechos, o reportar problemas relacionados con la privacidad:
+We reserve the right to update this privacy policy. Changes will be notified through:
 
-**Desarrollador:** Felipe Plazas  
-**Email:** feplazas@gmail.com  
-**GitHub:** https://github.com/feplazas/mib2-controller  
-**Tiempo de respuesta:** Máximo 30 días hábiles
+- Update of the "Last Updated" date at the beginning of this document
+- Notification within the Application (for significant changes)
+- Publication in the GitHub repository
 
----
-
-## 14. Autoridad de Supervisión
-
-Los usuarios de la Unión Europea tienen derecho a presentar una reclamación ante la autoridad de supervisión de protección de datos de su país si consideran que el procesamiento de sus datos personales infringe el GDPR.
-
-**España - Agencia Española de Protección de Datos (AEPD):**
-- Sitio web: https://www.aepd.es
-- Teléfono: +34 901 100 099
-- Dirección: C/ Jorge Juan, 6, 28001 Madrid, España
-
-Para usuarios en otras jurisdicciones, consultar la autoridad de protección de datos local correspondiente.
+We recommend periodically reviewing this policy.
 
 ---
 
-## 15. Resumen Ejecutivo
+## 9. Contact
 
-Para facilitar la comprensión rápida de esta política, se proporciona el siguiente resumen:
+For questions, concerns, or requests related to this privacy policy:
 
-| Aspecto | Resumen |
-|---------|---------|
-| **Recopilación de datos personales** | ❌ NO se recopilan |
-| **Almacenamiento de datos** | ✅ Solo datos técnicos locales |
-| **Transmisión a servidores externos** | ❌ NO se transmiten datos |
-| **Servicios de terceros** | ❌ NO se utilizan |
-| **Cifrado** | ✅ AES-256 para backups locales |
-| **Derechos del usuario** | ✅ Acceso, rectificación, supresión garantizados |
-| **Cumplimiento normativo** | ✅ GDPR, CCPA, LOPDGDD |
-| **Edad mínima** | 🔞 Mayores de 18 años |
-| **Cookies y seguimiento** | ❌ NO se utilizan |
-
-**Mensaje principal:** MIB2 USB Controller respeta tu privacidad. NO recopilamos datos personales. Toda la información se almacena localmente en tu dispositivo. Las conexiones con la unidad MIB2 son directas y locales. Usas la Aplicación bajo tu propio riesgo y responsabilidad.
+- **Email:** feplazas@gmail.com
+- **GitHub Issues:** https://github.com/feplazas/mib2-controller/issues
 
 ---
 
-**Fecha de entrada en vigor:** 14 de enero de 2026  
-**Versión del documento:** 3.0  
-**Última revisión:** 14 de enero de 2026
+# Legal Analysis: Legality of MIB2 USB Controller
+
+## 10. Executive Summary
+
+MIB2 USB Controller is a **legal diagnostic and configuration tool** that operates within established legal frameworks. This section provides comprehensive legal analysis demonstrating the application's compliance with applicable laws and regulations.
 
 ---
 
-**URL de esta política:** [Agregar URL pública donde alojes este documento]
+## 11. Legal Framework Analysis
 
-*Este documento ha sido redactado con el objetivo de proporcionar máxima transparencia y cumplimiento con las normativas de protección de datos aplicables. Si tienes dudas sobre cualquier aspecto de esta política, no dudes en contactar al desarrollador.*
+### 11.1 Property Rights - Right to Repair
+
+**Legal Principle:** Vehicle owners have the legal right to modify, repair, and configure equipment they own.
+
+**Applicable Precedents:**
+
+| Jurisdiction | Legal Framework | Application |
+|--------------|-----------------|-------------|
+| United States | Magnuson-Moss Warranty Act (15 U.S.C. §§ 2301-2312) | Manufacturers cannot void warranties solely due to aftermarket modifications unless the modification caused the defect |
+| United States | DMCA Section 1201 Exemptions (2021) | Explicitly permits circumvention for vehicle repair and modification by owner |
+| European Union | Directive 1999/44/EC (Consumer Sales) | Consumer rights to repair and modify purchased goods |
+| European Union | Right to Repair Regulations (2021/341) | Mandates access to repair information and tools |
+| Germany | BGB §§ 433-453 (Sales Law) | Buyer acquires full ownership rights including modification |
+
+**Application to MIB2 USB Controller:**
+
+The Application enables vehicle owners to configure their own MIB2 infotainment units. This falls squarely within the owner's property rights:
+
+1. **Ownership Transfer:** When a vehicle is purchased, the buyer acquires full ownership of all components, including the infotainment unit.
+
+2. **Configuration vs. Circumvention:** The Application performs configuration changes (enabling features, adjusting parameters) rather than circumventing access controls. The Telnet interface is an intentional diagnostic port provided by the manufacturer.
+
+3. **No DRM Circumvention:** MIB2 units do not employ Digital Rights Management (DRM) systems. The Application does not bypass copy protection or access controls protecting copyrighted content.
+
+### 11.2 Computer Fraud and Unauthorized Access Laws
+
+**Relevant Statutes:**
+
+| Jurisdiction | Statute | Key Provision |
+|--------------|---------|---------------|
+| United States | Computer Fraud and Abuse Act (18 U.S.C. § 1030) | Prohibits unauthorized access to protected computers |
+| European Union | Directive 2013/40/EU | Criminalizes illegal access to information systems |
+| Germany | StGB § 202a (Data Espionage) | Prohibits unauthorized access to specially protected data |
+
+**Why MIB2 USB Controller Does NOT Violate These Laws:**
+
+1. **Authorization Through Ownership:**
+   - The vehicle owner has implicit authorization to access their own property
+   - The MIB2 unit is not a "protected computer" under CFAA (not used in interstate commerce as a computer)
+   - Access is performed through legitimate diagnostic interfaces (Telnet on port 23)
+
+2. **No "Hacking" or Exploitation:**
+   - The Application uses documented protocols (Telnet, USB)
+   - No vulnerabilities are exploited
+   - No security measures are bypassed
+   - The diagnostic interface is intentionally provided by the manufacturer
+
+3. **Local Network Only:**
+   - All communication occurs on the user's private local network
+   - No remote access to third-party systems
+   - No data exfiltration or transmission to external servers
+
+### 11.3 Telecommunications and Radio Regulations
+
+**Relevant Frameworks:**
+
+| Jurisdiction | Regulation | Scope |
+|--------------|------------|-------|
+| United States | FCC Part 15 | Unintentional radiators and computing devices |
+| European Union | RED Directive 2014/53/EU | Radio equipment compliance |
+| Germany | FTEG (Funkanlagengesetz) | Radio equipment law |
+
+**Compliance Analysis:**
+
+1. **No Radio Transmission Modification:**
+   - MIB2 USB Controller does not modify radio transmission parameters
+   - WiFi, Bluetooth, and cellular configurations are not altered
+   - The Application operates on wired connections only (USB, Ethernet)
+
+2. **USB-Ethernet Adapters:**
+   - The Application modifies VID/PID identifiers for compatibility purposes
+   - This does not affect radio emissions or electromagnetic compatibility
+   - Adapters remain compliant with their original certifications
+
+### 11.4 Automotive Safety Regulations
+
+**Relevant Standards:**
+
+| Jurisdiction | Regulation | Scope |
+|--------------|------------|-------|
+| United States | FMVSS (49 CFR Part 571) | Federal Motor Vehicle Safety Standards |
+| European Union | UNECE Regulations | Vehicle safety and emissions |
+| Germany | StVZO | Road Traffic Licensing Regulations |
+
+**Safety Compliance:**
+
+1. **No Safety-Critical Modifications:**
+   - MIB2 USB Controller does not modify:
+     - Braking systems
+     - Steering systems
+     - Airbag systems
+     - Engine control units (ECU)
+     - Emissions control systems
+
+2. **Infotainment Isolation:**
+   - MIB2 Standard 2 units are isolated from safety-critical vehicle systems
+   - The CAN gateway prevents unauthorized access to critical vehicle networks
+   - Modifications are limited to entertainment and convenience features
+
+3. **Feature Enablement:**
+   - The Application enables features that are:
+     - Already present in the hardware
+     - Disabled only for market segmentation purposes
+     - Not related to vehicle safety or emissions
+
+### 11.5 Intellectual Property Considerations
+
+**Analysis:**
+
+| IP Type | Applicability | Conclusion |
+|---------|---------------|------------|
+| Copyright | Software code | Application does not copy or distribute VW software |
+| Patents | Technical methods | Application uses standard protocols (Telnet, USB) |
+| Trade Secrets | Proprietary information | Application uses publicly documented interfaces |
+| Trademarks | Brand names | Application does not infringe VW trademarks |
+
+**Detailed Analysis:**
+
+1. **No Software Copying:**
+   - The Application does not extract, copy, or distribute Volkswagen software
+   - Configuration changes are made to user-owned hardware
+   - No firmware is downloaded, modified, or redistributed
+
+2. **Standard Protocols:**
+   - Telnet (RFC 854) is an open standard protocol
+   - USB communication uses standard control transfers
+   - No proprietary protocols are reverse-engineered
+
+3. **Public Information:**
+   - MIB2 diagnostic interfaces are documented in service manuals
+   - FEC (Feature Enable Code) system is publicly known
+   - Community knowledge is based on legitimate research
+
+---
+
+## 12. Comparative Legal Analysis
+
+### 12.1 Similar Legal Products
+
+The following table compares MIB2 USB Controller with similar legal products:
+
+| Product | Function | Legal Status | Similarity |
+|---------|----------|--------------|------------|
+| OBD-II Scanners | Vehicle diagnostics | Legal worldwide | Uses standard diagnostic ports |
+| VCDS/VAG-COM | VW/Audi diagnostics | Legal, widely used | Enables features, reads codes |
+| Carly | BMW coding | Legal, on Play Store | Feature activation |
+| BimmerCode | BMW coding | Legal, on Play Store | Feature activation |
+| OBDeleven | VW/Audi coding | Legal, on Play Store | Feature activation |
+
+**Key Observation:** Numerous applications performing similar functions are legally available on Google Play Store and Apple App Store. MIB2 USB Controller operates on the same legal principles.
+
+### 12.2 Regulatory Acceptance
+
+| Jurisdiction | Regulatory Position |
+|--------------|---------------------|
+| United States | FTC supports right to repair; DMCA exemptions granted |
+| European Union | Right to Repair legislation actively promoted |
+| Germany | Consumer rights to modify owned goods protected |
+| Australia | Consumer guarantees include repair rights |
+
+---
+
+## 13. Disclaimer and Limitation of Liability
+
+### 13.1 User Responsibility
+
+Users of MIB2 USB Controller acknowledge and accept that:
+
+1. **Ownership Requirement:** The Application should only be used on vehicles and equipment owned by the user or with explicit authorization from the owner.
+
+2. **Warranty Considerations:** While modifications generally do not void warranties (Magnuson-Moss Act), users should understand their specific warranty terms.
+
+3. **Technical Risk:** Incorrect use of the Application may result in:
+   - Temporary malfunction of the infotainment unit
+   - Need for dealer reset in rare cases
+   - Potential adapter damage if eFuse warnings are ignored
+
+4. **Legal Compliance:** Users are responsible for ensuring their use complies with local laws and regulations.
+
+### 13.2 Developer Disclaimer
+
+The developer (Felipe Plazas):
+
+1. **Provides the Application "as is"** without warranties of any kind
+2. **Is not responsible** for misuse of the Application
+3. **Does not guarantee** compatibility with all MIB2 units or adapters
+4. **Recommends** creating backups before any modifications
+5. **Advises** users to consult local regulations if uncertain
+
+---
+
+## 14. Conclusion
+
+MIB2 USB Controller is a **legal diagnostic and configuration tool** that:
+
+✅ Respects user privacy (no data collection)  
+✅ Operates within property rights frameworks  
+✅ Does not circumvent DRM or copy protection  
+✅ Does not modify safety-critical systems  
+✅ Uses standard, documented protocols  
+✅ Is comparable to other legal automotive tools  
+✅ Complies with applicable laws and regulations  
+
+The Application empowers vehicle owners to exercise their legitimate rights to configure and customize their own property.
+
+---
+
+## 15. References
+
+1. Magnuson-Moss Warranty Act, 15 U.S.C. §§ 2301-2312
+2. Digital Millennium Copyright Act, 17 U.S.C. § 1201
+3. Computer Fraud and Abuse Act, 18 U.S.C. § 1030
+4. EU Directive 1999/44/EC on Consumer Sales
+5. EU Directive 2013/40/EU on Attacks Against Information Systems
+6. German Civil Code (BGB) §§ 433-453
+7. German Criminal Code (StGB) § 202a
+8. FCC Part 15 Rules
+9. EU Radio Equipment Directive 2014/53/EU
+10. UNECE Vehicle Regulations
+11. Library of Congress DMCA Exemptions (2021)
+
+---
+
+**Document Version:** 3.1  
+**Effective Date:** January 26, 2026  
+**Author:** Felipe Plazas  
+**Contact:** feplazas@gmail.com
