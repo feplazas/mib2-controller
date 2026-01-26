@@ -4,91 +4,111 @@
 MIB2 Controller
 
 ## Short Description (80 characters max)
-Control remoto para unidades MIB2 STD2 Technisat Preh sin navegación
+Unlock CarPlay & Android Auto on MIB2 STD2 infotainment systems
 
 ## Full Description (4000 characters max)
 
-**MIB2 Controller** es una aplicación profesional diseñada para usuarios avanzados que desean desbloquear el potencial completo de sus unidades de infoentretenimiento MIB2 STD2 Technisat Preh (específicamente para modelos **sin navegación, 1 SD slot**).
+**MIB2 Controller** is a professional application designed for advanced users who want to unlock the full potential of their MIB2 STD2 Technisat Preh infotainment units (specifically for models **without navigation, 1 SD slot**).
 
-### Características Principales
+### ⚠️ USB ACCESS REQUIRED
 
-**🔌 Spoofing USB Automático**
-- Modifica el VID/PID de adaptadores USB-Ethernet ASIX AX88772A/B
-- Detección automática de chipsets compatibles
-- Backup automático de EEPROM antes de modificar
-- Verificación de integridad con checksum
-- Soporte para perfiles personalizados
+This app requires USB Host access to communicate with USB-Ethernet adapters. When you connect a compatible adapter:
+• The app will request USB permission - please ALLOW it
+• This is essential for the app to detect and configure adapters
+• No personal data is collected through USB access
+• USB access is used solely for adapter communication
 
-**📡 Terminal Telnet Integrado**
-- Conexión directa a la unidad MIB2 vía Telnet
-- Biblioteca de scripts predefinidos para instalación de Toolbox
-- Comandos rápidos para diagnóstico del sistema
-- Historial de comandos y respuestas
-- Verificación automática del estado del sistema (root, SD montada, Toolbox instalado)
+### Key Features
 
-**🔧 Herramientas Avanzadas**
-- Generador de códigos FEC (Feature Enable Codes)
-- Inyección directa de códigos vía Telnet
-- Guía completa de instalación de MIB2 Toolbox
-- Gestión de backups de EEPROM
-- Recuperación de adaptadores con spoofing fallido
+**🔌 Automatic USB Spoofing**
+• Modifies VID/PID of ASIX AX88772A/B USB-Ethernet adapters
+• Automatic detection of compatible chipsets
+• Automatic EEPROM backup before any modification
+• Integrity verification with checksum
+• Support for custom profiles
 
-**⚡ Códigos FEC Incluidos**
-- CarPlay (00060800)
-- Android Auto (00060900 / 00010002)
-- MirrorLink (00010004)
-- App-Connect Full-Link (00010008)
-- Performance Monitor (00060001)
-- Vista Sport (00060400)
-- Y muchos más...
+**📡 Integrated Telnet Terminal**
+• Direct connection to MIB2 unit via Telnet
+• Library of predefined scripts for Toolbox installation
+• Quick commands for system diagnostics
+• Command and response history
+• Automatic system status verification (root, SD mounted, Toolbox installed)
 
-**🛡️ Seguridad**
-- Backups automáticos antes de cualquier modificación
-- Verificación de compatibilidad de chipsets
-- Detección de eFuse (chips bloqueados)
-- Modo dry-run para pruebas sin riesgo
-- Cifrado de backups sensibles
+**🔧 Advanced Tools**
+• FEC (Feature Enable Codes) generator
+• Direct code injection via Telnet
+• Complete MIB2 Toolbox installation guide
+• EEPROM backup management
+• Recovery for adapters with failed spoofing
 
-### Compatibilidad
+**⚡ FEC Codes Included**
+• CarPlay (00060800)
+• Android Auto (00060900 / 00010002)
+• MirrorLink (00010004)
+• App-Connect Full-Link (00010008)
+• Performance Monitor (00060001)
+• Sport View (00060400)
+• And many more...
 
-**Unidades MIB2 Compatibles:**
-- MIB2 STD2 Technisat Preh (sin navegación, 1 SD slot)
-- Modelos encontrados en: VW Golf 7, Passat B8, Tiguan, Seat Leon, Skoda Octavia (2016-2019)
+**🛡️ Security**
+• Automatic backups before any modification
+• Chipset compatibility verification
+• eFuse detection (locked chips)
+• Dry-run mode for risk-free testing
+• Encryption of sensitive backups
 
-**Adaptadores USB-Ethernet Compatibles:**
-- ASIX AX88772A con EEPROM externa
-- ASIX AX88772B con EEPROM externa
-- D-Link DUB-E100 Rev B1 (recomendado)
+### Compatibility
 
-**Requisitos:**
-- Dispositivo Android con soporte USB OTG
-- Cable OTG con alimentación externa (5V)
-- Adaptador USB-Ethernet compatible
-- Conocimientos técnicos avanzados
+**Compatible MIB2 Units:**
+• MIB2 STD2 Technisat Preh (without navigation, 1 SD slot)
+• Found in: VW Golf 7, Passat B8, Tiguan, Seat Leon, Skoda Octavia (2016-2019)
 
-### Advertencias Importantes
+**Compatible USB-Ethernet Adapters:**
+• ASIX AX88772A with external EEPROM
+• ASIX AX88772B with external EEPROM
+• D-Link DUB-E100 Rev B1 (recommended)
 
-⚠️ **Esta aplicación es solo para usuarios avanzados que entienden los riesgos.**
+**Requirements:**
+• Android device with USB OTG support
+• OTG cable with external power (5V)
+• Compatible USB-Ethernet adapter
+• Advanced technical knowledge
+• USB permission must be granted when prompted
 
-- El spoofing de EEPROM es permanente y puede dañar el adaptador si se interrumpe
-- Las modificaciones en la MIB2 pueden causar mal funcionamiento o pérdida de garantía
-- Siempre crea backups antes de cualquier modificación
-- Los dispositivos con eFuse NO son compatibles y no pueden ser modificados
-- El uso de esta aplicación es bajo tu propio riesgo
+### Important Warnings
 
-### Soporte
+⚠️ **This application is for advanced users who understand the risks.**
 
-Para soporte técnico, reportar bugs o solicitar funcionalidades, visita:
-- GitHub: https://github.com/feplazas/mib2-controller
-- Foros de la comunidad MIB2
+• EEPROM spoofing is permanent and may damage the adapter if interrupted
+• Modifications to MIB2 may cause malfunction or void warranty
+• Always create backups before any modification
+• Devices with eFuse are NOT compatible and cannot be modified
+• Use of this application is at your own risk
+• USB access is required for the app to function - please grant permission when prompted
 
-### Licencia
+### Support
 
-Esta aplicación es de código abierto y se distribuye bajo licencia MIT.
+For technical support, bug reports, or feature requests, visit:
+• GitHub: https://github.com/feplazas/mib2-controller
+• MIB2 community forums
+
+### License
+
+This application is open source and distributed under the MIT license.
 
 ---
 
-**Nota:** Esta aplicación NO incluye software pirateado ni códigos FEC ilegales. Los códigos FEC deben ser obtenidos legalmente del fabricante o generados con tu propio VIN/VCRN.
+**Note:** This application does NOT include pirated software or illegal FEC codes. FEC codes must be obtained legally from the manufacturer or generated with your own VIN/VCRN.
+
+### Why USB Permission is Needed
+
+This app communicates with USB-Ethernet adapters to:
+1. Detect adapter chipset and compatibility
+2. Read and backup EEPROM data
+3. Modify VID/PID for MIB2 compatibility
+4. Verify successful modifications
+
+Without USB permission, the app cannot detect or configure adapters. Your privacy is protected - no personal data is accessed or transmitted.
 
 ## Category
 Tools
@@ -112,4 +132,4 @@ MIB2, Volkswagen, VW, Seat, Skoda, CarPlay, Android Auto, Toolbox, USB, Telnet, 
 7. Settings screen
 
 ## Promotional Text (170 characters max)
-Desbloquea CarPlay, Android Auto y más funciones ocultas en tu MIB2 STD2 Technisat Preh. Spoofing USB automático y terminal Telnet integrado.
+Unlock CarPlay, Android Auto & hidden features on your MIB2 STD2 Technisat Preh. Automatic USB spoofing and integrated Telnet terminal.
