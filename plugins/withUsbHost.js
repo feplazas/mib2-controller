@@ -4,6 +4,10 @@ const path = require('path');
 
 /**
  * Plugin de Expo para agregar permisos y configuración USB Host
+ * 
+ * NOTA DE SEGURIDAD: Este plugin configura filtros USB específicos para
+ * adaptadores USB-Ethernet compatibles con MIB2 STD2 Technisat Preh.
+ * Solo se declaran los dispositivos necesarios para la funcionalidad de la app.
  */
 const withUsbHost = (config) => {
   // Paso 1: Modificar AndroidManifest.xml
@@ -32,7 +36,7 @@ const withUsbHost = (config) => {
       manifest['uses-permission'].push(usbPermission);
     }
 
-    // Agregar característica USB Host
+    // Agregar característica USB Host (opcional, no requerida)
     if (!manifest['uses-feature']) {
       manifest['uses-feature'] = [];
     }
@@ -128,18 +132,66 @@ const withUsbHost = (config) => {
         fs.mkdirSync(xmlPath, { recursive: true });
       }
 
-      // Contenido del device_filter.xml - ACEPTAR CUALQUIER DISPOSITIVO USB
+      // Contenido del device_filter.xml - FILTROS ESPECÍFICOS PARA ADAPTADORES MIB2
+      // Solo se declaran los adaptadores USB-Ethernet compatibles con MIB2 STD2 Technisat Preh
       const deviceFilterContent = `<?xml version="1.0" encoding="utf-8"?>
+<!--
+  MIB2 Controller - USB Device Filter
+  
+  This filter declares ONLY the USB-Ethernet adapters that are compatible with
+  MIB2 STD2 Technisat Preh infotainment systems. The app requires these specific
+  adapters to communicate with the vehicle's head unit via Telnet protocol.
+  
+  LEGAL BASIS: This app operates under the Right to Repair doctrine and DMCA
+  exemptions for vehicle diagnostic and repair purposes. See PRIVACY.md for
+  full legal analysis.
+  
+  SUPPORTED CHIPSETS:
+  - ASIX AX88772/AX88772A/AX88772B: Primary chipset for MIB2 compatibility
+  - ASIX AX88178: High-speed variant
+  - ASIX AX88179: USB 3.0 variant
+  - Realtek RTL8152/RTL8153: Common alternative chipsets
+  
+  These are the ONLY devices the app can interact with. The app does NOT
+  capture or access any other USB devices.
+-->
 <resources>
-    <!-- Accept ANY USB device for maximum compatibility -->
-    <!-- This allows the app to handle all USB devices and show them in the selection dialog -->
-    <usb-device />
+    <!-- ASIX AX88772/AX88772A/AX88772B - Primary MIB2 compatible chipset -->
+    <usb-device vendor-id="0x0B95" product-id="0x7720" />
+    <usb-device vendor-id="0x0B95" product-id="0x772A" />
+    <usb-device vendor-id="0x0B95" product-id="0x772B" />
+    
+    <!-- ASIX AX88178 - High-speed USB 2.0 variant -->
+    <usb-device vendor-id="0x0B95" product-id="0x1780" />
+    
+    <!-- ASIX AX88179 - USB 3.0 Gigabit variant -->
+    <usb-device vendor-id="0x0B95" product-id="0x1790" />
+    
+    <!-- Realtek RTL8152 - USB 2.0 Fast Ethernet -->
+    <usb-device vendor-id="0x0BDA" product-id="0x8152" />
+    
+    <!-- Realtek RTL8153 - USB 3.0 Gigabit Ethernet -->
+    <usb-device vendor-id="0x0BDA" product-id="0x8153" />
+    
+    <!-- Generic ASIX-based adapters (common rebrands) -->
+    <!-- D-Link DUB-E100 -->
+    <usb-device vendor-id="0x2001" product-id="0x1A00" />
+    <!-- Linksys USB200M -->
+    <usb-device vendor-id="0x13B1" product-id="0x0018" />
+    <!-- Apple USB Ethernet Adapter (ASIX based) -->
+    <usb-device vendor-id="0x05AC" product-id="0x1402" />
+    
+    <!-- Additional known MIB2-compatible adapters -->
+    <!-- Belkin F5D5055 -->
+    <usb-device vendor-id="0x050D" product-id="0x5055" />
+    <!-- Netgear FA120 -->
+    <usb-device vendor-id="0x0846" product-id="0x1040" />
 </resources>
 `;
 
       // Escribir archivo
       fs.writeFileSync(deviceFilterPath, deviceFilterContent, 'utf-8');
-      console.log('✅ Created device_filter.xml at:', deviceFilterPath);
+      console.log('✅ Created device_filter.xml with specific MIB2-compatible adapters at:', deviceFilterPath);
 
       return config;
     },

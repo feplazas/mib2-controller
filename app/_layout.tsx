@@ -23,7 +23,7 @@ import type { EdgeInsets, Metrics, Rect } from "react-native-safe-area-context";
 
 import { trpc, createTRPCClient } from "@/lib/trpc";
 import { initManusRuntime, subscribeSafeAreaInsets } from "@/lib/_core/manus-runtime";
-import { NotificationService } from "@/lib/notification-service";
+// NotificationService se importa solo donde se necesita (operaciones de spoofing/recovery)
 import { OnboardingModal } from "@/components/onboarding-modal";
 import { useOnboarding } from "@/hooks/use-onboarding";
 
@@ -63,8 +63,8 @@ function RootLayoutInner() {
   // Initialize Manus runtime for cookie injection from parent container
   useEffect(() => {
     initManusRuntime();
-    // Solicitar permisos de notificaciones al iniciar
-    NotificationService.requestPermissions();
+    // Nota: Permisos de notificaciones se solicitan manualmente desde Settings
+    // para evitar solicitudes intrusivas al inicio
   }, []);
 
   const handleSafeAreaUpdate = useCallback((metrics: Metrics) => {

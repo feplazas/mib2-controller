@@ -70,12 +70,6 @@ const config: ExpoConfig = {
     "./plugins/gradle-fix-plugin.js",
     "./plugins/withProguard.js",
     "expo-router",
-    [
-      "expo-audio",
-      {
-        microphonePermission: "Allow $(PRODUCT_NAME) to access your microphone.",
-      },
-    ],
 
     [
       "expo-splash-screen",

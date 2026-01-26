@@ -2946,3 +2946,11 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [ ] Actualizar política de privacidad en GitHub
 - [x] Crear política de privacidad en inglés con justificación jurídica completa
 - [x] Crear Feature Graphic (1024x500px) para Play Store y subir a GitHub
+
+## Auditoría de Seguridad y Compliance (26 Ene 2026)
+
+- [x] Auditar y eliminar permisos innecesarios
+- [x] Eliminar rastros de expo-audio si no se usa
+- [x] Hacer USB Host más conservador y específico (solo ASIX)
+- [x] Reforzar disclaimers en pantallas sensibles
+- [x] Mejorar metadatos del proyecto (nombre/versión/descripción)

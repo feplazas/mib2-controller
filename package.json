@@ -1,6 +1,24 @@
 {
-  "name": "app-template",
-  "version": "1.0.0",
+  "name": "mib2-controller",
+  "version": "1.1.0",
+  "description": "USB adapter configuration tool for MIB2 STD2 Technisat Preh infotainment systems. Enables CarPlay and Android Auto functionality through VID/PID modification.",
+  "author": "Felipe Plazas <feplazas@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/feplazas/mib2-controller.git"
+  },
+  "keywords": [
+    "mib2",
+    "carplay",
+    "android-auto",
+    "usb",
+    "asix",
+    "volkswagen",
+    "audi",
+    "skoda",
+    "seat"
+  ],
   "private": true,
   "main": "expo-router/entry",
   "scripts": {
@@ -38,7 +56,6 @@
     "drizzle-orm": "^0.44.7",
     "expo": "~54.0.32",
     "expo-asset": "^12.0.12",
-    "expo-audio": "~1.1.1",
     "expo-blur": "^15.0.8",
     "expo-build-properties": "^1.0.10",
     "expo-clipboard": "^8.0.8",
