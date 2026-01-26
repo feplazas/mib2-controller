@@ -67,6 +67,15 @@ export default function ActionsScreen() {
       color: '#5856D6', // iOS Indigo
       category: 'management',
     },
+    {
+      id: 'fec-codes',
+      icon: 'key.fill',
+      titleKey: 'actions.fec_codes',
+      descriptionKey: 'actions.fec_codes_desc',
+      route: '/(tabs)/fec',
+      color: '#FF9500', // iOS Orange
+      category: 'management',
+    },
     // Ayuda
     {
       id: 'guides',

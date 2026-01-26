@@ -2958,3 +2958,4 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] BUG CRÍTICO: USB Host no reconoce dispositivos después de cambios en filtro
 - [x] BUG CRÍTICO: Revertir filtro USB al método original que funcionaba
 - [x] Actualizar store-listing.md con requisito de acceso USB
+- [x] Restaurar pantalla FEC Codes en módulo Actions

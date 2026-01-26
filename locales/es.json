@@ -355,6 +355,8 @@
     "system_diag_desc": "Logs y estado del sistema",
     "backups": "Backups",
     "backups_desc": "Copias de seguridad de EEPROM",
+    "fec_codes": "Códigos FEC",
+    "fec_codes_desc": "Generar e inyectar códigos FEC",
     "guides": "Guías Offline",
     "guides_desc": "Documentación sin conexión",
     "footer_info": "Para interactuar con el MIB2, usa la pestaña Herramientas.",

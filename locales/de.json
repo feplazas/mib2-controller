@@ -355,6 +355,8 @@
     "system_diag_desc": "Logs und Systemstatus",
     "backups": "Backups",
     "backups_desc": "EEPROM-Sicherungskopien",
+    "fec_codes": "FEC-Codes",
+    "fec_codes_desc": "FEC-Codes generieren und injizieren",
     "guides": "Offline-Anleitungen",
     "guides_desc": "Dokumentation ohne Verbindung",
     "footer_info": "Um mit dem MIB2 zu interagieren, verwenden Sie die Registerkarte Werkzeuge.",
