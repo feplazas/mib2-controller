@@ -2922,3 +2922,5 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Unificar Recovery y EEPROM Backups en una sola pantalla lógica
 - [x] Quitar tooltips de la pantalla Auto Spoof
 - [x] Optimizar tamaño del APK eliminando dependencias no usadas
+- [x] Crear .easignore para reducir tamaño de upload (ya existe)
+- [x] Configurar ProGuard/R8 para optimización de código
