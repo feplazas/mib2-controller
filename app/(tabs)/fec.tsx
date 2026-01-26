@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "@/lib/language-context";
-import { ScrollView, Text, View, TouchableOpacity, TextInput, Alert, Platform, Linking } from "react-native";
+import { ScrollView, Text, View, TouchableOpacity, TextInput, Alert, Platform, Linking, ActivityIndicator } from "react-native";
 import * as Haptics from "expo-haptics";
 import * as Sharing from "expo-sharing";
 import * as FileSystem from "expo-file-system/legacy";
@@ -33,6 +33,11 @@ export default function FECScreen() {
   const [selectedCodes, setSelectedCodes] = useState<string[]>([]);
   const [customCode, setCustomCode] = useState("");
   const [showInfo, setShowInfo] = useState(false);
+  
+  // Loading states
+  const [isGeneratingList, setIsGeneratingList] = useState(false);
+  const [isGeneratingCommand, setIsGeneratingCommand] = useState(false);
+  const [isInjecting, setIsInjecting] = useState(false);
 
   const handleToggleCode = (code: string) => {
     if (Platform.OS !== "web") {
@@ -71,7 +76,12 @@ export default function FECScreen() {
       return;
     }
 
+    setIsGeneratingList(true);
+    
     try {
+      // Simulate processing time for better UX feedback
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
       const exceptionList = generateExceptionList(selectedCodes);
       const fileUri = `${FileSystem.documentDirectory}ExceptionList.txt`;
       
@@ -99,17 +109,33 @@ export default function FECScreen() {
     } catch (error) {
       showAlert('alerts.error', 'alerts.no_se_pudo_generar_el_archivo_exceptionlisttxt');
       console.error(error);
+    } finally {
+      setIsGeneratingList(false);
     }
   };
 
-  const handleGenerateInjectionCommand = () => {
+  const handleGenerateInjectionCommand = async () => {
     if (selectedCodes.length === 0) {
       showAlert('alerts.sin_códigos', 'alerts.selecciona_al_menos_un_código_fec_para_generar_el');
       return;
     }
 
-    const command = generateToolboxInjectionCommand(selectedCodes);
-    Alert.alert(t('fec.injection_command'), command, [{ text: t('common.close') }]);
+    setIsGeneratingCommand(true);
+    
+    try {
+      // Simulate processing time for better UX feedback
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      const command = generateToolboxInjectionCommand(selectedCodes);
+      
+      if (Platform.OS !== "web") {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
+      
+      Alert.alert(t('fec.injection_command'), command, [{ text: t('common.close') }]);
+    } finally {
+      setIsGeneratingCommand(false);
+    }
   };
 
   const handleInjectViaTelnet = () => {
@@ -131,17 +157,32 @@ export default function FECScreen() {
         {
           text: t('fec.inject'),
           style: 'destructive',
-          onPress: () => {
-            if (Platform.OS !== 'web') {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-            }
-            const commands = generateFecInjectionCommands(selectedCodes);
-            commands.forEach((cmd) => {
-              if (cmd && !cmd.startsWith('#')) {
-                sendCommand(cmd);
+          onPress: async () => {
+            setIsInjecting(true);
+            
+            try {
+              if (Platform.OS !== 'web') {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
               }
-            });
-            showAlert('alerts.inyectando', 'alerts.códigos_fec_enviados_la_unidad_se_reiniciará');
+              
+              const commands = generateFecInjectionCommands(selectedCodes);
+              
+              // Execute commands with delay between each
+              for (const cmd of commands) {
+                if (cmd && !cmd.startsWith('#')) {
+                  sendCommand(cmd);
+                  await new Promise(resolve => setTimeout(resolve, 300));
+                }
+              }
+              
+              if (Platform.OS !== 'web') {
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+              }
+              
+              showAlert('alerts.inyectando', 'alerts.códigos_fec_enviados_la_unidad_se_reiniciará');
+            } finally {
+              setIsInjecting(false);
+            }
           },
         },
       ]
@@ -166,6 +207,9 @@ export default function FECScreen() {
     }
     setShowInfo(!showInfo);
   };
+
+  // Check if any operation is in progress
+  const isAnyLoading = isGeneratingList || isGeneratingCommand || isInjecting;
 
   return (
     <ScreenContainer className="p-4">
@@ -390,30 +434,96 @@ export default function FECScreen() {
           {/* Action Buttons */}
           {selectedCodes.length > 0 && (
             <View className="gap-3">
-              <AnimatedButton
-                title={t('fec.generate_exception_list')}
-                icon="📄"
-                variant="primary"
-                fullWidth
+              {/* Generate Exception List Button */}
+              <TouchableOpacity
                 onPress={handleGenerateExceptionList}
-              />
+                disabled={isAnyLoading}
+                activeOpacity={0.8}
+                className="rounded-xl p-4 flex-row items-center justify-center"
+                style={{ 
+                  backgroundColor: isGeneratingList ? colors.primary + '80' : colors.primary,
+                  opacity: isAnyLoading && !isGeneratingList ? 0.5 : 1,
+                }}
+              >
+                {isGeneratingList ? (
+                  <>
+                    <ActivityIndicator size="small" color={colors.background} style={{ marginRight: 10 }} />
+                    <Text className="font-semibold" style={{ color: colors.background }}>
+                      {t('fec.generating')}...
+                    </Text>
+                  </>
+                ) : (
+                  <>
+                    <Text style={{ marginRight: 8, fontSize: 18 }}>📄</Text>
+                    <Text className="font-semibold" style={{ color: colors.background }}>
+                      {t('fec.generate_exception_list')}
+                    </Text>
+                  </>
+                )}
+              </TouchableOpacity>
 
-              <AnimatedButton
-                title={t('fec.view_injection_command')}
-                icon="💻"
-                variant="secondary"
-                fullWidth
+              {/* View Injection Command Button */}
+              <TouchableOpacity
                 onPress={handleGenerateInjectionCommand}
-              />
+                disabled={isAnyLoading}
+                activeOpacity={0.8}
+                className="rounded-xl p-4 flex-row items-center justify-center border"
+                style={{ 
+                  backgroundColor: isGeneratingCommand ? colors.surface : colors.surface,
+                  borderColor: colors.border,
+                  opacity: isAnyLoading && !isGeneratingCommand ? 0.5 : 1,
+                }}
+              >
+                {isGeneratingCommand ? (
+                  <>
+                    <ActivityIndicator size="small" color={colors.primary} style={{ marginRight: 10 }} />
+                    <Text className="font-semibold" style={{ color: colors.primary }}>
+                      {t('fec.generating')}...
+                    </Text>
+                  </>
+                ) : (
+                  <>
+                    <Text style={{ marginRight: 8, fontSize: 18 }}>💻</Text>
+                    <Text className="font-semibold" style={{ color: colors.foreground }}>
+                      {t('fec.view_injection_command')}
+                    </Text>
+                  </>
+                )}
+              </TouchableOpacity>
 
-              <AnimatedButton
-                title={isConnected ? t('fec.inject_via_telnet') : t('fec.connect_telnet_first')}
-                icon={isConnected ? "⚡" : "🔌"}
-                variant={isConnected ? "success" : "secondary"}
-                fullWidth
-                disabled={!isConnected}
+              {/* Inject via Telnet Button */}
+              <TouchableOpacity
                 onPress={handleInjectViaTelnet}
-              />
+                disabled={!isConnected || isAnyLoading}
+                activeOpacity={0.8}
+                className="rounded-xl p-4 flex-row items-center justify-center"
+                style={{ 
+                  backgroundColor: isInjecting 
+                    ? '#22C55E80' 
+                    : isConnected 
+                      ? '#22C55E' 
+                      : colors.surface,
+                  borderWidth: isConnected ? 0 : 1,
+                  borderColor: colors.border,
+                  opacity: (isAnyLoading && !isInjecting) || !isConnected ? 0.5 : 1,
+                }}
+              >
+                {isInjecting ? (
+                  <>
+                    <ActivityIndicator size="small" color="#FFF" style={{ marginRight: 10 }} />
+                    <Text className="font-semibold" style={{ color: "#FFF" }}>
+                      {t('fec.injecting')}...
+                    </Text>
+                  </>
+                ) : (
+                  <>
+                    <Text style={{ marginRight: 8, fontSize: 18 }}>{isConnected ? "⚡" : "🔌"}</Text>
+                    <Text className="font-semibold" style={{ color: isConnected ? "#FFF" : colors.muted }}>
+                      {isConnected ? t('fec.inject_via_telnet') : t('fec.connect_telnet_first')}
+                    </Text>
+                  </>
+                )}
+              </TouchableOpacity>
             </View>
           )}
         </View>

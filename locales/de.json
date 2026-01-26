@@ -681,6 +681,8 @@
     "confirm_injection": "Injektion bestätigen",
     "confirm_injection_message": "{count} FEC-Code(s) via Telnet injizieren?\n\nDie Einheit wird automatisch neu starten.",
     "inject": "Injizieren",
+    "generating": "Generieren",
+    "injecting": "Injizieren",
     "exception_list_generated": "ExceptionList generiert",
     "exception_list_generated_message": "Die Datei ExceptionList.txt wurde erfolgreich erstellt.",
     "injection_title": "Prozess der FEC-Code-Injektion",
