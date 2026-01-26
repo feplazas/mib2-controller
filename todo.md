@@ -2963,3 +2963,4 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [ ] Agregar vibración háptica al completar operaciones FEC exitosamente
 - [ ] Integrar guía completa de conexión USB-Ethernet en instructivo de la app
 - [x] Agregar Network Scanner para verificar conectividad
+- [ ] Agregar ping ICMP nativo al Network Scanner

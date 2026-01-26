@@ -1,10 +1,13 @@
 /**
  * Network Scanner for MIB2 Discovery
- * Escanea red local usando TCP directo (sin backend)
+ * Escanea red local usando TCP directo y ping ICMP nativo
  */
 
 import TcpSocket from 'react-native-tcp-socket';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform, NativeModules } from 'react-native';
+
+const { NetworkInfoModule } = NativeModules;
 
 export interface ScanResult {
   host: string;
@@ -13,6 +16,29 @@ export interface ScanResult {
   responseTime?: number;
   deviceInfo?: string;
   isMIB2?: boolean;
+}
+
+export interface PingResult {
+  host: string;
+  ip?: string;
+  success: boolean;
+  responseTime: number;
+  method: 'icmp' | 'tcp';
+  error?: string;
+}
+
+export interface PortScanResult {
+  host: string;
+  port: number;
+  status: 'open' | 'closed' | 'timeout';
+  responseTime: number;
+}
+
+export interface MIB2FindResult {
+  ip: string;
+  port: number;
+  found: boolean;
+  responseTime: number;
 }
 
 export interface ScanProgress {
@@ -289,4 +315,212 @@ export async function saveMIB2IP(ip: string): Promise<void> {
   } catch (error) {
     console.error('Error saving MIB2 IP:', error);
   }
+}
+
+// ============================================
+// FUNCIONES DE PING NATIVO (Android)
+// ============================================
+
+/**
+ * Ping ICMP nativo usando el módulo de Android
+ * Más preciso que TCP para verificar conectividad
+ */
+export async function nativePing(host: string, timeoutMs: number = 3000): Promise<PingResult> {
+  if (Platform.OS !== 'android' || !NetworkInfoModule?.ping) {
+    // Fallback a TCP ping en plataformas no soportadas
+    return tcpPingFallback(host, 23, timeoutMs);
+  }
+
+  try {
+    const result = await NetworkInfoModule.ping(host, timeoutMs);
+    return {
+      host: result.host,
+      ip: result.ip,
+      success: result.success,
+      responseTime: result.responseTime,
+      method: 'icmp',
+      error: result.error,
+    };
+  } catch (error) {
+    return {
+      host,
+      success: false,
+      responseTime: -1,
+      method: 'icmp',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+/**
+ * Ping TCP nativo usando el módulo de Android
+ * Útil cuando ICMP está bloqueado
+ */
+export async function nativeTcpPing(host: string, port: number = 23, timeoutMs: number = 3000): Promise<PingResult> {
+  if (Platform.OS !== 'android' || !NetworkInfoModule?.tcpPing) {
+    return tcpPingFallback(host, port, timeoutMs);
+  }
+
+  try {
+    const result = await NetworkInfoModule.tcpPing(host, port, timeoutMs);
+    return {
+      host: result.host,
+      success: result.success,
+      responseTime: result.responseTime,
+      method: 'tcp',
+      error: result.error,
+    };
+  } catch (error) {
+    return {
+      host,
+      success: false,
+      responseTime: -1,
+      method: 'tcp',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+/**
+ * Fallback TCP ping usando react-native-tcp-socket
+ */
+async function tcpPingFallback(host: string, port: number, timeout: number): Promise<PingResult> {
+  return new Promise((resolve) => {
+    const startTime = Date.now();
+    let resolved = false;
+
+    const socket = TcpSocket.createConnection(
+      { host, port },
+      () => {
+        if (!resolved) {
+          resolved = true;
+          const responseTime = Date.now() - startTime;
+          socket.destroy();
+          resolve({
+            host,
+            success: true,
+            responseTime,
+            method: 'tcp',
+          });
+        }
+      }
+    );
+
+    socket.on('error', (err) => {
+      if (!resolved) {
+        resolved = true;
+        socket.destroy();
+        // Connection refused significa que el host está activo
+        const isRefused = err.message?.includes('ECONNREFUSED');
+        resolve({
+          host,
+          success: isRefused, // Host activo pero puerto cerrado
+          responseTime: Date.now() - startTime,
+          method: 'tcp',
+          error: isRefused ? 'Port closed' : err.message,
+        });
+      }
+    });
+
+    setTimeout(() => {
+      if (!resolved) {
+        resolved = true;
+        socket.destroy();
+        resolve({
+          host,
+          success: false,
+          responseTime: timeout,
+          method: 'tcp',
+          error: 'Timeout',
+        });
+      }
+    }, timeout);
+  });
+}
+
+/**
+ * Escanear múltiples puertos usando módulo nativo
+ */
+export async function nativeScanPorts(
+  host: string,
+  ports: number[] = [23, 123, 21, 22, 80, 8080, 3000],
+  timeoutMs: number = 2000
+): Promise<PortScanResult[]> {
+  if (Platform.OS !== 'android' || !NetworkInfoModule?.scanPorts) {
+    // Fallback manual
+    const results: PortScanResult[] = [];
+    for (const port of ports) {
+      const pingResult = await tcpPingFallback(host, port, timeoutMs);
+      results.push({
+        host,
+        port,
+        status: pingResult.success ? 'open' : (pingResult.error === 'Timeout' ? 'timeout' : 'closed'),
+        responseTime: pingResult.responseTime,
+      });
+    }
+    return results;
+  }
+
+  try {
+    const results = await NetworkInfoModule.scanPorts(host, ports, timeoutMs);
+    return results.map((r: any) => ({
+      host: r.host,
+      port: r.port,
+      status: r.status as 'open' | 'closed' | 'timeout',
+      responseTime: r.responseTime,
+    }));
+  } catch (error) {
+    console.error('Error scanning ports:', error);
+    return [];
+  }
+}
+
+/**
+ * Buscar MIB2 en IPs comunes usando módulo nativo
+ */
+export async function nativeFindMIB2(timeoutMs: number = 2000): Promise<MIB2FindResult[]> {
+  if (Platform.OS !== 'android' || !NetworkInfoModule?.findMIB2) {
+    // Fallback usando quickScan
+    const results = await quickScan();
+    return results.map(r => ({
+      ip: r.host,
+      port: r.port,
+      found: r.responding,
+      responseTime: r.responseTime || 0,
+    }));
+  }
+
+  try {
+    const results = await NetworkInfoModule.findMIB2(timeoutMs);
+    return results.map((r: any) => ({
+      ip: r.ip,
+      port: r.port,
+      found: r.found,
+      responseTime: r.responseTime,
+    }));
+  } catch (error) {
+    console.error('Error finding MIB2:', error);
+    return [];
+  }
+}
+
+/**
+ * Ping combinado: intenta ICMP primero, luego TCP como fallback
+ */
+export async function combinedPing(host: string, timeoutMs: number = 3000): Promise<PingResult> {
+  // Primero intentar ICMP
+  const icmpResult = await nativePing(host, timeoutMs);
+  if (icmpResult.success) {
+    return icmpResult;
+  }
+
+  // Si ICMP falla, intentar TCP en puerto 23 (Telnet)
+  const tcpResult = await nativeTcpPing(host, 23, timeoutMs);
+  if (tcpResult.success) {
+    return tcpResult;
+  }
+
+  // Si ambos fallan, intentar TCP en puerto 123
+  const tcp123Result = await nativeTcpPing(host, 123, timeoutMs);
+  return tcp123Result;
 }

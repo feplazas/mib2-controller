@@ -5,6 +5,16 @@ import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { useColors } from '@/hooks/use-colors';
 import { useTranslation } from "@/lib/language-context";
+import { 
+  nativePing, 
+  nativeTcpPing, 
+  nativeScanPorts, 
+  nativeFindMIB2,
+  combinedPing,
+  type PingResult as NativePingResult,
+  type PortScanResult,
+  type MIB2FindResult 
+} from "@/lib/network-scanner";
 
 interface ScanResult {
   ip: string;
@@ -19,6 +29,7 @@ interface PingResult {
   success: boolean;
   responseTime?: number;
   error?: string;
+  method?: 'icmp' | 'tcp';
 }
 
 export default function NetworkScannerScreen() {
@@ -83,7 +94,7 @@ export default function NetworkScannerScreen() {
     });
   };
 
-  // Escanear puertos de MIB2
+  // Escanear puertos de MIB2 usando módulo nativo
   const handleScanPorts = async () => {
     if (isScanning) return;
     
@@ -96,46 +107,87 @@ export default function NetworkScannerScreen() {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     }
     
-    addLog(`🔍 Iniciando escaneo de puertos en ${targetIp}...`);
+    addLog(`🔍 Iniciando escaneo nativo de puertos en ${targetIp}...`);
     
-    const results: ScanResult[] = [];
-    
-    for (let i = 0; i < MIB2_PORTS.length; i++) {
-      const port = MIB2_PORTS[i];
-      addLog(`📡 Escaneando puerto ${port}...`);
+    try {
+      // Usar escaneo nativo de puertos
+      const nativeResults = await nativeScanPorts(targetIp, MIB2_PORTS, 3000);
       
-      const result = await tcpPing(targetIp, port, 3000);
-      results.push(result);
+      const results: ScanResult[] = nativeResults.map(r => ({
+        ip: r.host,
+        port: r.port,
+        status: r.status,
+        responseTime: r.responseTime,
+      }));
       
-      if (result.status === 'open') {
-        addLog(`✅ Puerto ${port} ABIERTO (${result.responseTime}ms)`);
-      } else if (result.status === 'closed') {
-        addLog(`❌ Puerto ${port} cerrado`);
+      // Log cada resultado
+      for (const result of results) {
+        if (result.status === 'open') {
+          addLog(`✅ Puerto ${result.port} ABIERTO (${result.responseTime}ms)`);
+        } else if (result.status === 'closed') {
+          addLog(`❌ Puerto ${result.port} cerrado (${result.responseTime}ms)`);
+        } else {
+          addLog(`⏱️ Puerto ${result.port} timeout`);
+        }
+      }
+      
+      setScanResults(results);
+      setScanProgress(100);
+      
+      const openPorts = results.filter(r => r.status === 'open');
+      if (openPorts.length > 0) {
+        addLog(`✅ Escaneo completado: ${openPorts.length} puertos abiertos`);
+        if (Platform.OS !== 'web') {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        }
       } else {
-        addLog(`⏱️ Puerto ${port} timeout`);
+        addLog(`⚠️ Escaneo completado: No se encontraron puertos abiertos`);
+        if (Platform.OS !== 'web') {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+        }
+      }
+    } catch (error) {
+      // Fallback al método antiguo
+      addLog(`⚠️ Usando fallback TCP...`);
+      const results: ScanResult[] = [];
+      
+      for (let i = 0; i < MIB2_PORTS.length; i++) {
+        const port = MIB2_PORTS[i];
+        addLog(`📡 Escaneando puerto ${port}...`);
+        
+        const result = await tcpPing(targetIp, port, 3000);
+        results.push(result);
+        
+        if (result.status === 'open') {
+          addLog(`✅ Puerto ${port} ABIERTO (${result.responseTime}ms)`);
+        } else if (result.status === 'closed') {
+          addLog(`❌ Puerto ${port} cerrado`);
+        } else {
+          addLog(`⏱️ Puerto ${port} timeout`);
+        }
+        
+        setScanProgress(((i + 1) / MIB2_PORTS.length) * 100);
+        setScanResults([...results]);
       }
       
-      setScanProgress(((i + 1) / MIB2_PORTS.length) * 100);
-      setScanResults([...results]);
-    }
-    
-    const openPorts = results.filter(r => r.status === 'open');
-    if (openPorts.length > 0) {
-      addLog(`✅ Escaneo completado: ${openPorts.length} puertos abiertos`);
-      if (Platform.OS !== 'web') {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      }
-    } else {
-      addLog(`⚠️ Escaneo completado: No se encontraron puertos abiertos`);
-      if (Platform.OS !== 'web') {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      const openPorts = results.filter(r => r.status === 'open');
+      if (openPorts.length > 0) {
+        addLog(`✅ Escaneo completado: ${openPorts.length} puertos abiertos`);
+        if (Platform.OS !== 'web') {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        }
+      } else {
+        addLog(`⚠️ Escaneo completado: No se encontraron puertos abiertos`);
+        if (Platform.OS !== 'web') {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+        }
       }
     }
     
     setIsScanning(false);
   };
 
-  // Ping simple (intenta conectar al puerto 23 o 123)
+  // Ping usando módulo nativo (ICMP + TCP fallback)
   const handlePing = async () => {
     if (isPinging) return;
     
@@ -146,33 +198,48 @@ export default function NetworkScannerScreen() {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
     
-    addLog(`🏓 Haciendo ping a ${targetIp}...`);
+    addLog(`🏓 Haciendo ping ICMP nativo a ${targetIp}...`);
     
-    // Intentar primero puerto 23 (Telnet), luego 123
-    const result23 = await tcpPing(targetIp, 23, 5000);
-    
-    if (result23.status === 'open' || result23.status === 'closed') {
-      // Host responde
-      setPingResult({
-        ip: targetIp,
-        success: true,
-        responseTime: result23.responseTime,
-      });
-      addLog(`✅ Host ${targetIp} alcanzable (${result23.responseTime}ms)`);
-      if (Platform.OS !== 'web') {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      }
-    } else {
-      // Timeout - intentar puerto 123
-      const result123 = await tcpPing(targetIp, 123, 5000);
+    try {
+      // Usar ping combinado (ICMP primero, luego TCP como fallback)
+      const result = await combinedPing(targetIp, 5000);
       
-      if (result123.status === 'open' || result123.status === 'closed') {
+      if (result.success) {
         setPingResult({
           ip: targetIp,
           success: true,
-          responseTime: result123.responseTime,
+          responseTime: result.responseTime,
+          method: result.method,
         });
-        addLog(`✅ Host ${targetIp} alcanzable vía puerto 123 (${result123.responseTime}ms)`);
+        addLog(`✅ Host ${targetIp} alcanzable vía ${result.method.toUpperCase()} (${result.responseTime}ms)`);
+        if (Platform.OS !== 'web') {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        }
+      } else {
+        setPingResult({
+          ip: targetIp,
+          success: false,
+          error: result.error || 'Host no responde',
+          method: result.method,
+        });
+        addLog(`❌ Host ${targetIp} no responde (${result.error})`);
+        if (Platform.OS !== 'web') {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        }
+      }
+    } catch (error) {
+      // Fallback a método antiguo si el nativo falla
+      addLog(`⚠️ Fallback a ping TCP...`);
+      const result23 = await tcpPing(targetIp, 23, 5000);
+      
+      if (result23.status === 'open' || result23.status === 'closed') {
+        setPingResult({
+          ip: targetIp,
+          success: true,
+          responseTime: result23.responseTime,
+          method: 'tcp',
+        });
+        addLog(`✅ Host ${targetIp} alcanzable (${result23.responseTime}ms)`);
         if (Platform.OS !== 'web') {
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         }
@@ -181,6 +248,7 @@ export default function NetworkScannerScreen() {
           ip: targetIp,
           success: false,
           error: 'Host no responde',
+          method: 'tcp',
         });
         addLog(`❌ Host ${targetIp} no responde`);
         if (Platform.OS !== 'web') {
@@ -192,7 +260,7 @@ export default function NetworkScannerScreen() {
     setIsPinging(false);
   };
 
-  // Escanear red local (buscar MIB2)
+  // Escanear red local (buscar MIB2) usando módulo nativo
   const handleScanNetwork = async () => {
     if (isScanning) return;
     
@@ -204,54 +272,89 @@ export default function NetworkScannerScreen() {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     }
     
-    addLog(`🔍 Buscando MIB2 en la red local...`);
+    addLog(`🔍 Buscando MIB2 en la red local (nativo)...`);
     
-    // Escanear IPs comunes de MIB2
-    const commonIPs = [
-      '192.168.1.1',
-      '192.168.1.4',
-      '192.168.1.10',
-      '192.168.0.1',
-      '192.168.0.4',
-      '10.200.1.1',
-    ];
-    
-    const results: ScanResult[] = [];
-    
-    for (let i = 0; i < commonIPs.length; i++) {
-      const ip = commonIPs[i];
-      addLog(`📡 Probando ${ip}:23...`);
+    try {
+      // Usar búsqueda nativa de MIB2
+      const nativeResults = await nativeFindMIB2(3000);
       
-      const result = await tcpPing(ip, 23, 2000);
+      const results: ScanResult[] = nativeResults
+        .filter(r => r.found)
+        .map(r => ({
+          ip: r.ip,
+          port: r.port,
+          status: 'open' as const,
+          responseTime: r.responseTime,
+        }));
       
-      if (result.status === 'open') {
-        results.push(result);
-        addLog(`✅ ¡MIB2 encontrado en ${ip}!`);
-        setTargetIp(ip);
+      for (const result of results) {
+        addLog(`✅ ¡MIB2 encontrado en ${result.ip}:${result.port}! (${result.responseTime}ms)`);
+        setTargetIp(result.ip);
+      }
+      
+      setScanResults(results);
+      setScanProgress(100);
+      
+      if (results.length > 0) {
+        addLog(`✅ Búsqueda completada: ${results.length} dispositivo(s) encontrado(s)`);
+        if (Platform.OS !== 'web') {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        }
       } else {
-        // Probar puerto 123
-        const result123 = await tcpPing(ip, 123, 2000);
-        if (result123.status === 'open') {
-          results.push({ ...result123, ip });
-          addLog(`✅ ¡MIB2 encontrado en ${ip}:123!`);
-          setTargetIp(ip);
+        addLog(`⚠️ No se encontró ningún MIB2 en la red`);
+        if (Platform.OS !== 'web') {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
         }
       }
+    } catch (error) {
+      // Fallback al método antiguo
+      addLog(`⚠️ Usando fallback manual...`);
       
-      setScanProgress(((i + 1) / commonIPs.length) * 100);
-    }
-    
-    setScanResults(results);
-    
-    if (results.length > 0) {
-      addLog(`✅ Búsqueda completada: ${results.length} dispositivo(s) encontrado(s)`);
-      if (Platform.OS !== 'web') {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      const commonIPs = [
+        '192.168.1.1',
+        '192.168.1.4',
+        '192.168.1.10',
+        '192.168.0.1',
+        '192.168.0.4',
+        '10.200.1.1',
+      ];
+      
+      const results: ScanResult[] = [];
+      
+      for (let i = 0; i < commonIPs.length; i++) {
+        const ip = commonIPs[i];
+        addLog(`📡 Probando ${ip}:23...`);
+        
+        const result = await tcpPing(ip, 23, 2000);
+        
+        if (result.status === 'open') {
+          results.push(result);
+          addLog(`✅ ¡MIB2 encontrado en ${ip}!`);
+          setTargetIp(ip);
+        } else {
+          const result123 = await tcpPing(ip, 123, 2000);
+          if (result123.status === 'open') {
+            results.push({ ...result123, ip });
+            addLog(`✅ ¡MIB2 encontrado en ${ip}:123!`);
+            setTargetIp(ip);
+          }
+        }
+        
+        setScanProgress(((i + 1) / commonIPs.length) * 100);
       }
-    } else {
-      addLog(`⚠️ No se encontró ningún MIB2 en la red`);
-      if (Platform.OS !== 'web') {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      
+      setScanResults(results);
+      
+      if (results.length > 0) {
+        addLog(`✅ Búsqueda completada: ${results.length} dispositivo(s) encontrado(s)`);
+        if (Platform.OS !== 'web') {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        }
+      } else {
+        addLog(`⚠️ No se encontró ningún MIB2 en la red`);
+        if (Platform.OS !== 'web') {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+        }
       }
     }
     
