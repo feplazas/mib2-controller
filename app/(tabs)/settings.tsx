@@ -21,6 +21,7 @@ import { useColors } from "@/hooks/use-colors";
 
 import { showAlert } from '@/lib/translated-alert';
 import { offlineGuidesService, type OfflineStatus } from '@/lib/offline-guides-service';
+import { getUserTimeout, setUserTimeout, DEFAULT_NETWORK_TIMEOUT, initializeTimeout } from '@/lib/network-scanner';
 
 /**
  * Settings Screen - Ultra Premium iOS Style
@@ -43,6 +44,8 @@ export default function SettingsScreen() {
   const [offlineStatus, setOfflineStatus] = useState<OfflineStatus | null>(null);
   const [isRefreshingGuides, setIsRefreshingGuides] = useState(false);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+  const [networkTimeout, setNetworkTimeout] = useState<number>(DEFAULT_NETWORK_TIMEOUT);
+  const [showTimeoutSelector, setShowTimeoutSelector] = useState(false);
   
   const { selectedLanguage, setLanguage: setAppLanguage } = useLanguage();
   const { themeMode, setThemeMode } = useThemeContext();
@@ -67,6 +70,32 @@ export default function SettingsScreen() {
 
     return () => unsubscribe();
   }, []);
+
+  // Cargar timeout de red al montar
+  useEffect(() => {
+    const loadTimeout = async () => {
+      try {
+        await initializeTimeout();
+        const timeout = await getUserTimeout();
+        setNetworkTimeout(timeout);
+      } catch (error) {
+        console.error('[Settings] Error loading network timeout:', error);
+      }
+    };
+    loadTimeout();
+  }, []);
+
+  const handleTimeoutChange = async (value: number) => {
+    try {
+      await setUserTimeout(value);
+      setNetworkTimeout(value);
+      haptics.success();
+      showAlert('alerts.éxito', 'settings.timeout_saved');
+    } catch (error) {
+      haptics.error();
+      showAlert('alerts.error', 'alerts.error');
+    }
+  };
 
   const handleSaveSettings = async () => {
     try {
@@ -390,7 +419,7 @@ export default function SettingsScreen() {
           </View>
 
           {/* Password */}
-          <View className="px-4 py-3">
+          <View className="px-4 py-3 border-b border-separator">
             <Text className="text-sm font-medium text-foreground mb-2">{t('settings.password')}</Text>
             <TextInput
               value={password}
@@ -402,7 +431,61 @@ export default function SettingsScreen() {
               placeholderTextColor={colors.muted}
             />
           </View>
+
+          {/* Network Timeout */}
+          <TouchableOpacity
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              setShowTimeoutSelector(!showTimeoutSelector);
+            }}
+            activeOpacity={0.8}
+            className="flex-row items-center px-4 py-3.5"
+          >
+            <Text className="text-xl mr-3">⏱️</Text>
+            <View className="flex-1">
+              <Text className="text-base text-foreground">{t('settings.network_timeout')}</Text>
+              <Text className="text-xs text-muted">{t('settings.network_timeout_desc')}</Text>
+            </View>
+            <Text className="text-base text-muted mr-2">{networkTimeout / 1000}s</Text>
+            <Text className="text-muted">›</Text>
+          </TouchableOpacity>
         </View>
+
+        {/* Timeout Selector Modal */}
+        {showTimeoutSelector && (
+          <View className="mx-4 mt-3 bg-surface rounded-2xl p-4 border border-primary">
+            <Text className="text-lg font-semibold text-foreground mb-3">{t('settings.network_timeout')}</Text>
+            <Text className="text-sm text-muted mb-4">{t('settings.network_timeout_desc')}</Text>
+            {[
+              { value: 3000, label: '3s', desc: 'Rápido' },
+              { value: 5000, label: '5s', desc: 'Normal (recomendado)' },
+              { value: 10000, label: '10s', desc: 'Lento' },
+              { value: 15000, label: '15s', desc: 'Muy lento' },
+              { value: 30000, label: '30s', desc: 'Máximo' },
+            ].map((option) => (
+              <TouchableOpacity
+                key={option.value}
+                onPress={async () => {
+                  haptics.selection();
+                  await handleTimeoutChange(option.value);
+                  setShowTimeoutSelector(false);
+                }}
+                activeOpacity={0.8}
+                className={`flex-row items-center p-3 rounded-xl mb-2 ${
+                  networkTimeout === option.value ? 'bg-primary' : 'bg-background'
+                }`}
+              >
+                <Text className={`text-lg font-bold mr-3 ${networkTimeout === option.value ? 'text-white' : 'text-foreground'}`}>
+                  {option.label}
+                </Text>
+                <Text className={`flex-1 ${networkTimeout === option.value ? 'text-white' : 'text-muted'}`}>
+                  {option.desc}
+                </Text>
+                {networkTimeout === option.value && <Text className="text-white">✓</Text>}
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
 
         {/* Connection Buttons */}
         <View className="flex-row gap-3 mx-4 mt-3">

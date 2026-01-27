@@ -1302,7 +1302,11 @@
     "offline_guides_cleared": "Guías offline eliminadas",
     "offline_guides_refreshed": "Guías actualizadas",
     "connection_online": "Conectado",
-    "connection_offline": "Sin conexión"
+    "connection_offline": "Sin conexión",
+    "network_timeout": "Timeout de Red",
+    "network_timeout_desc": "Tiempo de espera para conexiones de red (en segundos)",
+    "timeout_value": "{{value}} segundos",
+    "timeout_saved": "Timeout guardado correctamente"
   },
   "guides": {
     "subtitle": "Documentación disponible sin conexión",

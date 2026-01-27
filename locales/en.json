@@ -1304,7 +1304,11 @@
     "offline_guides_cleared": "Offline guides cleared",
     "offline_guides_refreshed": "Guides refreshed",
     "connection_online": "Online",
-    "connection_offline": "Offline"
+    "connection_offline": "Offline",
+    "network_timeout": "Network Timeout",
+    "network_timeout_desc": "Timeout for network connections (in seconds)",
+    "timeout_value": "{{value}} seconds",
+    "timeout_saved": "Timeout saved successfully"
   },
   "guides": {
     "subtitle": "Documentation available offline",

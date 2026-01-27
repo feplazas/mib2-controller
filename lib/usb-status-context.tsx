@@ -29,7 +29,7 @@ export function UsbStatusProvider({ children }: { children: React.ReactNode }) {
   const [recommendedProfile, setRecommendedProfile] = useState<VIDPIDProfile | null>(null);
   const [useBroadcastReceiver, setUseBroadcastReceiver] = useState(true); // Híbrido: BroadcastReceiver + polling
 
-  // Escanear dispositivos USB
+  // Escanear dispositivos USB con soporte para refresh forzado
   const scanDevices = useCallback(async () => {
     if (isScanning) return;
     
@@ -37,6 +37,27 @@ export function UsbStatusProvider({ children }: { children: React.ReactNode }) {
     
     try {
       await usbService.initialize();
+      
+      // Primero intentar con forceRefreshDevices para obtener estado de permisos
+      const refreshResult = UsbEventModule.forceRefreshDevices();
+      
+      if (refreshResult.success && refreshResult.count > 0) {
+        // Si hay dispositivos sin permisos, solicitarlos automáticamente
+        const devicesWithoutPermission = refreshResult.devices.filter(d => !d.hasPermission);
+        
+        if (devicesWithoutPermission.length > 0) {
+          console.log(`[UsbStatusProvider] Requesting permissions for ${devicesWithoutPermission.length} devices`);
+          try {
+            await UsbEventModule.requestPermissionForAll();
+            // Esperar un momento para que los diálogos de permisos se procesen
+            await new Promise(resolve => setTimeout(resolve, 500));
+          } catch (permError) {
+            console.warn('[UsbStatusProvider] Permission request error:', permError);
+          }
+        }
+      }
+      
+      // Ahora escanear con el servicio normal para obtener la lista completa
       const foundDevices = await usbService.scanDevices();
       setDevices(foundDevices);
       

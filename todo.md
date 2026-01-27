@@ -2979,3 +2979,37 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Actualizar handleScanNetwork() nativo para usar DEFAULT_TIMEOUT
 - [x] Actualizar handleScanNetwork() fallback para usar DEFAULT_TIMEOUT
 - [x] Verificar que todos los timeouts estén unificados
+
+## Corrección Sistema de Detección USB
+
+### Problema Crítico
+- [ ] Investigar por qué el refresh de dispositivos USB no funciona
+- [ ] Implementar BroadcastReceiver para USB_DEVICE_ATTACHED/DETACHED
+- [ ] Corregir detección dinámica sin necesidad de reconectar adaptador
+- [ ] Eliminar comportamiento que Android interpreta como crashes
+- [ ] Cumplir con requisitos de Google Play para USB Host
+- [ ] Probar refresh funcional en UI
+
+### Selector de Timeout en Settings
+- [ ] Crear constante para timeout configurable por usuario
+- [ ] Agregar slider de timeout en pantalla Settings
+- [ ] Persistir valor de timeout en AsyncStorage
+- [ ] Integrar timeout configurable con Network Scanner
+
+
+## Mejoras de Conectividad y UX (27 Ene 2026)
+
+### Timeout de Red Configurable
+- [x] Crear constantes globales DEFAULT_NETWORK_TIMEOUT, QUICK_SCAN_TIMEOUT, EXTENDED_TIMEOUT
+- [x] Implementar funciones getUserTimeout(), setUserTimeout(), initializeTimeout()
+- [x] Persistir timeout en AsyncStorage
+- [x] Unificar todos los timeouts de red para usar las constantes
+- [x] Agregar selector de timeout en Settings (3s, 5s, 10s, 15s, 30s)
+- [x] Agregar traducciones ES/EN/DE para timeout
+
+### Corrección Sistema de Detección USB
+- [x] Agregar función forceRefreshDevices en UsbEventModule.kt
+- [x] Agregar función requestPermissionForAll para solicitar permisos automáticamente
+- [x] Actualizar usb-status-context.tsx para usar las nuevas funciones
+- [x] Solicitar permisos automáticamente al detectar dispositivos sin permiso
+- [x] Eliminar necesidad de reconectar adaptador para refresh

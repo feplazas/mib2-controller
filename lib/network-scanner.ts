@@ -42,6 +42,74 @@ export const QUICK_SCAN_TIMEOUT = 2000;
  */
 export const EXTENDED_TIMEOUT = 10000;
 
+// ============================================
+// TIMEOUT CONFIGURABLE POR USUARIO
+// ============================================
+
+const TIMEOUT_STORAGE_KEY = '@mib2_network_timeout';
+
+/**
+ * Timeout configurado por el usuario (en milisegundos)
+ * Si no hay valor guardado, usa DEFAULT_NETWORK_TIMEOUT
+ */
+let userConfiguredTimeout: number | null = null;
+
+/**
+ * Obtener el timeout configurado por el usuario
+ * @returns Timeout en milisegundos
+ */
+export async function getUserTimeout(): Promise<number> {
+  if (userConfiguredTimeout !== null) {
+    return userConfiguredTimeout;
+  }
+  
+  try {
+    const stored = await AsyncStorage.getItem(TIMEOUT_STORAGE_KEY);
+    if (stored) {
+      userConfiguredTimeout = parseInt(stored, 10);
+      return userConfiguredTimeout;
+    }
+  } catch (error) {
+    console.error('[NetworkScanner] Error loading user timeout:', error);
+  }
+  
+  return DEFAULT_NETWORK_TIMEOUT;
+}
+
+/**
+ * Establecer el timeout configurado por el usuario
+ * @param timeout Timeout en milisegundos (1000-30000)
+ */
+export async function setUserTimeout(timeout: number): Promise<void> {
+  // Validar rango (1-30 segundos)
+  const validTimeout = Math.max(1000, Math.min(30000, timeout));
+  
+  try {
+    await AsyncStorage.setItem(TIMEOUT_STORAGE_KEY, validTimeout.toString());
+    userConfiguredTimeout = validTimeout;
+    console.log(`[NetworkScanner] User timeout set to ${validTimeout}ms`);
+  } catch (error) {
+    console.error('[NetworkScanner] Error saving user timeout:', error);
+    throw error;
+  }
+}
+
+/**
+ * Obtener el timeout actual (sincrónico, usa cache)
+ * Para uso en funciones que no pueden ser async
+ */
+export function getCurrentTimeout(): number {
+  return userConfiguredTimeout ?? DEFAULT_NETWORK_TIMEOUT;
+}
+
+/**
+ * Inicializar el timeout desde storage
+ * Llamar al inicio de la app
+ */
+export async function initializeTimeout(): Promise<void> {
+  await getUserTimeout();
+}
+
 export interface ScanResult {
   host: string;
   port: number;

@@ -24,11 +24,28 @@ export interface UsbEventResult {
   message: string;
 }
 
+export interface ForceRefreshResult {
+  success: boolean;
+  devices: Array<UsbDeviceInfo & { hasPermission: boolean }>;
+  count: number;
+  message?: string;
+}
+
+export interface PermissionResult {
+  success: boolean;
+  message: string;
+  granted: number;
+  pending: number;
+  total: number;
+}
+
 // Mock module for web platform
 const mockModule = {
   startListening: () => ({ success: false, message: 'Not available on web' }),
   stopListening: () => ({ success: false, message: 'Not available on web' }),
   isListening: () => false,
+  forceRefreshDevices: () => ({ success: false, devices: [], count: 0, message: 'Not available on web' }),
+  requestPermissionForAll: async () => ({ success: false, message: 'Not available on web', granted: 0, pending: 0, total: 0 }),
 };
 
 const UsbEventModule = Platform.OS === 'android' 
@@ -84,4 +101,30 @@ export function removeAllListeners() {
   if (!emitter) return;
   (emitter as any).removeAllListeners('onUsbDeviceAttached');
   (emitter as any).removeAllListeners('onUsbDeviceDetached');
+}
+
+/**
+ * Forzar refresco de dispositivos USB
+ * Enumera todos los dispositivos conectados actualmente sin necesidad de reconectar
+ * Incluye información sobre si cada dispositivo tiene permisos
+ */
+export function forceRefreshDevices(): ForceRefreshResult {
+  return UsbEventModule.forceRefreshDevices();
+}
+
+/**
+ * Solicitar permisos para todos los dispositivos USB conectados
+ * Esto permite que el refresh funcione sin necesidad de reconectar
+ * @returns Promesa con el resultado de las solicitudes de permisos
+ */
+export async function requestPermissionForAll(): Promise<PermissionResult> {
+  return UsbEventModule.requestPermissionForAll();
+}
+
+/**
+ * Suscribirse a eventos de resultado de permisos USB
+ */
+export function addUsbPermissionListener(listener: (result: { deviceName: string; granted: boolean }) => void) {
+  if (!emitter) return { remove: () => {} };
+  return (emitter as any).addListener('onUsbPermissionResult', listener);
 }
