@@ -455,13 +455,13 @@ export default function SettingsScreen() {
         {showTimeoutSelector && (
           <View className="mx-4 mt-3 bg-surface rounded-2xl p-4 border border-primary">
             <Text className="text-lg font-semibold text-foreground mb-3">{t('settings.network_timeout')}</Text>
-            <Text className="text-sm text-muted mb-4">{t('settings.network_timeout_desc')}</Text>
+            <Text className="text-sm text-muted mb-4" numberOfLines={3}>{t('settings.network_timeout_desc')}</Text>
             {[
-              { value: 3000, label: '3s', desc: 'Rápido' },
-              { value: 5000, label: '5s', desc: 'Normal (recomendado)' },
-              { value: 10000, label: '10s', desc: 'Lento' },
-              { value: 15000, label: '15s', desc: 'Muy lento' },
-              { value: 30000, label: '30s', desc: 'Máximo' },
+              { value: 3000, label: '3s', desc: t('settings.timeout_fast') || 'Rápido' },
+              { value: 5000, label: '5s', desc: t('settings.timeout_normal') || 'Normal' },
+              { value: 10000, label: '10s', desc: t('settings.timeout_slow') || 'Lento' },
+              { value: 15000, label: '15s', desc: t('settings.timeout_very_slow') || 'Muy lento' },
+              { value: 30000, label: '30s', desc: t('settings.timeout_max') || 'Máximo' },
             ].map((option) => (
               <TouchableOpacity
                 key={option.value}
@@ -471,17 +471,22 @@ export default function SettingsScreen() {
                   setShowTimeoutSelector(false);
                 }}
                 activeOpacity={0.8}
-                className={`flex-row items-center p-3 rounded-xl mb-2 ${
+                className={`flex-row items-center p-3 rounded-xl mb-2 min-h-[48px] ${
                   networkTimeout === option.value ? 'bg-primary' : 'bg-background'
                 }`}
               >
-                <Text className={`text-lg font-bold mr-3 ${networkTimeout === option.value ? 'text-white' : 'text-foreground'}`}>
-                  {option.label}
-                </Text>
-                <Text className={`flex-1 ${networkTimeout === option.value ? 'text-white' : 'text-muted'}`}>
+                <View className="w-12 flex-shrink-0">
+                  <Text className={`text-lg font-bold ${networkTimeout === option.value ? 'text-white' : 'text-foreground'}`}>
+                    {option.label}
+                  </Text>
+                </View>
+                <Text 
+                  className={`flex-1 ${networkTimeout === option.value ? 'text-white' : 'text-muted'}`}
+                  numberOfLines={2}
+                >
                   {option.desc}
                 </Text>
-                {networkTimeout === option.value && <Text className="text-white">✓</Text>}
+                {networkTimeout === option.value && <Text className="text-white ml-2 flex-shrink-0">✓</Text>}
               </TouchableOpacity>
             ))}
           </View>

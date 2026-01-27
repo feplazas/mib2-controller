@@ -1306,7 +1306,12 @@
     "network_timeout": "Timeout de Red",
     "network_timeout_desc": "Tiempo de espera para conexiones de red (en segundos)",
     "timeout_value": "{{value}} segundos",
-    "timeout_saved": "Timeout guardado correctamente"
+    "timeout_saved": "Timeout guardado correctamente",
+    "timeout_fast": "Rápido",
+    "timeout_normal": "Normal (recomendado)",
+    "timeout_slow": "Lento",
+    "timeout_very_slow": "Muy lento",
+    "timeout_max": "Máximo"
   },
   "guides": {
     "subtitle": "Documentación disponible sin conexión",

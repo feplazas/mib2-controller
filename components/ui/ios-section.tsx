@@ -213,22 +213,23 @@ export function IOSRow({
       {...props}
     >
       {leftIcon && (
-        <View className="mr-3">
+        <View className="mr-3 flex-shrink-0">
           {leftIcon}
         </View>
       )}
-      <View className="flex-1 flex-row items-center justify-between">
+      <View className="flex-1 flex-row items-center justify-between min-w-0 gap-3">
         <Text
           className={cn(
-            'text-base',
+            'text-base flex-1 flex-shrink-1',
             destructive ? 'text-error' : 'text-foreground'
           )}
+          numberOfLines={2}
         >
           {label}
         </Text>
-        <View className="flex-row items-center gap-2">
+        <View className="flex-row items-center gap-2 flex-shrink-0">
           {value && (
-            <Text className="text-base text-muted">
+            <Text className="text-base text-muted" numberOfLines={1}>
               {value}
             </Text>
           )}

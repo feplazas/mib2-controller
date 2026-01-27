@@ -452,51 +452,51 @@ export default function UsbStatusScreen() {
               </Text>
               
               <View className="gap-3">
-                <View className="flex-row justify-between">
-                  <Text className="text-sm text-muted">{t('usb.name')}:</Text>
-                  <Text className="text-sm text-foreground font-medium">
+                <View className="flex-row justify-between items-center gap-3">
+                  <Text className="text-sm text-muted flex-shrink-0">{t('usb.name')}:</Text>
+                  <Text className="text-sm text-foreground font-medium flex-1 text-right" numberOfLines={2}>
                     {device.deviceName}
                   </Text>
                 </View>
 
-                <View className="flex-row justify-between">
-                  <Text className="text-sm text-muted">VID:PID:</Text>
-                  <Text className="text-sm text-foreground font-mono">
+                <View className="flex-row justify-between items-center gap-3">
+                  <Text className="text-sm text-muted flex-shrink-0">VID:PID:</Text>
+                  <Text className="text-sm text-foreground font-mono flex-1 text-right" numberOfLines={1}>
                     {usbService.formatVIDPID(device.vendorId, device.productId)}
                   </Text>
                 </View>
 
                 {device.manufacturer && (
-                  <View className="flex-row justify-between">
-                    <Text className="text-sm text-muted">{t('usb.manufacturer')}:</Text>
-                    <Text className="text-sm text-foreground">
+                  <View className="flex-row justify-between items-center gap-3">
+                    <Text className="text-sm text-muted flex-shrink-0">{t('usb.manufacturer')}:</Text>
+                    <Text className="text-sm text-foreground flex-1 text-right" numberOfLines={2}>
                       {device.manufacturer}
                     </Text>
                   </View>
                 )}
 
                 {device.product && (
-                  <View className="flex-row justify-between">
-                    <Text className="text-sm text-muted">{t('usb.product')}:</Text>
-                    <Text className="text-sm text-foreground">
+                  <View className="flex-row justify-between items-center gap-3">
+                    <Text className="text-sm text-muted flex-shrink-0">{t('usb.product')}:</Text>
+                    <Text className="text-sm text-foreground flex-1 text-right" numberOfLines={2}>
                       {device.product}
                     </Text>
                   </View>
                 )}
 
                 {device.serialNumber && device.serialNumber !== 'Unknown' && (
-                  <View className="flex-row justify-between">
-                    <Text className="text-sm text-muted">{t('usb.serial')}:</Text>
-                    <Text className="text-sm text-foreground font-mono">
+                  <View className="flex-row justify-between items-center gap-3">
+                    <Text className="text-sm text-muted flex-shrink-0">{t('usb.serial')}:</Text>
+                    <Text className="text-sm text-foreground font-mono flex-1 text-right" numberOfLines={1}>
                       {device.serialNumber}
                     </Text>
                   </View>
                 )}
 
                 {device.chipset && (
-                  <View className="flex-row justify-between">
-                    <Text className="text-sm text-muted">{t('usb.chipset')}:</Text>
-                    <Text className="text-sm text-foreground font-medium">
+                  <View className="flex-row justify-between items-center gap-3">
+                    <Text className="text-sm text-muted flex-shrink-0">{t('usb.chipset')}:</Text>
+                    <Text className="text-sm text-foreground font-medium flex-1 text-right" numberOfLines={1}>
                       {device.chipset}
                     </Text>
                   </View>

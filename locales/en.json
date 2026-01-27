@@ -1308,7 +1308,12 @@
     "network_timeout": "Network Timeout",
     "network_timeout_desc": "Timeout for network connections (in seconds)",
     "timeout_value": "{{value}} seconds",
-    "timeout_saved": "Timeout saved successfully"
+    "timeout_saved": "Timeout saved successfully",
+    "timeout_fast": "Fast",
+    "timeout_normal": "Normal (recommended)",
+    "timeout_slow": "Slow",
+    "timeout_very_slow": "Very slow",
+    "timeout_max": "Maximum"
   },
   "guides": {
     "subtitle": "Documentation available offline",

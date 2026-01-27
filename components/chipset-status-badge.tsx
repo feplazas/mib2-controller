@@ -128,17 +128,21 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     gap: 12,
+    minHeight: 64,
   },
   icon: {
     fontSize: 24,
+    flexShrink: 0,
   },
   textContainer: {
     flex: 1,
     gap: 4,
+    minWidth: 0,
   },
   label: {
     fontSize: 14,
     fontWeight: '600',
+    flexWrap: 'wrap',
   },
   chipset: {
     fontSize: 12,

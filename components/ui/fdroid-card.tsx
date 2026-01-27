@@ -323,6 +323,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
+    flexShrink: 0,
   },
   icon: {
     fontSize: 24,
@@ -330,16 +331,18 @@ const styles = StyleSheet.create({
   titleContainer: {
     flex: 1,
     gap: 4,
+    minWidth: 0,
   },
   titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+    flexWrap: 'wrap',
   },
   title: {
     fontSize: 16,
     fontWeight: '600',
-    flex: 1,
+    flexShrink: 1,
   },
   subtitle: {
     fontSize: 13,
@@ -349,6 +352,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 6,
+    flexShrink: 0,
   },
   badgeText: {
     fontSize: 11,
@@ -361,6 +365,7 @@ const styles = StyleSheet.create({
   listItem: {
     paddingVertical: 12,
     paddingHorizontal: 16,
+    minHeight: 56,
   },
   listItemContent: {
     flexDirection: 'row',
@@ -373,10 +378,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
+    flexShrink: 0,
   },
   listItemText: {
     flex: 1,
     gap: 2,
+    minWidth: 0,
   },
   listItemTitle: {
     fontSize: 16,
@@ -388,5 +395,6 @@ const styles = StyleSheet.create({
   listItemValue: {
     fontSize: 14,
     marginRight: 4,
+    flexShrink: 0,
   },
 });

@@ -178,6 +178,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 14,
     gap: 8,
+    minHeight: 44,
   },
   fullWidth: {
     width: '100%',
@@ -188,8 +189,10 @@ const styles = StyleSheet.create({
   text: {
     fontWeight: '600',
     textAlign: 'center',
+    flexShrink: 1,
   },
   icon: {
     marginRight: 4,
+    flexShrink: 0,
   },
 });

@@ -313,17 +313,35 @@ export default function HomeScreen() {
           {/* Header - Premium Design */}
           <AnimatedFadeIn direction="fade" delay={0}>
             <View className="items-center gap-3 mb-2">
-              <View className="bg-primary/10 px-4 py-1 rounded-full">
-                <Text className="text-xs font-semibold text-primary uppercase tracking-wider">
+              <View className="bg-primary/10 px-4 py-1.5 rounded-full">
+                <Text 
+                  className="text-xs font-semibold text-primary uppercase tracking-wider text-center"
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.8}
+                >
                   MIB2 STD2 Technisat Preh
                 </Text>
               </View>
-              <Text className="text-3xl font-bold text-foreground tracking-tight">MIB2 Controller</Text>
-              <Text className="text-sm text-muted text-center px-4">
+              <Text 
+                className="text-3xl font-bold text-foreground tracking-tight text-center"
+                adjustsFontSizeToFit
+                numberOfLines={1}
+                minimumFontScale={0.7}
+              >
+                MIB2 Controller
+              </Text>
+              <Text 
+                className="text-sm text-muted text-center px-4"
+                numberOfLines={3}
+              >
                 {t('home.subtitle')}
               </Text>
-              <View className="bg-warning/10 px-3 py-1.5 rounded-lg mt-1">
-                <Text className="text-xs text-warning text-center font-medium">
+              <View className="bg-warning/10 px-4 py-2 rounded-xl mt-1 mx-4">
+                <Text 
+                  className="text-xs text-warning text-center font-medium leading-relaxed"
+                  numberOfLines={3}
+                >
                   {t('home.compatibility_notice')}
                 </Text>
               </View>
@@ -395,15 +413,17 @@ export default function HomeScreen() {
 
                 {/* Firmware Info - REAL */}
                 {toolboxInfo && (toolboxInfo.firmwareVersion || toolboxInfo.hardwareVersion) && (
-                  <View className="bg-background rounded-lg p-3 mb-3">
-                    <View className="flex-row items-center justify-between mb-2">
-                      <Text className="text-sm font-semibold text-foreground">{t('home.firmware_mib2')}</Text>
-                      <View className={`px-2 py-1 rounded ${
+                  <View className="bg-background rounded-xl p-4 mb-3">
+                    <View className="flex-row items-center justify-between mb-2 gap-2 flex-wrap">
+                      <Text className="text-sm font-semibold text-foreground flex-shrink-1" numberOfLines={1}>
+                        {t('home.firmware_mib2')}
+                      </Text>
+                      <View className={`px-3 py-1.5 rounded-lg flex-shrink-0 ${
                         toolboxInfo.firmwareCompatible ? 'bg-success/20' : 'bg-warning/20'
                       }`}>
                         <Text className={`text-xs font-semibold ${
                           toolboxInfo.firmwareCompatible ? 'text-success' : 'text-warning'
-                        }`}>
+                        }`} numberOfLines={1}>
                           {toolboxInfo.firmwareCompatible ? t('home.compatible') : t('home.telnet_closed')}
                         </Text>
                       </View>
@@ -430,15 +450,17 @@ export default function HomeScreen() {
 
                 {/* Toolbox Info */}
                 {toolboxInfo && (
-                  <View className="bg-background rounded-lg p-3">
-                    <View className="flex-row items-center justify-between mb-2">
-                      <Text className="text-sm font-semibold text-foreground">{t('home.mib2_toolbox')}</Text>
-                      <View className={`px-2 py-1 rounded ${
+                  <View className="bg-background rounded-xl p-4">
+                    <View className="flex-row items-center justify-between mb-2 gap-2 flex-wrap">
+                      <Text className="text-sm font-semibold text-foreground flex-shrink-1" numberOfLines={1}>
+                        {t('home.mib2_toolbox')}
+                      </Text>
+                      <View className={`px-3 py-1.5 rounded-lg flex-shrink-0 ${
                         toolboxInfo.installed ? 'bg-success/20' : 'bg-error/20'
                       }`}>
                         <Text className={`text-xs font-semibold ${
                           toolboxInfo.installed ? 'text-success' : 'text-error'
-                        }`}>
+                        }`} numberOfLines={1}>
                           {toolboxInfo.installed ? t('home.installed') : t('home.not_installed')}
                         </Text>
                       </View>
@@ -448,31 +470,46 @@ export default function HomeScreen() {
                     )}
                     {toolboxInfo.installed && toolboxInfo.services && (
                       <View className="flex-row gap-2 flex-wrap">
-                        <View className={`px-2 py-1 rounded ${
+                        <View className={`px-3 py-1.5 rounded-lg flex-row items-center gap-1 ${
                           toolboxInfo.services.telnet ? 'bg-success/10' : 'bg-muted/10'
                         }`}>
+                          <Text className={`text-xs font-medium ${
+                            toolboxInfo.services.telnet ? 'text-success' : 'text-muted'
+                          }`}>
+                            Telnet
+                          </Text>
                           <Text className={`text-xs ${
                             toolboxInfo.services.telnet ? 'text-success' : 'text-muted'
                           }`}>
-                            Telnet {toolboxInfo.services.telnet ? '✓' : '✗'}
+                            {toolboxInfo.services.telnet ? '✓' : '✗'}
                           </Text>
                         </View>
-                        <View className={`px-2 py-1 rounded ${
+                        <View className={`px-3 py-1.5 rounded-lg flex-row items-center gap-1 ${
                           toolboxInfo.services.ftp ? 'bg-success/10' : 'bg-muted/10'
                         }`}>
+                          <Text className={`text-xs font-medium ${
+                            toolboxInfo.services.ftp ? 'text-success' : 'text-muted'
+                          }`}>
+                            FTP
+                          </Text>
                           <Text className={`text-xs ${
                             toolboxInfo.services.ftp ? 'text-success' : 'text-muted'
                           }`}>
-                            FTP {toolboxInfo.services.ftp ? '✓' : '✗'}
+                            {toolboxInfo.services.ftp ? '✓' : '✗'}
                           </Text>
                         </View>
-                        <View className={`px-2 py-1 rounded ${
+                        <View className={`px-3 py-1.5 rounded-lg flex-row items-center gap-1 ${
                           toolboxInfo.services.ssh ? 'bg-success/10' : 'bg-muted/10'
                         }`}>
+                          <Text className={`text-xs font-medium ${
+                            toolboxInfo.services.ssh ? 'text-success' : 'text-muted'
+                          }`}>
+                            SSH
+                          </Text>
                           <Text className={`text-xs ${
                             toolboxInfo.services.ssh ? 'text-success' : 'text-muted'
                           }`}>
-                            SSH {toolboxInfo.services.ssh ? '✓' : '✗'}
+                            {toolboxInfo.services.ssh ? '✓' : '✗'}
                           </Text>
                         </View>
                       </View>

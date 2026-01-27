@@ -3013,3 +3013,24 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Actualizar usb-status-context.tsx para usar las nuevas funciones
 - [x] Solicitar permisos automáticamente al detectar dispositivos sin permiso
 - [x] Eliminar necesidad de reconectar adaptador para refresh
+
+
+## Optimización Visual - Responsiveness (27 Ene 2026)
+
+### Pills y Tarjetas
+- [x] Revisar y corregir layout de pills en todas las pantallas
+- [x] Asegurar que textos no se corten ni desborden (numberOfLines + ellipsizeMode)
+- [x] Alinear correctamente íconos con textos (flex-shrink-0 en íconos)
+- [x] Implementar flexWrap para textos largos en otros idiomas
+- [x] Agregar padding/margin consistente (min-h-[48px], min-w-0)
+
+### Responsiveness
+- [x] Implementar escalado de fuentes según tamaño de pantalla (adjustsFontSizeToFit)
+- [x] Usar dimensiones relativas en lugar de absolutas donde sea necesario
+- [x] Probar con diferentes tamaños de fuente del sistema
+- [x] Asegurar que funcione en pantallas pequeñas y grandes
+
+### Verificación Multi-idioma
+- [x] Verificar layout con textos en español
+- [x] Verificar layout con textos en inglés
+- [x] Verificar layout con textos en alemán (textos más largos)

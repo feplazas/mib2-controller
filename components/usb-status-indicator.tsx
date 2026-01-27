@@ -108,11 +108,20 @@ export function UsbStatusIndicator({ status, deviceName, onPress }: UsbStatusInd
         </Animated.View>
         
         {/* Información de estado */}
-        <View className="flex-1">
-          <Text className={cn('text-base font-bold', config.textColor)}>
+        <View className="flex-1 min-w-0">
+          <Text 
+            className={cn('text-base font-bold', config.textColor)}
+            numberOfLines={2}
+            adjustsFontSizeToFit
+            minimumFontScale={0.8}
+          >
             {config.text}
           </Text>
-          <Text className="text-sm text-muted mt-0.5" numberOfLines={1}>
+          <Text 
+            className="text-sm text-muted mt-0.5" 
+            numberOfLines={2}
+            ellipsizeMode="tail"
+          >
             {config.description}
           </Text>
         </View>
