@@ -4,6 +4,7 @@ import * as Haptics from 'expo-haptics';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import { SkeletonNetworkScan } from '@/components/ui/skeleton-loader';
 import { useColors } from '@/hooks/use-colors';
 import { useTranslation } from "@/lib/language-context";
 import { 
@@ -617,8 +618,27 @@ export default function NetworkScannerScreen() {
           </Pressable>
         </Animated.View>
 
+        {/* Loading Indicator - Animated Network Scan */}
+        {isAnyLoading && (
+          <Animated.View 
+            entering={FadeInUp.duration(300)}
+            style={[styles.loadingCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
+          >
+            <SkeletonNetworkScan 
+              message={
+                isPinging ? (t('network_scanner.pinging') || 'Probando conexión...') :
+                isScanning ? (t('network_scanner.scanning') || 'Escaneando red...') :
+                isArpScanning ? (t('network_scanner.arp_scanning') || 'Detectando dispositivos...') :
+                (t('network_scanner.loading') || 'Cargando...')
+              }
+              progress={scanProgress}
+              showProgress={isScanning && scanProgress > 0}
+            />
+          </Animated.View>
+        )}
+
         {/* Ping Result */}
-        {pingResult && (
+        {pingResult && !isAnyLoading && (
           <Animated.View 
             entering={FadeInUp.duration(300)}
             style={[styles.resultCard, { 
@@ -652,7 +672,7 @@ export default function NetworkScannerScreen() {
         )}
 
         {/* ARP Results */}
-        {arpResults.length > 0 && (
+        {arpResults.length > 0 && !isAnyLoading && (
           <Animated.View 
             entering={FadeInUp.duration(300)}
             style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
@@ -731,7 +751,7 @@ export default function NetworkScannerScreen() {
         )}
 
         {/* Scan Results */}
-        {scanResults.length > 0 && (
+        {scanResults.length > 0 && !isAnyLoading && (
           <Animated.View 
             entering={FadeInUp.duration(300)}
             style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
@@ -1056,5 +1076,14 @@ const styles = StyleSheet.create({
   arpResultTime: {
     fontSize: 11,
     marginTop: 8,
+  },
+  loadingCard: {
+    borderRadius: 16,
+    padding: 24,
+    marginBottom: 16,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 200,
   },
 });

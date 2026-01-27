@@ -165,8 +165,14 @@ export function TelnetProvider({ children }: { children: React.ReactNode }) {
     client.sendCommand(command);
   }, [client, isConnected, addMessage]);
 
-  const clearMessages = useCallback(() => {
+  const clearMessages = useCallback(async () => {
     setMessages([]);
+    // También limpiar mensajes de AsyncStorage
+    try {
+      await AsyncStorage.removeItem(STORAGE_KEY_MESSAGES);
+    } catch (error) {
+      console.error('Error clearing messages from storage:', error);
+    }
   }, []);
 
   const value: TelnetContextValue = {

@@ -3034,3 +3034,19 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Verificar layout con textos en español
 - [x] Verificar layout con textos en inglés
 - [x] Verificar layout con textos en alemán (textos más largos)
+
+
+## Indicador de Carga para Network Scanner (27 Ene 2026)
+
+- [x] Crear indicador de carga animado durante escaneo de red (SkeletonNetworkScan)
+- [x] Mostrar progreso visual con animación tipo shimmer o pulse (radar animation)
+- [x] Agregar texto de estado durante escaneo (Escaneando..., Buscando dispositivos...)
+- [x] Implementar feedback visual al encontrar dispositivos
+- [x] Agregar traducciones ES/EN/DE para mensajes de carga
+
+
+## BUG: Botón Clear del Log Telnet no funciona (27 Ene 2026)
+
+- [x] Investigar por qué el botón Clear no limpia el log de Telnet
+- [x] Corregir función clearMessages en telnet-provider.tsx (ahora también limpia AsyncStorage)
+- [x] Verificar que el estado de mensajes se resetea correctamente

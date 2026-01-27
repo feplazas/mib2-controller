@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet, ViewStyle } from 'react-native';
+import { View, Text, StyleSheet, ViewStyle } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -618,5 +618,259 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(30, 32, 34, 0.8)',
     borderRadius: 12,
     overflow: 'hidden',
+  },
+});
+
+
+/**
+ * SkeletonNetworkScan - Skeleton animado para escaneo de red
+ * Muestra un indicador visual premium mientras se escanea la red
+ */
+export function SkeletonNetworkScan({
+  message = 'Escaneando...',
+  progress = 0,
+  showProgress = true,
+  style,
+}: {
+  message?: string;
+  progress?: number;
+  showProgress?: boolean;
+  style?: ViewStyle;
+}) {
+  const pulseOpacity = useSharedValue(0.4);
+  const scanLinePosition = useSharedValue(0);
+
+  useEffect(() => {
+    // Animación de pulso
+    pulseOpacity.value = withRepeat(
+      withTiming(1, { duration: 800, easing: Easing.inOut(Easing.ease) }),
+      -1,
+      true
+    );
+    
+    // Animación de línea de escaneo
+    scanLinePosition.value = withRepeat(
+      withTiming(1, { duration: 2000, easing: Easing.linear }),
+      -1,
+      false
+    );
+  }, []);
+
+  const pulseStyle = useAnimatedStyle(() => ({
+    opacity: pulseOpacity.value,
+  }));
+
+  const scanLineStyle = useAnimatedStyle(() => ({
+    top: `${scanLinePosition.value * 100}%`,
+  }));
+
+  return (
+    <View style={[networkScanStyles.container, style]}>
+      {/* Radar/Scan Animation */}
+      <View style={networkScanStyles.radarContainer}>
+        <Animated.View style={[networkScanStyles.radarOuter, pulseStyle]} />
+        <Animated.View style={[networkScanStyles.radarMiddle, pulseStyle]} />
+        <Animated.View style={[networkScanStyles.radarInner, pulseStyle]} />
+        <View style={networkScanStyles.radarCenter}>
+          <View style={networkScanStyles.radarDot} />
+        </View>
+        {/* Scan line */}
+        <Animated.View style={[networkScanStyles.scanLine, scanLineStyle]} />
+      </View>
+
+      {/* Message */}
+      <Animated.Text style={[networkScanStyles.message, pulseStyle]}>
+        {message}
+      </Animated.Text>
+
+      {/* Progress Bar */}
+      {showProgress && progress > 0 && (
+        <View style={networkScanStyles.progressContainer}>
+          <View style={networkScanStyles.progressBackground}>
+            <View 
+              style={[
+                networkScanStyles.progressFill, 
+                { width: `${Math.min(progress, 100)}%` }
+              ]} 
+            />
+          </View>
+          <Text style={networkScanStyles.progressText}>{Math.round(progress)}%</Text>
+        </View>
+      )}
+    </View>
+  );
+}
+
+/**
+ * NetworkScanningOverlay - Overlay completo para escaneo de red
+ * Se muestra sobre el contenido mientras se realiza el escaneo
+ */
+export function NetworkScanningOverlay({
+  visible,
+  message = 'Escaneando red...',
+  progress = 0,
+  showProgress = true,
+  onCancel,
+}: {
+  visible: boolean;
+  message?: string;
+  progress?: number;
+  showProgress?: boolean;
+  onCancel?: () => void;
+}) {
+  const opacity = useSharedValue(0);
+
+  useEffect(() => {
+    opacity.value = withTiming(visible ? 1 : 0, { duration: 200 });
+  }, [visible]);
+
+  const overlayStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+    pointerEvents: visible ? 'auto' : 'none',
+  }));
+
+  if (!visible) return null;
+
+  return (
+    <Animated.View style={[networkScanStyles.overlay, overlayStyle]}>
+      <View style={networkScanStyles.overlayContent}>
+        <SkeletonNetworkScan 
+          message={message} 
+          progress={progress}
+          showProgress={showProgress}
+        />
+        {onCancel && (
+          <View style={networkScanStyles.cancelButton}>
+            <Text style={networkScanStyles.cancelText}>Cancelar</Text>
+          </View>
+        )}
+      </View>
+    </Animated.View>
+  );
+}
+
+const networkScanStyles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
+  },
+  radarContainer: {
+    width: 120,
+    height: 120,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+    overflow: 'hidden',
+  },
+  radarOuter: {
+    position: 'absolute',
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    borderWidth: 2,
+    borderColor: '#007AFF',
+    backgroundColor: 'rgba(0, 122, 255, 0.05)',
+  },
+  radarMiddle: {
+    position: 'absolute',
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    borderWidth: 2,
+    borderColor: '#007AFF',
+    backgroundColor: 'rgba(0, 122, 255, 0.1)',
+  },
+  radarInner: {
+    position: 'absolute',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: '#007AFF',
+    backgroundColor: 'rgba(0, 122, 255, 0.15)',
+  },
+  radarCenter: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: '#007AFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  radarDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#FFFFFF',
+  },
+  scanLine: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    height: 2,
+    backgroundColor: 'rgba(0, 122, 255, 0.6)',
+  },
+  message: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#007AFF',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  progressContainer: {
+    width: '100%',
+    maxWidth: 200,
+    alignItems: 'center',
+  },
+  progressBackground: {
+    width: '100%',
+    height: 6,
+    backgroundColor: 'rgba(0, 122, 255, 0.2)',
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    backgroundColor: '#007AFF',
+    borderRadius: 3,
+  },
+  progressText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#007AFF',
+    marginTop: 8,
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1000,
+  },
+  overlayContent: {
+    backgroundColor: 'rgba(30, 32, 34, 0.95)',
+    borderRadius: 20,
+    padding: 32,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 122, 255, 0.3)',
+    shadowColor: '#007AFF',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 10,
+  },
+  cancelButton: {
+    marginTop: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    backgroundColor: 'rgba(255, 59, 48, 0.2)',
+  },
+  cancelText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#FF3B30',
   },
 });

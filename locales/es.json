@@ -507,7 +507,9 @@
     "arp_scan": "Escaneo ARP",
     "auto_detect": "Auto-Detectar",
     "arp_results": "Dispositivos Detectados (ARP)",
-    "scanning": "Escaneando..."
+    "scanning": "Escaneando red...",
+    "arp_scanning": "Detectando dispositivos...",
+    "loading": "Cargando..."
   },
   "scanner": {
     "title": "Escáner de Red",

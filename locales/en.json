@@ -509,7 +509,9 @@
     "arp_scan": "ARP Scan",
     "auto_detect": "Auto-Detect",
     "arp_results": "Detected Devices (ARP)",
-    "scanning": "Scanning..."
+    "scanning": "Scanning network...",
+    "arp_scanning": "Detecting devices...",
+    "loading": "Loading..."
   },
   "scanner": {
     "title": "Network Scanner",
