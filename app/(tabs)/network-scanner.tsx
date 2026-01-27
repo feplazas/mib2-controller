@@ -15,6 +15,9 @@ import {
   quickArpScan,
   getArpTable,
   detectMIB2WithArp,
+  DEFAULT_NETWORK_TIMEOUT,
+  QUICK_SCAN_TIMEOUT,
+  EXTENDED_TIMEOUT,
   type PingResult as NativePingResult,
   type PortScanResult,
   type MIB2FindResult,
@@ -67,7 +70,7 @@ export default function NetworkScannerScreen() {
   }, []);
 
   // Función para hacer ping TCP (simula ping conectando a un puerto)
-  const tcpPing = async (ip: string, port: number, timeout: number = 3000): Promise<ScanResult> => {
+  const tcpPing = async (ip: string, port: number, timeout: number = DEFAULT_NETWORK_TIMEOUT): Promise<ScanResult> => {
     const startTime = Date.now();
     
     return new Promise((resolve) => {
@@ -119,7 +122,7 @@ export default function NetworkScannerScreen() {
     addLog(`🔍 ${t('network_scanner.starting_scan') || 'Iniciando escaneo de puertos en'} ${targetIp}...`);
     
     try {
-      const nativeResults = await nativeScanPorts(targetIp, MIB2_PORTS, 3000);
+      const nativeResults = await nativeScanPorts(targetIp, MIB2_PORTS, DEFAULT_NETWORK_TIMEOUT);
       
       const results: ScanResult[] = nativeResults.map(r => ({
         ip: r.host,
@@ -159,7 +162,7 @@ export default function NetworkScannerScreen() {
       
       for (let i = 0; i < MIB2_PORTS.length; i++) {
         const port = MIB2_PORTS[i];
-        const result = await tcpPing(targetIp, port, 3000);
+        const result = await tcpPing(targetIp, port, DEFAULT_NETWORK_TIMEOUT);
         results.push(result);
         
         if (result.status === 'open') {
@@ -195,7 +198,7 @@ export default function NetworkScannerScreen() {
     addLog(`🏓 Ping ICMP ${t('network_scanner.to') || 'a'} ${targetIp}...`);
     
     try {
-      const result = await combinedPing(targetIp, 5000);
+      const result = await combinedPing(targetIp, DEFAULT_NETWORK_TIMEOUT);
       
       if (result.success) {
         setPingResult({
@@ -222,7 +225,7 @@ export default function NetworkScannerScreen() {
       }
     } catch (error) {
       addLog(`⚠️ Fallback TCP...`);
-      const result23 = await tcpPing(targetIp, 23, 5000);
+      const result23 = await tcpPing(targetIp, 23, DEFAULT_NETWORK_TIMEOUT);
       
       if (result23.status === 'open' || result23.status === 'closed') {
         setPingResult({
@@ -267,7 +270,7 @@ export default function NetworkScannerScreen() {
     addLog(`🔍 ${t('network_scanner.searching_mib2') || 'Buscando MIB2 en la red'}...`);
     
     try {
-      const nativeResults = await nativeFindMIB2(3000);
+      const nativeResults = await nativeFindMIB2(DEFAULT_NETWORK_TIMEOUT);
       
       const results: ScanResult[] = nativeResults
         .filter(r => r.found)
@@ -304,7 +307,7 @@ export default function NetworkScannerScreen() {
       
       for (let i = 0; i < commonIPs.length; i++) {
         const ip = commonIPs[i];
-        const result = await tcpPing(ip, 23, 2000);
+        const result = await tcpPing(ip, 23, QUICK_SCAN_TIMEOUT);
         
         if (result.status === 'open') {
           results.push(result);

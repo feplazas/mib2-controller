@@ -9,6 +9,39 @@ import { Platform, NativeModules } from 'react-native';
 
 const { NetworkInfoModule } = NativeModules;
 
+// ============================================
+// CONFIGURACIÓN GLOBAL DE TIMEOUTS
+// ============================================
+
+/**
+ * Timeout por defecto para operaciones de red (en milisegundos)
+ * 
+ * Este valor se usa en todas las funciones de escaneo y ping.
+ * Ajustar este valor afecta:
+ * - Ping ICMP y TCP
+ * - Escaneo de puertos
+ * - Búsqueda de MIB2
+ * - Escaneo ARP
+ * 
+ * Valores recomendados:
+ * - 3000ms: Conexiones rápidas y estables
+ * - 5000ms: Conexiones normales (recomendado)
+ * - 10000ms: Conexiones lentas o inestables
+ */
+export const DEFAULT_NETWORK_TIMEOUT = 5000;
+
+/**
+ * Timeout corto para escaneos rápidos (en milisegundos)
+ * Usado para escaneos de múltiples hosts donde se necesita velocidad
+ */
+export const QUICK_SCAN_TIMEOUT = 2000;
+
+/**
+ * Timeout largo para operaciones críticas (en milisegundos)
+ * Usado para conexiones Telnet y operaciones que requieren más tiempo
+ */
+export const EXTENDED_TIMEOUT = 10000;
+
 export interface ScanResult {
   host: string;
   port: number;
@@ -346,7 +379,7 @@ export async function saveMIB2IP(ip: string): Promise<void> {
  * Ping ICMP nativo usando el módulo de Android
  * Más preciso que TCP para verificar conectividad
  */
-export async function nativePing(host: string, timeoutMs: number = 3000): Promise<PingResult> {
+export async function nativePing(host: string, timeoutMs: number = DEFAULT_NETWORK_TIMEOUT): Promise<PingResult> {
   if (Platform.OS !== 'android' || !NetworkInfoModule?.ping) {
     // Fallback a TCP ping en plataformas no soportadas
     return tcpPingFallback(host, 23, timeoutMs);
@@ -377,7 +410,7 @@ export async function nativePing(host: string, timeoutMs: number = 3000): Promis
  * Ping TCP nativo usando el módulo de Android
  * Útil cuando ICMP está bloqueado
  */
-export async function nativeTcpPing(host: string, port: number = 23, timeoutMs: number = 3000): Promise<PingResult> {
+export async function nativeTcpPing(host: string, port: number = 23, timeoutMs: number = DEFAULT_NETWORK_TIMEOUT): Promise<PingResult> {
   if (Platform.OS !== 'android' || !NetworkInfoModule?.tcpPing) {
     return tcpPingFallback(host, port, timeoutMs);
   }
@@ -465,7 +498,7 @@ async function tcpPingFallback(host: string, port: number, timeout: number): Pro
 export async function nativeScanPorts(
   host: string,
   ports: number[] = [23, 123, 21, 22, 80, 8080, 3000],
-  timeoutMs: number = 2000
+  timeoutMs: number = DEFAULT_NETWORK_TIMEOUT
 ): Promise<PortScanResult[]> {
   if (Platform.OS !== 'android' || !NetworkInfoModule?.scanPorts) {
     // Fallback manual
@@ -499,7 +532,7 @@ export async function nativeScanPorts(
 /**
  * Buscar MIB2 en IPs comunes usando módulo nativo
  */
-export async function nativeFindMIB2(timeoutMs: number = 2000): Promise<MIB2FindResult[]> {
+export async function nativeFindMIB2(timeoutMs: number = DEFAULT_NETWORK_TIMEOUT): Promise<MIB2FindResult[]> {
   if (Platform.OS !== 'android' || !NetworkInfoModule?.findMIB2) {
     // Fallback usando quickScan
     const results = await quickScan();
@@ -528,7 +561,7 @@ export async function nativeFindMIB2(timeoutMs: number = 2000): Promise<MIB2Find
 /**
  * Ping combinado: intenta ICMP primero, luego TCP como fallback
  */
-export async function combinedPing(host: string, timeoutMs: number = 3000): Promise<PingResult> {
+export async function combinedPing(host: string, timeoutMs: number = DEFAULT_NETWORK_TIMEOUT): Promise<PingResult> {
   // Primero intentar ICMP
   const icmpResult = await nativePing(host, timeoutMs);
   if (icmpResult.success) {
@@ -610,7 +643,7 @@ export async function arpScan(
  * Escaneo ARP rápido - Escanea solo IPs comunes de MIB2
  * Más rápido que el escaneo completo
  */
-export async function quickArpScan(timeoutMs: number = 3000): Promise<ArpScanResult[]> {
+export async function quickArpScan(timeoutMs: number = DEFAULT_NETWORK_TIMEOUT): Promise<ArpScanResult[]> {
   if (Platform.OS !== 'android' || !NetworkInfoModule?.quickArpScan) {
     // Fallback: usar método antiguo
     console.warn('Quick ARP scan not available, using fallback');
@@ -640,7 +673,7 @@ export async function quickArpScan(timeoutMs: number = 3000): Promise<ArpScanRes
  * Detectar MIB2 usando combinación de ARP y puertos
  * Método más completo para encontrar MIB2
  */
-export async function detectMIB2WithArp(timeoutMs: number = 3000): Promise<ArpScanResult | null> {
+export async function detectMIB2WithArp(timeoutMs: number = DEFAULT_NETWORK_TIMEOUT): Promise<ArpScanResult | null> {
   // Primero intentar escaneo ARP rápido
   const arpResults = await quickArpScan(timeoutMs);
   

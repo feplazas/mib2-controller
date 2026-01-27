@@ -2968,3 +2968,14 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Agregar ícono a Network Scanner en tab bar
 - [x] Reordenar tabs: Network Scanner antes de Config
 - [x] Optimizar UI Network Scanner look ultra premium
+
+## Optimización de Timeouts de Red
+
+### Constante Global DEFAULT_TIMEOUT
+- [x] Crear constante DEFAULT_TIMEOUT en lib/network-scanner.ts
+- [x] Actualizar tcpPing() para usar DEFAULT_TIMEOUT
+- [x] Actualizar handleScanPorts() nativo para usar DEFAULT_TIMEOUT
+- [x] Actualizar handleScanPorts() fallback para usar DEFAULT_TIMEOUT
+- [x] Actualizar handleScanNetwork() nativo para usar DEFAULT_TIMEOUT
+- [x] Actualizar handleScanNetwork() fallback para usar DEFAULT_TIMEOUT
+- [x] Verificar que todos los timeouts estén unificados
