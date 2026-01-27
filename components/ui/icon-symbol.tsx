@@ -68,6 +68,8 @@ const MAPPING = {
   "wifi": "wifi",
   "wifi.slash": "wifi-off",
   "network": "lan",
+  "network.badge.shield.half.filled": "security",
+  "point.3.connected.trianglepath.dotted": "hub",
   
   // Security & Keys
   "key.fill": "vpn-key",

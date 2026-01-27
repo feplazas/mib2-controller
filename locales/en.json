@@ -342,6 +342,7 @@
     "diag": "Diag",
     "config": "Config",
     "actions": "Actions",
+    "network": "Network",
     "tools": "Tools"
   },
   "actions": {

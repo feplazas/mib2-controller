@@ -169,6 +169,21 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="network-scanner"
+        options={{
+          title: t('tabs.network'),
+          tabBarIcon: ({ color, focused }) => (
+            <AnimatedTabIcon 
+              size={24} 
+              name="point.3.connected.trianglepath.dotted" 
+              color={color}
+              focused={focused}
+              glowColor={colors.primary}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="settings"
         options={{
           title: t('tabs.config'),

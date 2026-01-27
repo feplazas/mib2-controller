@@ -2965,3 +2965,6 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Agregar Network Scanner para verificar conectividad
 - [ ] Agregar ping ICMP nativo al Network Scanner
 - [x] Agregar escaneo ARP al Network Scanner
+- [x] Agregar ícono a Network Scanner en tab bar
+- [x] Reordenar tabs: Network Scanner antes de Config
+- [x] Optimizar UI Network Scanner look ultra premium
