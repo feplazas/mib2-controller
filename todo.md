@@ -3079,3 +3079,17 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Actualizar guías en /docs con requisitos de hardware
 - [x] Actualizar guía de conexión USB-Ethernet embebida
 - [x] Verificar consistencia en los 3 idiomas (ES/EN/DE)
+
+
+## Build APK Release (Enero 2026)
+
+- [x] Verificar configuración de EAS Build
+- [x] Generar APK firmado de release (v1.1.0, build 7)
+- [x] Entregar APK al usuario
+
+
+## GitHub Sync y Política de Privacidad (Enero 2026)
+
+- [ ] Commit cambios recientes a GitHub
+- [ ] Push/sync con repositorio remoto
+- [ ] Actualizar página de política de privacidad
