@@ -16,6 +16,22 @@ interface OnboardingStep {
 
 const ONBOARDING_STEPS: OnboardingStep[] = [
   {
+    id: 0,
+    icon: '🛠️',
+    titleKey: 'onboarding.step0_title',
+    descriptionKey: 'onboarding.step0_desc',
+    detailKeys: [
+      'onboarding.step0_detail1',
+      'onboarding.step0_detail2',
+      'onboarding.step0_detail3',
+      'onboarding.step0_detail4',
+      'onboarding.step0_detail5',
+      'onboarding.step0_detail6',
+      'onboarding.step0_detail7',
+      'onboarding.step0_detail8',
+    ],
+  },
+  {
     id: 1,
     icon: '🔌',
     titleKey: 'onboarding.step1_title',

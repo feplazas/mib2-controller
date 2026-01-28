@@ -3059,3 +3059,11 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Corregir la función clearMessages en telnet-provider.tsx (agregado flag isClearing)
 - [x] Verificar que el estado local también se resetea
 - [ ] Probar que el botón funciona correctamente (requiere build)
+
+
+## Actualizar Guía Inicial con Lista de Hardware (28 Ene 2026)
+
+- [x] Localizar el componente de guía inicial en la app (onboarding-modal.tsx)
+- [x] Agregar lista completa de hardware necesario (nuevo paso 0)
+- [x] Incluir: adaptadores USB-Ethernet, switch, cables, alimentación
+- [x] Actualizar traducciones ES/EN/DE

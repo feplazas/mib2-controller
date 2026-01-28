@@ -1571,6 +1571,16 @@
     "device_ready": "Dispositivo listo"
   },
   "onboarding": {
+    "step0_title": "Hardware Necesario",
+    "step0_desc": "Antes de comenzar, asegúrate de tener todo el hardware necesario para conectar con tu MIB2.",
+    "step0_detail1": "🔌 Adaptador USB-Ethernet ASIX (AX88772A/B) - Para spoofing",
+    "step0_detail2": "🔌 Segundo adaptador USB-Ethernet (cualquier marca) - Para Android",
+    "step0_detail3": "📱 Cable OTG con alimentación externa (5V) - Para Android",
+    "step0_detail4": "🔄 Switch Ethernet (ej: TP-Link TL-SF1005D) - Para conexión estable",
+    "step0_detail5": "🔋 Cable USB a DC 5V 5.5mm - Para alimentar switch en el carro",
+    "step0_detail6": "🛡️ 2x Cables Ethernet Cat5e/Cat6 - Para conectar adaptadores al switch",
+    "step0_detail7": "🔋 Powerbank o cargador USB de carro - Para alimentar switch",
+    "step0_detail8": "🚗 Vehículo con MIB2 STD2 Technisat/Preh - Con Developer Mode habilitado",
     "step1_title": "Conectar Adaptador USB",
     "step1_desc": "Conecta tu adaptador USB-Ethernet al dispositivo Android usando un cable OTG con alimentación externa.",
     "step1_detail1": "Usa un cable OTG con alimentación externa (5V)",
