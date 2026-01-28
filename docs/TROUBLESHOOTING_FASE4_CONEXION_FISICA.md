@@ -305,10 +305,13 @@ Algunos Android requieren:
 4. Reiniciar Android
 ```
 
-#### Solución 3.E: Usar hub USB con alimentación
+#### Solución 3.E: Verificar alimentación USB
 ```
-Android → Hub USB (con corriente externa) → Adaptador Ethernet
-Útil si el Android no proporciona suficiente corriente
+Nota: La mayoría de los Android alimentan correctamente los adaptadores USB-Ethernet.
+Si el adaptador no enciende:
+1. Probar con otro cable OTG
+2. Verificar que el Android tenga suficiente batería (>20%)
+3. En casos raros, algunos Android antiguos pueden requerir hub USB alimentado
 ```
 
 ### Verificación Final

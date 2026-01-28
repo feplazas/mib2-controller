@@ -36,7 +36,7 @@ Esta guía documenta problemas comunes que los usuarios pueden encontrar al usar
 | Causa | Probabilidad | Solución |
 |-------|--------------|----------|
 | Adaptador no conectado físicamente | Alta | Conectar adaptador USB-Ethernet al puerto USB del teléfono |
-| Cable OTG defectuoso | Media | Probar con otro cable USB OTG |
+| Cable OTG defectuoso | Media | Probar con otro cable OTG simple (no requiere alimentación externa) |
 | Permisos USB no otorgados | Alta | Ver sección 7.1 |
 | Adaptador no soportado | Baja | Verificar que sea chipset ASIX (ver sección 2) |
 
@@ -53,6 +53,8 @@ Esta guía documenta problemas comunes que los usuarios pueden encontrar al usar
    - Si no aparece el diálogo, ir a Configuración → Aplicaciones → MIB2 Controller → Permisos → Habilitar todos los permisos
 
 3. **Verificar cable OTG**
+   - Usar un cable OTG simple (no requiere alimentación externa)
+   - El Android alimenta el adaptador directamente por USB
    - Probar el cable OTG con otro dispositivo USB (pendrive, teclado)
    - Si no funciona, reemplazar el cable
 

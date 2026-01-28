@@ -3067,3 +3067,15 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Agregar lista completa de hardware necesario (nuevo paso 0)
 - [x] Incluir: adaptadores USB-Ethernet, switch, cables, alimentación
 - [x] Actualizar traducciones ES/EN/DE
+
+
+## Actualización de Guías y FAQs (Enero 2026)
+
+### Actualización de Hardware Requerido
+- [x] Actualizar onboarding con hardware simplificado y alternativas
+- [x] Eliminar exigencia de cable OTG con alimentación independiente
+- [x] Agregar alternativas: switch vs cable cruzado, inversor vs cable USB-DC
+- [x] Actualizar FAQs en Settings con información de hardware
+- [x] Actualizar guías en /docs con requisitos de hardware
+- [x] Actualizar guía de conexión USB-Ethernet embebida
+- [x] Verificar consistencia en los 3 idiomas (ES/EN/DE)

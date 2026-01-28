@@ -7,7 +7,7 @@ const OFFLINE_GUIDES_VERSION_KEY = '@mib2_offline_guides_version';
 const OFFLINE_GUIDES_TIMESTAMP_KEY = '@mib2_offline_guides_timestamp';
 
 // Versión actual de las guías (incrementar cuando se actualicen)
-export const GUIDES_VERSION = '3.0.0';
+export const GUIDES_VERSION = '3.1.0';
 
 /**
  * Estructura de una guía offline

@@ -1,11 +1,40 @@
-# Pasos Exactos: Configuración de Conexión MIB2 con Switch
+# Pasos Exactos: Configuración de Conexión MIB2
 
 ## ⚠️ IMPORTANTE: Leer ANTES de empezar
 
 - **Tiempo estimado:** 30-45 minutos
-- **Requisitos:** Switch TP-Link, 2 cables Ethernet, adaptadores USB-Ethernet, Android con app instalada
 - **Condiciones:** Vehículo con contacto ON, motor APAGADO
 - **Batería:** Asegúrate de tener batería suficiente (>50%) o motor encendido brevemente cada 15 min
+
+---
+
+## Hardware Necesario
+
+### Esencial (obligatorio)
+| Componente | Descripción | Nota |
+|------------|-------------|------|
+| Adaptador USB-Ethernet ASIX | AX88772A/B con EEPROM externa | Para conectar a MIB2, requiere spoofing |
+| Adaptador USB-Ethernet | Cualquier marca compatible OTG | Para conectar a Android |
+| Cable OTG simple | USB-A a USB-C o Micro-USB | **Sin alimentación externa** - Android alimenta el adaptador |
+
+### Interconexión (elegir UNA opción)
+
+**OPCIÓN A: Switch Ethernet (recomendado para uso frecuente)**
+| Componente | Descripción | Nota |
+|------------|-------------|------|
+| Switch Ethernet | Ej: TP-Link TL-SF1005D | 5 puertos, no administrable |
+| 2x Cables Ethernet | Cat5e o Cat6, cualquier largo | Cables directos normales |
+| Alimentación switch | **Elegir una:** | |
+| → Inversor 12V→110V/220V | Ej: Steren 150W | Usa el adaptador original del switch |
+| → Cable USB a DC 5V 5.5mm | + Cargador USB de carro | Solo si el switch acepta 5V DC |
+
+**OPCIÓN B: Cable Ethernet Cruzado (más simple, menos cables)**
+| Componente | Descripción | Nota |
+|------------|-------------|------|
+| Cable Ethernet cruzado | Cat5e o Cat6 crossover | Conecta directamente ambos adaptadores |
+
+### Nota importante sobre alimentación
+> **Los adaptadores USB-Ethernet se alimentan directamente por USB.** El puerto USB de la MIB2 alimenta el adaptador conectado a ella, y el puerto USB del Android alimenta el adaptador conectado a él. **No necesitas cable OTG con alimentación externa ni hub USB alimentado.**
 
 ---
 
@@ -34,13 +63,22 @@
 ### 1.2 Preparar el Kit de Conexión
 
 **Empacar en una bolsa:**
-- ✅ Switch TP-Link TL-SF1005D + cable de alimentación
+
+Si usas **OPCIÓN A (Switch)**:
+- ✅ Switch TP-Link TL-SF1005D
+- ✅ Alimentación del switch (inversor 12V→110V/220V O cable USB-DC 5V)
+- ✅ 2x cables Ethernet directos
 - ✅ Adaptador USB-Ethernet SPOOFED (marcado)
-- ✅ Adaptador USB-Ethernet NO spoofed (para Android)
-- ✅ 2x cables Ethernet (cualquier largo, directos)
+- ✅ Adaptador USB-Ethernet para Android
+- ✅ Cable OTG simple
 - ✅ Android con app MIB2 Controller instalada
-- ✅ Cable USB-C/Micro-USB para cargar Android
-- ✅ Esta guía impresa o en otro dispositivo
+
+Si usas **OPCIÓN B (Cable cruzado)**:
+- ✅ Cable Ethernet cruzado (crossover)
+- ✅ Adaptador USB-Ethernet SPOOFED (marcado)
+- ✅ Adaptador USB-Ethernet para Android
+- ✅ Cable OTG simple
+- ✅ Android con app MIB2 Controller instalada
 
 ### 1.3 Verificar Configuración de Android
 
@@ -136,9 +174,10 @@
 
 ### 3.1 Conectar Adaptador USB-Ethernet
 
-1. ✅ Conectar el adaptador USB-Ethernet **NO spoofed** al Android
-2. ✅ Esperar 5-10 segundos
-3. ✅ Puede aparecer notificación "Ethernet conectado"
+1. ✅ Conectar el adaptador USB-Ethernet al Android usando el **cable OTG simple**
+2. ✅ El Android alimenta el adaptador directamente - **no necesitas alimentación externa**
+3. ✅ Esperar 5-10 segundos
+4. ✅ Puede aparecer notificación "Ethernet conectado"
 
 ### 3.2 Configurar IP Estática
 
@@ -176,41 +215,68 @@
 
 ---
 
-## FASE 4: Conexión Física con Switch
+## FASE 4: Conexión Física
 
-### 4.1 Ubicar el Switch
+### OPCIÓN A: Usando Switch Ethernet
+
+#### 4.1 Ubicar y Alimentar el Switch
 
 **Encontrar un lugar en el auto donde:**
-- ✅ Esté cerca de una toma de corriente 12V → USB (para alimentar switch)
+- ✅ Esté cerca de una toma de corriente 12V (para el inversor)
 - ✅ Tenga espacio plano (consola central, asiento trasero, piso)
 - ✅ Los cables lleguen sin tensión
 
 **Conectar alimentación del switch:**
-1. ✅ Conectar cable de alimentación al switch
-2. ✅ Conectar a inversor 12V→220V o adaptador USB (si el switch es USB)
+
+Si usas **inversor 12V→110V/220V**:
+1. ✅ Conectar inversor a la toma 12V del auto
+2. ✅ Conectar adaptador original del switch al inversor
+3. ✅ Conectar adaptador al switch
+4. ✅ Verificar que encienda (LED de power)
+
+Si usas **cable USB a DC 5V**:
+1. ✅ Conectar cable USB-DC al cargador USB del auto
+2. ✅ Conectar extremo DC al switch
 3. ✅ Verificar que encienda (LED de power)
 
-### 4.2 Conectar MIB2 → Switch
+#### 4.2 Conectar MIB2 → Switch
 
 1. ✅ Tomar el adaptador **SPOOFED** (marcado)
 2. ✅ Conectar al puerto **USB de la MIB2**
    - Usar el puerto USB que normalmente usas para Android Auto/CarPlay
+   - **El MIB2 alimenta el adaptador directamente**
 3. ✅ Esperar 3-5 segundos
 4. ✅ Tomar un cable Ethernet
 5. ✅ Conectar un extremo al adaptador USB-Ethernet (spoofed)
 6. ✅ Conectar el otro extremo a **cualquier puerto del switch** (ej: Puerto 1)
 7. ✅ Verificar LED del switch en ese puerto → debe encender **verde/naranja**
 
-### 4.3 Conectar Switch → Android
+#### 4.3 Conectar Switch → Android
 
 1. ✅ Tomar el segundo cable Ethernet
 2. ✅ Conectar un extremo a **otro puerto del switch** (ej: Puerto 2)
 3. ✅ Conectar el otro extremo al adaptador USB-Ethernet del Android
 4. ✅ Verificar LED del switch en ese puerto → debe encender **verde/naranja**
 
+### OPCIÓN B: Usando Cable Ethernet Cruzado
+
+#### 4.1 Conectar Adaptador a MIB2
+
+1. ✅ Tomar el adaptador **SPOOFED** (marcado)
+2. ✅ Conectar al puerto **USB de la MIB2**
+   - **El MIB2 alimenta el adaptador directamente**
+3. ✅ Esperar 3-5 segundos hasta que el LED del adaptador encienda
+
+#### 4.2 Conectar Cable Cruzado
+
+1. ✅ Tomar el cable Ethernet **cruzado** (crossover)
+2. ✅ Conectar un extremo al adaptador de la MIB2
+3. ✅ Conectar el otro extremo al adaptador del Android
+4. ✅ Verificar que los LEDs de ambos adaptadores parpadeen
+
 ### 4.4 Verificar LEDs
 
-**Estado esperado:**
+**Estado esperado (con switch):**
 
 | Dispositivo | LED | Estado |
 |-------------|-----|--------|
@@ -220,9 +286,16 @@
 | Adaptador MIB2 | Verde/Azul | ✅ Encendido, parpadea |
 | Adaptador Android | Verde/Azul | ✅ Encendido, parpadea |
 
+**Estado esperado (con cable cruzado):**
+
+| Dispositivo | LED | Estado |
+|-------------|-----|--------|
+| Adaptador MIB2 | Verde/Azul | ✅ Encendido, parpadea |
+| Adaptador Android | Verde/Azul | ✅ Encendido, parpadea |
+
 **Si algún LED NO enciende:**
 - ❌ Verificar que el cable esté bien conectado en ambos extremos
-- ❌ Probar con otro puerto del switch
+- ❌ Probar con otro puerto del switch (si aplica)
 - ❌ Probar con otro cable Ethernet
 
 ---
@@ -248,7 +321,7 @@
 **Si muestra TIMEOUT:**
 - ❌ Volver a FASE 2.5 y verificar IP de MIB2
 - ❌ Volver a FASE 3.3 y verificar IP de Android
-- ❌ Verificar LEDs del switch (FASE 4.4)
+- ❌ Verificar LEDs (FASE 4.4)
 
 ### 5.2 Telnet Test (Prueba Avanzada)
 
@@ -324,7 +397,7 @@ en0: flags=...
 ### 7.1 Tomar Fotos
 
 **Para referencia futura:**
-- ✅ Foto de la ubicación del switch en el auto
+- ✅ Foto de la ubicación del switch/conexión en el auto
 - ✅ Foto de las conexiones (adaptadores + cables)
 - ✅ Foto de la pantalla de Network Scanner con resultados exitosos
 - ✅ Foto de la terminal Telnet conectada
@@ -334,11 +407,15 @@ en0: flags=...
 ```
 Fecha de configuración: _______________
 
-✅ Switch: TP-Link TL-SF1005D
+✅ Método de conexión: [ ] Switch  [ ] Cable cruzado
 ✅ Adaptador MIB2 (spoofed): _______________
 ✅ Adaptador Android: _______________
 ✅ IP MIB2: 192.168.1.4
 ✅ IP Android: 192.168.1.10
+
+Si usas switch:
+✅ Switch: _______________
+✅ Alimentación: [ ] Inversor  [ ] USB-DC
 ✅ Puerto Switch MIB2: _____
 ✅ Puerto Switch Android: _____
 
@@ -362,7 +439,7 @@ _________________________________
 
 **Solución:**
 1. Verificar que ambos dispositivos tengan IPs en la misma subred (192.168.1.x)
-2. Apagar y encender el switch
+2. Si usas switch: Apagar y encender el switch
 3. Desconectar y reconectar los adaptadores USB
 
 ### Problema: Android no detecta Ethernet
@@ -371,6 +448,13 @@ _________________________________
 1. Ir a **Tools** → **Guides** → **Android Network Config**
 2. Seguir instrucciones específicas para tu modelo
 3. Puede requerir app de terceros o root
+
+### Problema: Adaptador no enciende al conectar
+
+**Solución:**
+1. Verificar que el contacto del vehículo esté ON (no solo ACC)
+2. Probar otro puerto USB de la MIB2
+3. Verificar que el cable OTG funcione con otros dispositivos
 
 ---
 
@@ -406,4 +490,4 @@ Si algo falla, anota exactamente en qué paso y qué mensaje de error aparece. E
 ---
 
 *Última actualización: Enero 2026*
-*Versión: 1.0*
+*Versión: 2.0 - Actualizado con alternativas de hardware y simplificación*
