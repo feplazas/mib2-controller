@@ -3050,3 +3050,12 @@ Permite verificar que todo funciona correctamente antes de ejecutar el spoofing 
 - [x] Investigar por qué el botón Clear no limpia el log de Telnet
 - [x] Corregir función clearMessages en telnet-provider.tsx (ahora también limpia AsyncStorage)
 - [x] Verificar que el estado de mensajes se resetea correctamente
+
+
+## BUG CRÍTICO: Botón Limpiar Telnet No Funciona (28 Ene 2026)
+
+- [x] Analizar por qué clearMessages no limpia el log visible
+- [x] Verificar que AsyncStorage se limpia correctamente
+- [x] Corregir la función clearMessages en telnet-provider.tsx (agregado flag isClearing)
+- [x] Verificar que el estado local también se resetea
+- [ ] Probar que el botón funciona correctamente (requiere build)

@@ -44,6 +44,7 @@ export function TelnetProvider({ children }: { children: React.ReactNode }) {
   const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [messages, setMessages] = useState<TelnetMessage[]>([]);
+  const [isClearing, setIsClearing] = useState(false);
 
   // Load saved configuration on mount
   useEffect(() => {
@@ -51,10 +52,12 @@ export function TelnetProvider({ children }: { children: React.ReactNode }) {
     loadMessages();
   }, []);
 
-  // Save messages when they change
+  // Save messages when they change (but not when clearing)
   useEffect(() => {
-    saveMessages();
-  }, [messages]);
+    if (!isClearing) {
+      saveMessages();
+    }
+  }, [messages, isClearing]);
 
   const loadConfig = async () => {
     try {
@@ -166,13 +169,23 @@ export function TelnetProvider({ children }: { children: React.ReactNode }) {
   }, [client, isConnected, addMessage]);
 
   const clearMessages = useCallback(async () => {
+    // Marcar que estamos limpiando para evitar que el useEffect guarde mensajes vacíos
+    setIsClearing(true);
+    
+    // Limpiar el estado local primero para feedback inmediato
     setMessages([]);
-    // También limpiar mensajes de AsyncStorage
+    
+    // Luego limpiar AsyncStorage
     try {
       await AsyncStorage.removeItem(STORAGE_KEY_MESSAGES);
     } catch (error) {
       console.error('Error clearing messages from storage:', error);
     }
+    
+    // Resetear el flag de limpieza después de un pequeño delay
+    setTimeout(() => {
+      setIsClearing(false);
+    }, 100);
   }, []);
 
   const value: TelnetContextValue = {
